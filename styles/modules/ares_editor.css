@@ -1,0 +1,521 @@
+﻿@layer modules {
+/* 
+   ==========================================================================
+   ARES EDITOR - CENTRO DE INTELIGENCIA ACADÃ‰MICA v1.0
+   SoberanÃ­a de Reactivos | ADN Vitrina 06
+   ==========================================================================
+ */
+
+.ares-panel-radius { 
+    border-radius: var(--el-radius-main); 
+    border: 0.0938rem solid var(--el-primary); 
+}
+
+.ares-h-44 { 
+    height: var(--el-height-elite); 
+}
+
+.ares-editor-box { 
+    min-height: 12.5rem; 
+    border: 0.0625rem solid var(--el-border-strong); 
+    background: var(--el-white); 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+.ares-editor-box.ql-disabled { 
+    background-color: rgba(var(--el-primary-rgb), 0.05); 
+    opacity: 0.8; 
+    cursor: not-allowed; 
+}
+
+.ares-editor-box.ql-disabled .ql-editor::before { 
+    display: none; 
+}
+
+.input-elite:disabled, 
+.select-elite:disabled,
+.ares-select-final:disabled { 
+    background-color: rgba(var(--el-primary-rgb), 0.02); 
+    color: var(--el-text-muted); 
+    border-color: var(--el-border); 
+    cursor: not-allowed; 
+    opacity: 0.6; 
+}
+
+.ql-editor.ql-blank::before { 
+    color: var(--el-text-muted); 
+    font-style: italic; 
+    opacity: 0.5; 
+    pointer-events: none; 
+}
+
+.ql-container { 
+    font-family: var(--el-font-institutional); 
+    font-size: 1rem; 
+    color: var(--el-dark); 
+}
+
+.ares-border-dashed { 
+    border: 0.0625rem dashed var(--el-border-strong); 
+}
+
+.nav-elite-tabs { 
+    background: rgba(var(--el-primary-rgb), 0.05); 
+    border: 0.0625rem solid var(--el-border-strong); 
+    padding: 0.25rem; 
+}
+
+.nav-link-elite { 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    color: var(--el-text-muted); 
+    background: transparent; 
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.0313rem;
+    text-transform: uppercase;
+}
+
+.nav-link-elite.active { 
+    background: var(--el-white); 
+    color: var(--el-primary); 
+    box-shadow: var(--el-shadow-sm);
+    border-radius: var(--el-radius-pill);
+}
+
+.ares-sticky-header { 
+    position: sticky; 
+    inset-block-start: -0.0625rem; 
+    z-index: 1060; 
+    background: var(--el-white); 
+    border-block-end: 0.125rem solid var(--el-primary);
+    box-shadow: 0 0.5rem 1.25rem rgba(var(--el-primary-rgb), 0.1);
+}
+
+.reactivo-item { 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    border-inline-start: 0.25rem solid transparent;
+    padding-inline-end: 0.75rem;
+}
+
+#lista-reactivos .reactivo-item {
+    border-block-end: 0.0625rem solid rgba(var(--el-primary-rgb), 0.12);
+}
+
+#lista-reactivos .reactivo-item:last-child {
+    border-block-end: none;
+}
+
+.reactivo-item.active { 
+    border-inline-start-color: var(--el-primary); 
+    background-color: rgba(var(--el-primary-rgb), 0.05); 
+}
+
+.reactivo-item .btn.btn-link {
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--el-radius-main);
+    border: none;
+    text-decoration: none;
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reactivo-item .btn.btn-link:hover,
+.reactivo-item .btn.btn-link:focus {
+    background-color: rgba(var(--el-primary-rgb, 220, 38, 38), 0.1);
+    color: var(--el-primary);
+    text-decoration: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.btn-helper-elite {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: var(--el-font-institutional);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--el-primary);
+    text-decoration: none;
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-helper-elite:hover,
+.btn-helper-elite:focus {
+    opacity: 0.75;
+    outline: none;
+    box-shadow: none;
+    text-decoration: none;
+    color: var(--el-primary);
+}
+
+/* REJILLA BLINDADA ARES (MÃ‰TRICAS MEN Y ESTRUCTURA HORIZONTAL) */
+.ares-grid-men { 
+    display: grid;
+    grid-template-columns: 1.2fr 2fr 2fr;
+    gap: 1rem;
+    width: 100%; 
+}
+
+.ares-label-men {
+    font-size: 0.625rem;
+    font-weight: 800;
+    color: var(--el-primary);
+    text-transform: uppercase;
+    margin-block-end: 0.5rem;
+    display: block;
+    letter-spacing: 0.0313rem;
+    opacity: 0.7;
+}
+
+.ares-select-final {
+    display: block;
+    width: 100%;
+}
+
+.ares-select-final:focus {
+    border-color: var(--el-primary);
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.1);
+}
+
+.ares-preview-box {
+    background: rgba(var(--el-primary-rgb), 0.02); 
+    color: var(--el-dark); 
+    font-size: 0.85rem; 
+    line-height: 1.2; 
+    padding: 0.375rem 0.75rem;
+    margin-block-end: 0;
+    border-inline-start: 0.25rem solid var(--el-primary);
+}
+
+.ares-preview-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-block-end: 0.5rem;
+}
+
+.ares-preview-label {
+    flex: 0 0 5.3125rem;
+    font-weight: bold;
+    color: var(--el-dark);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.ares-preview-text {
+    flex: 1;
+    color: var(--el-dark);
+}
+
+.ares-preview-item:last-child { margin-block-end: 0; }
+
+.search-wrapper-elite {
+    position: relative;
+    width: 100%;
+}
+
+.search-icon-elite-fixed {
+    position: absolute;
+    inset-inline-start: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--el-primary);
+    opacity: 0.6;
+    z-index: 5;
+}
+
+.search-wrapper-elite .search-elite {
+    padding-inline-start: 2.75rem;
+}
+
+/* ðŸ›¡ï¸ LABORATORIO ARES */
+.ares-panel-men {
+    background: linear-gradient(to bottom, var(--el-white), var(--el-surface-1));
+    border: 0.0625rem solid var(--el-border-strong);
+}
+
+/* ðŸŽ¨ SELECCIÃ“N DINÃMICA DE DBA Y EVIDENCIAS DE ANCHO AMPLIADO Y CHEVRON CSS */
+.ares-custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+button.select-elite.ares-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: var(--el-height-elite);
+    padding-inline: 1rem;
+    background: var(--el-white);
+    background-image: none;
+    border: 0.0625rem solid var(--el-border-strong);
+    border-radius: var(--el-radius-main);
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--el-dark);
+    text-align: start;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button.select-elite.ares-dropdown-trigger:hover:not(:disabled) {
+    border-color: var(--el-primary);
+    background-color: rgba(var(--el-primary-rgb), 0.02);
+}
+
+button.select-elite.ares-dropdown-trigger:focus:not(:disabled) {
+    outline: none;
+    border-color: var(--el-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.1);
+}
+
+/* Flecha de despliegue en CSS Puro para evitar fallos de fuentes externas */
+button.select-elite.ares-dropdown-trigger::after {
+    content: "";
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-inline-end: 0.125rem solid var(--el-primary);
+    border-block-end: 0.125rem solid var(--el-primary);
+    transform: rotate(45deg);
+    margin-inline-start: auto;
+    margin-block-start: -0.25rem;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button.select-elite.ares-dropdown-trigger[aria-expanded="true"]::after {
+    transform: rotate(-135deg);
+    margin-block-start: 0.125rem;
+}
+
+button.select-elite.ares-dropdown-trigger[disabled] {
+    cursor: not-allowed;
+    background-color: rgba(var(--el-primary-rgb), 0.02);
+    color: var(--el-text-muted);
+    opacity: 0.6;
+}
+
+button.select-elite.ares-dropdown-trigger[disabled]::after {
+    border-color: var(--el-border);
+}
+
+.ares-dropdown-menu {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    width: 100%;
+    margin-block-start: 0.5rem;
+    z-index: 1070;
+    display: none;
+    max-height: 18.75rem;
+    overflow-y: auto;
+    background: var(--el-white);
+    border: 0.0625rem solid var(--el-border-strong);
+    border-radius: var(--el-radius-main);
+    box-shadow: 0 0.625rem 1.875rem rgba(var(--el-primary-rgb), 0.15);
+    padding: 0.5rem;
+}
+
+
+
+.ares-dropdown-menu.show {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ares-custom-list-item {
+    padding: 0.75rem 1rem;
+    border-radius: var(--el-radius-main);
+    cursor: pointer;
+    background: rgba(var(--el-primary-rgb), 0.015);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.05);
+    font-size: 0.85rem;
+    color: var(--el-dark);
+    line-height: 1.4;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ares-custom-list-item:hover {
+    background: rgba(var(--el-primary-rgb), 0.05);
+    border-color: rgba(var(--el-primary-rgb), 0.2);
+    transform: translateY(-1px);
+}
+
+.ares-custom-list-item.active {
+    background: var(--el-primary);
+    color: var(--el-white);
+    border-color: var(--el-primary);
+    box-shadow: 0 4px 15px rgba(var(--el-primary-rgb), 0.2);
+}
+
+.ares-custom-list-item.active strong {
+    color: var(--el-white);
+}
+
+/* Scrollbar Personalizada Premium */
+.ares-dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+.ares-dropdown-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+.ares-dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(var(--el-primary-rgb), 0.2);
+    border-radius: var(--el-radius-pill);
+}
+.ares-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--el-primary);
+}
+
+/* Ocultar botones de teclado virtual y hamburguesa de MathLive (Pureza Absoluta) */
+math-field::part(virtual-keyboard-toggle) {
+    display: none;
+}
+math-field::part(menu-toggle) {
+    display: none;
+}
+
+/* ==========================================================================
+   SELECTORES WYSIWYG CIENTÃFICOS - MULTI-CATEGORÃA PREMIUM
+   ========================================================================== */
+
+.ares-wysiwyg-picker {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-block-start: 1rem;
+    border-block-start: 0.0625rem solid var(--el-border-strong);
+    padding-block-start: 1rem;
+}
+
+.ares-wysiwyg-tabs {
+    background: rgba(var(--el-primary-rgb), 0.05);
+    border: 0.0625rem solid var(--el-border-strong);
+    padding: 0.25rem;
+    display: flex;
+    gap: 0.25rem;
+}
+
+.ares-wysiwyg-tabs .nav-link-elite {
+    flex: 1;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.ares-wysiwyg-panel {
+    display: none;
+    animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ares-wysiwyg-panel.active {
+    display: block;
+}
+
+.ares-wysiwyg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+    gap: 0.5rem;
+    max-height: 14rem;
+    overflow-y: auto;
+    padding-block: 0.5rem;
+    padding-inline: 0.25rem;
+}
+
+/* Scrollbar Personalizada para la CuadrÃ­cula */
+.ares-wysiwyg-grid::-webkit-scrollbar {
+    width: 6px;
+}
+.ares-wysiwyg-grid::-webkit-scrollbar-track {
+    background: transparent;
+}
+.ares-wysiwyg-grid::-webkit-scrollbar-thumb {
+    background: rgba(var(--el-primary-rgb), 0.2);
+    border-radius: var(--el-radius-pill);
+}
+.ares-wysiwyg-grid::-webkit-scrollbar-thumb:hover {
+    background: var(--el-primary);
+}
+
+.ares-keycap-btn {
+    height: var(--el-height-elite); /* Altura exacta de 44px */
+    border-radius: var(--el-radius-main); /* Radio de Prestigio de 12px */
+    border: 0.0625rem solid var(--el-border-strong);
+    background: var(--el-white);
+    color: var(--el-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0.125rem 0.25rem rgba(var(--el-primary-rgb), 0.05);
+}
+
+.ares-keycap-btn:hover {
+    background: rgba(var(--el-primary-rgb), 0.04);
+    border-color: var(--el-primary);
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.25rem 0.5rem rgba(var(--el-primary-rgb), 0.15);
+}
+
+.ares-keycap-btn:active {
+    transform: translateY(0);
+}
+
+/* RenderizaciÃ³n Interna de KaTeX en Keycaps */
+.ares-keycap-btn .katex {
+    font-size: 0.9rem;
+    color: var(--el-dark);
+    pointer-events: none;
+}
+
+/* Evitar estilos inline en math-field modal */
+math-field.ares-swal-field {
+    min-height: 5.5rem;
+    display: block;
+    border-color: var(--el-border-strong);
+}
+
+/* PrevisualizaciÃ³n de FÃ³rmulas en Lista Lateral */
+.formula-preview-container {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal;
+    text-overflow: ellipsis;
+    max-height: 3rem;
+    line-height: 1.5;
+}
+
+.formula-preview-container .ql-formula {
+    display: inline-block;
+    vertical-align: middle;
+    padding-inline: 0.375rem;
+    padding-block: 0.125rem;
+    background: rgba(var(--el-primary-rgb), 0.05);
+    border-radius: var(--el-radius-main);
+    color: var(--el-primary);
+}
+} /* Fin de @layer modules */
+
+

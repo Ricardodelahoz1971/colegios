@@ -1,0 +1,59 @@
+Created At: 2026-07-07T11:30:33Z
+Completed At: 2026-07-07T11:30:33Z
+File Path: `file:///c:/xampp/htdocs/sistema_escolar/php/vistas/zulu.php`
+Total Lines: 333
+Total Bytes: 22234
+Showing lines 170 to 220
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+170:         $plan_master_map = [];
+171:         while($pm = $plan_master_stmt->fetch(PDO::FETCH_ASSOC)) { $plan_master_map[(int)$pm['nivel_nombre']][] = (int)$pm['especialidad_id']; }
+172: 
+173:         $data_agrupada = [];
+174:         while($row = $plantilla_stmt->fetch(PDO::FETCH_ASSOC)) {
+175:             $c_id = $row['curso_id'];
+176:             if (!isset($data_agrupada[$c_id])) {
+177:                 $data_agrupada[$c_id] = [
+178:                     'nombre'   => $row['nombre_curso'],
+179:                     'nivel_id' => $row['nivel_id'],
+180:                     'tutor'    => $row['nombre_tutor'],
+181:                     'carga'    => []
+182:                 ];
+183:             }
+184:             if ($row['docente_nombre']) {
+185:                 $data_agrupada[$c_id]['carga'][] = [
+186:                     'materia' => $row['materia_nombre'],
+187:                     'docente' => $row['docente_nombre'],
+188:                     'd_id'    => $row['docente_id'],
+189:                     'm_id'    => $row['materia_id']
+190:                 ];
+191:             } elseif ($es_incompleto) {
+192:                 $border_class = 'border-start border-danger border-4';
+193:             } else {
+194:                 $border_class = 'border-start border-success border-4';
+195:             }
+196:         ?>
+197:             <div class="col-xl-4 col-lg-6 col-md-12 card-curso-wrap" data-curso-nombre="<?php echo strtolower($info['nombre']); ?>">
+198:                 <div class="card card-zulu-elite border-0 shadow-sm rounded-4 position-relative <?php echo $border_class; ?>"
+199:                      data-curso-dest="<?php echo $id_cur; ?>"
+200:                      <?php if($can_edit_census): ?>
+201:                      ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
+202:                      <?php endif; ?>>
+203:                     
+204:                     <div class="card-body p-4">
+205:                         <div class="d-flex align-items-center justify-content-between mb-3">
+206:                             <div class="d-flex align-items-center overflow-hidden">
+207:                                 <div class="avatar-elite me-3">
+208:                                     <?php echo htmlspecialchars(substr($info['nombre'], 0, 2)); ?>
+209:                                 </div>
+210:                                 <div class="overflow-hidden">
+211:                                     <div class="text-secondary small fw-bold text-uppercase">DIR: <?php echo htmlspecialchars($info['tutor'] ?? 'SIN ASIGNAR'); ?></div>
+212:                                     <?php if (!$tiene_plan): ?>
+213:                                         <div class="text-warning fw-800 fs-nano text-uppercase mt-1 cursor-pointer" onclick="abrirPlanMaestroConNivel(<?php echo $nivel_id; ?>)" title="Configurar Plan Maestro para este nivel">
+214:                                             <i class="bi bi-exclamation-triangle-fill me-1"></i> Sin Plan (Configurar)
+215:                                         </div>
+216:                                     <?php elseif ($es_incompleto): ?>
+217:                                         <div class="text-danger fw-800 fs-nano animate-pulse-elite text-uppercase mt-1">
+218:                                             <i class="bi bi-exclamation-circle-fill me-1"></i> Faltan <?php echo count($materias_faltantes); ?> materias
+219:                                         </div>
+220:                                     <?php else: ?>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

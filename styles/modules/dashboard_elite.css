@@ -1,0 +1,244 @@
+﻿@layer modules {
+/* 
+   ==========================================================================
+   DASHBOARD Ã‰LITE - CENTRO DE MANDO INSTITUCIONAL v1.0
+   ADN Vitrina 06 | Sello Ã‰lite
+   ==========================================================================
+*/
+
+.container-max-elite {
+    max-width: 100rem;
+    margin-inline: auto;
+}
+
+/* Ã°Å¸â€ºÂ¡Ã¯Â¸Â CINTA DE ACCIÃƒâ€œN RÃƒÂPIDA */
+.action-ribbon-elite {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    padding-block: 1rem;
+    scrollbar-width: none; /* Ocultar scrollbar en Firefox */
+}
+
+.action-ribbon-elite::-webkit-scrollbar {
+    display: none; /* Ocultar scrollbar en Chrome/Safari */
+}
+
+.btn-action-pill-elite {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 5rem;
+}
+
+.btn-action-pill-elite:hover {
+    transform: translateY(-0.25rem);
+}
+
+.btn-action-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--el-radius-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: inherit;
+    box-shadow: 0 0.5rem 1.25rem rgba(var(--el-primary-rgb), 0.05);
+}
+
+.btn-action-pill-elite:hover .btn-action-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0.75rem 1.5rem rgba(var(--el-primary-rgb), 0.15);
+}
+
+.btn-action-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--el-primary);
+    letter-spacing: 0.0313rem;
+}
+
+/* Ã°Å¸â€œÅ  SISTEMA PERSEUS (ANILLO DE COBERTURA) */
+.card-perseus {
+    border-inline-start: 0.375rem solid var(--el-accent);
+}
+
+.perseus-progress-circle {
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease;
+}
+
+.perseus-ring {
+    transform: rotate(-90deg);
+}
+
+.perseus-select-curso {
+    min-width: 7rem;
+}
+
+.perseus-select-docente {
+    min-width: 18.75rem;
+}
+
+/* Ã°Å¸Å¸Â¢ PULSAR DE SALUD */
+.pulsar-status-elite {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: var(--el-radius-pill);
+}
+
+.pulsar-online {
+    background-color: var(--el-primary);
+    box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0.7);
+    animation: pulsar-green 2s infinite;
+}
+
+.pulsar-warning {
+    background-color: var(--el-primary);
+    box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0.7);
+    animation: pulsar-yellow 2s infinite;
+}
+
+@keyframes pulsar-green {
+    0% { box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0.7); }
+    70% { box-shadow: 0 0 0 0.625rem rgba(var(--el-primary-rgb), 0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0); }
+}
+
+@keyframes pulsar-yellow {
+    0% { box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0.7); }
+    70% { box-shadow: 0 0 0 0.625rem rgba(var(--el-primary-rgb), 0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0); }
+}
+
+/* ðŸŽ›ï¸ SWITCH iOS VITRINA 06 (ELITE) */
+.elite-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    user-select: none;
+    height: var(--el-height-elite); /* MÃ©trica obligatoria 44px */
+    padding-inline: 1rem;
+    border-radius: var(--el-radius-sub); /* Radio de prestigio para controles (12px) */
+    background: rgba(var(--el-primary-rgb), 0.03);
+    transition: var(--el-transition-premium);
+    border: 1px solid rgba(var(--el-primary-rgb), 0.06);
+}
+
+.elite-switch:hover {
+    background: rgba(var(--el-primary-rgb), 0.07);
+    border-color: rgba(var(--el-primary-rgb), 0.15);
+}
+
+.elite-switch__input {
+    display: none;
+}
+
+.elite-switch__track {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    background: rgba(var(--el-primary-rgb), 0.15);
+    border-radius: var(--el-radius-pill); /* PÃ­ldora */
+    transition: var(--el-transition-premium);
+}
+
+.elite-switch__thumb {
+    position: absolute;
+    top: 2px;
+    inset-inline-start: 2px;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--el-radius-pill);
+    background: var(--el-white); /* Cero HEX */
+    box-shadow: 0 2px 8px rgba(var(--el-primary-rgb), 0.18);
+    transition: var(--el-transition-premium);
+}
+
+.elite-switch__input:checked + .elite-switch__track {
+    background: var(--el-primary);
+}
+
+.elite-switch__input:checked + .elite-switch__track .elite-switch__thumb {
+    transform: translateX(24px);
+}
+
+.elite-switch__label {
+    font-family: var(--el-font-institutional);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--el-primary);
+}
+
+.config-main-card-elite__title {
+    font-family: var(--el-font-institutional);
+}
+
+.elite-switch-desc {
+    margin-inline-start: 2rem;
+}
+
+.config-main-card-elite--padded {
+    padding: 2rem;
+}
+
+.config-info-card-elite__icon {
+    margin-inline-end: 1rem;
+}
+
+/* ðŸ”˜ PESTAÃ‘A FLOTANTE E INTEGRACIÃ“N OFFCANVAS ACCESS */
+.btn-floating-tab-elite {
+    position: fixed;
+    inset-inline-end: 0;
+    top: 9.5rem;
+    z-index: 1040;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--el-primary);
+    color: var(--el-white);
+    border: none;
+    border-start-start-radius: var(--el-radius-sub); /* 12px logical */
+    border-end-start-radius: var(--el-radius-sub);   /* 12px logical */
+    cursor: pointer;
+    box-shadow: -4px 0 1.25rem rgba(var(--el-primary-rgb), 0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-floating-tab-elite:hover {
+    transform: scale(1.1);
+    background-color: var(--el-accent);
+    color: var(--el-dark);
+    box-shadow: -6px 0 1.5rem rgba(var(--el-accent-rgb), 0.3);
+}
+
+.offcanvas.card-elite {
+    border-radius: 0;
+    border-inline-start: 0.0625rem solid var(--el-border);
+    box-shadow: var(--el-shadow-lg);
+    background: rgba(var(--el-white-rgb), 0.95);
+    backdrop-filter: blur(12px);
+    width: 20rem;
+}
+
+.offcanvas-grid-elite {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    padding-block: 1rem;
+}
+
+.offcanvas-grid-elite .btn-action-pill-elite {
+    width: 100%;
+}
+} /* Fin de @layer modules */
+

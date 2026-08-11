@@ -1,0 +1,955 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01+RDFa 1.1//EN" "http://www.w3.org/MarkUp/DTD/html401-rdfa11-1.dtd">
+<html lang="es"><head><base href="https://www.cna.gov.co/1779/w3-channel.html"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!--begin-box-container:CNA_tr_header_CC::32750:Articulo completo de este molde--><!--loc('Caja contenedora')--><!--pos=1--><!--begin-box:CNA_tr_metaviewport::32749:Articulo completo de este molde--><!--loc('* Código HTML libre dentro de la página.')--><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.5.207/pdf.min.js"></script><!--end-box--><!--pos=2--><!--begin-box:CNA_tr_encabezado::32747:Articulo completo de este molde--><!--loc('* Encabezado w3 full, requerido en todas las páginas HTML de su sitio ')--><title>Inicio - Consejo Nacional de Acreditación - CNA</title><style type="text/css">@import"channels-976_css_base_cna.css";
+@import"channels-976_css_theme_cna.css";
+@import"channels-976_css_swiper.css";
+@import"channels-976_css_datatable.css";
+@import"channels-976_css_datatable_buttons.css";</style><meta name="keywords" content="cna, consejo nacional de acreditacion, alta calidad, acreditacion de alta calidad, calidad educacion superior, ies de colombia, ies de alta calidad,"><meta name="description" content="El CNA lidera el desarrollo y enriquecimiento conceptual del Sistema Nacional de Acreditación, en estrecha colaboración con las comunidades académicas y científicas de Colombia, y el aval del Consejo Superior de Educación Superior (CESU)."><meta name="generator" content="Newtenberg Engine CMS - https://www.newtenberg.com/"><meta name="Newtenberg-Server" content="https://cms.mineducacion.gov.co"><meta name="Content-Encoding" content="UTF-8"><link rel="Top" type="text/html" href="http://www.cna.gov.co"><script type="text/javascript"><!--
+
+var __cid = '976';
+var __iid = '1779';
+
+--></script><script type="text/javascript" src="channels-976_js_main.js"></script><script type="text/javascript" src="channels-976_js_cookies.js"></script><script type="text/javascript" src="channels-976_js_jquery_v3_5_1.js"></script><script type="text/javascript" src="channels-976_js_jquery_migrate.js"></script><script type="text/javascript" src="channels-976_js_datatable.js"></script><script type="text/javascript" src="channels-976_js_datatable_bs4.js"></script><script type="text/javascript" src="channels-976_js_datatable_buttons.js"></script><script type="text/javascript" src="channels-976_js_datatable_flash.js"></script><script type="text/javascript" src="channels-976_js_datatable_html5.js"></script><!--end-box--><!--pos=3--><!--begin-box:CNA_tr_analytics::33827:Script analytics--><!--loc('* Código HTML libre dentro de la página.')--><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9RFRHQNF30"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-9RFRHQNF30');
+</script> 
+
+<!-- Google Analytics  4 -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EB44WPM43L"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-EB44WPM43L');
+</script>
+<!--end-box--><!--end-box--><!--begin-box:CNA_home_css_grafica::32972:Estilos para el funcionamiento de las gráficas de comunidades--><!--loc('* Código HTML libre dentro de la página.')--><!-- Load c3.css -->
+<link href="channels-976_graph_c3_css.css" rel="stylesheet">
+<!--end-box--><link rel="canonical" href="https://www.cna.gov.co/1779/w3-channel.html?_noredirect=1"></head><body><header><div class="container-fluid"><div class="row align-items-center"><!--begin-box:CNA_tr_logo_redes::32803:Articulo completo de este molde--><!--loc('* Código HTML libre dentro de la página.')--><div class="col-md-6 text-center text-md-left logo-cna">
+    <a href="/portal/" title="Ir al Inicio el portal CNA">
+        <img src="channels-976_logo.png"
+            alt="Logotipo del Consejo Nacional de Acreditación - CNA" class="py-3"/>
+        <span class="sr-only">Logotipo del Consejo nacional de Acreditación</span>
+    </a>
+</div>
+<div class="col-md-6">
+    <ul class="list-inline lista-superior d-flex justify-content-end align-items-center">
+        <li class="list-inline-item"><a href="https://www.facebook.com/cnaacreditacioncol" class="list-item"
+                title="Ir a CNA en Facebook">
+                <img src="channels-976_icon_fb.png" alt="CNA en Facebook" />
+                <span class="sr-only">CNA en Facebook</span></a></li>
+        <li class="list-inline-item">
+            <a href="https://twitter.com/CNA_AcreditaCol" class="list-item" title="Ir a CNA en Twitter">
+                <img src="channels-976_icon_tw.png" title="CNA en twitter" />
+                <span class="sr-only">CNA en Twitter</span></a></li>
+        <li class="list-inline-item"><a href="https://www.youtube.com/channel/UCuavNguPAKNrGIPuaMczQWA" class="list-item" target="blank" title="Ir a CNA en Youtube">
+                <img src="channels-976_icon_youtube.png" title="CNA en Youtube" />
+            </a></li>
+        <li class="list-inline-item"><a href="w3-propertyvalue-67695.html" class="list-item" title="Ir a Contacto">
+                <img src="channels-976_icon_mail.png" title="Contacto CNA" />
+            </a></li>
+        <li class="list-inline-item"><a href="w3-search.html" class="list-item" title="Ir al Buscador">
+                <img src="channels-976_icon_search.png" title="Ir al buscador general" />
+            </a></li>
+        <!--<li class="list-inline-item"><a href="https://translate.google.com/translate?hl=&sl=auto&tl=en&u=https%3A%2F%2Fwww.cna.gov.co%2Fportal%2F" target="_blank" class="list-item" title="Go to english versión">
+                <img src="channels-976_icon_ingles.png" title="Portal en ingles" />
+            </a></li>
+        <li class="list-inline-item boton"><a href="http://incna.mineducacion.gov.co:8080/incna/"  target="blank" class="list-item btn btn-primary"
+                title="Ir a plataforma SACES-CNA">SACES-CNA</a></li>-->
+        <li class="list-inline-item boton"><a href="https://incna.mineducacion.gov.co/incna/ "  target="blank" class="list-item btn btn-primary"
+                title="Ir a plataforma SACES-CNA">SACES-CNA</a></li>      
+      
+        <li class="list-inline-item boton"><a href="https://login.microsoftonline.com/common/oauth2/authorize?client_id=4345a7b9-9a63-4910-a426-35363201d503&redirect_uri=https%3A%2F%2Fwww.office.com%2Flanding&response_type=code%20id_token&scope=openid%20profile&response_mode=form_post&nonce=637441605423215608.NjJkYWE3YTgtYWY0YS00ZGZhLWI3NTMtZDI1MDEyOTVjMWVjYWIyZGJmYTQtZTBkZS00NTU5LTljNjMtZmI3ZjkwYzMzYTA2&ui_locales=es-ES&mkt=es-ES&client-request-id=27b916e8-8c12-4cb6-a6b7-5a4ca6e60078&state=C-iGXOBX1dsF_ixfa87H8wwzTxbYCq60JOtJeNAi86iPWBbGifMYHkSBNlEBoKFAjV2SwG-dj6V0Uv6VkRDY3ut56RIY6Kubz1QHOSFbHX6-dnYfuyHKdd1WCsTW9WXPXPfa9OBkus_LVlMm-QAvYdeJze75sAbbwu8caVksi0fl4JunQBwOV4N6JtSCSHypyIgZMRryp9bR_-hxw-ijZGrsD64J3mBJ3ItxQFuQwIpN7O6M78wl46XhzATj1xlDT7S7P6wNYtHYKuka4SBVjQ&x-client-SKU=ID_NETSTANDARD2_0&x-client-ver=6.6.0.0" class="list-item btn btn-secondary" title="Ir al Correo CNA" target="blank">CORREO
+                CNA</a></li>
+    </ul>
+</div><!--end-box--></div></div><nav class="navbar navbar-expand-lg navbar-dark bg-primary"><!--begin-box-container:CNA_tr_menuppal_CC::32770:Contenedora de todos los elementos del encabezado (logo,redes,búsqueda y menú principal)--><!--loc('Caja contenedora')--><div><!--pos=1--><!--begin-box:CNA_tr_btnMovil::32775:HTML libre menú hamburguesa--><!--loc('* Código HTML libre dentro de la página.')-->  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button><!--end-box--><div class="collapse navbar-collapse" id="navbarSupportedContent"><ul><!--pos=2--><!--begin-box:CNA_tr_link_canal::32769:Link de acceso al canal--><!--loc('* acceso a Canal ')--><li class="current"><a href="/portal/" title="Ir a CNA">Inicio</a></li><!--end-box--><!--pos=3--><!--begin-box:CNA_tr_menuppal:collapse navbar-collapse:32768:Links de acceso a las secciones del menú principal--><!--loc('* Lista de Valores de Clasificando')--><li><a class="pnid-3581 pv-pid-0 pvid-67522 cid-976" href="/portal/El-CNA/" title="Ir a El CNA">El CNA</a><ul><li><a class="pnid-3581 pv-pid-67522 pvid-67529 cid-976" href="/portal/El-CNA/Marco-estrategico/" title="Ir a Marco estratégico">Marco estratégico</a></li><li><a class="pnid-3581 pv-pid-67522 pvid-67530 cid-976" href="/portal/El-CNA/Estructura/" title="Ir a Estructura">Estructura</a></li><li><a class="pnid-3581 pv-pid-67522 pvid-67531 cid-976" href="/portal/El-CNA/Hitos-del-CNA/" title="Ir a Hitos del CNA">Hitos del CNA</a></li></ul></li><li><a class="pnid-3581 pv-pid-0 pvid-67523 cid-976" href="/portal/Sistema-Nacional-de-Acreditacion/" title="Ir a Sistema Nacional de Acreditación">Sistema Nacional de Acreditación</a><ul><li><a class="pnid-3581 pv-pid-67523 pvid-67535 cid-976" href="/portal/Sistema-Nacional-de-Acreditacion/Estructura-del-SNA/" title="Ir a Estructura del SNA">Estructura del SNA</a></li><li><a class="pnid-3581 pv-pid-67523 pvid-67681 cid-976" href="/portal/Sistema-Nacional-de-Acreditacion/Marco-conceptual/" title="Ir a Marco conceptual">Marco conceptual</a></li><li><a class="pnid-3581 pv-pid-67523 pvid-67595 cid-976" href="/portal/Sistema-Nacional-de-Acreditacion/Marco-normativo/" title="Ir a Marco normativo">Marco normativo</a></li><li><a class="pnid-3581 pv-pid-67523 pvid-67539 cid-976" href="/portal/Sistema-Nacional-de-Acreditacion/Cifras-y-estadisticas/" title="Ir a Cifras y estadísticas">Cifras y estadísticas</a></li><li><a class="pnid-3581 pv-pid-67523 pvid-67536 cid-976" href="/portal/Sistema-Nacional-de-Acreditacion/Glosario/" title="Ir a Glosario">Glosario</a></li><li><a class="pnid-3581 pv-pid-67523 pvid-67537 cid-976" href="/portal/Sistema-Nacional-de-Acreditacion/Sistemas-de-informacion/" title="Ir a Sistemas de información">Sistemas de información</a></li></ul></li><li><a class="pnid-3581 pv-pid-0 pvid-67524 cid-976" href="/portal/Modelo-de-Acreditacion/" title="Ir a Modelo de Acreditación">Modelo de Acreditación</a><ul><li><a class="pnid-3581 pv-pid-67524 pvid-67538 cid-976" href="/portal/Modelo-de-Acreditacion/Contexto/" title="Ir a Contexto">Contexto</a></li><li><a class="pnid-3581 pv-pid-67524 pvid-67680 cid-976" href="/portal/Modelo-de-Acreditacion/Acreditacion-en-Alta-Calidad/" title="Ir a Acreditación en Alta Calidad">Acreditación en Alta Calidad</a></li><li><a class="pnid-3581 pv-pid-67524 pvid-67686 cid-976" href="/portal/Modelo-de-Acreditacion/Proceso-de-Acreditacion-en-Alta-Calidad/" title="Ir a Proceso de Acreditación en Alta Calidad">Proceso de Acreditación en Alta Calidad</a></li><li><a class="pnid-3581 pv-pid-67524 pvid-67687 cid-976" href="/portal/Modelo-de-Acreditacion/Modelo-de-acompanamiento-y-capacitacion/" title="Ir a Modelo de acompañamiento y capacitación">Modelo de acompañamiento y capacitación</a></li><li><a class="pnid-3581 pv-pid-67524 pvid-67540 cid-976" href="/portal/Modelo-de-Acreditacion/Preguntas-frecuentes/" title="Ir a Preguntas frecuentes">Preguntas frecuentes</a></li></ul></li><li><a class="pnid-3581 pv-pid-0 pvid-67525 cid-976" href="/portal/Pares-academicos/" title="Ir a Pares académicos">Pares académicos</a><ul><li><a class="pnid-3581 pv-pid-67525 pvid-67688 cid-976" href="/portal/Pares-academicos/El-Par-Academico/" title="Ir a El Par Académico">El Par Académico</a></li><li><a class="pnid-3581 pv-pid-67525 pvid-67689 cid-976" href="/portal/Pares-academicos/Rol-del-Par/" title="Ir a Rol del Par">Rol del Par</a></li><li><a class="pnid-3581 pv-pid-67525 pvid-67690 cid-976" href="/portal/Pares-academicos/Banco-de-Pares/" title="Ir a Banco de Pares">Banco de Pares</a></li><li><a class="pnid-3581 pv-pid-67525 pvid-67691 cid-976" href="/portal/Pares-academicos/Gestion-integral-de-Pares/" title="Ir a Gestión integral de Pares">Gestión integral de Pares</a></li></ul></li><li><a class="pnid-3581 pv-pid-0 pvid-67526 cid-976" href="/portal/Internacionalizacion/" title="Ir a Internacionalización">Internacionalización</a><ul><li><a class="pnid-3581 pv-pid-67526 pvid-67619 cid-976" href="/portal/Internacionalizacion/Politica-y-Estrategias/" title="Ir a Política y Estrategias">Política y Estrategias</a></li><li><a class="pnid-3581 pv-pid-67526 pvid-67620 cid-976" href="/portal/Internacionalizacion/Relacionamiento-Internacional/" title="Ir a Relacionamiento Internacional">Relacionamiento Internacional</a></li><li><a class="pnid-3581 pv-pid-67526 pvid-67621 cid-976" href="/portal/Internacionalizacion/Internacionalizacion-en-el-Modelo-Nacional-de-Acreditacion/" title="Ir a Internacionalización en el Modelo Nacional de Acreditación">Internacionalización en el Modelo Nacional de Acreditación</a></li><li><a class="pnid-3581 pv-pid-67526 pvid-67622 cid-976" href="/portal/Internacionalizacion/Reconocimientos-internacionales/" title="Ir a Reconocimientos internacionales">Reconocimientos internacionales</a></li><li><a class="pnid-3581 pv-pid-67526 pvid-67634 cid-976" href="/portal/Internacionalizacion/Sistema-ARCU-SUR/" title="Ir a Sistema ARCU-SUR">Sistema ARCU-SUR</a></li></ul></li><li><a class="pnid-3581 pv-pid-0 pvid-67527 cid-976" href="/portal/Divulgacion/" title="Ir a Divulgación">Divulgación</a><ul><li><a class="pnid-3581 pv-pid-67527 pvid-67543 cid-976" href="/portal/Divulgacion/Noticias/" title="Ir a Noticias">Noticias</a></li><li><a class="pnid-3581 pv-pid-67527 pvid-67618 cid-976" href="/portal/Divulgacion/Eventos/" title="Ir a Eventos">Eventos</a></li><li><a class="pnid-3581 pv-pid-67527 pvid-67544 cid-976" href="/portal/Divulgacion/Comunidades/" title="Ir a Comunidades">Comunidades</a></li><li><a class="pnid-3581 pv-pid-67527 pvid-67545 cid-976" href="/portal/Divulgacion/Capsulas-informativas/" title="Ir a Cápsulas informativas">Cápsulas informativas</a></li></ul></li><li><a class="pnid-3581 pv-pid-0 pvid-67528 cid-976" href="/portal/Biblioteca/" title="Ir a Biblioteca">Biblioteca</a></li><!--end-box--></ul></div></div><!--end-box--></nav></header><main id="contenido_principal"><div class="container-fluid"><div class="row"><!--begin-box:CNA_home_slider_principales:recuadros-recursos:32771:Slider de noticias principales--><!--loc('* Recuadros de artículos')--><div id="recuadros_articulo_32771" class="recuadros-recursos"><div class="recuadro"><div class="figure m-0 cid-976 aid-427106 binary-foto_marquesina format-jpg"><img src="articles-427106_foto_marquesina.jpg" alt="foto marquesina" title="foto marquesina" width="1600" height="456"></div><div class="carousel-caption"><div class="titulo aid-427106 cid-976"><a href="/portal//427106:Cuadros-Maestros-Acreditacion-CNA-Actualizados-2025">Cuadros Maestros Acreditación CNA Actualizados 2025</a></div></div></div><div class="recuadro"><div class="figure m-0 cid-976 aid-427225 binary-foto_marquesina format-jpg"><img src="articles-427225_foto_marquesina.jpg" alt="Encuentros Regionales 2026" title="Encuentros Regionales 2026" width="1266" height="721"></div><div class="carousel-caption"><div class="titulo aid-427225 cid-976"><a href="/portal//427225:Agenda-Encuentros-Regionales-2026">Agenda Encuentros Regionales  2026</a></div></div></div><div class="recuadro"><div class="figure m-0 cid-976 aid-428199 binary-foto_marquesina format-pdf"><img src="channels-976_mime_pdf.png" alt="CNA Encuentros Regionales" title="CNA Encuentros Regionales" width="61" height="61" longdesc="articles-428199_foto_marquesina.longdesc.html" class=" mimethumb"></div><div class="carousel-caption"><div class="titulo aid-428199 cid-976"><a href="/portal//428199:Encuentro-Regional-Jornada-con-Rectores-Vicerrectores-y-Directores-de-Calidad">Encuentro Regional : Jornada con Rectores, Vicerrectores y Directores de Calidad</a></div></div></div><div class="recuadro"><div class="figure m-0 cid-976 aid-427146 binary-foto_marquesina format-jpg"><img src="articles-427146_foto_marquesina.jpg" alt="foto_marquesina" title="foto_marquesina" width="1600" height="456"></div><div class="carousel-caption"><div class="titulo aid-427146 cid-976"><a href="/portal//427146:Nueva-Coordinadora-en-el-CNA">Nueva Coordinadora en el CNA</a></div></div></div><div class="recuadro"><div class="figure m-0 cid-976 aid-425965 binary-foto_marquesina format-png"><img src="articles-425965_foto_marquesina.png" alt="Invitación pública para la actualización del repositorio de pares académicos de acreditación –CNA" title="Invitación pública para la actualización del repositorio de pares académicos de acreditación –CNA" width="1600" height="475"></div><div class="carousel-caption"><div class="titulo aid-425965 cid-976"><a href="/portal//425965:Invitacion-publica-para-la-actualizacion-del-repositorio-de-pares-academicos-de-acreditacion-CNA">Invitación pública para la actualización del repositorio de pares académicos de acreditación – CNA</a></div></div></div></div><!--end-box--></div></div><section><div class="container"><div class="row"><!--begin-box:CNA_home_lanzadores:recuadros-4-columnas col-12 mt-disface pb-5:32774:Lanzadores--><!--loc('* Recuadros de artículos')--><div id="recuadros_articulo_32774" class="recuadros-4-columnas col-12 mt-disface pb-5"><div class="recuadro d-flex"><div class="card"><div class="figure text-center pt-4 cid-976 aid-402154 binary-icono format-png"><img src="articles-402154_icono.png" alt="" width="84" height="84"></div><div class="text-center blank aid-402154 cid-976"><a href="https://hecaa.mineducacion.gov.co/consultaspublicas/programas">BUSCADOR DE PROGRAMAS ACREDITADOS</a></div></div></div><div class="recuadro d-flex"><div class="card"><div class="figure text-center pt-4 cid-976 aid-401141 binary-icono format-png"><img src="articles-401141_icono.png" alt="" width="76" height="76"></div><div class="text-center blank aid-401141 cid-976"><a href="https://hecaa.mineducacion.gov.co/consultaspublicas/ies">BUSCADOR DE INSTITUCIONES ACREDITADAS</a></div></div></div><div class="recuadro d-flex"><div class="card"><div class="figure text-center pt-4 cid-976 aid-414968 binary-icono format-png"><img src="articles-414968_icono.png" alt="" width="76" height="76"></div><div class="text-center blank aid-414968 cid-976"><a href="/portal/Relacionamiento-Internacional/Actividad-internacional/414820:Accredited-Medicine-Programs">ACCREDITED PROGRAMS IN MEDICINE AND HIGH QUALITY ACCREDITED INSTITUTIONS</a></div></div></div><div class="recuadro d-flex"><div class="card"><div class="figure text-center pt-4 cid-976 aid-401142 binary-icono format-png"><img src="articles-401142_icono.png" alt="" width="82" height="72"></div><div class="text-center blank aid-401142 cid-976"><a href="http://incna.mineducacion.gov.co:8080/incna/">INGRESE SOLICITUD DEL TRÁMITE DE ACREDITACIÓN EN ALTA CALIDAD</a></div></div></div></div><!--end-box--></div></div></section><section><div class="container"><div class="row"><!--begin-box:CNA_Home_iframe:col-12 pb-5 cifras-home:32799:Articulo completo de este molde--><!--loc('* Recuadros de artículos')--><div id="recuadros_articulo_32799" class="col-12 pb-5 cifras-home"><div class="recuadro"><h2 class="primary-title aid-402155 cid-976">Cifras y estadísticas</h2>
+			<p><a class="link_iframe" href="https://hecaa.mineducacion.gov.co/consultaspublicas/poblacionalpublico">https://hecaa.mineducacion.gov.co/consultaspublicas/poblacionalpublico</a></p>
+
+		</div></div><!--end-box--></div></div></section><section class="bg-gris-light"><div class="container"><div class="row"><!--begin-box:CNA_home_slider_secundarias:col-lg-12 recuadros-noticias py-5 ntg-primary-title:32800:Slider de noticias secundarias--><!--loc('* Recuadros de artículos')--><div id="recuadros_articulo_32800" class="col-lg-12 recuadros-noticias py-5 ntg-primary-title"><h2 class="ntg-titulo-caja">Noticias destacadas</h2><div class="recuadro col-md-6 col-lg-4 d-flex"><div class="card"><div class="figure cid-976 aid-427106 binary-foto_marquesina format-jpg"><img src="articles-427106_foto_marquesina.thumb_recuadro.jpg" alt="foto marquesina" title="foto marquesina"></div><h6 class="fecha cid-976 aid-427106 pnid-3577 iso8601-20260320T0000000500">20-mar-2026</h6><div class="titulo text-truncate-2lines font-weight-bold h5 aid-427106 cid-976"><a href="/portal//427106:Cuadros-Maestros-Acreditacion-CNA-Actualizados-2025">Cuadros Maestros Acreditación CNA Actualizados 2025</a></div><div class="text-truncate-4lines aid-427106 cid-976">En el marco del proceso de armonización normativa, que ha liderado el CNA a la luz del Acuerdo CESU 01 de 2025, desde el Consejo se ha asumido la tarea de avanzar en la actualización de documentos y formatos, entre ellos, los Cuadros Maestros, herramienta fundamental en los procesos de autoevaluación</div></div></div><div class="recuadro col-md-6 col-lg-4 d-flex"><div class="card"><div class="figure cid-976 aid-427225 binary-foto_marquesina format-jpg"><img src="articles-427225_foto_marquesina.thumb_recuadro.jpg" alt="Encuentros Regionales 2026" title="Encuentros Regionales 2026"></div><h6 class="fecha cid-976 aid-427225 pnid-3577 iso8601-20260130T0000000500">30-ene-2026</h6><div class="titulo text-truncate-2lines font-weight-bold h5 aid-427225 cid-976"><a href="/portal//427225:Agenda-Encuentros-Regionales-2026">Agenda Encuentros Regionales  2026</a></div><div class="text-truncate-4lines aid-427225 cid-976">El Consejo Nacional de Acreditación, promueve los Encuentros Regionales para 2026, se tienen programadas las fechas y ciudades a desarrollar estos espacios con el fin de socializar y dialogar sobre los aspectos más relevantes de la Acreditación en Alta Calidad.
+
+En esta ocasión durante el encuentro, se abordarán aspectos sobre la actualización y cambios del modelo según el Acuerdo CESU 01 de 2025, Guías, documentos técnicos, lineamientos entre otros.</div></div></div><div class="recuadro col-md-6 col-lg-4 d-flex"><div class="card"><div class="figure cid-976 aid-428199 binary-foto_marquesina format-pdf"><img src="articles-428199_foto_marquesina.thumb_recuadro.jpg" alt="CNA Encuentros Regionales" title="CNA Encuentros Regionales" longdesc="articles-428199_foto_marquesina.longdesc.html"></div><h6 class="fecha cid-976 aid-428199 pnid-3577 iso8601-20260130T0000000500">30-ene-2026</h6><div class="titulo text-truncate-2lines font-weight-bold h5 aid-428199 cid-976"><a href="/portal//428199:Encuentro-Regional-Jornada-con-Rectores-Vicerrectores-y-Directores-de-Calidad">Encuentro Regional : Jornada con Rectores, Vicerrectores y Directores de Calidad</a></div></div></div><div class="recuadro col-md-6 col-lg-4 d-flex"><div class="card"><div class="figure cid-976 aid-427146 binary-foto_marquesina format-jpg"><img src="articles-427146_foto_marquesina.thumb_recuadro.jpg" alt="foto_marquesina" title="foto_marquesina"></div><h6 class="fecha cid-976 aid-427146 pnid-3577 iso8601-20251231T0000000500">31-dic-2025</h6><div class="titulo text-truncate-2lines font-weight-bold h5 aid-427146 cid-976"><a href="/portal//427146:Nueva-Coordinadora-en-el-CNA">Nueva Coordinadora en el CNA</a></div><div class="text-truncate-4lines aid-427146 cid-976">A partir del 1 de enero de 2026, la Dra. Adriana Xiomara Reyes Gamboa, asume como nueva Coordinadora del CNA, en reemplazo del Dr. Mario Fernando Uribe Orozco, quién culminó exitosamente su periodo 2025.</div></div></div><div class="recuadro col-md-6 col-lg-4 d-flex"><div class="card"><div class="figure cid-976 aid-425965 binary-foto_marquesina format-png"><img src="articles-425965_foto_marquesina.thumb_recuadro.jpg" alt="Invitación pública para la actualización del repositorio de pares académicos de acreditación –CNA" title="Invitación pública para la actualización del repositorio de pares académicos de acreditación –CNA"></div><h6 class="fecha cid-976 aid-425965 pnid-3577 iso8601-20251002T0000000500">02-oct-2025</h6><div class="titulo text-truncate-2lines font-weight-bold h5 aid-425965 cid-976"><a href="/portal//425965:Invitacion-publica-para-la-actualizacion-del-repositorio-de-pares-academicos-de-acreditacion-CNA">Invitación pública para la actualización del repositorio de pares académicos de acreditación – CNA</a></div></div></div><div class="recuadro col-md-6 col-lg-4 d-flex"><div class="card"><div class="figure cid-976 aid-425946 binary-foto_marquesina format-png"><img src="articles-425946_foto_marquesina.thumb_recuadro.jpg" alt="Corporación universitaria del Hulia" title="Corporación universitaria del Hulia"></div><h6 class="fecha cid-976 aid-425946 pnid-3577 iso8601-20250930T0000000500">30-sep-2025</h6><div class="titulo text-truncate-2lines font-weight-bold h5 aid-425946 cid-976"><a href="/portal//425946:XVI-Encuentro-Regional-Huila-07-de-Octubre-de-2025">XVI Encuentro Regional - Huila, 07 de Octubre de 2025 </a></div><div class="text-truncate-4lines aid-425946 cid-976">El Consejo Nacional de Acreditación, promueve el XVI Encuentro Regional, con el fin de socializar y dialogar sobre los aspectos más relevantes de la Acreditación en Alta Calidad. En esta ocasión durante el encuentro, se abordarán aspectos sobre la actualización y cambios del modelo.</div></div></div></div><!--end-box--><!--begin-box:CNA_home_link_mas_noticias:text-center col-12 div-btn div-btn-primary mb-5:32801:Lanzadores--><!--loc('* acceso a Valor de Clasificando ')--><!--uniqueid=i__CNA_home_link_mas_noticias_1--><!--class=text-center col-12 div-btn div-btn-primary mb-5--><div class="text-center col-12 div-btn div-btn-primary mb-5" id="link_clasificandoi__CNA_home_link_mas_noticias_1"><a href="/portal/Divulgacion/Noticias/" title="Ir a Noticias" class=" pvid-67543 cid-976">Más noticias</a></div><!--end-box--></div></div></section><section class="bg-texture1"><div class="container"><div class="row"><!--begin-box:CNA_home_capsula:col-lg-8 ntg-primary-title-l py-5 ntg-text-white:32812:Representación de la capsula informativa--><!--loc('* Recuadros de artículos')--><div id="recuadros_articulo_32812" class="col-lg-8 ntg-primary-title-l py-5 ntg-text-white"><h2 class="ntg-titulo-caja">Cápsulas informativas</h2><div class="recuadro"><div class="link_youtube aid-416575 cid-976"><a href="https://www.youtube.com/watch?v=-s2ycaePpGw&amp;t=35s">Impacto del Reconocimiento al CNA de la WFME</a></div><div class="text-white pt-3 aid-416575 cid-976">El Dr. Carlos Gómez - Restrepo, consejero del área de la salud del CNA explica cuál es la importancia para la comunidad académica de medicina del país, el reconocimiento obtenido por la World Federation for Medical Education (WFME) al CNA y los retos en materia de calidad que tiene para el consejo esta certificación.</div></div></div><!--end-box--><!--begin-box:CNA_home_sesiones:col-lg-4 py-5 sesiones-table:32813:Sesiones informativas--><!--loc('* Recuadros de artículos')--><div id="recuadros_articulo_32813" class="col-lg-4 py-5 sesiones-table"><div class="recuadro"><h4 class="primary-title text-left text-white aid-402340 cid-976">Sesiones del Consejo</h4><div class="card">
+			<p>Acorde con lo dispuesto en el Acuerdo CESU 01 de 2020, el CNA sesionará ordinariamente cada mes.<br>
+Definición de fechas sesiones ordinarias 2026</p>
+<table border="0" cellpadding="0" cellspacing="0">
+<colgroup>
+<col>
+<col span="3"></colgroup>
+<thead>
+<tr>
+<th height="22" scope="col"><strong>MES</strong></th>
+<th scope="col"><strong>INICIO</strong></th>
+<th scope="col"><strong>FIN</strong></th>
+<th scope="col"><strong>DIAS</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td height="22">ENERO</td>
+<td>28</td>
+<td>30</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">FEBRERO</td>
+<td>18</td>
+<td>20</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">MARZO</td>
+<td>18</td>
+<td>20</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">ABRIL</td>
+<td>22</td>
+<td>24</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">MAYO</td>
+<td>20</td>
+<td>22</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">JUNIO</td>
+<td>17</td>
+<td>19</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">JULIO</td>
+<td>22</td>
+<td>24</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">AGOSTO</td>
+<td>19</td>
+<td>21</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">SEPTIEMBRE</td>
+<td>16</td>
+<td>18</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">OCTUBRE</td>
+<td>21</td>
+<td>23</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="22">NOVIEMBRE</td>
+<td>18</td>
+<td>20</td>
+<td>3</td>
+</tr>
+<tr>
+<td height="21">DICIEMBRE</td>
+<td>3</td>
+<td>4</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+
+		</div></div></div><!--end-box--><!--begin-box:CNA_home_link_mas_capsulas:text-center col-12 div-btn div-btn-secondary mb-5:33020:Lanzadores--><!--loc('* acceso a Valor de Clasificando ')--><!--uniqueid=i__CNA_home_link_mas_capsulas_1--><!--class=text-center col-12 div-btn div-btn-secondary mb-5--><div class="text-center col-12 div-btn div-btn-secondary mb-5" id="link_clasificandoi__CNA_home_link_mas_capsulas_1"><a href="/portal/Divulgacion/Capsulas-informativas/" title="Ir a Cápsulas informativas" class=" pvid-67545 cid-976">Ver más cápsulas</a></div><!--end-box--></div></div></section><section><div class="container"><div class="row"><!--begin-box-container:CNA_Home_form_CC::32923:Articulo completo de este molde--><!--loc('Caja contenedora')--><div class="col-lg-8 pb-5"><div id="encuesta"><!--pos=1--><!--begin-box:CNA_Home_form:ntg-primary-title-l py-5 encuesta-home:32804:Articulo completo de este molde--><!--loc('Formulario (W3 compatible)')--><div id="formulario_i__CNA_Home_form_1" class="ntg-primary-title-l py-5 encuesta-home"><h2 class="ntg-titulo-caja">Encuesta</h2><!----><form name="CNA_formulario_DEMO" id="CNA_formulario_DEMO" style="margin-bottom:0;" onsubmit="return false" class="ntg-primary-title-l py-5 encuesta-home" method="get" action="https://cms.mineducacion.gov.co/mod/form/cgi/form.cgi"><script type="text/javascript"><!--
+	function CNA_formulario_DEMO32804Submit(frm, type) {
+
+		if( CNA_formulario_DEMO32804IsValid(frm) ) {
+			if ( type != 'submit' ){
+				var link = decodeURI("https://cms.mineducacion.gov.co/mod/form/cgi/form.cgi");
+				var v;
+				if( type == 'savetourifragment_submit' ) {
+					var rnd = String(Math.random()).substr(0,6);
+					if( link.indexOf('?') == -1 ) {
+						link += '?' + rnd;
+					} else {
+						link = link.replace('?', '?' + rnd + '&');
+					}
+					link += '#';
+				}
+			
+				v = getValue(frm.campo2);
+				if( v.length ) {
+					if( type == 'savetocookies_submit' ) {
+						setCookie('CNA_formulario_DEMO_campo2', v);
+					} else if(type == 'savetocookiesnoname_submit') {
+						setCookie('campo2', v);
+					} else if( type == 'savetourifragment_submit' ) {
+						link += '&campo2=' + encodeURIComponent(v);
+					}
+				} else {
+					if( type == 'savetocookies_submit' ) {
+						deleteCookie('CNA_formulario_DEMO_campo2');
+					}
+					else if(type == 'savetocookiesnoname_submit') {
+						deleteCookie('campo2');
+					}
+				}
+			
+				var reload = 0;
+				window.location.href=link;
+			}
+			else {
+				frm.submit();
+			}
+		}
+		return false;
+	}
+	
+	function CNA_formulario_DEMO32804IsValid_(frm) {
+		_is_valid = true;
+		_field = frm.campo1;if((_field&&_field.validity&&!_field.checkValidity())){$(_field).focus();$('#campo1_div_775').addClass('ntg-invalid');$('#campo1_div_775 span.ntg-warning').remove();$('#campo1_div_775 label:first').after('<span class="ntg-warning alert alert-warning"><\/span>');$('#campo1_div_775 span.ntg-warning').text('Debe especificar Pregunta');_is_valid = false;}else{$('#campo1_div_775 span.ntg-warning').remove();$('#campo1_div_775').removeClass('ntg-invalid');}
+			_field = frm.campo2;if((_field&&_field.validity&&!_field.checkValidity())||!((getValue(frm.campo2) != ''))){$(_field).focus();$('#campo2_div_775').addClass('ntg-invalid');$('#campo2_div_775 span.ntg-warning').remove();$('#campo2_div_775 label:first').after('<span class="ntg-warning alert alert-warning"><\/span>');$('#campo2_div_775 span.ntg-warning').text('Debe seleccionar una opción');_is_valid = false;}else{$('#campo2_div_775 span.ntg-warning').remove();$('#campo2_div_775').removeClass('ntg-invalid');}
+			_field = frm.boton1;if((_field&&_field.validity&&!_field.checkValidity())){$(_field).focus();$('#boton1_div_775').addClass('ntg-invalid');$('#boton1_div_775 span.ntg-warning').remove();$('#boton1_div_775 label:first').after('<span class="ntg-warning alert alert-warning"><\/span>');$('#boton1_div_775 span.ntg-warning').text('Debe especificar Enviar');_is_valid = false;}else{$('#boton1_div_775 span.ntg-warning').remove();$('#boton1_div_775').removeClass('ntg-invalid');}
+			_field = frm.boton2;if((_field&&_field.validity&&!_field.checkValidity())){$(_field).focus();$('#boton2_div_775').addClass('ntg-invalid');$('#boton2_div_775 span.ntg-warning').remove();$('#boton2_div_775 label:first').after('<span class="ntg-warning alert alert-warning"><\/span>');$('#boton2_div_775 span.ntg-warning').text('Debe especificar Ver resultados');_is_valid = false;}else{$('#boton2_div_775 span.ntg-warning').remove();$('#boton2_div_775').removeClass('ntg-invalid');}
+			return _is_valid;
+		}
+	
+	function CNA_formulario_DEMO32804IsValid(frm) {
+		__is_valid = new Array(true);
+__is_valid.push(CNA_formulario_DEMO32804IsValid_(frm));
+return __is_valid.reduce(function(a, b) { return a && b; });
+	}
+	function CNA_formulario_DEMOEvent(frm) {
+	
+		return;
+	}
+	--></script><fieldset class="forminvisible"><legend class="ntg-titulo-formulario"></legend><input type="hidden" name="HTTP_REFERER" value="" id="HTTP_REFERER_775"><input type="hidden" name="HTTP_REFERER_PREV" value="" id="HTTP_REFERER_PREV_775"><input type="hidden" name="action" value="exeResponse" id="action_775"><input type="hidden" name="fdid" value="775" id="fdid_775"><input type="hidden" name="cid" value="965" id="cid_775"><input type="hidden" name="context_cid" value="976" id="context_cid_775"><input type="hidden" name="context_iid" value="1779" id="context_iid_775"></fieldset><fieldset><legend class="ntg-titulo-formulario"></legend><div id="campo1_div_775" class="form_message"><span>Pregunta<br>  <small class="ntg-formulario-texto-abajo">¿Cuáles considera son los principales cambios que presenta la Actualización del Modelo de Acreditación (Acuerdo CESU 02 del 01 de julio de 2020)?</small></span></div><div id="campo2_div_775" class="form_select ntg-required"><label><span style="white-space: nowrap">Opciones</span></label><div><ul><li><input type="radio" name="campo2" value="67726" id="campo2_775_1_1" onclick="javascript:CNA_formulario_DEMOEvent(this.form);">- Acreditación Institucional por lugar de desarrollo </li></ul></div><div><ul><li><input type="radio" name="campo2" value="67727" id="campo2_775_2_1" onclick="javascript:CNA_formulario_DEMOEvent(this.form);">- Modificación en la temporalidad de la Acreditación </li></ul></div><div><ul><li><input type="radio" name="campo2" value="67728" id="campo2_775_3_1" onclick="javascript:CNA_formulario_DEMOEvent(this.form);">- Nuevos factores y características de evaluación para Instituciones y Programas </li></ul></div><div><ul><li><input type="radio" name="campo2" value="67729" id="campo2_775_4_1" onclick="javascript:CNA_formulario_DEMOEvent(this.form);">- Incluye seguimiento y evaluación como parte del proceso de Acreditación </li></ul></div><div><ul><li><input type="radio" name="campo2" value="67730" id="campo2_775_5_1" onclick="javascript:CNA_formulario_DEMOEvent(this.form);">- Todas las anteriores </li></ul></div><div><ul><li><input type="radio" name="campo2" value="67731" id="campo2_775_6_1" onclick="javascript:CNA_formulario_DEMOEvent(this.form);">- Desconozco los cambios que presenta la Actualización del Modelo de Acreditación </li></ul></div></div><div id="boton1_div_775" class="form_button"><input name="boton1" value="Responder" id="boton1_775" type="button" onclick="javascript:return CNA_formulario_DEMO32804Submit(this.form, 'submit')"></div><div id="boton2_div_775" class="form_button btn-resultados"><input name="boton2" value="Ver resultados" id="boton2_775" type="button"></div></fieldset></form><script type="text/javascript"><!--
+		var _frm = document.getElementById('CNA_formulario_DEMO');
+		if( _frm ) {
+			try {
+				_frm.HTTP_REFERER.value = document.location.href;
+				_frm.HTTP_REFERER_PREV.value = document.referrer;
+				var cookie_ref = getCookie('_form_referer');
+				if(_frm.HTTP_REFERER_PREV.value == '' ) { 
+					if(cookie_ref != '') {
+						_frm.HTTP_REFERER_PREV.value = cookie_ref;
+					} else {
+						_frm.HTTP_REFERER_PREV.value = document.location.href;
+					}
+				}
+				if ( _frm.HTTP_REFERER_PREV.value.indexOf('#') != -1 ){
+					_frm.HTTP_REFERER_PREV.value = _frm.HTTP_REFERER_PREV.value.substring(0,_frm.HTTP_REFERER_PREV.value.indexOf('#'));
+				}
+			} catch (e) {
+				if (!window.console) {
+					var log = window.opera ? window.opera.postError : alert;
+					window.console = { log: function(str) { log(str) } };
+				}
+				window.console.log(e.message);
+			}
+		}
+		--></script><script type="text/javascript"><!--
+CNA_formulario_DEMOEvent(document.CNA_formulario_DEMO);
+		var CNA_formulario_DEMO_load = parseURL();
+		for( var fieldname in CNA_formulario_DEMO_load ) {
+			
+					if( fieldname == "boton1" ) {
+						document.CNA_formulario_DEMO.boton1.value = CNA_formulario_DEMO_load[fieldname];
+					}
+					
+					if( fieldname == "boton2" ) {
+						document.CNA_formulario_DEMO.boton2.value = CNA_formulario_DEMO_load[fieldname];
+					}
+					
+		}
+--></script></div><!--end-box--></div><div id="respuestas" class="collapse"><!--pos=2--><!--begin-box:CNA_Home_form_respuestas:resultados:32924:Respuestas del formulario--><!--loc('* Tabla de cruce de valores para cuenta de artículos')--><div id="resultados" class="resultados"><table><thead><tr><th></th><th title="">Respuesta form - CNA </th></tr></thead><tbody><tr><th title="">Acreditación Institucional por lugar de desarrollo</th><td>54</td></tr><tr><th title="">Modificación en la temporalidad de la Acreditación</th><td>26</td></tr><tr><th title="">Nuevos factores y características de evaluación para Instituciones y Programas</th><td>123</td></tr><tr><th title="">Incluye seguimiento y evaluación como parte del proceso de Acreditación</th><td>59</td></tr><tr><th title="">Todas las anteriores</th><td>388</td></tr><tr><th title="">Desconozco los cambios que presenta la Actualización del Modelo de Acreditación</th><td>82</td></tr></tbody></table></div><!--end-box--><div id="graph"></div></div><div id="boton_otras" class="form_button btn-resultados pt-4 text-center"><form><input name="boton_otros" value="Otras encuestas" id="boton_otros" type="button" class="" onclick="goToURL(); return false;"></form></div></div><!--end-box--><!--begin-box:CNA_Home_tabsredes::32802:Articulo completo de este molde--><!--loc('* Código HTML libre dentro de la página.')--><div class="col-lg-4 py-5 redes-feed">
+  <h2 class="primary-title text-left">Redes sociales</h2>
+<ul class="nav nav-pills ntg-bs role_tablist" id="myTab">
+<li class="nav-item">
+<a class="nav-link active ntg-bs data-toggle_tab role_tab aria-controls_dia1 aria-selected_true" id="dia1-tab" href="https://www.cna.gov.co/portal/#dia1">Twitter</a>
+</li>
+<li class="nav-item">
+<a class="nav-link ntg-bs data-toggle_tab role_tab aria-controls_dia2 aria-selected_false" id="dia2-tab" href="https://www.cna.gov.co/portal/#dia2">Facebook</a>
+</li>
+</ul>
+<div class="tab-content" id="myTabContent">
+<div class="tab-pane fade show active ntg-bs role_tabpanel aria-labelledby_dia1-tab" id="dia1">
+<a class="twitter-timeline" data-height="500" href="https://twitter.com/CNA_AcreditaCol?ref_src=twsrc%5Etfw">Tweets by CNA_AcreditaCol</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+<div class="tab-pane fade ntg-bs role_tabpanel aria-labelledby_dia2-tab" id="dia2">
+  <span class="sr-only">Facebook</span>
+<iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fcnaacreditacioncol&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false&appId" width="340" height="500" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+</div>
+</div>
+  </div>
+<!--end-box--></div></div></section><section class="bg-gris-light"><div class="container"><div class="row"><!--begin-box:CNA_home_biblioteca:col-12 recuadros-4-columnas link_modal_doc py-5 ntg-primary-title:32815:Biblioteca--><!--loc('* Recuadros de artículos')--><div id="recuadros_articulo_32815" class="col-12 recuadros-4-columnas link_modal_doc py-5 ntg-primary-title"><h2 class="ntg-titulo-caja">Biblioteca CNA</h2><div class="recuadro d-flex col-sm-6 col-md-4"><div class="card"><div class="fecha cid-976 aid-416576 pnid-3577 iso8601-20230904T0000000500">04-sep-2023</div><div class="text-truncate-2lines titulo text-primary font-weight-bold h5 aid-416576 cid-976">Actualización Cuadros Maestros CNA</div><div class="text-truncate-4lines aid-416576 cid-976">El Dr. Carlos Hernán González, Consejero del CNA representante de las áreas de Economía y Administración, Contaduría y afines, explica qué son los cuadros maestros, cuáles han sido sus principales cambios y de que forman ayudan en los procesos de autoevaluación con fines de acreditación. 
+
+Consulte los cuadros maestros en: https://www.cna.gov.co/portal/413485:</div></div></div><div class="recuadro d-flex col-sm-6 col-md-4"><div class="card"><div class="figure cid-976 aid-408169 binary-documento format-pdf"><a href="articles-408169_documento.pdf" title="Ir a Sistematización de Buenas Prácticas Protocolo visitas virtuales"><img src="articles-408169_documento.thumb_thumbpdf.jpg" alt="Sistematización de Buenas Prácticas Protocolo visitas virtuales" title="Sistematización de Buenas Prácticas Protocolo visitas virtuales"></a></div><div class="text-truncate-2lines titulo text-primary font-weight-bold h5 aid-408169 cid-976">Sistematización buenas prácticas Protocolo de visitas virtual </div></div></div><div class="recuadro d-flex col-sm-6 col-md-4"><div class="card"><div class="figure cid-976 aid-402848 binary-documento format-pdf"><a href="articles-402848_documento.pdf" title="Ir a Acuerdo CESU No. 02 de 2020"><img src="articles-402848_documento.thumb_thumbpdf.jpg" alt="Acuerdo CESU No. 02 de 2020" title="Acuerdo CESU No. 02 de 2020"></a></div><div class="text-truncate-2lines titulo text-primary font-weight-bold h5 aid-402848 cid-976">Acuerdo CESU No. 02 de 2020</div></div></div><div class="recuadro d-flex col-sm-6 col-md-4"><div class="card"><div class="figure cid-976 aid-402818 binary-documento format-pdf"><a href="articles-402818_documento.pdf" title="Ir a La Alta Calidad de la Educación Superior en tiempos de Pandemia"><img src="articles-402818_documento.thumb_thumbpdf.jpg" alt="La Alta Calidad de la Educación Superior en tiempos de Pandemia" title="La Alta Calidad de la Educación Superior en tiempos de Pandemia"></a></div><div class="text-truncate-2lines titulo text-primary font-weight-bold h5 aid-402818 cid-976">La Alta Calidad de la Educación Superior en tiempos de Pandemia</div></div></div></div><!--end-box--><!--begin-box:CNA_home_link_biblioteca:text-center col-12 div-btn div-btn-primary mb-5:32940:Lanzadores--><!--loc('* acceso a Valor de Clasificando ')--><!--uniqueid=i__CNA_home_link_biblioteca_1--><!--class=text-center col-12 div-btn div-btn-primary mb-5--><div class="text-center col-12 div-btn div-btn-primary mb-5" id="link_clasificandoi__CNA_home_link_biblioteca_1"><a href="/portal/Biblioteca/" title="Ir a Biblioteca" class=" pvid-67528 cid-976">Ir a la biblioteca</a></div><!--end-box--></div></div></section><section class="bg-faq"><div class="container"><div class="row"><!--begin-box-container:CNA_Home_FAQ_CC::32808:Contededora de las preguntas frencuentes--><!--loc('Caja contenedora')--><div id="faq" class="col-12 row py-5"><div class="col-lg-6 d-flex align-items-center"><h2 class="h3 text-uppercase text-left text-white icon-faq">Preguntas frecuentes</h2></div><div class="col-lg-6 text-white"><!--pos=1--><!--begin-box:CNA_Home_FAQ:swiper-container:32807:FAQs slider vertical--><!--loc('* Recuadros de artículos')--><div id="slider-faq" class="swiper-container"><div class="recuadro row"><div class="titulo col-12 h5 text-secondary text-left aid-402759 cid-976">¿Cuál es la función del Consejo Nacional de Acreditación CNA?</div><div class="faq-text cid-976 aid-402759">
+			<p>Su función esencial es la de promover y ejecutar la política de acreditación adoptada por el CESU y coordinar los respectivos procesos; por consiguiente, orienta a las instituciones de educación superior para que adelanten su autoevaluación, define y desarrolla el modelo de acreditación en alta calidad, definiendo los lineamientos y a través de ellos los factores, característica y aspectos a evaluar que se aplican en la evaluación externa, designa los pares académicos externos que la practican y lleva a cabo la evaluación final.</p>
+
+		</div></div><div class="recuadro row"><div class="titulo col-12 h5 text-secondary text-left aid-402202 cid-976">¿El CNA cuenta con mecanismos de acompañamiento a las IES que desean acreditarse?</div><div class="faq-text cid-976 aid-402202">
+			<p>El CNA ha implementado acciones de acompañamiento y capacitación con el fin de contribuir a la consolidación de la cultura de aseguramiento de la calidad de la educación superior, con el fin de fortalecer los procesos de autoevaluación con fines de acreditación de los programas académicos y las instituciones de educación superior en Colombia.</p>
+
+		</div></div><div class="recuadro row"><div class="titulo col-12 h5 text-secondary text-left aid-402203 cid-976">¿Para qué sirve la acreditación en alta calidad?</div><div class="faq-text cid-976 aid-402203">
+			<p>Entre otras, para:</p>
+<ul>
+<li>Propiciar el mejoramiento de la calidad de la educación superior.</li>
+<li>Es un mecanismo para que las Instituciones de Educación Superior rindan cuentas ante la sociedad y el Estado sobre el servicio educativo que prestan.</li>
+<li>Propicia la idoneidad y la solidez de las instituciones que prestan el servicio público de educación superior.</li>
+</ul>
+
+		</div></div></div><!--end-box--><div class="text-center"><a href="/portal/Modelo-de-Acreditacion/Preguntas-frecuentes/" class="btn btn-secondary">Ir a preguntas frecuentes</a></div></div></div><!--end-box--></div></div></section><section><div class="container"><div class="row"><!--begin-box:CNA_home_logos:home-logos col-12:32814:Articulo completo de este molde--><!--loc('* Recuadros de artículos')--><div id="recuadros_articulo_32814" class="home-logos col-12"><div class="recuadro row justify-content-center align-items-center text-center py-5"><h1 class="primary-title aid-402390 cid-976">Sitios de interés</h1><div class="blank col-sm-6 img-fluid-cc mb-5 cid-976 aid-402390 binary-recurso_1 format-png"><a href="https://www.mineducacion.gov.co/portal/" title="Ir a Mineducación"><img src="articles-402390_recurso_1.png" alt="Mineducación" title="Mineducación" width="301" height="49"></a></div><div class="blank col-sm-6 img-fluid-cc mb-5 cid-976 aid-402390 binary-recurso_2 format-png"><a href="https://minciencias.gov.co/" title="Ir a Minciencias"><img src="articles-402390_recurso_2.png" alt="Minciencias" title="Minciencias" width="301" height="49"></a></div><div class="blank col-sm-6 img-fluid-cc mb-5 cid-976 aid-402390 binary-recurso_3 format-png"><a href="https://www.icfes.gov.co/" title="Ir a Icfes"><img src="articles-402390_recurso_3.png" alt="Icfes" title="Icfes" width="200" height="68"></a></div><div class="blank col-sm-6 img-fluid-cc mb-5 cid-976 aid-402390 binary-recurso_4 format-png"><a href="https://portal.icetex.gov.co/Portal" title="Ir a Icetex"><img src="articles-402390_recurso_4.png" alt="Icetex" title="Icetex" width="200" height="41"></a></div><div class="blank col-sm-6 img-fluid-cc mb-5 cid-976 aid-402390 binary-recurso_5 format-png"><a href="https://snies.mineducacion.gov.co/portal/" title="Ir a SNIES"><img src="articles-402390_recurso_5.png" alt="SNIES" title="SNIES" width="120" height="54"></a></div><div class="boton col-12 cid-976 aid-402390">
+			<p><a href="/portal/Sitios-de-interes/">Más sitios de interés</a></p>
+
+		</div></div><div class="recuadro row justify-content-center align-items-center text-center py-5"><h1 class="primary-title aid-402389 cid-976">Reconocimientos internacionales</h1><div class="blank col-sm-6 img-fluid-cc mb-5 cid-976 aid-402389 binary-recurso_1 format-png"><img src="articles-402389_recurso_1.png" alt="Reconocimiento INQAAHE" title="Reconocimiento INQAAHE" width="200" height="71"><div class="caption m-auto" style="width: 200px"><p><strong>Certificación Internacional</strong><br>
+por el cumplimiento de Directrices de Buenas<br>
+Prácticas para organismos acreditadores</p>
+
+</div></div><div class="blank col-sm-6 img-fluid-cc mb-5 cid-976 aid-402389 binary-recurso_2 format-png"><img src="articles-402389_recurso_2.png" alt="RIACES" title="RIACES" width="76" height="101"><div class="caption m-auto" style="width: 76px"><p><strong>Máxima distinción</strong><br>
+en reconocimiento al cumplimiento pleno<br>
+de las orientaciones de buenas prácticas (OBP)<br>
+definidas por RIACES</p>
+
+</div></div><div class="blank col-sm-6 img-fluid-cc mb-5 cid-976 aid-402389 binary-recurso_3 format-png"><img src="articles-402389_recurso_3.png" alt="SIACES" title="SIACES" width="203" height="50"><div class="caption m-auto" style="width: 203px"><p><strong>Reconocimiento de validación de buenas prácticas</strong><br>
+en materia de aseguramiento de la calidad de<br>
+la educación superior en Iberoamérica</p>
+
+</div></div></div></div><!--end-box--></div></div></section></main><div class="footer-path"></div><footer class="bg-primary"><div class="container-fluid"><div class="row"><!--begin-box:CNA_home_modal::32959:HTML modal--><!--loc('* Código HTML libre dentro de la página.')--><div id="myModal" class="modal" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        class="" aria-hidden="true">×</span></button></div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div><!--end-box--><!--begin-box:CNA_tr_footer::32776:Footer--><!--loc('* Código HTML libre dentro de la página.')--><div class="footer m-auto py-5 px-3 row small w-100">
+  <div class="col-lg-8 text-light text-center ">
+    <ul class="d-flex flex-wrap justify-content-center">
+      <li class="px-3"><a href="w3-propertyvalue-67646.html">Políticas de privacidad y condiciones de uso</a></li>
+      <li class="px-3"><a href="https://www.mineducacion.gov.co/portal/atencion-al-ciudadano/Participacion-Ciudadana/353715:Proteccion-de-Datos-Personales" target="blank">Políticas de protección de datos</a></li>
+  </ul>
+    <br/>
+    <br/>
+  
+      <p class="text-secondary font-weight-bold">Consejo Nacional de Acreditación</p>
+       Cl. 19 #6-68, piso 4 Edificio Ángel - Bogotá - Colombia (En esta dirección no es posible radicar correspondencia o trámites del CNA)
+
+      <br>Horario de atención presencial con cita previa: lunes a jueves de 8:00 a.m. a 5:00 p.m. y el viernes de 7:00 a.m. a 4:00 p.m. 
+    <br><br> Puede contactar al CNA remitiendo sus comunicaciones al sistema PQRSDF del Ministerio de Educación Nacional
+      
+    <br><br>
+   <a href="https://www.cna.gov.co/1779/w3-propertyvalue-67695.html?_noredirect=1" target="blank">Enlace y precisiones sobre radicación de trámites</a>
+ <br> Dirección: Calle 43 No. 57 - 14. CAN. Bogotá, Colombia. Código Postal 111321. 
+    <br> 
+Horario de atención: Lunes a jueves de 8:00 a.m. a 5:00 p.m. y viernes de 7:00 a.m. a 4:00 p.m. Jornada continua
+     <br>Teléfono: (601) 22 22800 - Línea gratuita fuera de Bogotá: 018000 - 910122 - Fax: (601) 2224953
+<br> Correo Institucional: atencionalciudadano@mineducacion.gov.co
+    
+  </div>
+  <div class="col-lg-4 mapa-sitio">
+    <span>Mapa del sitio</span>
+    <ul>
+    <li><a href="/portal/"
+            title="Ir a CNA 2020">Inicio</a></li>
+    <li><a class="pnid-3581 pv-pid-0 pvid-67522 cid-976"
+            href="/portal/El-CNA/"
+            title="Ir a El CNA">El CNA</a>
+    </li>
+    <li><a class="pnid-3581 pv-pid-0 pvid-67523 cid-976"
+            href="/portal/Sistema-Nacional-de-Acreditacion/"
+            title="Ir a Sistema Nacional de Acreditación">Sistema Nacional de Acreditación</a>
+    </li>
+    <li><a class="pnid-3581 pv-pid-0 pvid-67524 cid-976"
+            href="/portal/Modelo-de-Acreditacion/"
+            title="Ir a Modelo de Acreditación">Modelo de Acreditación</a>
+    </li>
+    <li><a class="pnid-3581 pv-pid-0 pvid-67525 cid-976"
+            href="/portal/Pares-academicos/"
+            title="Ir a Pares académicos">Pares académicos</a></li>
+    <li><a class="pnid-3581 pv-pid-0 pvid-67526 cid-976"
+            href="/portal/Internacionalizacion/"
+            title="Ir a Internacionalización">Internacionalización</a></li>
+    <li><a class="pnid-3581 pv-pid-0 pvid-67527 cid-976"
+            href="/portal/Divulgacion/"
+            title="Ir a Divulgación">Divulgación</a>
+    </li>
+    <li><a class="pnid-3581 pv-pid-0 pvid-67528 cid-976"
+            href="/portal/Biblioteca/"
+            title="Ir a Biblioteca">Biblioteca</a>
+    </li>
+       <li><a class="pnid-3581 pv-pid-0 pvid-67528 cid-976"
+            href="w3-propertyvalue-67695.html"
+            title="Ir a Biblioteca">Contacto CNA</a>
+    </li>
+      <li><a class="pnid-3584 pv-pid-0 pvid-67649 cid-976"
+            href="w3-propertyvalue-67649.html"
+            title="Ir a Créditos">Créditos</a>
+    </li>
+
+</ul>
+  </div>
+</div>
+
+<div class="bg-info w-100">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
+            <ul class="d-flex m-0 py-3 list-unstyled">
+                <li class="align-self-center">
+                    <img src="channels-956_header_govco.png" alt="Logo Gobierno de Colombia" width="130px">
+                    <span class="sr-only">Logo Gobierno de Colombia</span>
+                </li>
+                <li class="border-left border-white pl-4 ml-4">
+                </li>
+                <li>
+                    <img src="channels-956_marca_colombia.png" alt="Marca Colombia" width="60px">
+                    <span class="sr-only">Logo marca Colombia</span>
+                </li>
+            </ul>
+            <a href="https://www.gov.co" target="_blank" class="text-white">Conoce GOV.CO aquí</a>
+        </div>
+    </div>
+</div>
+<!--end-box--></div></div></footer><!--begin-box-container:CNA_tr_extras_CC::32751:Articulo completo de este molde--><!--loc('Caja contenedora')--><div><!--pos=1--><!--begin-box:CNA_js_jquery_ui::32752:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript" src="boxes-32752_js_file.js"></script><!--end-box--><!--pos=2--><!--begin-box:CNA_tr_bootstrap::32753:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript" src="boxes-32753_js_file.js"></script><script type="text/javascript" src="channels-976_js_bootstrap.js"></script><!--end-box--><!--pos=3--><!--begin-box:CNA_tr_tabs_recuadros_agrupados::32754:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript" src="boxes-32754_js_file.js"></script><script type="text/javascript"><!--
+					$(document).ready(function() {
+    $( ".tabs" ).tabs();
+    
+    $('#myTab a.nav-link',$(this)).each(function(ida){
+      var url = $(this).attr('href');
+      $(this).attr('aria-controls',url.substring($(this).attr('href').indexOf('#')+1)).attr('role','tab').attr('data-toggle','tab');
+      $(this).attr('href',url.substring($(this).attr('href').indexOf('#')));
+    });
+    
+    $(".ntgBootstrap").each( function(){
+		var myself = $(this);
+		$.map(
+			$.grep(myself.attr("class").split(" "),
+				function(e,i){ 
+					return(e.indexOf("data-") != -1 || e.indexOf("role_") != -1);
+				}) ,
+			function(classname,index){
+				cl = classname.replace("\\","");
+				myself.attr( cl.split("_")[0], cl.split("_")[1]);
+				myself.removeClass("ntgBootstrap");
+				myself.removeClass(classname);
+			});
+	});
+  });
+					--></script><!--end-box--><!--pos=4--><!--begin-box:CNA_tr_link_youtube::32755:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript" src="boxes-32755_js_file.js"></script><script type="text/javascript"><!--
+					$(document).ready(function(){
+   $('.link_youtube a, a.link_youtube').ntg_link_video();
+});
+					--></script><!--end-box--><!--pos=5--><!--begin-box:CNA_js_link_iframe::32756:Script para convertir links en iframe--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript"><!--
+					$(function(){
+  
+  $('.link_iframe a, a.link_iframe').each(function(){
+    var url =$(this).attr('href');
+    var html ='<div class="iframe-embebido embed-responsive embed-responsive-16by9">'+
+        '<iframe class="embed-responsive-item" src="'+url+'"></iframe>'+
+        '</div>';
+    //$(this).parent('div').append(html);
+    //$(this).hide();
+    $(this).replaceWith(html);
+    
+  });
+});
+					--></script><!--end-box--><!--pos=6--><!--begin-box:CNA_js_MenuFijo::32758:Caja que contiene js para menú fijo--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript" src="boxes-32758_js_file.js"></script><!--end-box--><!--pos=7--><!--begin-box:Elementos_tr_accesibilidad::34984:js para accesibilidad--><!--loc('* Código HTML libre dentro de la página.')-->    <div id="accesibilidad-menu" class="accesibilidad-menu">
+        <ul class="accesibilidad-items">
+            <li>
+                <a id="high_contrast" href="javascript: void(0)" class="icon-contrast" title="Cambiar niveles de contraste">
+                    <img src="channels-956_icon_contrast.svg"
+                    alt="Icono contraste">
+                    <span> Contraste </span>
+                </a>
+            </li>
+            <li>
+                <a id="a_less" href="javascript: void(0)" class="icon-a-less" title="Reducir el tamaño del texto">
+                    <img src="channels-956_icon_less_size.svg"
+                    alt="Icono reducir tamaño de fuente">
+                    <span> Reducir letra </span>
+                </a>
+            </li>
+            <li>
+                <a id="a_more" href="javascript: void(0)" class="icon-a-more" title="Aumentar el tamaño del texto">
+                    <img src="channels-956_icon_more_size.svg"
+                    alt="Icono aumentar tamaño de fuente">
+                    <span> Aumentar letra </span>
+                </a>
+            </li>
+            <li>
+                <a id="c_relevo" href="https://www.signosenred.gov.co/home" target="_blank" class="icon-a-less" title="Ir a Signos en red">
+                    <img src="channels-956_icon_centro_relevo.svg"
+                    alt="Icono Signos en red ">
+                    <span> Signos en red  </span>
+                </a>
+            </li>
+        </ul>
+    </div><!--end-box--><!--pos=8--><!--begin-box:Elementos_js_accesibilidad::33878:js para accesibilidad--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript"><!--
+					$(document).ready(function(accesibilidad) { 
+  
+  /*Aumentar tamaño de la fuente*/
+  $('.baracces-fixed #a_more, #a_more').click(function(){    
+    curSize= parseInt($('html').css('font-size')) + 2;
+    if(curSize<=24)
+      $('html').css('font-size', curSize);
+  });  
+  
+  /*Disminuir tamaño de la fuente*/
+  $('.baracces-fixed #a_less, #a_less').click(function(){    
+    curSize= parseInt($('html').css('font-size')) - 2;
+    if(curSize>=14)
+      $('html').css('font-size', curSize);
+  }); 
+  
+  /*Reiniciar tamaño de la fuente*/
+  $('#a_normal').click(function(){    
+      $('html').css('font-size', 'initial');
+  }); 
+  
+  /*Alto contraste*/
+  
+  $('.baracces-fixed #high_contrast, #high_contrast').click(function(){
+    
+    if($('html').hasClass('altoContraste')){
+        $('html').removeClass('altoContraste');
+      $(".navbar-default" ).removeClass( "navbar-inverse" );
+    }
+    else{
+      $('html').addClass('altoContraste');
+      $(".navbar-default" ).addClass( "navbar-inverse" );
+    }
+    
+  });
+    
+});
+					--></script><!--end-box--><!--pos=9--><!--begin-box:CNA_js_frames_gradual::32759:js para Cargar más--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript" src="boxes-32759_js_file.js"></script><script type="text/javascript"><!--
+					$(function(){
+  console.log('cargar más');
+  $('.frames_gradual').ntg_frames_gradual({
+    showItems: 6,
+    btnHTML: "<div class='col-12 text-center'><button class='btn-primary btn'>Cargar m&aacute;s</button></div>"
+  });
+})
+					--></script><!--end-box--><!--pos=10--><!--begin-box:CNA_tr_link_blank_bloque:blank:32760:Abre enlaces en nueva ventana en bloques--><!--loc('* Incluye script para personalizar comportamiento de links')--><script type="text/javascript"><!--
+$(document).ready(function(){$('.blank a:not([class])').click(function(){window.open(this.href,'_blank','resizable=1,menubar=1,location=1,status=1,scrollbars=1,toolbar=1,width=,height=');return false});});
+--></script><!--end-box--><!--pos=11--><!--begin-box:CNA_tr_link_blank_contenido:blank:32761:Abre enlaces en nueva ventana en bloques--><!--loc('* Incluye script para personalizar comportamiento de links')--><script type="text/javascript"><!--
+$(document).ready(function(){$('a.blank').click(function(){window.open(this.href,'_blank','resizable=1,menubar=1,location=1,status=1,scrollbars=1,toolbar=1,width=,height=');return false});});
+--></script><!--end-box--><!--pos=12--><!--begin-box:CNA_js_accordion_init::32762:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript"><!--
+					$(document).ready(function(){
+  console.log('acordeon');
+  $(".accordion h3, .accordion-eidox .recuadro h3").each(function(){
+    $(this).nextUntil("h3").wrapAll('<div></div>');
+    
+  });
+  
+  $('.accordion, .accordion-eidox .recuadro').accordion({header:"> h3",heightStyle:"content", collapsible:true, active:true});
+  
+  $('.accordion > ul').hide();
+  $("#acordeon_micrositios").accordion({header:'h2',heightStyle:"content", collapsible:true, active:true});
+ 
+});
+					--></script><!--end-box--><!--pos=13--><!--pos=14--><!--pos=15--><!--begin-box:CNA_js_link_flickr::32964:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript"><!--
+					$(document).ready(function(){
+  $("a.link_flickr, .link_flickr a").each(function(){    
+    var url_img= $(this).parent().find(".fuente").hide().text();
+    var url_album= $(this).attr("href").replace('"','');
+
+    var iframe='<iframe style="position: relative; top: 0; left: 0; width: 100%; height:400px;" src="https://flickrembed.com/cms_embed.php?source=flickr&layout=responsive&input='+url_album+'&sort=0&by=album&theme=default&scale=fill&speed=3000&limit=10&skin=default&autoplay=true" scrolling="no" frameborder="0" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"><p><a  href="https://www.comparetyres.com">CompareTyres</a></p><small>Powered by <a href="https://flickrembed.com">flickr embed</a>.</small></iframe><script type="text/javascript">function showpics(){var a=$("#box").val();$.getJSON("http://api.flickr.com/services/feeds/photos_public.gne?tags="+a+"&tagmode=any&format=json&jsoncallback=?",function(a){$("#images").hide().html(a).fadeIn("fast"),$.each(a.items,function(a,e){$("<img/>").attr("src",e.media.m).appendTo("#images")})})}</script>';
+    
+    //$(this).parent().append(iframe);
+    $(this).replaceWith(iframe);
+  });
+});
+					--></script><!--end-box--><!--pos=16--><!--begin-box:Elementos_js_govco::33139:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript" src="boxes-33139_js_file.js"></script><!--end-box--><!--pos=17--><!--begin-box:CNA_js_extra::32763:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript"><!--
+					var inqaahe = [3, 5, 6, 8, 9, 10, 15, 12, 13, 24, 18, 25, 32, 27, 26, 29, 30, 35, 37, 71, 40, 45, 49, 52, 55, 54, 57, 63, 42, 61, 66, 69, 75, 74, 78, 76, 80, 81, 82, 84, 83, 86, 87, 90, 91, 88, 94, 99, 115, 56, 113, 105, 110, 116, 123, 121, 124, 122, 125, 126, 136, 127, 130, 135, 128, 54, 131, 138, 139, 178, 142, 155, 180, 51, 97, 156, 28, 161, 17, 165, 167, 170, 4, 59, 173, 176, 181, 182];
+var siaces = [5, 29, 35, 48, 51, 38, 128, 134, 105, 172, 120, 127, 149, 70, 37];
+var riaces = [21, 22, 29, 35, 37, 38, 48, 149, 51, 105, 120, 127, 135, 128, 46, 172];
+var arcu = [5, 21, 22, 29, 35, 135, 172];
+
+$(function () {
+  
+  $("a#main_link").prop("href","#contenido_principal");
+    //   Cargar img por defecto en los valores de clasificando
+    if ($(".recuadro-valores")) {
+        $(".recuadro-valores .recuadro").each(function () {
+            if ($(this).find(".figure").length < 1) {
+                $(this).prepend('<a href="/portal/">aaaa</a><div class="col-lg-6 figure"><img src="/static/cache/binaries/channels-976_demo_recuadro.jpg"/></div>')
+            }
+        });
+    }
+    $("#formulario_i__CNA_Home_form_1 form").removeClass("col-lg-8");
+
+    if ($("#i__CNA_ar_valores_consejo_1")) {
+        $("#i__CNA_ar_valores_consejo_1 ul li a.pvid-67533").attr("href", "w3-propertyvalue-67530.html#consejeros");
+        $("#i__CNA_ar_valores_consejo_1 ul li a.pvid-67534").attr("href", "w3-propertyvalue-67530.html#secretaria");
+    }
+    if ($("#i__CNA_ar_valores_hitos_1")) {
+        $("#i__CNA_ar_valores_hitos_1 ul li a.pvid-67551").attr("href", "w3-propertyvalue-67531.html#historia");
+        $("#i__CNA_ar_valores_hitos_1 ul li a.pvid-67547").attr("href", "w3-propertyvalue-67531.html#exconsejo");
+    }
+
+    if ($("#i__CNA_ar_valores_consejo_1").length > 0 && $("#i__CNA_ar_valores_hitos_1").length > 0) {
+        $("#i__CNA_ar_valores_hitos_1").hide();
+        $(".migapan").empty();
+        $(".migapan").append('<p id="i__CNA_pa_breadcrumb_1_67530" class="migapan" style=""><a class="channellink" href="/portal/">Inicio</a><a href="/portal/El-CNA/" class=" pnid-3581 pv-pid-0 pvid-67522 cid-976">El CNA</a><a class="current pvid-67530 cid-976 active" href="/portal/El-CNA/Estructura/">Estructura</a></p>');
+
+    }
+
+
+    var url = window.location.href;
+    if (url.indexOf("#conseje") > -1 || url.indexOf("#historia") > -1) {
+        $("#dia1-tab").trigger("click");
+    }
+    if (url.indexOf("#secretar") > -1 || url.indexOf("#exconsejo") > -1) {
+        $("#dia2-tab").trigger("click");
+    }
+
+    //clase link_hover para enviar el link del epigrafe al hover del recuadro
+    $('.link_hover .recuadro').each(function () {
+        var url = $(this).find('.titulo a').attr('href');
+
+        $(this).find('.abstract').wrapInner('<a href=' + url + ' target="blank"></a>');
+        $(this).find('.titulo a').contents().unwrap();
+    });
+
+    $(".link_modal .recuadro").each(function () {
+        $(this).find(".titulo a").prop("href", $(this).find(".documento a").prop("href"));
+
+        $(this).find("a").attr("data-toggle", "modal");
+        $(this).find("a").attr("data-target", "myModal");
+    });
+
+    $(".articulo.link_modal, .link_modal_doc .recuadro").each(function () {
+        $(this).find("a").attr("data-toggle", "modal");
+        $(this).find("a").attr("data-target", "myModal");
+    });
+
+    $('#myModal').on('hidden.bs.modal', function (e) {
+        $('#myModal').find('.modal-body').empty();
+    });
+
+    $(".link_modal .recuadro a, .articulo.link_modal a, .link_modal_doc a").click(function () {
+        abrirModalBoletin($(this).prop("href"));
+
+    });
+
+    // Mostrar / Ocultar respuestas de formulario 
+
+    $("#encuesta form .btn-resultados input[type=button]").attr("data-toggle", "collapse");
+    $("#encuesta form .btn-resultados input[type=button]").attr("data-target", "#respuestas");
+
+    // Obtener miniaturas Youtube para las capsulas informativas
+    if ($("#capsulas").length > 0) {
+        $("#capsulas .recuadro .epigrafe").each(function () {
+            var yt_id = YouTubeGetID($(this).text());
+            var yt_html = "<div class='img-fluid-cc'><img src='https://img.youtube.com/vi/" + yt_id + "/0.jpg'</div>";
+            $(this).replaceWith(yt_html);
+        });
+    }
+
+    // Span para personalizar chekbox formularios
+
+    $(".form_select li").append("<span></span>");
+
+    $("a.link-mapa").click(function () {
+
+        $("#mapa svg g path").removeClass("orange");
+        $("a.link-mapa").parent().removeClass("active");
+        $(this).parent().addClass("active");
+
+        var id = $(this).prop("id");
+        var array_ids = [];
+        switch (id) {
+            case "inqaahe":
+                array_ids = inqaahe;
+                break;
+            case "siaces":
+                array_ids = siaces;
+                break;
+            case "riaces":
+                array_ids = riaces;
+                break;
+            case "arcu":
+                array_ids = arcu;
+                break;
+        }
+        for (var j = 0; j < array_ids.length; j++) {
+            $("#mapa svg g path:nth-child(" + array_ids[j] + ")").addClass("orange");
+        }
+
+        if ($(window).width() < 990) {
+            $('body,html').animate({
+                scrollTop: $('#mapa').offset().top - 100
+            }, 800);
+
+        }
+    });
+
+});
+
+function abrirModalBoletin(ruta) {
+    var h_ref = ruta;
+    //   var iframe = "<embed src='"+h_ref+"#toolbar=0&navpanes=0&scrollbar=0' width='500' height='500'>";
+    var iframe = "<div class='embed-responsive embed-responsive-16by9'>" +
+        "              <iframe class='embed-responsive-item' src='" + h_ref + "'>" +
+        "              </iframe>" +
+        "            </div>'";
+
+    $('#myModal').find('.modal-body').append(iframe);
+    $("a.link_youtube").ntg_link_video();
+    $('#myModal').modal('show');
+}
+
+function YouTubeGetID(url) {
+    var ID = '';
+    url = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+    if (url[2] !== undefined) {
+        ID = url[2].split(/[^0-9a-z_\-]/i);
+        ID = ID[0];
+    } else {
+        ID = url;
+    }
+    return ID;
+}
+					--></script><!--end-box--><!--pos=18--><!--pos=19--><!--pos=20--></div><!--end-box--><!--begin-box-container:CNA_home_slider_init_CC::32772:Contenedora de scripts para el slider del Home--><!--loc('Caja contenedora')--><!--pos=1--><!--begin-box:Snies_js_ntg_responsive::32461:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript" src="boxes-32461_js_file.js"></script><!--end-box--><!--pos=2--><!--begin-box:Snies_js_ntg_carrusel::32462:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript" src="boxes-32462_js_file.js"></script><!--end-box--><!--pos=3--><!--begin-box:CNA_js_slider_init::32773:Articulo completo de este molde--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript"><!--
+					$(function () {
+    $('body').ntg_responsive({
+        callbacks: [{
+                limite: 1200,
+                change: function (obj) {
+                    console.log("[md] 1200 < width ");
+                    $(".recuadros-recursos, .recuadros-noticias").ntg_frames_carrusel_bootstrap4("destroy");
+                    $(".recuadros-recursos").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 1,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+
+                    $(".recuadros-noticias").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 3,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+                }
+            },
+            {
+                limite: 992,
+                change: function (obj) {
+                    console.log("[md] 992 < width < 1200");
+                    $(".recuadros-recursos, .recuadros-noticias").ntg_frames_carrusel_bootstrap4("destroy");
+                    $(".recuadros-recursos").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 1,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+
+                    $(".recuadros-noticias").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 3,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+                }
+            },
+            {
+                limite: 768,
+                change: function (obj) {
+                    console.log("[md] 768 < width < 992");
+                    $(".recuadros-recursos, .recuadros-noticias").ntg_frames_carrusel_bootstrap4("destroy");
+                    $(".recuadros-recursos").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 1,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+
+                    $(".recuadros-noticias").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 2,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+                }
+            },
+            {
+                limite: 576,
+                change: function (obj) {
+                    console.log("[md] 576 < width < 768");
+                    $(".recuadros-recursos, .recuadros-noticias").ntg_frames_carrusel_bootstrap4("destroy");
+                    $(".recuadros-recursos").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 1,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+
+                    $(".recuadros-noticias").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 1,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+                }
+            },
+            {
+                limite: 120,
+                change: function (obj) {
+                    console.log("[xs] 120 < width < 576");
+                    $(".recuadros-recursos, .recuadros-noticias").ntg_frames_carrusel_bootstrap4("destroy");
+                    $(".recuadros-recursos").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 1,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+
+                    $(".recuadros-noticias").ntg_frames_carrusel_bootstrap4({
+                        num_divs: 1,
+                        mode: "fixed",
+                        debug: true,
+                        interval: 5000,
+                        btnClass: "d-none",
+                        pause: null
+                    }).carousel();
+                }
+            }
+        ]
+    });
+    $('.recuadros-noticias .carousel-item').each(function(){
+        $(this).contents().wrapAll('<div class="row"></div>');
+    });
+    
+});
+					--></script><!--end-box--><!--end-box--><!--begin-box:CNA_js_swiper::32806:Estilos del slider--><!--loc('* Código HTML libre dentro de la página.')--><!--Agrega código HTML aquí -->
+<script src="channels-976_js_swiper.js"></script>
+
+<script>
+    console.log("swipe");
+    if ($("#slider-faq").length > 0) {
+
+        $("#slider-faq .recuadro").addClass("swiper-slide");
+        $("#slider-faq .recuadro").wrapAll("<div class='swiper-wrapper'></div>");
+
+        var slider_faq = '<div class="swiper-pagination"></div>' +
+            '      <div class="swiper-button-prev"></div>' +
+            '      <div class="swiper-button-next"></div>';
+
+        $("#slider-faq").append(slider_faq);
+
+        var swiper = new Swiper('.swiper-container', {
+            direction: 'vertical',
+            slidesPerView: 1,
+            loop: true,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+        });
+    }
+</script><!--end-box--><!--begin-box:CNA_home_lib_grafica::32974:LIbrerias javascript para el funcionamiento de las gráficas de comunidades--><!--loc('* Código HTML libre dentro de la página.')--><!-- Load d3.js and c3.js -->
+<script src="channels-976_graph_d3_js.js"></script>
+<script src="channels-976_graph_c3_js.js"></script><!--end-box--><!--begin-box:CNA_home_js_grafica::32973:JS con la configuración especial del historico de formularios--><!--loc('* Código JavaScript para la página.')--><script type="text/javascript"><!--
+					$(function () {
+  
+  $("#resultados table").hide();
+  
+    var titulo = $("#resultados table thead th[title]").text();
+    datos = [];
+    textos = [];
+    count = 0;
+
+    $("#resultados table tbody tr").each(function () {
+        count = parseInt($(this).find("td").text());
+        datos.push(count);
+        textos.push($(this).find("th").text());
+    });
+
+    datos.unshift('Respuestas');
+
+    if ($("#graph").hasClass('c3')) {
+        chart = chart.destroy();
+    }
+
+    chart = c3.generate({
+        bindto: '#graph',
+        data: {
+            columns: [datos],
+            type: 'bar',
+            labels: true,
+            color: function (inColor, data) {
+                var ide_x = data.x;
+                var color_x;
+                switch (ide_x) {
+                    case 0:
+                        color_x = "#242951"
+                        break;
+                    case 1:
+                        color_x = "#F6A337"
+                        break;
+                    case 2:
+                        color_x = "#0082A0"
+                        break;
+
+                    case 3:
+                        color_x = "#069169"
+                        break;
+                    case 4:
+                        color_x = "#6f42c1"
+                        break;
+                    case 5:
+                        color_x = "#F3561F"
+                        break;
+                }
+
+                return color_x;
+            }
+        },
+        axis: {
+            x: {
+                type: 'category',
+                categories: textos
+            }
+        },
+        legend: {
+            show: false
+        }
+    });
+});
+
+function goToURL(){
+  location.href = 'w3-propertyvalue-67544.html';
+}
+					--></script><!--end-box--></body></html>

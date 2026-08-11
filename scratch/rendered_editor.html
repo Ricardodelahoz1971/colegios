@@ -1,0 +1,606 @@
+
+Notice: session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\sistema_escolar\php\dashboard.php on line 9
+<!-- DEBUG ELITE: STYLE = [aero] | TOTAL_KEYS = 26 -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MÓDULO BANCO DE REACTIVOS (ARES)</title>
+    
+    <!-- LIBRERÍAS NUCLEARES (PRE-CARGA ÉLITE) -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/vendor/sweetalert2/sweetalert2.all.min.js"></script>
+    
+    <script>
+        window.MODULO_ACTUAL = "editor_preguntas";
+        window.CSRF_TOKEN = "";
+        // 🛡️ CENTINELA DE RESOLUCIÓN ÉLITE
+        (function() {
+            const isMobileScreen = window.innerWidth <= 1024;
+            const cookieName = "dispositivo_elite=";
+            const currentCookie = document.cookie.split(';').find(c => c.trim().startsWith(cookieName));
+            const cookieValue = currentCookie ? currentCookie.split('=')[1] : null;
+
+            if (isMobileScreen && cookieValue !== 'movil') {
+                document.cookie = "dispositivo_elite=movil; path=/; max-age=86400";
+                window.location.reload();
+            } else if (!isMobileScreen && cookieValue === 'movil') {
+                document.cookie = "dispositivo_elite=escritorio; path=/; max-age=86400";
+                window.location.reload();
+            }
+        })();
+
+        // 🛡️ MOTOR INTERCEPTOR ÉLITE (Soberanía de Red)
+        // Gobierna TODAS las peticiones fetch de la arquitectura para aniquilar la caché
+        (function() {
+            const originalFetch = window.fetch;
+            window.fetch = function() {
+                let [resource, config] = arguments;
+                
+                // Si la petición va dirigida a nuestras APIs o procesos lógicos (GET por defecto)
+                if (typeof resource === 'string' && (resource.includes('logica/') || resource.includes('api_'))) {
+                    // Solo interceptar peticiones GET (las POST/PUT no se cachean de la misma forma)
+                    const method = (config && config.method) ? config.method.toUpperCase() : 'GET';
+                    
+                    if (method === 'GET') {
+                        const separator = resource.includes('?') ? '&' : '?';
+                        resource += `${separator}_t=${new Date().getTime()}`;
+                        
+                        config = config || {};
+                        config.cache = 'no-store';
+                    }
+                }
+                
+                return originalFetch.apply(this, [resource, config]);
+            };
+        })();
+    </script>
+    
+    <!-- Componentes Élite (Carga Local Sello Ares) -->
+    <!-- 0. MANIFIESTO DE CAPAS (Soberanía de Cascada) -->
+    <link rel="stylesheet" href="../styles/elite_layers.css?v=1780750138">
+
+    <!-- 1. BASE LEGACY & VENDORS (Carga vía Capas) -->
+    <link rel="stylesheet" href="../assets/vendor/datatables/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="../styles/utilities.css?v=1780750138">
+
+    <!-- 2. TOKENS & IDENTIDAD (Variables de Diseño) -->
+    <link rel="stylesheet" href="../styles/elite_themes.css?v=1780750138">
+
+    <!-- 3. MÓDULOS ESPECÍFICOS (Estructura Local) -->
+    <link rel="stylesheet" href="../styles/modules/layout.css?v=1780750138">
+    <link rel="stylesheet" href="../styles/modules/sidebar.css?v=1780750138">
+    <link rel="stylesheet" href="../styles/modules/mensajeria.css?v=1780750138">
+    <link rel="stylesheet" href="../styles/modules/agenda.css?v=1780750138">
+    <link rel="stylesheet" href="../styles/modules/zulu.css?v=1780750138">
+    <link rel="stylesheet" href="../styles/modules/khronos.css?v=1780750138">
+    <link rel="stylesheet" href="../styles/modules/ares.css?v=1780750138">
+    <link rel="stylesheet" href="../styles/modules/ares_editor.css?v=1780750138">
+    <link rel="stylesheet" href="../styles/modules/dashboard_elite.css?v=1780750138">
+
+    <!-- 4. NÚCLEO ÉLITE (Autoridad Suprema) -->
+    <link rel="stylesheet" href="../styles/ui_kit.css?v=1780750138">
+    <link rel="stylesheet" href="../styles/modules/elite_mutations.css?v=1780750138">
+
+    <!-- 5. CARGA DINÁMICA DE MÓDULOS (Soberanía Modular) -->
+        
+    <!-- Librerías Ares (Evaluación) - Sincronización Local -->
+    <link rel="stylesheet" href="../assets/vendor/katex/katex.min.css">
+    <script src="../assets/vendor/katex/kt_engine.js"></script>
+    <script src="../assets/vendor/mathlive/ml_engine.js"></script>
+    <link href="../assets/vendor/quill/quill.snow.min.css" rel="stylesheet">
+    <script src="../assets/vendor/quill/ql_engine.js"></script>
+    <script src="../assets/vendor/sortablejs/st_engine.js"></script>
+    <script src="../js/modules/ares_select_engine.js?v=1780750138"></script>
+    
+    <!-- CARGADOR DE MODELOS SOBERANOS -->
+            <link rel="stylesheet" href="../styles/modules/elite_aero.css?v=1780750138">
+            
+    <!-- Google Fonts: ADN Textual Maestro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Montserrat:wght@400;500;700;800;900&family=Roboto:wght@300;400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+
+    
+    <style>
+        :root {
+            /* ADN ÉLITE: TOKENS DE IDENTIDAD INSTITUCIONAL */
+            --el-primary: #046731;
+            --el-primary-rgb: 4, 103, 49;
+            --el-accent: #61a003;
+            --el-accent-rgb: 97, 160, 3;
+            --el-info: #00ffe1;
+            --el-info-rgb: 0, 255, 225;
+            --el-success: #166534;
+            --el-success-rgb: 22, 101, 52;
+            --el-danger: #991b1b;
+            --el-danger-rgb: 153, 27, 27;
+            --el-white: rgb(255, 255, 255);
+            --el-white-rgb: 255, 255, 255;
+            --el-dark-rgb: 30, 41, 59;
+
+            /* COMPATIBILIDAD BOOTSTRAP */
+            --bs-primary: var(--el-primary);
+            --bs-primary-rgb: var(--el-primary-rgb);
+            --bs-btn-hover-bg: #1a3275;
+            --bs-success: var(--el-success);
+            --bs-success-rgb: var(--el-success-rgb);
+            --bs-danger: var(--el-danger);
+            --bs-danger-rgb: var(--el-danger-rgb);
+            --bs-warning-rgb: 255, 193, 7;
+            --bs-info: var(--el-info);
+            --bs-info-rgb: var(--el-info-rgb);
+            --bs-btn-active-bg: #1a3275 !important;
+            --bs-body-bg: #f8fafc !important;
+            --bs-tertiary-bg: #ffffff !important;
+            --bs-body-color: #334155 !important;
+            --bs-border-color: rgba(var(--el-primary-rgb), 0.15);
+            --el-border: rgba(var(--el-primary-rgb), 0.1);
+            --el-border-strong: rgba(var(--el-primary-rgb), 0.2);
+            --el-font-institutional: 'Inter', sans-serif;
+            --sidebar-width: 280px;
+        }
+        body {
+            font-family: var(--el-font-institutional) !important;
+        }
+
+        /* Refinamiento de Inputs Numéricos (Flechitas siempre visibles) */
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            opacity: 1 !important;
+            height: 30px;
+        }
+        input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+        /* 🛡️ SOBERANÍA DEL SELECT ÉLITE (Inyección Dinámica de Flecha) */
+                select.form-select, select.select-elite, select.select-elite-reborn, select.select-elite-sm {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23046731' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        }
+    </style>
+
+    </head>
+<body class="bg-light  mode-aero-elite">
+
+<div class="container-fluid overflow-hidden p-0">
+    <div class="row vh-100 g-0">
+        
+        <!-- SIDEBAR (Navegación Élite) -->
+        <nav class="sidebar-container d-flex flex-column p-0 shadow-lg" id="sidebarMaestro">
+            <div class="sidebar-header-elite p-4 border-bottom">
+                <div class="logo-container-elite mb-3">
+                                            <img src="../uploads/branding/logo_institucional_1777692837.png" alt="Logo" class="logo-img-elite school-logo-global">
+                                    </div>
+                <div class="school-name-container-elite">
+                    <h2 class="school-name-elite school-name-global">Colegio Atanasio Girardot</h2>
+                </div>
+            </div>
+            
+            <div class="flex-fill py-3 sidebar-scroll-elite">
+                <ul class="menu-elite px-3">
+                    
+                    <!-- INICIO -->
+                    <li class="menu-item-elite">
+                        <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                <span>Inicio</span>
+                            </div>
+                        </a>
+                    </li>
+
+                    <!-- EVALUACIÓN (ESTUDIANTES) -->
+                    
+Warning: Undefined array key "rol_nombre" in C:\xampp\htdocs\sistema_escolar\php\dashboard.php on line 390
+
+                                        <li class="menu-item-elite">
+                        <a href="javascript:void(0)" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                <span>Estudiantes</span>
+                            </div>
+                            <i class="bi bi-chevron-right small arrow-icon"></i>
+                        </a>
+                        <ul class="submenu-elite">
+                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('matriculados')">Gestión de Matriculados</a></li>
+                                                    </ul>
+                    </li>
+                    
+                    <!-- CATEGORÍA: ACADÉMICO -->
+                                        <li class="menu-item-elite">
+                        <a href="#!" onclick="event.preventDefault()" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 17 17H20"></path><path d="M6.5 20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                                <span>Académico</span>
+                            </div>
+                            <i class="bi bi-chevron-right small arrow-icon"></i>
+                        </a>
+                        <ul class="submenu-elite">
+                                                                                                                                                    <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('cursos')">Cursos / Grupos</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('zulu')">Carga Académica</a></li>
+                                <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('khronos')">Horario Escolar</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('reporte_listas')">Centro de Reportes</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('aula_virtual_gestion')">Aula Virtual</a></li>
+                                                                                        <li><a class="submenu-link-elite active" href="javascript:void(0)" onclick="navegarModulo('editor_preguntas')">Banco de Reactivos</a></li>
+                                <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('constructor_pruebas')">Creador de exámenes</a></li>
+                                <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('constructor_actividades')">Gestor de Actividades</a></li>
+                                <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('calificar_pruebas')">Calificación de pruebas</a></li>
+                                                                    <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('sabana_calificaciones')">Sábana de Notas</a></li>
+                                                                                    </ul>
+                    </li>
+                    
+                    <!-- CATEGORÍA: AGENDA -->
+                                        <li class="menu-item-elite">
+                        <a href="#!" onclick="event.preventDefault()" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                <span>Agenda</span>
+                            </div>
+                            <i class="bi bi-chevron-right small arrow-icon"></i>
+                        </a>
+                        <ul class="submenu-elite">
+                                                            <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('asistencia')">Control de Asistencia</a></li>
+                                                        
+                                                            <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('agenda')">Agenda Académica</a></li>
+                            
+                                                            <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('calendario')">Cronograma Escolar</a></li>
+                                                    </ul>
+                    </li>
+                    
+                    <!-- MENSAJERÍA -->
+                                        <li class="menu-item-elite">
+                        <a href="javascript:void(0)" onclick="navegarModulo('mensajeria')" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                <span>Mensajería</span>
+                            </div>
+                        </a>
+                    </li>
+                    
+                    <!-- ADMINISTRACIÓN -->
+                                    </ul>
+                <div class="px-3 py-2 text-center border-top mt-2 border-white-10">
+                    <span class="badge-soberania badge-soberania--context">
+                        CONTEXTO: ESCRITORIO                    </span>
+                </div>
+            </div>
+            
+            <div class="p-3 mt-auto">
+                <!-- Espacio para expansión futura -->
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="d-flex flex-column p-0 main-content-fixed">
+            
+            <!-- HEADER -->
+            <header class="navbar navbar-white sticky-top bg-white p-2 shadow-sm border-bottom">
+                <div class="container-fluid d-flex flex-nowrap align-items-center justify-content-between">
+                    <div class="d-flex align-items-center overflow-hidden">
+                        <button class="btn-toggle-sidebar me-2" type="button" onclick="toggleSidebarElite()">
+                            <i class="bi bi-list fs-2"></i>
+                        </button>
+                        <h1 class="h3 fw-bold mb-0 hero-module-title text-topbar-elite text-truncate header-title-truncate">MÓDULO BANCO DE REACTIVOS (ARES)</h1>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                        <!-- TOGGLE MODO OSCURO -->
+                        <button onclick="toggleDarkMode()" class="btn btn-link text-dark no-print p-1 shadow-none" id="btnDarkMode">
+                            <svg id="icon-moon" class="" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                            <svg id="icon-sun" class="d-none" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        </button>
+
+                        <!-- CAMPANA DE NOTIFICACIONES -->
+                        <div class="dropdown no-print" id="campanaNotificaciones">
+                            <a href="#" class="text-dark position-relative p-1 d-block" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                                <span id="punto-rojo-mensajes" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none notif-badge-offset"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 w-fixed-280" id="lista-notificaciones-mini">
+                                <li class="dropdown-header fw-bold text-uppercase small pb-2">Notificaciones</li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="text-center py-3 text-muted small">Cargando...</li>
+                            </ul>
+                        </div>
+
+                        <!-- PERFIL DE USUARIO -->
+                        <div class="dropdown no-print ms-2">
+                            <a href="#" class="d-flex align-items-center text-decoration-none" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="d-none d-md-flex flex-column text-end me-3">
+                                    <span class="text-dark fw-bold fs-xs lh-1">Usuario</span>
+                                    <span class="text-muted text-uppercase fs-nano fw-semibold">Personal</span>
+                                </div>
+                                <div class="avatar-elite avatar-elite--circle bg-primary text-white shadow-sm border border-2 border-white">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 animate__animated animate__fadeIn fs-7">
+                                <li class="px-3 py-2 border-bottom mb-1">
+                                    <div class="fw-bold text-dark">Usuario</div>
+                                    <small class="text-muted text-uppercase fs-nano">Personal</small>
+                                </li>
+                                <li><a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="navegarModulo('mi_perfil')">
+                                    <i class="bi bi-person me-2"></i> Mi Perfil</a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger d-flex align-items-center py-2" href="logout.php">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- DINAMIC VIEW CONTENT -->
+            <div class="flex-fill overflow-auto">
+                <div class="p-0">
+                    <div class='container p-5 text-center'><h2 class='display-6 fw-bold text-muted'>La sección 'editor_preguntas' no fue encontrada.</h2></div>                </div>
+            </div>
+        </main>
+
+    </div>
+</div>
+
+<!-- 🛡️ ESCUDO DE ORIENTACIÓN ÉLITE (Soberanía Horizontal) -->
+<div id="escudo-orientacion-elite">
+    <div class="escudo-contenido">
+        <div class="escudo-icon-box">
+            <i class="bi bi-phone-landscape-fill"></i>
+        </div>
+        <h2 class="escudo-titulo">GIRE SU DISPOSITIVO</h2>
+        <p class="escudo-texto">Para una visualización institucional óptima y legible, el sistema requiere el uso en modo horizontal.</p>
+        <div class="escudo-loader"></div>
+    </div>
+</div>
+
+<!-- 🛡️ ESCUDO DE NAVEGACIÓN (OVERLAY) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebarElite()"></div>
+
+<!-- Scripts Nucleares (Carga Local) -->
+<script src="../assets/vendor/datatables/dataTables.min.js"></script>
+<script src="../assets/vendor/datatables/dataTables.bootstrap5.min.js"></script>
+<script>
+function toggleDarkMode() {
+    const isDark = document.body.classList.toggle('dark-theme-mode');
+    document.getElementById('icon-moon').classList.toggle('d-none', isDark);
+    document.getElementById('icon-sun').classList.toggle('d-none', !isDark);
+    
+    const formData = new FormData();
+    formData.append('dark_mode', isDark ? '1' : '0');
+    fetch('logica/guardar_estetica.php', { method: 'POST', body: formData });
+}
+
+function toggleSidebarElite() {
+    const sidebar = document.getElementById('sidebarMaestro');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+    document.body.classList.toggle('u-overflow-hidden', sidebar.classList.contains('active'));
+}
+
+function navegarModulo(p, push = true) {
+    window.MODULO_ACTUAL = p.split('&')[0];
+    if (window.innerWidth <= 992) {
+        const sidebar = document.getElementById('sidebarMaestro');
+        if (sidebar.classList.contains('active')) {
+            toggleSidebarElite();
+        }
+    }
+    
+    const currentParams = new URLSearchParams(window.location.search);
+    if (currentParams.get('p') === p && push && !window.forceRefreshElite) return;
+    window.forceRefreshElite = false; 
+
+    actualizarSidebar(p);
+
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    document.querySelectorAll('.modal.show').forEach(el => {
+        const m = bootstrap.Modal.getInstance(el);
+        if (m) m.hide();
+        el.remove();
+    });
+    document.body.classList.remove('modal-open', 'u-overflow-hidden');
+    
+    const newUrl = `dashboard.php?p=${p}`;
+    const mainContentArea = document.querySelector('.flex-fill.overflow-auto');
+    const pageHeader = document.querySelector('.hero-module-title');
+    
+    if (mainContentArea) {
+        mainContentArea.classList.remove('u-opacity-full');
+        mainContentArea.classList.add('u-opacity-muted');
+    }
+
+    if (push) window.history.pushState({p: p}, '', newUrl);
+
+    fetch(`${newUrl}&_t=${new Date().getTime()}`)
+    .then(r => r.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const nuevoHTML = doc.querySelector('.flex-fill.overflow-auto');
+        const nuevoTitulo = doc.querySelector('.hero-module-title');
+        
+        if (nuevoHTML && mainContentArea) {
+            // 🛡️ SOBERANÍA DE ESTILOS DINÁMICOS (Inyección en el head para SPA)
+            doc.querySelectorAll('head link[rel="stylesheet"]').forEach(newLink => {
+                const href = newLink.getAttribute('href');
+                if (href && !document.querySelector(`head link[href="${href}"]`)) {
+                    const linkElem = document.createElement('link');
+                    linkElem.rel = 'stylesheet';
+                    linkElem.href = href;
+                    document.head.appendChild(linkElem);
+                }
+            });
+
+            mainContentArea.querySelectorAll('script.spa-injected').forEach(s => s.remove());
+            mainContentArea.innerHTML = nuevoHTML.innerHTML;
+            if (nuevoTitulo && pageHeader) pageHeader.innerText = nuevoTitulo.innerText;
+            
+            // 🛡️ SOBERANÍA GLOBAL DE MODALES (Liberación de Stacking Context)
+            // Extraer modales del módulo inyectado y moverlos al root (body)
+            mainContentArea.querySelectorAll('.modal').forEach(modal => {
+                if (modal.id) {
+                    const oldModal = document.querySelector('body > #' + modal.id);
+                    if (oldModal) oldModal.remove();
+                }
+                document.body.appendChild(modal);
+            });
+
+            const scripts = nuevoHTML.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                newScript.classList.add('spa-injected');
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.textContent) {
+                    newScript.textContent = oldScript.textContent;
+                }
+                mainContentArea.appendChild(newScript);
+            });
+
+            mainContentArea.classList.remove('u-opacity-muted');
+            mainContentArea.classList.add('u-opacity-full');
+            mainContentArea.scrollTo({ top: 0, behavior: 'instant' });
+            document.dispatchEvent(new Event('DOMContentLoaded'));
+        } else {
+            window.location.href = newUrl;
+        }
+    })
+    .catch(() => {
+        if (mainContentArea) {
+            mainContentArea.classList.remove('u-opacity-muted');
+            mainContentArea.classList.add('u-opacity-full');
+        }
+        window.location.href = newUrl;
+    });
+}
+
+
+function actualizarSidebar(p) {
+    const allLinks = document.querySelectorAll('.menu-link-elite, .submenu-link-elite');
+    allLinks.forEach(link => link.classList.remove('active'));
+
+    const activeLink = document.querySelector(`.sidebar-container a[onclick*="navegarModulo('${p}')"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+        const parentItem = activeLink.closest('.menu-item-elite');
+        if (parentItem) {
+             const parentLink = parentItem.querySelector('.menu-link-elite');
+             if (parentLink) parentLink.classList.add('active');
+        }
+    }
+}
+
+function purgarIntentosAres() {
+    Swal.fire({
+        title: '¿ESTÁS SEGURO?',
+        text: "Esta acción purgará TODOS los intentos y respuestas de exámenes registrados en el sistema Ares. No se puede deshacer.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: 'var(--el-danger)',
+        cancelButtonColor: 'rgb(110, 120, 129)',
+        confirmButtonText: 'SÍ, PURGAR TODO',
+        cancelButtonText: 'CANCELAR',
+        background: document.body.classList.contains('dark-theme-mode') ? 'var(--el-bg-card)' : 'var(--el-white)',
+        color: document.body.classList.contains('dark-theme-mode') ? 'var(--el-dark)' : 'var(--el-dark)'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'ÚLTIMA CONFIRMACIÓN',
+                text: "El sistema quedará en blanco para nuevos exámenes. ¿Proceder?",
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonText: 'PURGAR AHORA',
+                background: document.body.classList.contains('dark-theme-mode') ? 'var(--el-bg-card)' : 'var(--el-white)',
+                color: document.body.classList.contains('dark-theme-mode') ? 'var(--el-dark)' : 'var(--el-dark)'
+            }).then((final) => {
+                if (final.isConfirmed) {
+                    fetch('logica/purgar_examenes_total.php')
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.status === 'success') {
+                            Swal.fire('¡BÓVEDA LIMPIA!', res.message, 'success').then(() => location.reload());
+                        } else {
+                            Swal.fire('ERROR', res.message, 'error');
+                        }
+                    });
+                }
+            });
+        }
+    });
+}
+
+window.onpopstate = function(event) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const p = urlParams.get('p') || 'inicio';
+    navegarModulo(p, false); 
+};
+
+// 🛡️ MANDO ÚNICO DE NAVEGACIÓN TÁCTIL (Blindaje contra Ghost-Clicks)
+document.addEventListener('click', function(e) {
+    const link = e.target.closest('.menu-link-elite');
+    if (!link) return;
+
+    if (window.innerWidth <= 992) {
+        const submenu = link.nextElementSibling;
+        if (submenu && submenu.classList.contains('submenu-elite')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const wasActive = link.classList.contains('active-mobile');
+            
+            // Purga de estados previos
+            document.querySelectorAll('.menu-link-elite').forEach(l => l.classList.remove('active-mobile'));
+            document.querySelectorAll('.submenu-elite').forEach(s => s.classList.remove('active-mobile'));
+
+            if (!wasActive) {
+                // Pequeño retardo para que el DOM se estabilice antes de permitir clics internos
+                link.classList.add('active-mobile');
+                submenu.classList.add('active-mobile');
+            }
+        }
+    }
+});
+
+// Inicialización de funciones globales
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof iniciarCarteroDigital === 'function') {
+        iniciarCarteroDigital();
+    }
+    
+    // 🛡️ LIBERACIÓN INICIAL DE MODALES (Para carga directa sin AJAX)
+    document.querySelectorAll('.main-content-fixed .modal').forEach(modal => {
+        if (modal.id) {
+            const oldModal = document.querySelector('body > #' + modal.id);
+            if (oldModal && oldModal !== modal) oldModal.remove();
+        }
+        document.body.appendChild(modal);
+    });
+});
+
+// 🛡️ SOBERANÍA: LIBERACIÓN REACTIVA DE MODALES (Aplica para cargas vía AJAX y dinámicas)
+document.addEventListener('show.bs.modal', function (event) {
+    if (event.target && event.target.classList && event.target.classList.contains('modal')) {
+        if (event.target.parentNode !== document.body) {
+            document.body.appendChild(event.target);
+        }
+        event.target.style.zIndex = "1055"; // Fuerza capa Élite
+    }
+}, true);
+</script>
+<script src="../js/sidebar_gravity.js?v=1780750138"></script>
+<script src="../js/elite_showroom.js?v=1780750138"></script>
+<!-- 🛠️ MOTOR DE SEGURIDAD ÉLITE (Inyección de Tokens) -->
+<script>
+    window.CSRF_TOKEN = '351755229282d35622609883ca9616786f5ecb9f05d240fc8d9c38705fbebe2e';
+</script>
+<!-- JS EXTERNO -->
+<script src="../js/modules/hermes_global.js?v=1780750138"></script>
+<script src="../js/modules/ui_navigator.js?v=1780750138"></script>
+<script src="../js/modules/security_core.js?v=1780750138"></script>
+<script src="../js/modules/academic_manager.js?v=1780750138"></script>
+<script src="../js/modules/perseus_engine.js?v=1780750138"></script>
+<script src="../js/script.js?v=1780750138"></script>
+</body>
+</html>

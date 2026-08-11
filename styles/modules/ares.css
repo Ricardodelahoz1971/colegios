@@ -1,0 +1,89 @@
+﻿@layer modules {
+/* 
+   ==========================================================================
+   ARES CORE - SISTEMA DE GESTIÃ“N ACADÃ‰MICA ELITE v1.0
+   Controladores del Banco de Reactivos y Ensamblador de Pruebas.
+   ==========================================================================
+*/
+
+/* 1. EXPLORADOR DE REACTIVOS (LISTADO) */
+.reactivo-item {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border-inline-start: 0.25rem solid transparent;
+}
+.reactivo-item:hover {
+    background-color: rgba(var(--el-primary-rgb), 0.05);
+    border-inline-start-color: var(--el-primary);
+    transform: translateX(0.3125rem);
+}
+.reactivo-item.is-selected-ares {
+    background-color: rgba(var(--el-primary-rgb), 0.1);
+    border-inline-start-color: var(--el-primary);
+}
+
+/* 2. EDITOR RICH TEXT (QUILL) CUSTOMIZATION */
+.ql-toolbar.ql-snow {
+    border-start-start-radius: var(--el-radius-sub);
+    border-start-end-radius: var(--el-radius-sub);
+    border-color: var(--el-border);
+    background: var(--el-bg);
+}
+.ql-container.ql-snow {
+    border-end-start-radius: var(--el-radius-sub);
+    border-end-end-radius: var(--el-radius-sub);
+    border-color: var(--el-border);
+    font-family: var(--el-font-institutional);
+    font-size: 0.95rem;
+}
+
+/* 3. ENSAMBLADOR (SORTABLE AREA) */
+.lienzo-drag-area {
+    min-height: 25rem;
+}
+.reactivo-card-mini {
+    background: white;
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.1);
+    border-radius: var(--el-radius-sub);
+    margin-block-end: 0.75rem;
+    transition: all 0.2s ease;
+}
+.reactivo-card-mini:hover {
+    border-color: var(--el-primary);
+    box-shadow: var(--el-shadow-sm);
+}
+.reactivo-banco-item {
+    cursor: pointer;
+    border-radius: var(--el-radius-sub);
+    margin-block-end: 0.3125rem;
+    font-size: 0.85rem;
+}
+.reactivo-banco-item:hover {
+    background-color: rgba(var(--el-primary-rgb), 0.05);
+}
+.handle-drag {
+    cursor: grab;
+}
+.handle-drag:active {
+    cursor: grabbing;
+}
+
+/* 5. SEMÃƒÂFORO: INDICADORES DE ESTADO (ARES) */
+.semaphore-light {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: var(--el-radius-pill, 50rem);
+    display: inline-block;
+    margin-inline-end: 0.5rem;
+    box-shadow: inset -0.0625rem -0.0625rem 0.1875rem rgba(var(--el-dark-rgb), 0.3), 0.0625rem 0.0625rem 0.1875rem rgba(var(--el-white-rgb), 0.1);
+}
+.bg-semaphore-green { background: radial-gradient(circle at 30% 30%, rgba(var(--el-primary-rgb), 0.8), var(--el-primary)); }
+.bg-semaphore-yellow { background: radial-gradient(circle at 30% 30%, rgba(var(--el-primary-rgb), 0.8), var(--el-primary)); }
+.bg-semaphore-red { background: radial-gradient(circle at 30% 30%, rgba(var(--el-primary-rgb), 0.8), var(--el-primary)); }
+.bg-semaphore-blue { background: radial-gradient(circle at 30% 30%, rgba(var(--el-primary-rgb), 0.8), var(--el-primary)); }
+
+/* 6. UTILIDADES DE MAQUETACIÃƒâ€œN ARES */
+.bunker-icon-container { width: 5rem; height: 5rem; }
+.border-dashed { border: 0.125rem dashed var(--el-border); }
+} /* Fin de @layer modules */
+

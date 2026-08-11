@@ -1,0 +1,24 @@
+/* 
+   ==========================================================================
+   ELITE LAYERS MANIFEST - ARQUITECTURA DE CASCADA SOBERANA
+   Define la jerarquía de poder del sistema Ares.
+   Orden de prioridad (de menor a mayor): reset < base < components < modules < utilities
+   ==========================================================================
+*/
+
+@layer reset, base, components, modules, utilities;
+
+/* 🛡️ BLINDAJE DE TERCEROS: Degradando Bootstrap a la capa de menor prioridad */
+@import url("../assets/libs/bootstrap/css/bootstrap.min.css") layer(reset);
+@import url("../assets/libs/bootstrap-icons/bootstrap-icons.min.css") layer(reset);
+@import url("../assets/libs/animate.css/animate.min.css") layer(reset);
+
+/* 🎨 ELITE CORE - Centralización de variables y componentes base */
+@import url("./elite_colors.css") layer(base);
+@import url("./elite_animations.css") layer(base);
+@import url("./elite_z_index.css") layer(base);
+@import url("./elite_breakpoints.css") layer(base);
+
+/* 🛡️ BLINDAJE DE LIBRERÍAS TERCERAS */
+@import url("./sweetalert2_customization.css") layer(components);
+@import url("./bootstrap_override.css") layer(utilities);

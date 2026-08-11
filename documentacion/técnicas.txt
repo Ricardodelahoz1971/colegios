@@ -1,0 +1,27 @@
+Aquí tienes técnicas avanzadas puras, sin dependencias externas:
+1. PHP: El núcleo de la aplicación
+En lugar de usar un framework, construye tu propio sistema de ruteo y contenedores:
+Front Controller Pattern: Redirige todas las peticiones a un solo index.php usando .htaccess. Esto te permite manejar URLs amigables y centralizar la lógica.
+Autoloading con PSR-4: No uses cientos de require. Configura un spl_autoload_register para cargar tus clases automáticamente siguiendo una estructura de carpetas lógica.
+Inyección de Dependencias (DI): Pasa los objetos (como la conexión a SQLite) a través del constructor. Esto hace que tu código sea testeable y desacoplado.
+Middlewares: Crea una cadena de funciones que se ejecuten antes de procesar la ruta (para verificar login o permisos) usando funciones anónimas.
+2. JavaScript: Estado y Componentes Nativos
+Sin React o Vue, debes gestionar la interfaz manualmente pero de forma elegante:
+Web Components (Custom Elements): Crea tus propias etiquetas HTML (ej. <mi-boton></mi-boton>) usando la API nativa customElements.define(). Tienen su propio ciclo de vida y Shadow DOM para encapsular CSS.
+State Management (Proxy API): Usa el objeto Proxy de JS para detectar cambios en tus datos y actualizar el DOM automáticamente cuando una variable cambie, emulando la reactividad.
+Single Page Application (SPA) nativa: Usa la History API (pushState) para cambiar la URL sin recargar la página y carga el contenido dinámicamente con fetch().
+3. CSS: Lógica sin preprocesadores
+Sass ya no es tan necesario gracias a las actualizaciones modernas de CSS:
+Nesting Nativo: Ya puedes anidar selectores directamente en CSS (como en Sass) en los navegadores modernos.
+Funciones Matemáticas: Usa clamp(), min() y max() para crear diseños que se adapten al tamaño de pantalla sin escribir decenas de @media queries.
+Container Queries: Usa @container en lugar de @media. Esto permite que un componente cambie su estilo según el tamaño de su contenedor padre, no solo del ancho de la pantalla (ideal para componentes reutilizables).
+4. SQLite: Modo Experto y Rendimiento
+SQLite es increíblemente potente si se configura bien desde el código:
+Modo WAL (Write-Ahead Logging): Actívalo con PRAGMA journal_mode=WAL;. Esto permite que múltiples usuarios lean la base de datos mientras uno escribe, eliminando muchos bloqueos de "database is locked".
+Sentencias Preparadas (Prepared Statements): Usa siempre PDO::prepare(). No es solo por seguridad; SQLite compila la consulta una vez y la ejecuta muchas veces más rápido con diferentes parámetros.
+Virtual Tables: Explora FTS5 para búsquedas tipo Google o R-Tree si necesitas manejar datos geográficos (coordenadas).
+Ejemplo de flujo de trabajo avanzado:
+PHP recibe la petición y consulta SQLite.
+PHP devuelve un JSON (no HTML).
+JS recibe el JSON, actualiza un objeto reactivo (Proxy).
+El Web Component detecta el cambio y se redibuja a sí mismo usando CSS Variables para el estilo.

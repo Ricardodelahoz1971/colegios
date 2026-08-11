@@ -1,0 +1,187 @@
+/* 🏛️ MÓDULO: GESTIÓN DE AULA VIRTUAL ARES */
+@layer modules {
+.text-truncate-2 { 
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; 
+    line-clamp: 2; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden; 
+}
+
+.fs-nano { 
+    font-size: 0.65rem; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+}
+
+.icon-box-elite { 
+    width: 56px; 
+    height: 56px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+
+.card-elite {
+    transition: var(--el-transition-fast);
+}
+
+.card-elite:hover {
+    box-shadow: var(--el-shadow-main);
+}
+
+/* 🎨 FORM SWITCH ELITE (VITRINA 06 COMPLIANT) */
+.form-switch-elite {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-block-size: var(--el-height-elite); /* Métrica 44px */
+    padding-inline: 1rem;
+    padding-block: 0.5rem;
+    border: 0.0625rem solid var(--el-border-strong);
+    border-radius: var(--el-radius-sub); /* Radio de Prestigio 12px */
+    background-color: var(--el-white);
+    transition: var(--el-transition-premium);
+    cursor: pointer;
+    user-select: none;
+}
+
+.form-switch-elite:hover {
+    border-color: var(--el-primary);
+    background-color: rgba(var(--el-primary-rgb), 0.02);
+}
+
+.form-switch-elite__container {
+    position: relative;
+    inline-size: 48px;
+    block-size: 28px;
+    flex-shrink: 0;
+}
+
+.form-switch-elite__input {
+    opacity: 0;
+    inline-size: 0;
+    block-size: 0;
+}
+
+.form-switch-elite__slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--el-border-strong);
+    border-radius: var(--el-radius-pill);
+    transition: var(--el-transition-premium);
+}
+
+.form-switch-elite__slider::before {
+    position: absolute;
+    content: "";
+    block-size: 20px;
+    inline-size: 20px;
+    inset-inline-start: 4px;
+    inset-block-start: 4px;
+    background-color: var(--el-white);
+    border-radius: var(--el-radius);
+    transition: var(--el-transition-premium);
+}
+
+.form-switch-elite__input:checked + .form-switch-elite__slider {
+    background-color: var(--el-primary);
+}
+
+.form-switch-elite__input:focus-visible + .form-switch-elite__slider {
+    box-shadow: 0 0 0 3px rgba(var(--el-primary-rgb), 0.25);
+}
+
+.form-switch-elite__input:checked + .form-switch-elite__slider::before {
+    transform: translateX(20px);
+}
+
+.form-switch-elite__label {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    font-family: var(--el-font-institutional);
+}
+
+.form-switch-elite__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--el-dark);
+}
+
+.form-switch-elite__subtitle {
+    font-size: 0.75rem;
+    color: var(--el-text-muted);
+}
+
+/* Switches para las tarjetas del grid */
+.card-switch-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.card-switch-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-block-size: 24px;
+}
+
+.card-switch-label {
+    font-family: var(--el-font-institutional);
+    font-size: 0.75rem;
+    color: var(--el-text-muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* 🎨 FILTERS PANEL: PREVENCIÓN DE CORTE DE DROPDOWNS SOBERANOS */
+.card-elite--filters {
+    overflow: visible;
+}
+
+.card-elite--filters .ares-select-wrapper {
+    max-inline-size: 320px;
+}
+
+/* 🎨 REFINAMIENTO DE ELEMENTOS INTERACTIVOS (VITRINA 06) */
+
+/* 1. Eliminar bordes/outlines negros en el botón de 3 puntos de las tarjetas */
+.card-elite .dropdown button.btn-link,
+.card-elite .dropdown button.btn-link:focus,
+.card-elite .dropdown button.btn-link:active,
+.card-elite .dropdown button.btn-link:focus-visible {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    text-decoration: none;
+}
+
+/* 2. Redondear switches a nivel global en el módulo (tarjetas y modales) */
+.form-check.form-switch .form-check-input {
+    border-radius: var(--el-radius-pill);
+}
+
+.form-switch-elite__slider::before {
+    border-radius: var(--el-radius-pill);
+}
+
+/* 3. Alinear verticalmente el selector de archivos Élite */
+input[type="file"].input-elite {
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+}
+
+input[type="file"].input-elite::-webkit-file-upload-button {
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+    margin-block: 0;
+    border-radius: var(--el-radius-pill);
+}
+} /* Fin de @layer modules */

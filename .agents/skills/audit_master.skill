@@ -1,0 +1,26 @@
+# 🛡️ SKILL: MAESTRO DE AUDITORÍA Y BLINDAJE (v1.2 - SOBERANÍA TOTAL)
+## Dominio: Estándares de Vitrina, Arquitectura CSS y UX Institucional
+
+### ⚖️ Leyes de Identidad (Ex-Manifiesto):
+1. **Arquitectura BEM/OOCSS:** Obligatorio separar estructura de piel. Clases en formato `block__element--modifier`.
+2. **Cascada Controlada:** Uso mandatorio de `@layer` (Reset, Base, Components, Utilities).
+3. **Zero Hardcoding:** Prohibido el uso de HEX o valores fijos. Uso universal de tokens `var(--el-*)`.
+4. **Regla de la Seda:** Transiciones exclusivas con `cubic-bezier(0.4, 0, 0.2, 1)`.
+5. **Propiedades Lógicas:** Sustituir direcciones físicas (`left`, `right`) por lógicas (`inline-start`, `inline-end`).
+6. **Geometría Fluida:** Uso prioritario de `clamp()` para fuentes y espaciados responsivos.
+7. **Regla del Dedo (44px):** Área interactiva mínima de 44px para controles táctiles.
+8. **Glassmorphism 2.0:** Uso de `backdrop-filter`, `Edge Glow` (borde superior 1px) y `Backdrop Noise`.
+
+### 📋 Protocolo de Acción Quirúrgica:
+1. **Escaneo de Vitrina:** Antes de cada cambio, validar contra el estándar de `test_components.php`.
+2. **Blindaje de Librerías:** Intervenir librerías de terceros (SweetAlert, etc.) para forzar el ADN Élite (Glassmorphism + Tipografía).
+3. **Validación de Saneamiento:** Eliminar estilos inline y selectores HTML base sin clase soberana.
+4. **Cierre de Certificación:** Ejecutar `antigravity_auditor.php` y emitir el **Reporte de Blindaje**.
+
+### 🚫 Prohibiciones Absolutas:
+- Atributo `style` en HTML/PHP.
+- Píxeles (`px`) fijos en layouts o fuentes (usar `rem`, `%`, `clamp`).
+- Selectores universales (`*`) para estilos de renderizado.
+
+---
+*Este skill es la ley suprema de la piel del sistema. La excelencia visual no es negociable.*

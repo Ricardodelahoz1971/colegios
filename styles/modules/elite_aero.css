@@ -1,0 +1,42 @@
+/* ðŸ§Š ARQUITECTURA AERO GLASS (VITRINA 06) - v20.2 (PURGA FINAL) */
+@layer modules {
+:root {
+    /* ðŸŽ¨ PALETA DE CRISTALIZACIÃ“N (v20.3 - ACLARADO INSTITUCIONAL) */
+    --el-glass-blur: blur(1.25rem); 
+    --el-glass-bg: rgba(var(--el-white-rgb), 0.75); 
+    --el-glass-border: rgba(var(--el-white-rgb), 0.45);
+    
+    /* ðŸ›ï¸ SOBREESCRITURA DE VARIABLES INSTITUCIONALES */
+    --el-sidebar-bg: rgba(var(--el-primary-rgb), 0.75);
+    --el-body-bg: rgb(239, 243, 249);
+    --el-panel-bg: var(--el-glass-bg);
+    
+    /* ðŸ“ TIPOGRAFÃA Y CONTRASTE */
+    --el-text-main: var(--el-dark); 
+    --el-text-sidebar: var(--el-white);
+    --el-glass-text: var(--el-dark);
+    --el-title-color: var(--el-primary);
+    --el-submenu-text: var(--el-white);
+    
+    /* ðŸ§Š VARIABLES DE SUBMENÃš */
+    --el-submenu-bg: rgba(var(--el-primary-rgb), 0.75);
+    --el-submenu-blur: blur(1.25rem);
+    --el-submenu-border: 0.09375rem solid rgba(255, 255, 255, 0.4);
+    --el-submenu-shadow: 0 0.9375rem 2.8125rem rgba(var(--el-primary-rgb), 0.35);
+    --el-submenu-brightness: brightness(1);
+}
+
+/* ðŸ¢ DRENAJE DE TARJETAS */
+.card, .panel-maestro, .bg-primary.card {
+    background-color: var(--el-white);
+    color: var(--el-text-strong);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.1);
+}
+
+/* ðŸ“ LA FÃSICA DE INPUTS ES SOBERANÃA DEL MONOLITO (HERENCIA ATÃ“MICA) */
+
+/* ðŸ’  DETALLES DE NAVEGACIÃ“N */
+.school-name-sidebar { color: var(--el-white); }
+.menu-link-elite i, .menu-link-elite svg { color: var(--el-white); }
+.menu-link-elite::before { background: var(--el-white); }
+} /* Fin de @layer modules */

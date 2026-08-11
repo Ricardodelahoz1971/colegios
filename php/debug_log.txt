@@ -1,0 +1,12 @@
+[2026-04-20 22:28:31] Petición recibida: ID=1
+[2026-04-20 22:28:37] Petición recibida: ID=1
+[2026-04-20 22:28:45] Petición recibida: ID=1
+[2026-04-23 17:53:46] Petición recibida: ID=10
+[2026-04-24 02:42:28] Petición recibida: ID=12
+[2026-04-24 02:42:37] Petición recibida: ID=12
+[2026-04-25 20:40:00] Petición recibida: ID=72
+[2026-04-25 20:40:16] Petición recibida: ID=72
+[2026-04-25 20:41:12] Petición recibida: ID=72
+[2026-04-25 20:41:22] Petición recibida: ID=72
+[2026-04-25 20:41:29] Petición recibida: ID=72
+listar_estudiante: action=listar_estudiante, session_est_id=null, session_cur_id=null, resolved_est_id=0, resolved_cur_id=0

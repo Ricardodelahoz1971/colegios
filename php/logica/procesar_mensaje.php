@@ -1,0 +1,55 @@
+<?php
+declare(strict_types=1);
+require_once __DIR__ . '/../security.php';
+guardia_sesion();
+    session_write_close();
+// PHP/LOGICA/PROCESAR_MENSAJE.PHP - MOTOR DE COMUNICACIONES v1.1 (ELITE)
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+header('Content-Type: application/json');
+require_once '../db.php';
+require_once '../auth.php';
+
+try {
+    proteccion_extrema();
+
+    $remitente_id = (int)$_SESSION['usuario_id'];
+    $destinatario_id = (int)($_POST['destinatario_id'] ?? 0);
+    $chat_type = $_POST['chat_type'] ?? 'direct';
+    $asunto = e($_POST['asunto'] ?? 'Sin asunto');
+    $contenido = trim($_POST['contenido'] ?? '');
+    $prioridad = (int)($_POST['prioridad'] ?? 1);
+
+    if (empty($contenido)) {
+        throw new Exception('El contenido del mensaje no puede estar vacío.');
+    }
+
+    // 🛡️ ACCIÓN: Determinar destino
+    $grupo_id = ($chat_type === 'group') ? $destinatario_id : 0;
+    $real_dest_id = ($chat_type === 'group') ? 0 : $destinatario_id;
+
+    $fecha_actual = date('Y-m-d H:i:s');
+
+    $stmt = $db->prepare("INSERT INTO mensajes (remitente_id, destinatario_id, grupo_id, asunto, contenido, prioridad, fecha_envio) 
+                          VALUES (:rem, :dest, :grupo, :asu, :cont, :prio, :fecha)");
+    $stmt->bindValue(':rem', $remitente_id, PDO::PARAM_INT);
+    $stmt->bindValue(':dest', $real_dest_id, PDO::PARAM_INT);
+    $stmt->bindValue(':grupo', $grupo_id, PDO::PARAM_INT);
+    $stmt->bindValue(':asu', $asunto, PDO::PARAM_STR);
+    $stmt->bindValue(':cont', $contenido, PDO::PARAM_STR);
+    $stmt->bindValue(':prio', $prioridad, PDO::PARAM_INT);
+    $stmt->bindValue(':fecha', $fecha_actual, PDO::PARAM_STR);
+
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success', 'message' => '¡Mensaje transmitido con éxito!']);
+    } else {
+        throw new Exception("Fallo en la sincronización del canal de comunicación.");
+    }
+
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+}
+exit();
+?>
+

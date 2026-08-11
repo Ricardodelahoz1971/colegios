@@ -1,0 +1,126 @@
+// 1. FUNCI??N DE VALIDACI??N (M??s robusta y Est??tica)
+function validarFormulario(event) {
+    let campoUsuario = document.getElementById('usuario');
+    let campoPassword = document.getElementById('password');
+
+    if (campoUsuario && campoPassword) {
+        if (campoUsuario.value === '' || campoPassword.value === '') {
+            Swal.fire({
+                icon: 'info',
+                title: '??Faltan datos!',
+                text: 'Por favor, no dejes campos vac??os para poder entrar.',
+                customClass: { confirmButton: 'btn-elite px-4' }
+            });
+            event.preventDefault();
+            return false;
+        }
+    }
+}
+
+// 2. INICIO DEL SCRIPT AL CARGAR LA P??GINA
+document.addEventListener('DOMContentLoaded', function () {
+    let form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', validarFormulario);
+    }
+
+    // Lector de Par??metros URL (SweetAlerts)
+    let urlParams = new URLSearchParams(window.location.search);
+    let error = urlParams.get('error');
+    let mensaje = urlParams.get('mensaje');
+
+    // SI HAY PAR??METROS, PROCESAMOS ALERTAS Y LIMPIAMOS LA URL AL INSTANTE
+    if (error || mensaje) {
+        const btnSmClass = 'btn-elite px-4';
+        const btnDangerClass = 'btn-elite btn-elite--danger px-4';
+        const btnWarningClass = 'btn-elite btn-elite--outline px-4';
+
+        if (error === 'clave') {
+            Swal.fire({ icon: 'error', title: 'Acceso Denegado', text: 'La contrase??a es incorrecta.', customClass: { confirmButton: btnDangerClass } });
+        } else if (error === 'usuario') {
+            Swal.fire({ icon: 'question', title: '??Qui??n eres?', text: 'Ese nombre de usuario no existe.', customClass: { confirmButton: btnDangerClass } });
+        } else if (error === 'duplicado') {
+            Swal.fire({ icon: 'warning', title: 'Atenci??n', text: 'Esta identificaci??n ya existe.', customClass: { confirmButton: btnWarningClass } });
+        } else if (error === 'protegido') {
+            Swal.fire({ icon: 'error', title: 'Acci??n Bloqueada', text: 'Este recurso est?? protegido.', customClass: { confirmButton: btnDangerClass } });
+        }
+
+        // Alertas de ??xito (Toasts)
+        const successToast = (title) => { Swal.fire({ icon: 'success', title: title, timer: 1500, showConfirmButton: false }); };
+        if (mensaje === 'rol_creado') successToast('??Rol Guardado!');
+        if (mensaje === 'rol_editado') successToast('??Rol Actualizado!');
+        // ... (resto de mensajes manejados similarmente)
+
+        // ELIMINAR PAR??METROS DE LA URL PARA QUE NO REPITAN AL REFRESCAR
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Alertas de ??xito est??ndar (Mini y Limpias)
+    const successToast = (title) => {
+        Swal.fire({ icon: 'success', title: title, timer: 1500, showConfirmButton: false });
+    };
+
+    if (mensaje === 'rol_creado') successToast('??Rol Guardado!');
+    if (mensaje === 'rol_editado') successToast('??Rol Actualizado!');
+    if (mensaje === 'rol_borrado') successToast('??Rol Eliminado!');
+    if (mensaje === 'personal_registrado') successToast('??Personal Registrado!');
+    if (mensaje === 'personal_editado') successToast('??Perfil Actualizado!');
+    if (mensaje === 'personal_borrado') successToast('??Baja Confirmada!');
+    if (mensaje === 'insertado') successToast('??Alumno Matriculado!');
+    if (mensaje === 'especialidad_creada') successToast('??Nueva Especialidad!');
+    if (mensaje === 'especialidad_editada') successToast('??Especialidad Actualizada!');
+    if (mensaje === 'especialidad_borrada') successToast('??Especialidad Eliminada!');
+    
+    if (mensaje === 'area_creada') successToast('??Nueva ??rea!');
+    if (mensaje === 'area_editada') successToast('????rea Actualizada!');
+    if (mensaje === 'area_borrada') successToast('????rea Eliminada!');
+
+    if (mensaje === 'curso_creado') successToast('??Curso Creado!');
+    if (mensaje === 'curso_editado') successToast('??Curso Actualizado!');
+    if (mensaje === 'curso_borrado') successToast('??Curso Eliminado!');
+    
+    if (error === 'protegido_alumnos') {
+        Swal.fire({ icon: 'error', title: 'Acci??n Bloqueada', text: 'No puedes eliminar un curso que a??n tiene alumnos matriculados.', customClass: { confirmButton: btnDangerClass } });
+    }
+
+    if (mensaje === 'carga_guardada') successToast('??Materia Asignada!');
+    if (mensaje === 'carga_eliminada') successToast('??Materia Retirada!');
+    if (error === 'duplicado_materia') {
+        Swal.fire({ icon: 'warning', title: 'Ojo con eso', text: 'Esta materia ya ha sido asignada a este curso anteriormente.', customClass: { confirmButton: btnWarningClass } });
+    }
+
+    // --- L??GICA DE B??SQUEDA DIN??MICA DE TABLAS (ACTUALIZADA CON CLEAR UX) ---
+    const buscador = document.querySelector('.buscador-dinamico');
+    if (buscador) {
+        const btnClear = document.querySelector('.btn-clear-search');
+        
+        buscador.addEventListener('input', function(e) {
+            const termino = e.target.value.toLowerCase();
+            const filas = document.querySelectorAll('.tabla-datos tbody tr');
+            
+            // Mostrar/Ocultar bot??n X
+            if (btnClear) {
+                if (termino.length > 0) {
+                    btnClear.classList.remove('u-hidden');
+                } else {
+                    btnClear.classList.add('u-hidden');
+                }
+            }
+            
+            filas.forEach(fila => {
+                const textoContenido = fila.textContent.toLowerCase();
+                fila.classList.toggle('u-hidden', !textoContenido.includes(termino));
+            });
+        });
+
+        // Limpiar b??squeda al clickear la X
+        if (btnClear) {
+            btnClear.addEventListener('click', function() {
+                buscador.value = '';
+                buscador.dispatchEvent(new Event('input')); // Disparar filtro para restaurar la tabla
+                buscador.focus();
+            });
+        }
+    }
+});
+

@@ -1,0 +1,1 @@
+{ "mcpServers": { "ollama": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-ollama"], "env": { "OLLAMA_URL": "http://localhost:11434" } } } }

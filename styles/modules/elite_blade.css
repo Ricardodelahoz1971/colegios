@@ -1,0 +1,58 @@
+﻿/**
+/**
+ * ðŸ—ï¸ ELITE BLADE (INDUSTRIAL ARCHITECTURE v31.3)
+ * MutaciÃ³n de variables para estÃ©tica industrial de aristas vivas.
+ * Cero redundancia de selectores (Ley B7).
+ */
+
+@layer modules {
+.mode-blade-elite {
+    /* ðŸŽ¨ ADN CROMÃTICO INDUSTRIAL */
+    --el-bg-body: rgb(241, 245, 249);
+    --el-primary: rgb(15, 23, 42); /* Oscuro Industrial */
+    --el-primary-rgb: 15, 23, 42;
+    
+    /* ðŸ¢ ARQUITECTURA DE SUPERFICIES */
+    --el-sidebar-bg: var(--el-primary);
+    --el-header-bg: var(--el-white);
+    --el-glass-blur: none;
+    
+    /* ðŸŽ´ MUTACIÃ“N DE TARJETAS Y CONTROLES (ARISTAS VIVAS TOTALES) */
+    --el-card-shadow: 0.5rem 0.5rem 0 rgba(var(--el-primary-rgb), 0.05);
+    --el-card-radius: 0;
+    --el-card-transform: translate(-0.25rem, -0.25rem);
+    --el-glass-bg: var(--el-white);
+    --el-glass-border: var(--el-primary);
+    
+    /* ðŸ“ MUTACIÃ“N DE RADIOS RICARDO (CERO REDONDEO) */
+    --el-radius-sub: 0;
+    --el-radius-main: 0;
+    --el-radius-pill: 0;
+    
+    /* ðŸ”¶ COMPONENTES */
+    --el-border-width: 0.125rem;
+}
+
+/* ðŸ›¡ï¸ ANULACIÃ“N DEL CÃRCULO EN EL TEMA BLADE (ARISTAS VIVAS EN AVATARES Y LOGOS) */
+.mode-blade-elite .avatar-elite,
+.mode-blade-elite .avatar-elite--sm,
+.mode-blade-elite .avatar-elite--circle,
+.mode-blade-elite .logo-img-elite,
+.mode-blade-elite .logo-container-elite,
+.mode-blade-elite .school-logo-global {
+    border-radius: 0;
+}
+
+/* ðŸ”µ SOBERANÃA DE BOTONES: Azul institucional fijo independiente del primary del tema */
+.mode-blade-elite .btn-elite--primary {
+    background: hsl(224, 78%, 46%);
+    border-color: hsl(224, 78%, 46%);
+    color: var(--el-white);
+}
+.mode-blade-elite .btn-elite--danger {
+    background: var(--el-primary);
+    border-color: var(--el-primary);
+    color: var(--el-white);
+}
+} /* Fin de @layer modules */
+

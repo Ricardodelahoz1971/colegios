@@ -1,0 +1,153 @@
+@layer base {
+/*
+   ==========================================================================
+   ELITE Z-INDEX SYSTEM - JERARQUÍA CLARA v10.0
+   ÚNICA fuente de z-index. Jerarquía estructurada sin conflictos.
+   ==========================================================================
+*/
+
+:root {
+  /* ========================================
+     Z-INDEX HIERARCHY
+     Rango: 1-1999 (nunca números random)
+     ======================================== */
+
+  /* NIVEL 1: Elementos fixos pero bajos */
+  --z-dropdown: 100;              /* Dropdowns, selects */
+  --z-tooltip: 110;               /* Tooltips */
+
+  /* NIVEL 2: Sticky y fixed normales */
+  --z-sticky: 200;                /* Sticky headers, nav */
+  --z-fixed: 210;                 /* Fixed banners */
+
+  /* NIVEL 3: Overlays y sombras */
+  --z-overlay: 500;               /* Overlays semi-transparentes */
+  --z-overlay-dark: 510;          /* Overlays oscuros (más prominentes) */
+
+  /* NIVEL 4: MODAL LAYER (crítico) */
+  --z-modal-backdrop: 1000;       /* Modal backdrop (detrás del modal) */
+  --z-modal: 1001;                /* Modal content (encima del backdrop) */
+  --z-modal-header: 1002;         /* Modal header si tiene que estar arriba */
+
+  /* NIVEL 5: NOTIFICACIONES Y ALERTS */
+  --z-notification: 1100;         /* Toast notifications, alerts */
+  --z-alert: 1110;                /* Alert boxes */
+
+  /* NIVEL 6: TOP NAVIGATION (siempre visible) */
+  --z-navbar: 1200;               /* Navbar/topbar principal */
+  --z-navbar-dropdown: 1210;      /* Dropdowns dentro del navbar */
+
+  /* NIVEL 7: SPECIAL OVERLAYS (máximo, excepto popovers) */
+  --z-popover: 1300;              /* Popovers, help dialogs */
+  --z-loading-screen: 1400;       /* Loading screens que tapan todo */
+
+  /* NIVEL 8: MÁXIMO (solo para emergencias) */
+  --z-max: 2000;                  /* Emergencias, casos especiales */
+}
+
+/*
+   APLICACIONES DE Z-INDEX
+   Use estas clases o variables en sus selectores
+*/
+
+/* Dropdowns y popovers */
+.dropdown-menu,
+.dropdown-toggle::after {
+  z-index: var(--z-dropdown);
+}
+
+/* Tooltips */
+[data-bs-toggle="tooltip"],
+.tooltip {
+  z-index: var(--z-tooltip);
+}
+
+/* Sticky elements */
+.sticky-top,
+.sticky-header-elite {
+  z-index: var(--z-sticky);
+}
+
+/* Fixed elements */
+.fixed-top,
+.fixed-bottom {
+  z-index: var(--z-fixed);
+}
+
+/* Overlays */
+.overlay {
+  z-index: var(--z-overlay);
+}
+
+.overlay--dark {
+  z-index: var(--z-overlay-dark);
+}
+
+/* Modal system */
+.modal-backdrop {
+  z-index: var(--z-modal-backdrop);
+}
+
+.modal,
+.modal-dialog,
+.modal-content {
+  z-index: var(--z-modal);
+}
+
+/* SweetAlert2 integration */
+.swal2-container {
+  z-index: var(--z-notification);
+}
+
+.swal2-container.swal2-top,
+.swal2-container.swal2-top-start,
+.swal2-container.swal2-top-end {
+  z-index: var(--z-alert);
+}
+
+/* Navbar */
+.navbar,
+.navbar-expand-lg,
+.topbar-elite {
+  z-index: var(--z-navbar);
+}
+
+.navbar .dropdown-menu {
+  z-index: var(--z-navbar-dropdown);
+}
+
+/* Notifications and alerts */
+.alert {
+  z-index: var(--z-notification);
+}
+
+.toast,
+.toast-container {
+  z-index: var(--z-notification);
+}
+
+/* Popovers */
+.popover {
+  z-index: var(--z-popover);
+}
+
+/* Loading screens */
+.loading-overlay,
+.spinner-overlay {
+  z-index: var(--z-loading-screen);
+}
+
+/* ARES Editor specific */
+.ares-sticky-header {
+  z-index: var(--z-sticky);
+}
+
+.ares-modal-backdrop {
+  z-index: var(--z-modal-backdrop);
+}
+
+.ares-modal {
+  z-index: var(--z-modal);
+}
+
+} /* Fin @layer base */

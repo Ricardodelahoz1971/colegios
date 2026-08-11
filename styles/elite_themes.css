@@ -1,0 +1,95 @@
+﻿@layer base {
+/*
+   ==========================================================================
+   ELITE UI CORE - ADN INSTITUCIONAL GLOBAL v10.2 (REFACTORIZADO)
+   Variables maestro y sincronizaciÃ³n de frameworks.
+   Las definiciones de color estÃ¡n ahora centralizadas en elite_colors.css
+   ==========================================================================
+*/
+
+:root {
+    /* ========================================
+       TRANSICIONES Ã‰LITE (Organic Motion)
+       ======================================== */
+    --el-transition-premium: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --el-transition-organic: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    --el-transition-fast: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ========================================
+       GLASS MORPHISM (tokens)
+       ======================================== */
+    --el-glass-blur: 12px;
+    --el-card-radius: 1.5rem;
+    --el-card-transform: none;
+    --el-border-width: 0.0625rem;
+
+    /* ========================================
+       MÃ‰TRICAS DE PRESTIGIO (VITRINA 06)
+       ======================================== */
+    --el-radius-sub: 0.75rem;   /* 12px: Controles y Botones */
+    --el-radius-main: 1.5rem;   /* 24px: Paneles y Secciones */
+    --el-radius-pill: 50rem;    /* PÃ­ldora */
+    --el-height-elite: 2.75rem; /* 44px: MÃ©trica universal */
+
+    /* ========================================
+       Bootstrap sync (colores viene de elite_colors.css)
+       ======================================== */
+    --bs-primary: var(--el-primary);
+    --bs-primary-rgb: var(--el-primary-rgb);
+    --bs-white: var(--el-white);
+    --bs-dark: var(--el-dark);
+    --bs-body-bg: var(--el-bg);
+    --bs-body-color: var(--el-dark);
+    --bs-border-color: var(--el-border);
+    --bs-secondary-color: var(--el-text-muted);
+    --bs-danger: var(--el-primary);
+    --bs-warning: var(--el-primary);
+    --bs-success: var(--el-primary);
+    --bs-info: var(--el-primary);
+}
+
+/* ========================================
+   TEMA OSCURO (Pergamino)
+   Override de variables desde elite_colors.css
+   ======================================== */
+.dark-theme-mode {
+    /* Los colores estÃ¡n declarados en elite_colors.css */
+    /* AquÃ­ solo sincronizamos con Bootstrap */
+    --bs-body-bg: var(--el-bg);
+    --bs-tertiary-bg: var(--el-bg-card);
+    --bs-body-color: var(--el-dark);
+    --bs-secondary-color: var(--el-text-muted);
+    --bs-border-color: var(--el-border);
+}
+
+/* Ajustes de contraste pergamino */
+.dark-theme-mode body {
+    background-color: var(--el-bg);
+    color: var(--el-dark);
+}
+
+.dark-theme-mode .navbar-white,
+.dark-theme-mode .bg-white {
+    background-color: var(--el-white);
+}
+
+.dark-theme-mode .card,
+.dark-theme-mode .modal-content {
+    background-color: var(--el-white);
+    border-color: var(--el-border);
+}
+
+/* ========================================
+   RESET GLOBAL
+   ======================================== */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+    background-color: var(--el-primary);
+    color: var(--el-white);
+}
+
+} /* Fin de @layer base */
+

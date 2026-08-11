@@ -1,0 +1,17 @@
+{
+    "workbench.colorTheme": "Solarized Dark",
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "python.languageServer": "Default",
+    "workbench.editor.enablePreview": false,
+    "security.workspace.trust.untrustedFiles": "open",
+    "securecoder.enabled": true,
+    "redhat.telemetry.enabled": true,
+    "providers": {
+        "deepseek": {
+            "api_key": "sk-8346d7cb8e8e4ff5b812ace0eba8d0e6",
+            "model": "deepseek-chat",
+            "endpoint": "https://deepseek.com"
+        }
+    }
+}

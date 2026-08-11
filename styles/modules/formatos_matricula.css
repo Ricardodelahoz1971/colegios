@@ -1,0 +1,778 @@
+﻿@layer components {
+    /* ESTILOS DE FORMATOS DE MATRÃCULA - HEPHESTO FORMATOS STYLE v1.0 */
+
+    .formatos-container {
+        padding: 1.5rem;
+        font-family: var(--el-font-institutional), sans-serif;
+    }
+
+    .formats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .format-card {
+        background: var(--el-bg-card, var(--el-white));
+        border: 1px solid rgba(var(--el-primary-rgb), 0.12);
+        border-radius: var(--el-radius-main);
+        padding: 1.5rem;
+        box-shadow: 0 8px 30px rgba(var(--el-primary-rgb), 0.05);
+        transition: var(--el-transition-premium);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 220px;
+    }
+
+    .format-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(var(--el-primary-rgb), 0.12);
+    }
+
+    .format-card__header {
+        margin-bottom: 1rem;
+    }
+
+    .format-card__title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--el-primary);
+        margin: 0 0 0.5rem 0;
+        text-transform: uppercase;
+    }
+
+    .format-card__desc {
+        font-size: 0.85rem;
+        color: var(--el-text-muted);
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .format-card__badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: var(--el-radius-pill);
+        text-transform: uppercase;
+    }
+
+    .format-card__badge--predesigned {
+        background-color: rgba(var(--el-primary-rgb), 0.1);
+        color: var(--el-primary);
+    }
+
+    .format-card__badge--custom {
+        background-color: rgba(var(--el-primary-rgb), 0.1);
+        color: var(--el-accent);
+    }
+
+    .format-card__actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+        border-top: 1px solid rgba(var(--el-primary-rgb), 0.06);
+        padding-top: 1rem;
+    }
+
+    /* =========================================
+       ARES HYBRID WORKSPACE CSS
+       ========================================= */
+
+    /* Toolbox (Barra lateral) */
+    .ares-toolbox {
+        background: var(--el-bg-card, var(--el-white));
+        min-width: 280px;
+        width: 280px;
+    }
+
+    /* PÃ­ldoras de Herramientas (Tool Pills) */
+    .ares-tool-pill {
+        display: flex;
+        align-items: center;
+        background: var(--el-white);
+        border: 1px solid rgba(var(--el-primary-rgb), 0.1);
+        border-radius: var(--el-radius-main);
+        padding: 8px 12px;
+        cursor: grab;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 5px rgba(var(--el-primary-rgb), 0.02);
+    }
+    .ares-tool-pill:hover {
+        border-color: rgba(var(--el-primary-rgb), 0.3);
+        box-shadow: 0 4px 12px rgba(var(--el-primary-rgb), 0.08);
+        transform: translateY(-2px);
+    }
+    .ares-tool-pill:active {
+        cursor: grabbing;
+    }
+    .ares-tool-pill .icon-box {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--el-radius-sub);
+        background: rgba(var(--el-primary-rgb), 0.08);
+        color: var(--el-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-inline-end: 10px;
+        font-size: 1rem;
+    }
+    .ares-tool-pill .icon-success {
+        background: rgba(var(--el-primary-rgb), 0.1);
+        color: var(--el-primary);
+    }
+    .ares-tool-pill span {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--el-text-dark);
+    }
+    .ares-variable-trigger {
+        cursor: pointer;
+    }
+    .ares-variable-trigger:active {
+        cursor: pointer;
+        transform: translateY(0);
+    }
+
+    /* Etiqueta grÃ¡fica (Badge) insertada en el WYSIWYG */
+    .ares-variable-badge {
+        display: inline-block;
+        background-color: rgba(var(--el-primary-rgb), 0.15);
+        color: var(--el-primary);
+        padding: 2px 8px;
+        border-radius: var(--el-radius-pill);
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-inline: 4px;
+        border: 1px solid rgba(var(--el-primary-rgb), 0.3);
+        vertical-align: baseline;
+        line-height: 1;
+        user-select: all;
+    }
+    .block-content-texto {
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 11px;
+        line-height: 15px;
+    }
+    
+    .bloque-texto[data-align="justify"],
+    .block-content-texto[data-align="justify"],
+    .canvas-block-wrapper[data-bloque="texto"] .block-content-texto {
+        text-align: justify;
+    }
+
+    /* Forzar lÃ­nea Ãºnica en bloques de cabecera â€” evita wrapping antes de medir */
+    .canvas-block-wrapper[data-bloque="titulo_colegio"] .block-content-wysiwyg,
+    .canvas-block-wrapper[data-bloque="titulo_colegio"] h3,
+    .canvas-block-wrapper[data-bloque="titulo_colegio"] h2,
+    .canvas-block-wrapper[data-bloque="lema_colegio"] .block-content-wysiwyg,
+    .canvas-block-wrapper[data-bloque="lema_colegio"] p,
+    .canvas-block-wrapper[data-bloque="metadatos"] .block-content-wysiwyg,
+    .canvas-block-wrapper[data-bloque="metadatos"] h4 {
+        white-space: nowrap;
+    }
+
+
+    /* Entorno de Trabajo (Workspace) */
+    .ares-workspace {
+        background: rgba(var(--el-primary-rgb), 0.04);
+        /* PatrÃ³n de cuadrÃ­cula tenue para fondo tÃ©cnico */
+        background-image: linear-gradient(rgba(var(--el-primary-rgb), 0.03) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(var(--el-primary-rgb), 0.03) 1px, transparent 1px);
+        background-size: 20px 20px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    /* Lienzo / Papel A4 / Multi-Paper */
+    .ares-paper-sheet {
+        position: relative;
+        background-color: var(--el-white);
+        width: 816px; /* Carta por defecto */
+        min-height: 1056px;
+        border: 1px solid var(--el-dark);
+        box-shadow: 0 25px 70px rgba(var(--el-dark-rgb), 0.25), 0 5px 20px rgba(var(--el-dark-rgb), 0.15);
+        margin: 0 auto 2rem auto;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        zoom: 1; /* Escala real 1:1 absoluta */
+    }
+    .ares-paper-sheet--carta {
+        width: 816px;
+        min-height: 1056px;
+        zoom: 1;
+    }
+    .ares-paper-sheet--media_carta {
+        width: 816px;
+        min-height: 528px;
+        zoom: 1;
+    }
+    .ares-paper-sheet--carne_v {
+        width: 324px;
+        min-height: 512px;
+        zoom: 1;
+        border-radius: var(--el-radius-sub);
+        border: 1px solid rgba(var(--el-primary-rgb), 0.15);
+    }
+    .ares-paper-sheet--carne_h {
+        width: 512px;
+        min-height: 324px;
+        zoom: 1;
+        border-radius: var(--el-radius-sub);
+        border: 1px solid rgba(var(--el-primary-rgb), 0.15);
+    }
+    .ares-paper-sheet.drag-over {
+        box-shadow: 0 0 0 4px rgba(var(--el-primary-rgb), 0.2);
+    }
+
+    /* =========================================================
+       BLINDAJE ELITE CONTRA BOOTSTRAP (Lienzo DiseÃ±ador)
+       Anulamos mÃ¡rgenes heredados del framework para 
+       garantizar cajas delimitadoras exactas.
+       ========================================================= */
+    .ares-paper-sheet h1,
+    .ares-paper-sheet h2,
+    .ares-paper-sheet h3,
+    .ares-paper-sheet h4,
+    .ares-paper-sheet h5,
+    .ares-paper-sheet h6,
+    .ares-paper-sheet p,
+    .ares-paper-sheet hr {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .canvas-empty-state {
+        pointer-events: none;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 100px;
+    }
+
+    /* Ares Utils */
+    .ares-min-height {
+        height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .ares-icon-lg {
+        width: 80px; 
+        height: 80px; 
+        font-size: 2rem;
+    }
+
+    .canvas-block-wrapper {
+        position: absolute;
+        background: transparent;
+        border: 2px dashed rgba(var(--el-primary-rgb), 0.25);
+        border-radius: var(--el-radius-sub);
+        padding: 0;
+        cursor: move;
+        transition: border-color var(--el-transition-premium), box-shadow var(--el-transition-premium);
+        user-select: none;
+    }
+
+    .canvas-block-wrapper:hover,
+    .canvas-block-wrapper.selected {
+        border-color: var(--el-primary-hover);
+        box-shadow: 0 4px 15px rgba(var(--el-primary-rgb), 0.15);
+    }
+
+    .block-controls {
+        position: absolute;
+        top: -12px;
+        right: 15px;
+        display: flex;
+        gap: 0.25rem;
+        background: var(--el-white);
+        border: 1px solid rgba(var(--el-primary-rgb), 0.1);
+        border-radius: var(--el-radius-pill);
+        padding: 0.2rem 0.5rem;
+        opacity: 0;
+        transform: translateY(5px);
+        transition: var(--el-transition-premium);
+        box-shadow: 0 2px 10px rgba(var(--el-primary-rgb), 0.05);
+    }
+
+    .canvas-block-wrapper:hover .block-controls {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .block-controls button {
+        background: none;
+        border: none;
+        color: var(--el-text-muted);
+        cursor: pointer;
+        font-size: 0.85rem;
+        padding: 0.25rem;
+        border-radius: 50%;
+        transition: var(--el-transition-premium);
+    }
+
+    .block-controls button:hover {
+        color: var(--el-primary);
+        background: rgba(var(--el-primary-rgb), 0.1);
+    }
+
+    .block-controls button.text-danger:hover {
+        color: var(--el-primary);
+        background: rgba(var(--el-primary-rgb), 0.1);
+    }
+
+    .block-content-texto {
+        min-height: 24px;
+        outline: none;
+        padding: 2px 6px;
+        border-radius: var(--el-radius-sub);
+        transition: var(--el-transition-premium);
+    }
+
+    .block-content-texto:focus {
+        background: rgba(var(--el-primary-rgb), 0.02);
+    }
+
+    .block-content-texto[placeholder]:empty:before {
+        content: attr(placeholder);
+        color: var(--el-text-muted);
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .chip-variable {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(var(--el-primary-rgb), 0.1);
+        color: var(--el-primary);
+        border: 1px solid rgba(var(--el-primary-rgb), 0.2);
+        border-radius: var(--el-radius-pill);
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin: 0 4px;
+        user-select: none;
+        cursor: default;
+    }
+
+    .chip-variable:hover {
+        background: rgba(var(--el-primary-rgb), 0.2);
+    }
+
+    .placeholder-pill[draggable="true"] {
+        cursor: grab;
+    }
+    
+    .placeholder-pill[draggable="true"]:active {
+        cursor: grabbing;
+    }
+
+    /* Componentes de paso de matrícula (de matricula.css) */
+    .matricula-step-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1pt solid var(--el-accent);
+        background: transparent;
+        color: var(--el-accent);
+        font-weight: bold;
+        margin-inline-end: 1rem;
+    }
+
+    .dynamic-firmas-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        align-items: flex-end;
+        margin-top: 19px;
+    }
+    .firma-grupo-col {
+        display: flex;
+        flex-direction: column;
+        gap: 57px;
+        flex: 1 1 0px;
+        max-width: 48%;
+    }
+    .firma-item-canvas {
+        width: 100%;
+    }
+    .firma-divisor-canvas {
+        border-top: 1.5px solid var(--el-dark);
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Estilos WYSIWYG Mockup */
+.ares-logo-cabecera {
+    height: auto;
+}
+
+.ares-titulo-cabecera {
+    letter-spacing: 1px;
+}
+
+/* Nodos Tiradores de RedimensiÃ³n en Esquinas */
+.resize-handle {
+    display: none;
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--el-primary);
+    border: 2px solid var(--el-white);
+    border-radius: 50%;
+    z-index: 20;
+    box-shadow: 0 1px 3px rgba(var(--el-primary-rgb), 0.3);
+}
+
+.canvas-block-wrapper:hover .resize-handle,
+.canvas-block-wrapper:active .resize-handle {
+    display: block;
+}
+
+.resize-handle-tl {
+    top: -5px;
+    left: -5px;
+    cursor: nwse-resize;
+}
+
+.resize-handle-tr {
+    top: -5px;
+    right: -5px;
+    cursor: nesw-resize;
+}
+
+.resize-handle-bl {
+    bottom: -5px;
+    left: -5px;
+    cursor: nesw-resize;
+}
+
+.resize-handle-br {
+    bottom: -5px;
+    right: -5px;
+    cursor: nwse-resize;
+}
+
+/* ==========================================
+   ðŸš€ CATÃLOGO DE CAMPOS EN MODAL (OPCIÃ“N 2)
+   ========================================== */
+
+.ares-var-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--el-bg-card, var(--el-white));
+    border: 1px solid rgba(var(--el-primary-rgb), 0.1);
+    border-radius: var(--el-radius-main, 12px);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ares-var-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--el-primary);
+    box-shadow: 0 8px 24px rgba(var(--el-primary-rgb), 0.12);
+}
+
+.ares-var-card i {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.ares-var-card div {
+    display: flex;
+    flex-direction: column;
+}
+
+.ares-var-card strong {
+    font-size: 0.85rem;
+    color: var(--el-dark);
+    font-family: var(--el-font-institutional);
+}
+
+.ares-var-card span {
+    font-size: 0.75rem;
+    color: var(--el-text-muted);
+    font-family: var(--el-font-institutional);
+}
+
+.ares-foto-estudiante-placeholder {
+    width: 110px;
+    height: 140px;
+    background-color: rgba(var(--el-primary-rgb), 0.05);
+    border: 2px dashed rgba(var(--el-primary-rgb), 0.3);
+    border-radius: var(--el-radius-sub);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--el-primary);
+    -webkit-user-drag: none;
+}
+
+.canvas-block-wrapper img, 
+.canvas-block-wrapper svg {
+    -webkit-user-drag: none;
+}
+
+.ares-foto-estudiante-placeholder {
+    font-size: 11px;
+    font-weight: bold;
+    font-family: var(--el-font-institutional);
+}
+
+/* =======================================================================
+   ðŸ“ LÃNEAS GUÃA DE PÃGINA (DISEÃ‘ADOR ACADÃ‰MICO)
+   ======================================================================= */
+.ares-page-guide {
+    position: absolute;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 0;
+    border-top: 2px dashed rgba(var(--el-primary-rgb, 220, 53, 69), 0.4);
+    pointer-events: none;
+    z-index: 5;
+    user-select: none;
+}
+
+.ares-page-guide span {
+    position: absolute;
+    inset-inline-end: 15px;
+    top: -11px;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--el-primary, rgb(220, 53, 69));
+    background: var(--el-white, rgb(255, 255, 255));
+    padding: 2px 8px;
+    border-radius: var(--el-radius-sub, 12px);
+    border: 1px solid rgba(var(--el-primary-rgb, 220, 53, 69), 0.3);
+    font-family: var(--el-font-institutional);
+    box-shadow: 0 2px 6px rgba(var(--el-primary-rgb, 220, 53, 69), 0.1);
+}
+
+.tabla-referencia-elite {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-family: var(--el-font-institutional);
+}
+
+.tabla-referencia-elite thead tr {
+    background-color: rgba(var(--el-primary-rgb), 0.06);
+}
+
+.tabla-referencia-elite th {
+    padding: 8px 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    color: var(--el-primary);
+    border-bottom: 2px solid rgba(var(--el-primary-rgb), 0.15);
+}
+
+.tabla-referencia-elite td {
+    padding: 7px 12px;
+    border-bottom: 1px solid rgba(var(--el-primary-rgb), 0.07);
+    vertical-align: middle;
+    color: var(--el-dark);
+}
+
+.tabla-referencia-elite td code {
+    background-color: rgba(var(--el-primary-rgb), 0.08);
+    color: var(--el-primary);
+    padding: 2px 7px;
+    border-radius: var(--el-radius-sub);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.tabla-referencia-elite tbody tr:hover {
+    background-color: rgba(var(--el-primary-rgb), 0.03);
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Badge conteo de formatos con contraste garantizado */
+.badge-elite-conteo {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    border-radius: var(--el-radius-elite, 12px);
+    background-color: rgba(var(--el-primary-rgb), 0.12);
+    color: var(--el-primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: var(--el-font-institutional);
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(var(--el-primary-rgb), 0.25);
+}
+
+/* Bloque informativo de nota de uso con contraste garantizado */
+.nota-uso-elite {
+    background-color: rgba(var(--el-primary-rgb), 0.06);
+    border: 1px solid rgba(var(--el-primary-rgb), 0.18);
+    color: var(--el-dark);
+    font-family: var(--el-font-institutional);
+}
+
+.nota-uso-elite code {
+    background-color: rgba(var(--el-primary-rgb), 0.1);
+    color: var(--el-primary);
+    padding: 1px 6px;
+    border-radius: var(--el-radius-sub);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* GuÃ­a de lÃ­mites y margen seguro estilo Office */
+.ares-safe-zone-guide {
+    pointer-events: none;
+    border: 1px dashed rgba(var(--el-primary-rgb), 0.35);
+    background-color: rgba(var(--el-primary-rgb), 0.01);
+    transition: var(--el-transition-premium);
+    box-shadow: inset 0 0 15px rgba(var(--el-primary-rgb), 0.02);
+}
+
+/* Bloqueo dinÃ¡mico del membrete superior */
+.canvas-block-wrapper.header-locked {
+    pointer-events: none;
+    user-select: none;
+    border-style: solid;
+    border-color: rgba(var(--el-primary-rgb), 0.08);
+    box-shadow: none;
+    cursor: not-allowed;
+    transition: var(--el-transition-premium);
+}
+
+.canvas-block-wrapper.header-locked,
+.canvas-block-wrapper.header-locked * {
+    opacity: 0.65; /* AtenuaciÃ³n equilibrada del 65% */
+    filter: grayscale(100%);
+}
+
+.canvas-block-wrapper.header-locked .block-controls,
+.canvas-block-wrapper.header-locked .resize-handle {
+    display: none;
+}
+
+/* Bloqueo dinÃ¡mico del cuerpo del documento */
+.canvas-block-wrapper.body-locked {
+    pointer-events: none;
+    user-select: none;
+    border-style: solid;
+    border-color: rgba(var(--el-primary-rgb), 0.08);
+    box-shadow: none;
+    cursor: not-allowed;
+    transition: var(--el-transition-premium);
+}
+
+.canvas-block-wrapper.body-locked,
+.canvas-block-wrapper.body-locked * {
+    opacity: 0.65; /* AtenuaciÃ³n equilibrada del 65% */
+    filter: grayscale(100%);
+}
+
+.canvas-block-wrapper.body-locked .block-controls,
+.canvas-block-wrapper.body-locked .resize-handle {
+    display: none;
+}
+
+/* Clases utilitarias premium */
+.user-select-none {
+    user-select: none;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+#switch-cabecera-label {
+    font-size: 11px;
+}
+
+/* Estilo premium checkbox de la app */
+.input-checkbox-elite {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--el-radius-sub, 4px);
+    border: 2px solid var(--el-primary);
+    transition: var(--el-transition-premium);
+}
+
+/* Casillero de Foto en el DiseÃ±ador */
+.ficha-foto-container {
+    width: 90px;
+    vertical-align: middle;
+    border-inline-start: 1px solid var(--el-border-color);
+}
+.ficha-foto-box {
+    height: 100px;
+    font-size: 9px;
+    color: var(--el-text-muted);
+}
+
+.input-checkbox-elite:checked {
+    background-color: var(--el-primary);
+    border-color: var(--el-primary);
+}
+
+/* Cabeceras de Tabla y Firmas con ADN CromÃ¡tico DinÃ¡mico */
+#canvas-builder .ares-table-header th,
+#canvas-builder tr.ares-table-header th {
+    background-color: rgba(var(--el-primary-rgb), 0.8);
+    color: var(--el-white);
+}
+
+/* =========================================================
+   SINCRONIZACIÃ“N DE TABLAS (DISEÃ‘ADOR VS IMPRESIÃ“N)
+   Garantiza que la Ficha y Calificaciones tengan el mismo
+   alto en el lienzo que en el PDF final sin usar prioridad forzada.
+   ========================================================= */
+#canvas-builder table.table {
+    font-size: 10px;
+    width: 100%;
+    margin-bottom: 0;
+}
+#canvas-builder table.table td, 
+#canvas-builder table.table th {
+    padding: 4px 6px;
+    line-height: 1.1;
+}
+
+
+#canvas-builder .ares-firma-cargo {
+    color: var(--el-primary);
+    font-weight: 700;
+}
+
+#canvas-builder .block-content-texto strong,
+#canvas-builder .bloque-texto strong {
+    font-weight: 800;
+}
+
+#canvas-builder .block-content-texto .ares-campo-valor,
+#canvas-builder .bloque-texto .ares-campo-valor,
+#canvas-builder strong.ares-campo-valor,
+#canvas-builder .ares-variable-badge,
+.ares-variable-badge,
+.ares-campo-valor,
+strong.ares-campo-valor {
+    font-weight: 800;
+}
+
+

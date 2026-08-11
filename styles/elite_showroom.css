@@ -1,0 +1,194 @@
+﻿/* 
+   Elite Showroom Styles v8.7 
+   Este archivo centraliza la estÃ©tica de la vitrina sin hardcoding.
+*/
+
+:root {
+    --el-bg-white: #ffffff;
+}
+
+body { 
+    font-family: var(--font-selector); 
+    padding: 2.5rem 0; 
+    background: var(--el-bg); /* Sigue la paleta dinÃ¡micamente */
+    transition: background 0.4s ease;
+}
+
+.component-section-elite { 
+    background: var(--el-bg-white); 
+    border-radius: 1.25rem; 
+    padding: 2.5rem; 
+    margin-bottom: 3.125rem; 
+    box-shadow: 0 0.625rem 1.875rem rgba(var(--el-primary-rgb), 0.05); 
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.05); 
+    transition: 0.4s;
+}
+
+.section-title-elite { 
+    font-family: var(--el-font-institutional), sans-serif; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 0.03125rem; 
+    color: var(--el-primary); 
+    border-bottom: 1.5pt solid var(--el-accent); 
+    display: inline-block; 
+    margin-bottom: 1.875rem; 
+    padding-bottom: 0.5rem; 
+}
+
+.theme-preview-elite { 
+    height: 6.25rem; 
+    border-radius: 0.9375rem; 
+    margin-bottom: 0.9375rem; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: white; 
+    font-weight: 900; 
+}
+
+/* Modo Oscuro Nativo para la Vitrina - Consolidado */
+body.dark-theme-mode .component-section-elite {
+    background: var(--el-dark-bg-light);
+    border-color: var(--el-dark-border);
+}
+
+/* 4. COMPONENTES DE VITRINA (ZERO INLINE v9.1) */
+.hero-title-elite { 
+    color: var(--el-primary); 
+    font-family: var(--el-font-institutional), sans-serif; 
+    font-weight: 900; 
+}
+.btn-dark-elite { background: var(--el-dark); }
+.btn-primary-lite-elite { background: var(--el-primary); }
+
+.icon-box-elite {
+    width: 1.5rem; height: 1.5rem;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 0.5rem;
+}
+.icon-box-primary { background: rgba(var(--el-primary-rgb), 0.1); border: 0.0625rem solid var(--el-primary); }
+.icon-box-accent { background: rgba(var(--el-accent-rgb), 0.1); border: 0.0625rem solid var(--el-accent); }
+.icon-box-info { background: rgba(var(--el-primary-rgb), 0.1); border: 0.0625rem solid var(--el-primary); }
+
+.simulator-box-elite {
+    background: rgba(var(--el-primary-rgb), 0.02); 
+    border: 0.125rem dashed var(--el-border);
+}
+
+.alert-elite-standard {
+    background: rgba(var(--el-primary-rgb), 0.1); 
+    color: var(--el-primary); 
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.2);
+}
+
+/* 5. PRECISIÃ“N DE TABLAS */
+.table-elite-fixed { table-layout: fixed; width: 100%; }
+.col-id { width: 15%; }
+.col-name { width: 45%; }
+.col-status { width: 20%; }
+.col-actions { width: 20%; }
+
+.tabla-maestra tbody tr { transition: background 0.2s ease; }
+.tabla-maestra tbody tr:hover { 
+    background: rgba(var(--el-primary-rgb), 0.04); 
+}
+
+.text-truncate-elite {
+    max-width: 100%; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    display: block;
+}
+
+/* Colores de Paleta (Simulador) */
+.palette-01-c1 { background: var(--el-pal-1-1); } .palette-01-c2 { background: var(--el-pal-1-2); } .palette-01-c3 { background: var(--el-pal-1-3); }
+.palette-02-c1 { background: var(--el-pal-2-1); } .palette-02-c2 { background: var(--el-pal-2-2); } .palette-02-c3 { background: var(--el-pal-2-3); }
+.palette-03-c1 { background: var(--el-pal-3-1); } .palette-03-c2 { background: var(--el-pal-3-2); } .palette-03-c3 { background: var(--el-pal-3-3); }
+.palette-04-c1 { background: var(--el-pal-4-1); } .palette-04-c2 { background: var(--el-pal-4-2); } .palette-04-c3 { background: var(--el-pal-4-3); }
+/* 6. CATÃLOGO TÃ‰CNICO (FICHAS Ã‰LITE v9.1) */
+.ficha-tecnica-elite {
+    background: white; border: 0.0625rem solid var(--el-border); border-radius: 0.75rem;
+    padding: 0.9375rem; transition: 0.3s; height: 100%; display: flex; flex-direction: column;
+}
+.ficha-tecnica-elite:hover { border-color: var(--el-primary); box-shadow: 0 0.25rem 0.9375rem rgba(0,0,0,0.05); }
+
+.ficha-meta-elite { margin-bottom: 0.9375rem; border-bottom: 0.0625rem solid rgba(var(--el-primary-rgb), 0.05); padding-bottom: 0.625rem; }
+.ficha-nombre-elite { font-size: 0.75rem; font-weight: 800; color: var(--el-dark); text-transform: uppercase; margin-bottom: 0.25rem; display: block; }
+.ficha-clase-elite { font-family: 'Consolas', monospace; font-size: 0.65rem; color: var(--el-primary); background: rgba(var(--el-primary-rgb), 0.05); padding: 0.125rem 0.375rem; border-radius: 0.25rem; display: inline-block; font-weight: 700; }
+
+.ficha-demo-elite { flex-grow: 1; display: flex; align-items: center; justify-content: center; min-height: 3.75rem; }
+
+/* Modo Oscuro para Fichas */
+body.dark-theme-mode .ficha-tecnica-elite { background: var(--el-glass-bg); border-color: var(--el-dark-border); }
+body.dark-theme-mode .ficha-nombre-elite { color: var(--el-white); }
+body.dark-theme-mode .ficha-clase-elite { background: var(--el-glass-bg); color: var(--el-accent); }
+
+/* 7. SIMULADOR EN VIVO (MOCKUP v9.1) */
+.live-sim-container {
+    background: var(--el-white);
+    border-radius: 1.25rem;
+    border: 0.0625rem solid var(--el-border);
+    box-shadow: var(--el-shadow-lg);
+    overflow: hidden;
+    height: 23.75rem;
+    display: flex;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sim-sidebar-elite {
+    width: 5.3125rem;
+    background: var(--el-primary);
+    padding: 1.25rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: 0.5s ease;
+}
+
+.sim-nav-item {
+    height: 0.875rem;
+    background: var(--el-glass-bg-hover);
+    border-radius: 0.375rem;
+    width: 100%;
+}
+.sim-nav-item--short { width: 70%; }
+
+.sim-content-elite {
+    flex-grow: 1;
+    background: var(--el-bg);
+    padding: 1.5625rem;
+}
+
+.sim-header-line {
+    height: 0.625rem;
+    background: var(--el-border);
+    width: 30%;
+    border-radius: 0.25rem;
+    margin-bottom: 1.875rem;
+}
+
+.sim-card-mockup {
+    background: var(--el-white); border-radius: 1rem; padding: 1.25rem;
+    box-shadow: var(--el-shadow-sm); border: 0.0625rem solid var(--el-border);
+}
+
+.sim-card-bar-elite {
+    height: 0.9375rem;
+    background: var(--el-primary);
+    width: 60%;
+    border-radius: 0.375rem;
+    margin-bottom: 0.9375rem;
+    transition: 0.5s ease;
+}
+
+.sim-card-text { height: 0.375rem; background: var(--el-bg); width: 100%; border-radius: 0.1875rem; margin-bottom: 0.5rem; }
+.sim-card-text--short { width: 50%; opacity: 0.7; }
+
+/* Modo Oscuro para el Simulador */
+body.dark-theme-mode .live-sim-container { background: var(--el-dark-bg); border-color: var(--el-dark-border); }
+body.dark-theme-mode .sim-content-elite { background: var(--el-dark-bg); }
+body.dark-theme-mode .sim-card-mockup { background: var(--el-dark-bg-light); border-color: var(--el-dark-border); }
+body.dark-theme-mode .sim-card-text { background: var(--el-dark-border); }
+

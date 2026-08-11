@@ -1,0 +1,188 @@
+@layer utilities {
+/*
+   ==========================================================================
+   BOOTSTRAP STATE COLORS OVERRIDE - BLINDAJE TOTAL
+   Anula TODAS las clases de color de estado de Bootstrap (.text-success, .bg-danger, etc.)
+   y las reemplaza por --el-primary para que respondan dinámicamente a cambios de paleta.
+   ==========================================================================
+*/
+
+/* TEXT COLORS - Bootstrap utilities */
+.text-success { color: var(--el-primary) !important; }
+.text-danger { color: var(--el-primary) !important; }
+.text-info { color: var(--el-primary) !important; }
+.text-warning { color: var(--el-primary) !important; }
+
+/* BACKGROUND COLORS - Bootstrap utilities */
+.bg-success { background-color: var(--el-primary) !important; }
+.bg-danger { background-color: var(--el-primary) !important; }
+.bg-info { background-color: var(--el-primary) !important; }
+.bg-warning { background-color: var(--el-primary) !important; }
+
+/* BORDER COLORS - Bootstrap utilities */
+.border-success { border-color: var(--el-primary) !important; }
+.border-danger { border-color: var(--el-primary) !important; }
+.border-info { border-color: var(--el-primary) !important; }
+.border-warning { border-color: var(--el-primary) !important; }
+
+/* ALERT COMPONENTS - Bootstrap alerts */
+.alert-success {
+    background-color: rgba(var(--el-primary-rgb), 0.1) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-primary) !important;
+}
+.alert-danger {
+    background-color: rgba(var(--el-primary-rgb), 0.1) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-primary) !important;
+}
+.alert-info {
+    background-color: rgba(var(--el-primary-rgb), 0.1) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-primary) !important;
+}
+.alert-warning {
+    background-color: rgba(var(--el-primary-rgb), 0.1) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-primary) !important;
+}
+
+/* BADGE COMPONENTS - Bootstrap badges */
+.badge-success {
+    background-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+.badge-danger {
+    background-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+.badge-info {
+    background-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+.badge-warning {
+    background-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+
+/* BUTTON VARIANTS - Bootstrap buttons */
+.btn-success {
+    background-color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+.btn-success:hover {
+    background-color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+}
+
+.btn-danger {
+    background-color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+.btn-danger:hover {
+    background-color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+}
+
+.btn-info {
+    background-color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+.btn-info:hover {
+    background-color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+}
+
+.btn-warning {
+    background-color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+.btn-warning:hover {
+    background-color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+}
+
+/* OUTLINE BUTTON VARIANTS */
+.btn-outline-success {
+    color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+}
+.btn-outline-success:hover {
+    background-color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+
+.btn-outline-danger {
+    color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+}
+.btn-outline-danger:hover {
+    background-color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+
+.btn-outline-info {
+    color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+}
+.btn-outline-info:hover {
+    background-color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+
+.btn-outline-warning {
+    color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+}
+.btn-outline-warning:hover {
+    background-color: var(--el-primary) !important;
+    border-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+
+/* TABLE VARIANTS - Bootstrap table colors */
+.table-success { background-color: rgba(var(--el-primary-rgb), 0.1) !important; }
+.table-danger { background-color: rgba(var(--el-primary-rgb), 0.1) !important; }
+.table-info { background-color: rgba(var(--el-primary-rgb), 0.1) !important; }
+.table-warning { background-color: rgba(var(--el-primary-rgb), 0.1) !important; }
+
+.table-success th, .table-success td { border-color: var(--el-primary) !important; }
+.table-danger th, .table-danger td { border-color: var(--el-primary) !important; }
+.table-info th, .table-info td { border-color: var(--el-primary) !important; }
+.table-warning th, .table-warning td { border-color: var(--el-primary) !important; }
+
+/* FORM VALIDATION STATES - Bootstrap form states */
+.is-valid { border-color: var(--el-primary) !important; }
+.is-valid:focus {
+    border-color: var(--el-primary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.25) !important;
+}
+.valid-feedback { color: var(--el-primary) !important; }
+
+.is-invalid { border-color: var(--el-primary) !important; }
+.is-invalid:focus {
+    border-color: var(--el-primary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.25) !important;
+}
+.invalid-feedback { color: var(--el-primary) !important; }
+
+/* PROGRESS BARS - Bootstrap progress */
+.progress-bar-success { background-color: var(--el-primary) !important; }
+.progress-bar-danger { background-color: var(--el-primary) !important; }
+.progress-bar-info { background-color: var(--el-primary) !important; }
+.progress-bar-warning { background-color: var(--el-primary) !important; }
+
+/* TOAST VARIANTS - Bootstrap toasts */
+.toast.text-success { color: var(--el-primary) !important; }
+.toast.text-danger { color: var(--el-primary) !important; }
+.toast.text-info { color: var(--el-primary) !important; }
+.toast.text-warning { color: var(--el-primary) !important; }
+
+} /* Fin @layer utilities */

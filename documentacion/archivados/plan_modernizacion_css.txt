@@ -1,0 +1,32 @@
+# PLAN DE MODERNIZACIÓN Y MODULARIZACIÓN CSS (V2.0)
+Este plan garantiza que el sistema siga funcionando sin riesgos ("Zero Downtime") mientras profesionalizamos el código.
+
+## 1. PRINCIPIOS DE DISEÑO (Tu Guía)
+- Metodologías: BEM (Block, Element, Modifier).
+- Layout: Moderno (Flexbox y Grid).
+- Centralización: Variables CSS nativas (Custom Properties).
+- Rendimiento: Carga modular, no un solo archivo gigante.
+- Accesibilidad: Foco visible, contraste y semántica.
+
+## 2. CRONOGRAMA DE EJECUCIÓN (Paso a Paso)
+
+### FASE 0: Auditoría y Seguridad
+1. Crear respaldo completo de `estilos.css` (`estilos.css.bak`).
+2. Identificar todos los elementos repetidos (ej. los 4 bloques de chat).
+
+### FASE 1: El Corazón Estético (Componentes Globales)
+1. Crear `components.css`: Definición de botones, inputs, modales, tablas y avatares.
+2. Crear `test_components.php`: Una página de visualización (Showcase) donde podrás ver todos los componentes diseñados uno al lado del otro.
+3. **PUNTO DE REVISIÓN:** Tú ves la página de prueba. Si el diseño te gusta y los componentes son lo que esperas, aprobamos pasar a la siguiente fase.
+
+### FASE 2: Modularización No-Destructiva
+1. Creamos `styles/modules/mensajeria.css` (primera fase piloto).
+2. Vinculamos este archivo solo en `mensajeria.php`. 
+3. Verificamos que el chat se vea perfecto e ignore el código viejo.
+
+### FASE 3: Limpieza y Consolidación
+1. Solo tras tu aprobación final de cada módulo, eliminamos el código redundante de `estilos.css`.
+2. Repetimos el proceso para Zulu, Khronos y el resto del sistema.
+
+## 3. OBJETIVO FINAL
+Un código donde `estilos.css` sea mínimo (solo variables y layout global) y cada funcionalidad tenga su propia hoja de estilos limpia, profesional y escalable.

@@ -1,0 +1,2 @@
+console.warn("HELLO I AM X. The browser loaded this file!");
+console.warn(new Error().stack);

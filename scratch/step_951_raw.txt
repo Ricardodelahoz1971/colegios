@@ -1,0 +1,69 @@
+Created At: 2026-07-07T11:12:01Z
+Completed At: 2026-07-07T11:12:01Z
+File Path: `file:///c:/xampp/htdocs/sistema_escolar/php/vistas/zulu.php`
+Total Lines: 352
+Total Bytes: 22787
+Showing lines 140 to 200
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+140:             </div>
+141:         </div>
+142:     </div>
+143:     
+144:     <!-- GRID DE CURSOS ATLAS -->
+145:     <div class="row g-4 px-3" id="grid-cursos-zulu">
+146:         <?php 
+147:         $stmt_plantilla = $db->prepare("
+148:             SELECT c.id as curso_id, c.nombre_curso, c.nivel_id, u_tutor.nombre as nombre_tutor,
+149:                    e.nombre_especialidad as materia_nombre, u_doc.nombre as docente_nombre,
+150:                    u_doc.id as docente_id, e.id as materia_id
+151:             FROM cursos c
+152:             LEFT JOIN usuarios u_tutor ON c.tutor_id = u_tutor.id
+153:             LEFT JOIN carga_academica ca ON c.id = ca.curso_id
+154:             LEFT JOIN especialidades e ON ca.especialidad_id = e.id
+155:             LEFT JOIN usuarios u_doc ON ca.docente_id = u_doc.id
+156:             ORDER BY c.nombre_curso ASC, e.nombre_especialidad ASC
+157:         ");
+158:         $stmt_plantilla->execute();
+159:         $plantilla_stmt = $stmt_plantilla;
+160: 
+161:         $stmt_spec = $db->prepare("SELECT id, nombre_especialidad FROM especialidades");
+162:         $stmt_spec->execute();
+163:         $spec_stmt = $stmt_spec;
+164:         $nombres_materias = [];
+165:         while($s = $spec_stmt->fetch(PDO::FETCH_ASSOC)) { $nombres_materias[$s['id']] = $s['nombre_especialidad']; }
+166: 
+167:         $stmt_plan_master = $db->prepare("SELECT nivel_nombre, especialidad_id FROM zulu_plan_maestro");
+168:         $stmt_plan_master->execute();
+169:         $plan_master_stmt = $stmt_plan_master;
+170:         $plan_master_map = [];
+171:         while($pm = $plan_master_stmt->fetch(PDO::FETCH_ASSOC)) { $plan_master_map[(int)$pm['nivel_nombre']][] = (int)$pm['especialidad_id']; }
+172: 
+173:         $data_agrupada = [];
+174:         while($row = $plantilla_stmt->fetch(PDO::FETCH_ASSOC)) {
+175:             $c_id = $row['curso_id'];
+176:             if (!isset($data_agrupada[$c_id])) {
+177:                 $data_agrupada[$c_id] = [
+178:                     'nombre'   => $row['nombre_curso'],
+179:                     'nivel_id' => $row['nivel_id'],
+180:                     'tutor'    => $row['nombre_tutor'],
+181:                     'carga'    => []
+182:                 ];
+183:             }
+184:             if ($row['docente_nombre']) {
+185:                 $data_agrupada[$c_id]['carga'][] = [
+186:                     'materia' => $row['materia_nombre'],
+187:                     'docente' => $row['docente_nombre'],
+188:                     'd_id'    => $row['docente_id'],
+189:                     'm_id'    => $row['materia_id']
+190:                 ];
+191:             }
+192:         }
+193: 
+194:         foreach($data_agrupada as $id_cur => $info):
+195:             $nivel_id = (int)$info['nivel_id'];
+196:             $ids_requeridos = $plan_master_map[$nivel_id] ?? [];
+197:             $ids_asignados = array_column($info['carga'], 'm_id');
+198:             
+199:             $carga_unificada = [];
+200:             foreach($info['carga'] as $c) { $carga_unificada[] = array_merge($c, ['es_placeholder' => false]); }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

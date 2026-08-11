@@ -1,0 +1,220 @@
+@layer components {
+/*
+   ==========================================================================
+   SWEETALERT2 CUSTOMIZATION - Blindaje de librería tercera
+   Fuerza los estilos ÉLITE sobre SweetAlert2
+   ==========================================================================
+*/
+
+/* Contenedor general */
+.swal2-container {
+    z-index: var(--z-notification);
+}
+
+/* Modal backdrop */
+.swal2-modal {
+    background: var(--el-white);
+    border-radius: var(--el-radius-main);
+}
+
+/* Título */
+.swal2-title {
+    color: var(--el-accent);
+    font-family: var(--el-font-institutional), sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+/* Contenido */
+.swal2-html-container {
+    color: var(--el-dark);
+    font-family: var(--el-font-institutional), sans-serif;
+}
+
+/* BOTONES - Crítico (justificado !important para blindaje de librería) */
+.swal2-confirm,
+.swal2-deny,
+.swal2-cancel {
+    font-family: var(--el-font-institutional), sans-serif !important;
+    font-weight: 700 !important;
+    border-radius: var(--el-radius-sub) !important;
+    min-height: var(--el-height-elite) !important;
+    transition: var(--el-transition-fast) !important;
+    border: none !important;
+    cursor: pointer !important;
+}
+
+/* Botón confirmar (primario/azul institucional) */
+.swal2-confirm {
+    background-color: var(--el-primary) !important;
+    color: var(--el-white) !important;
+}
+
+.swal2-confirm:hover {
+    background-color: var(--color-primary-dark) !important;
+    box-shadow: 0 0.5rem 1rem rgba(var(--el-primary-rgb), 0.3) !important;
+}
+
+.swal2-confirm:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgb(var(--el-primary-rgb) / 0.3) !important;
+}
+
+/* Botón negar (acento/naranja) */
+.swal2-deny {
+    background-color: var(--el-accent) !important;
+    color: var(--el-white) !important;
+}
+
+.swal2-deny:hover {
+    background-color: var(--color-accent-dark) !important;
+    box-shadow: 0 0.5rem 1rem rgba(var(--el-accent-rgb), 0.3) !important;
+}
+
+.swal2-deny:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgb(var(--el-accent-rgb) / 0.3) !important;
+}
+
+/* Botón cancelar (gris neutro) */
+.swal2-cancel {
+    background-color: var(--color-gray-200) !important;
+    color: var(--el-dark) !important;
+}
+
+.swal2-cancel:hover {
+    background-color: var(--color-gray-300) !important;
+    box-shadow: 0 0.5rem 1rem rgba(var(--color-gray-500), 0.2) !important;
+}
+
+.swal2-cancel:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(var(--el-primary-rgb), 0.2) !important;
+}
+
+/* Inputs dentro de SweetAlert */
+.swal2-input {
+    color: var(--el-dark) !important;
+    border: 1px solid var(--color-gray-300) !important;
+    border-radius: var(--el-radius-sub) !important;
+    font-family: var(--el-font-institutional), sans-serif !important;
+    padding: 0.75rem !important;
+    background-color: var(--el-white) !important;
+    min-height: var(--el-height-elite) !important;
+}
+
+.swal2-input::placeholder {
+    color: var(--color-gray-400) !important;
+    opacity: 1 !important;
+}
+
+.swal2-input:focus {
+    border-color: var(--el-primary) !important;
+    box-shadow: 0 0 0 3px rgb(var(--el-primary-rgb) / 0.1) !important;
+    outline: none !important;
+}
+
+/* Select dentro de SweetAlert */
+.swal2-select {
+    color: var(--el-dark) !important;
+    border: 1px solid var(--color-gray-300) !important;
+    border-radius: var(--el-radius-sub) !important;
+    font-family: var(--el-font-institutional), sans-serif !important;
+    padding: 0.75rem !important;
+    background-color: var(--el-white) !important;
+    min-height: var(--el-height-elite) !important;
+}
+
+.swal2-select::placeholder {
+    color: var(--color-gray-400) !important;
+    opacity: 1 !important;
+}
+
+.swal2-select:focus {
+    border-color: var(--el-primary) !important;
+    box-shadow: 0 0 0 3px rgb(var(--el-primary-rgb) / 0.1) !important;
+    outline: none !important;
+}
+
+/* Textarea dentro de SweetAlert */
+.swal2-textarea {
+    color: var(--el-dark) !important;
+    border: 1px solid var(--color-gray-300) !important;
+    border-radius: var(--el-radius-sub) !important;
+    font-family: var(--el-font-institutional), sans-serif !important;
+    padding: 0.75rem !important;
+    background-color: var(--el-white) !important;
+    min-height: 120px !important;
+}
+
+.swal2-textarea::placeholder {
+    color: var(--color-gray-400) !important;
+    opacity: 1 !important;
+}
+
+.swal2-textarea:focus {
+    border-color: var(--el-primary) !important;
+    box-shadow: 0 0 0 3px rgb(var(--el-primary-rgb) / 0.1) !important;
+    outline: none !important;
+}
+
+/* Botón cerrar (X) */
+.swal2-close {
+    color: var(--el-dark) !important;
+    font-size: 2rem !important;
+    width: var(--el-height-elite) !important;
+    height: var(--el-height-elite) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: var(--el-radius-sub) !important;
+}
+
+.swal2-close:hover {
+    background-color: rgba(var(--el-primary-rgb), 0.1) !important;
+}
+
+.swal2-close:focus {
+    outline: 2px solid var(--el-primary) !important;
+}
+
+/* Pop-up animations */
+.swal2-popup.swal2-show {
+    animation: swal2PopupShow 0.3s ease-out;
+}
+
+@keyframes swal2PopupShow {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Backdrop */
+.swal2-backdrop {
+    background-color: rgba(var(--el-black-rgb), 0.4);
+}
+
+/* Progress steps */
+.swal2-progress-steps {
+    color: var(--el-primary);
+}
+
+.swal2-progress-steps .swal2-progress-step {
+    background-color: var(--el-primary);
+    color: var(--el-white);
+}
+
+.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
+    background-color: var(--el-accent);
+}
+
+.swal2-progress-steps .swal2-progress-step-line {
+    background-color: var(--el-border);
+}
+
+} /* Fin @layer components */

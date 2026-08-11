@@ -1,0 +1,18 @@
+# 🛡️ BLINDAJE ANTI-CACHÉ DEFICIENTE (ENTORNO DE DESARROLLO/PRUEBAS)
+# Fuerza a Apache a enviar cabeceras para desactivar la caché de CSS, JS y PHP.
+
+<IfModule mod_headers.c>
+    # Desactivar caché para archivos de estilos y scripts
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "Jan 01 1970 00:00:00 GMT"
+    </FilesMatch>
+
+    # Desactivar caché para archivos dinámicos PHP
+    <FilesMatch "\.(php)$">
+        Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "Jan 01 1970 00:00:00 GMT"
+    </FilesMatch>
+</IfModule>

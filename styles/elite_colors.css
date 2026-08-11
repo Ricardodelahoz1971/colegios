@@ -1,0 +1,151 @@
+@layer base {
+/*
+   ==========================================================================
+   ELITE COLORS - PALETA CENTRALIZADA v10.0
+   Única fuente de verdad para colores. CERO hardcoding permitido.
+   ==========================================================================
+*/
+
+:root {
+  /* ========================================
+     PRIMARIOS - Identidad institucional
+     Nota: usa --el-primary para responder a cambios dinámicos de paleta
+     ======================================== */
+  --color-primary: var(--el-primary);
+  --color-primary-light: var(--el-primary);
+  --color-primary-dark: var(--el-primary);
+  --color-primary-rgb: var(--el-primary-rgb);           /* Para rgba() */
+
+  /* ========================================
+     ACENTOS - Alertas y énfasis
+     ======================================== */
+  --color-accent: hsl(24, 100%, 50%);         /* OrangeRed puro */
+  --color-accent-light: hsl(24, 100%, 65%);
+  --color-accent-dark: hsl(24, 100%, 35%);
+  --color-accent-rgb: 255, 69, 0;
+
+  /* ========================================
+     NEUTRALES - Fondos, bordes, texto
+     ======================================== */
+  --color-white: hsl(0, 0%, 100%);
+  --color-white-rgb: 255, 255, 255;
+
+  --color-black: hsl(0, 0%, 0%);
+  --color-black-rgb: 0, 0, 0;
+
+  /* Escala de grises (light → dark) */
+  --color-gray-50: hsl(210, 40%, 98%);        /* Casi blanco */
+  --color-gray-100: hsl(210, 40%, 96%);
+  --color-gray-200: hsl(214, 32%, 91%);
+  --color-gray-300: hsl(213, 26%, 85%);       /* Bordes claros */
+  --color-gray-400: hsl(215, 16%, 47%);
+  --color-gray-500: hsl(215, 14%, 34%);       /* Texto mutado */
+  --color-gray-600: hsl(215, 19%, 35%);
+  --color-gray-700: hsl(217, 33%, 17%);
+  --color-gray-800: hsl(215, 28%, 17%);       /* Texto oscuro */
+  --color-gray-900: hsl(222, 47%, 11%);       /* Casi negro */
+
+  /* ========================================
+     ALIAS INSTITUCIONALES (compatibilidad)
+     ======================================== */
+  --el-primary: var(--color-primary);
+  --el-primary-rgb: var(--color-primary-rgb);
+  --el-accent: var(--color-accent);
+  --el-accent-rgb: var(--color-accent-rgb);
+  --el-white: var(--color-white);
+  --el-black: var(--color-black);
+  --el-black-rgb: var(--color-black-rgb);
+  --el-dark: var(--color-gray-900);
+  --el-text-muted: var(--color-gray-500);
+
+  /* ========================================
+     FONDO Y SUPERFICIE
+     ======================================== */
+  --el-bg: var(--color-white);
+  --el-bg-card: var(--color-gray-50);
+  --el-bg-card-muted: var(--color-gray-100);
+
+  /* ========================================
+     BORDES
+     ======================================== */
+  --el-border: rgba(var(--color-primary-rgb), 0.25);
+  --el-border-strong: rgba(var(--color-primary-rgb), 0.45);
+
+  /* ========================================
+     OVERLAY Y GLASS
+     ======================================== */
+  --el-glass-bg: rgba(var(--color-white-rgb), 0.85);
+  --el-glass-border: rgba(var(--color-white-rgb), 0.2);
+  --el-glass-blur: 12px;
+
+  /* ========================================
+     SOMBRAS (con tinte de primario)
+     ======================================== */
+  --el-shadow-sm: 0 0.25rem 0.375rem -0.0625rem rgba(var(--color-primary-rgb), 0.1);
+  --el-shadow-md: 0 0.5rem 1rem -0.125rem rgba(var(--color-primary-rgb), 0.15);
+  --el-shadow-lg: 0 1.5rem 4rem rgba(var(--color-primary-rgb), 0.45);
+
+  /* ========================================
+     SIDEBAR Y HEADER
+     ======================================== */
+  --el-sidebar-bg: var(--el-primary);
+  --el-header-bg: var(--color-white);
+  --el-topbar-bg: var(--color-white);
+}
+
+/*
+   TEMA OSCURO (Pergamino)
+   Paleta cálida con tonos bronce/marrón
+*/
+.dark-theme-mode {
+  /* Fondos pergamino */
+  --el-bg: rgb(244, 234, 213);                /* Fondo crema */
+  --el-bg-card: rgb(253, 246, 227);           /* Superficie más clara */
+  --el-bg-card-muted: rgb(235, 222, 195);
+
+  /* Colores reajustados para tema oscuro */
+  --color-white: rgb(253, 246, 227);
+  --color-gray-900: rgb(67, 52, 34);          /* Marrón oscuro */
+  --color-gray-800: rgb(100, 80, 60);
+
+  /* Primario en tema oscuro */
+  --color-primary: hsl(26, 45%, 50%);         /* Bronce */
+  --color-primary-rgb: 139, 90, 43;
+  --el-primary: var(--color-primary);
+  --el-primary-rgb: var(--color-primary-rgb);
+
+  /* Bordes pergamino */
+  --el-border: rgba(139, 90, 43, 0.3);
+  --el-border-strong: rgba(139, 90, 43, 0.6);
+
+  /* Sombras en tema oscuro */
+  --el-shadow-sm: 0 0.25rem 0.375rem -0.0625rem rgba(67, 52, 34, 0.15);
+  --el-shadow-md: 0 0.5rem 1rem -0.125rem rgba(67, 52, 34, 0.2);
+
+  /* Texto en tema oscuro */
+  --el-dark: rgb(67, 52, 34);
+  --el-text-muted: rgb(139, 115, 85);
+
+  /* Sidebar y header */
+  --el-sidebar-bg: hsl(26, 45%, 45%);
+  --el-header-bg: rgb(253, 246, 227);
+
+  /* Bootstrap sync */
+  --bs-body-bg: var(--el-bg);
+  --bs-tertiary-bg: var(--el-bg-card);
+  --bs-body-color: var(--el-dark);
+  --bs-border-color: var(--el-border);
+}
+
+/* Bootstrap sync (light mode) */
+:root {
+  --bs-primary: var(--el-primary);
+  --bs-primary-rgb: var(--el-primary-rgb);
+  --bs-white: var(--color-white);
+  --bs-dark: var(--el-dark);
+  --bs-body-bg: var(--el-bg);
+  --bs-body-color: var(--color-gray-900);
+  --bs-border-color: var(--el-border);
+}
+
+} /* Fin @layer base */

@@ -1,0 +1,2925 @@
+﻿@layer components {
+/* 
+   ==========================================================================
+   MÃ“DULO: UI KIT - COMPONENTES DE VITRINA v9.2
+   Tablas Ã‰lite, Badges de SoberanÃ­a y Fichas de Identidad.
+   ==========================================================================
+*/
+
+/* 0. NORMALIZACIÃ“N TIPOGRÃFICA GLOBAL (JERARQUÃA Ã‰LITE) */
+html, body {
+    font-family: var(--el-font-institutional), sans-serif;
+    font-size: 0.9rem; /* MÃ©trica de Equilibrio Ã‰lite */
+}
+
+/* EL ÃšNICO TÃTULO MAESTRO (CABECERA) */
+.text-topbar-elite {
+    color: var(--el-title-color, var(--el-white));
+}
+
+.hero-module-title {
+    color: var(--el-primary); /* Estricto: TÃ­tulo Maestro en Color 2 (Acento) */
+    font-size: clamp(1.2rem, 4vw, 1.65rem);
+    font-weight: 800;
+    letter-spacing: -0.03125rem;
+    text-transform: uppercase;
+}
+
+.text-primary {
+    color: var(--el-primary);
+}
+
+h1:not(.hero-login-title) {
+    font-family: var(--el-font-institutional), sans-serif;
+    color: var(--el-accent); /* Estricto: H1 en Color 2 (Acento) */
+    font-weight: 900;
+    font-size: clamp(1.15rem, 3vw, 1.45rem);
+    letter-spacing: -0.05rem;
+    text-transform: uppercase;
+}
+
+/* SUBTÃTULOS DE SECCIÃ“N Y PROTOCOLOS (AUTORIDAD INTERNA) */
+h2, h3 {
+    font-family: var(--el-font-institutional), sans-serif;
+    color: var(--el-primary); /* Estricto: SubtÃ­tulos en Color 3 (Info) */
+    font-weight: 900;
+    font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+    letter-spacing: -0.05rem;
+    text-transform: uppercase;
+}
+
+/* SUBTÃTULOS Y CABECERAS MENORES (JERARQUÃA REFINADA) */
+h4, h5, h6, .welcome-title-elite, .text-titulo-elite {
+    font-family: var(--el-font-institutional), sans-serif;
+    color: var(--el-primary); /* EvoluciÃ³n CromÃ¡tica: SubtÃ­tulos en 3er Color */
+    font-weight: 700;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    letter-spacing: -0.03125rem;
+    text-transform: uppercase;
+}
+
+.border-topbar-elite { 
+    border-color: var(--el-text-muted); /* UNIFICACIÃ“N AL TERCIARIO (GRIS) */
+}
+
+/* 1.1 NORMALIZACIÃ“N DE ESTATURA Ã‰LITE (2.75rem) */
+.u-nowrap { white-space: nowrap; }
+
+/* BOTÃ“N PARA ICONOS (SoberanÃ­a Circular) */
+.btn-elite-icon {
+    padding: 0;
+    width: var(--el-height-elite); /* EstÃ¡ndar Ã‰lite: 44px */
+    height: var(--el-height-elite);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--el-transition-premium);
+    background: transparent;
+    border: none;
+    color: var(--el-primary);
+    cursor: pointer;
+}
+
+/* ðŸŽ¯ OPTIMIZACIÃ“N RICARDO: Prevenir colisiÃ³n de transiciÃ³n con transformaciones de Animate.css */
+
+.btn-elite-icon:hover {
+    background: rgba(var(--el-primary-rgb), 0.1);
+    transform: scale(1.15) rotate(5deg);
+}
+
+.btn-elite-icon--clean {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* CONTENEDOR DE BÃšSQUEDA Ã‰LITE (ALTA FIDELIDAD v9.3) */
+.search-elite-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* EL INPUT: ESPACIO SAGRADO PARA EL ICONO */
+/* ðŸ”˜ UTILIDADES CROMÃTICAS ELITE (ANTI-NEGRO) */
+.text-dark { color: var(--el-dark); }
+.text-secondary, .text-muted { color: var(--el-text-muted, #64748b); }
+
+/* ðŸ”˜ FIN DE UTILIDADES CROMÃTICAS */
+
+.search-elite {
+    width: 100%;
+    height: var(--el-height-elite);
+    padding: 0.625rem 1.25rem;
+    padding-inline-start: 3.5rem;
+    border-radius: var(--el-radius-sub);
+    border: 0.0625rem solid var(--el-border-strong);
+    background: var(--el-white);
+    color: var(--el-dark);
+    transition: var(--el-transition-premium);
+    font-size: 0.85rem;
+}
+
+.search-elite:focus {
+    border-color: var(--el-primary);
+    box-shadow: 0 0.625rem 1.5625rem rgba(var(--el-primary-rgb), 0.15);
+    outline: none;
+}
+
+/* EL ICONO: POSICIONAMIENTO QUIRÃšRGICO */
+.search-icon-elite {
+    position: absolute;
+    inset-inline-start: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.search-icon-elite i, 
+.search-icon-elite svg {
+    font-size: 1.1rem;
+    color: var(--el-primary);
+    opacity: 0.7;
+}
+
+.search-elite:focus + .search-icon-elite i {
+    opacity: 1;
+    transform: scale(1.2);
+}
+/* ðŸ”˜ PROTOTIPO: CONTROL Ã‰LITE (SUPREMACÃA PILL-STYLE BLANCO) */
+.input-elite, 
+.select-elite, 
+.select-elite-sm,
+.form-control-elite,
+input.form-control, 
+select.form-select {
+    height: var(--el-height-elite);
+    min-height: var(--el-height-elite);
+    width: 100%;
+    padding: 0 1.5rem;
+    border-radius: var(--el-radius-sub);
+    border: 0.0938rem solid rgba(var(--el-primary-rgb), 0.8);
+
+    background-color: var(--el-white);
+    color: var(--el-dark);
+    font-family: var(--el-font-institutional), sans-serif;
+    font-size: 0.85rem;
+    transition: var(--el-transition-premium);
+    box-sizing: border-box;
+    box-shadow: 0 0.25rem 0.75rem rgba(var(--el-primary-rgb), 0.08);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+input.form-control:focus, 
+select.form-select:focus,
+.input-elite:focus, 
+.select-elite:focus {
+    border-color: var(--el-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.15);
+    background-color: var(--el-white);
+    outline: none;
+}
+
+/* ðŸ’  EL ÃšNICO PROTOTIPO MAESTRO: SELECT Ã‰LITE (SOBERANÃA TOTAL) */
+select.form-select, 
+.select-elite,
+.select-elite-reborn,
+.select-elite-sm {
+    height: var(--el-height-elite);
+    min-height: var(--el-height-elite);
+    width: 100%;
+    padding: 0 1.8rem 0 1rem; /* ðŸ›¡ï¸ Fix de truncamiento (Seleccion...) */
+    background-color: var(--el-white);
+    border: 0.0938rem solid var(--el-border-strong);
+    border-radius: var(--el-radius-sub);
+    color: var(--el-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    font-family: var(--el-font-institutional);
+    /* La imagen SVG de la flecha serÃ¡ inyectada dinÃ¡micamente desde dashboard.php para respetar el brand color */
+    background-image: none;
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-size: 0.8rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-shadow: var(--el-shadow-sm);
+}
+
+button.select-elite {
+    background-image: none;
+}
+
+/* Variante Compacta: Mantiene el ADN pero reduce escala */
+.select-elite-sm,
+.select-elite-reborn.sm {
+    height: 2.2rem;
+    min-height: 2.2rem;
+    font-size: 0.8rem;
+    padding-inline: 1rem 2.2rem;
+}
+
+select.form-select:focus,
+.select-elite:focus,
+.select-elite-reborn:focus {
+    border-color: var(--el-primary);
+    background-color: var(--el-white);
+    box-shadow: 0 0.5rem 1.25rem rgba(var(--el-primary-rgb), 0.12);
+    outline: none;
+    transform: translateY(-0.0625rem);
+}
+
+select.form-select:disabled,
+.select-elite:disabled,
+.select-elite-reborn:disabled {
+    background-color: rgba(var(--el-primary-rgb), 0.02);
+    color: var(--el-text-muted);
+    border-color: var(--el-border);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Variante Compacta */
+.select-elite-reborn.sm {
+    height: 2.2rem;
+    font-size: 0.8rem;
+}
+
+.select-elite-reborn::after {
+    display: none; /* Eliminamos el ::after para usar background-image y evitar conflictos */
+}
+
+.dropdown-elite-toggle::after {
+    display: none; /* Flecha eliminada solo en componentes Elite para permitir variantes */
+}
+
+.select-elite-reborn[aria-expanded="true"]::after {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu-elite {
+    border-radius: var(--el-radius-sub); /* 12px en todas las esquinas */
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.1);
+    box-shadow: 0 1rem 3rem rgba(var(--el-primary-rgb), 0.15); /* Sombra profunda para levitaciÃ³n */
+    padding: 0.5rem;
+    margin-top: 0;
+    top: calc(100% + 4px); /* Isla Flotante: Gap de 4px */
+    left: 0;
+    background: var(--el-white);
+    backdrop-filter: blur(1rem);
+    z-index: 99999; /* Capa Ã©lite absoluta */
+    min-width: 100%;
+    width: max-content;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.dropdown-menu-elite:empty {
+    display: none;
+}
+
+.dropdown-menu-elite .dropdown-item {
+    border-radius: var(--el-radius-sub); /* 12px */
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--el-dark);
+    transition: all 0.2s ease;
+}
+
+.dropdown-menu-elite .dropdown-item:hover {
+    background: rgba(var(--el-primary-rgb), 0.1);
+    color: var(--el-primary);
+    transform: translateX(0.25rem);
+}
+
+.dropdown-menu-elite .dropdown-item.active, 
+.dropdown-menu-elite .dropdown-item:active {
+    background: var(--el-primary);
+    color: var(--el-white);
+}
+
+/* MODIFICADOR PARA INPUTS CON ICONO (LOGIN/BÃšSQUEDA) */
+.input-elite-group .input-elite {
+    padding-inline-start: 3.2rem;
+}
+
+/* ðŸ“ ELITE FILE SELECTOR (SoberanÃ­a Visual) */
+input[type="file"].input-elite {
+    padding: 0.5rem;
+    line-height: 1.5rem;
+}
+
+input[type="file"].input-elite::-webkit-file-upload-button {
+    background: var(--el-primary);
+    color: white;
+    border: none;
+    padding: 0.375rem 0.9375rem;
+    border-radius: 0.5rem;
+    margin-inline-end: 0.9375rem;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--el-transition-fast);
+}
+
+input[type="file"].input-elite::-webkit-file-upload-button:hover {
+    background: var(--el-accent);
+    color: var(--el-dark);
+}
+
+/* ðŸŽ¯ SOBERANÃA CROMÃTICA UNIVERSAL (ING. RICARDO) */
+.text-terciario-elite, 
+.text-secondary, 
+.text-muted,
+p.text-secondary,
+p.text-muted,
+span.text-muted { 
+    color: var(--el-text-muted); 
+    font-family: var(--el-font-institutional);
+}
+
+.subtitle-elite {
+    color: var(--el-text-muted);
+    font-family: var(--el-font-institutional);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0;
+    display: block;
+}
+
+/* ðŸŽ¯ POWER HEADER: OBJETO ÃšNICO DE SOBERANÃA */
+.header-module-elite {
+    border-inline-start: 0.25rem solid var(--el-accent); /* ADN Atlas: Oro Institucional */
+    padding-inline-start: 1.25rem;
+    margin-bottom: 2rem;
+    transition: var(--el-transition-premium);
+}
+
+.header-module-elite .title-elite {
+    font-family: var(--el-font-institutional);
+    font-weight: 800;
+    color: var(--el-accent); /* TÃ­tulo = Color 2 (Naranja) */
+    margin-bottom: 0.125rem;
+    text-transform: uppercase;
+    letter-spacing: -0.03125rem;
+}
+
+.title-section-elite {
+    font-size: 1.1rem;
+    color: var(--el-accent);
+    text-transform: uppercase;
+    font-weight: 800;
+}
+
+/* ðŸŽ¯ BOTÃ“N DE CIERRE ESTÃNDAR Ã‰LITE (v1A) */
+.btn-close-elite {
+    width: 1.75rem;
+    height: 1.75rem;
+    background: rgba(var(--el-primary-rgb), 0.1);
+    border: none;
+    border-radius: 50%;
+    color: var(--el-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    font-size: 1rem;
+    padding: 0;
+}
+
+.btn-close-elite:hover {
+    background: var(--el-primary);
+    color: var(--el-white);
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 0.25rem 0.75rem rgba(var(--el-primary-rgb), 0.3);
+}
+
+/* Modificador especÃ­fico para esquinas de modales */
+.btn-close-elite--modal {
+    margin-block-start: 0.75rem;
+    margin-inline-end: 0.75rem;
+}
+
+/* ðŸ“¦ COMPONENTE: CARD Ã‰LITE (PROTOCOLO SOBERANO) */
+.card-elite {
+    background-color: var(--el-white);
+    border: 0.0625rem solid var(--el-border);
+    border-radius: var(--el-radius-main); /* Prestigio Paneles: 24px */
+    box-shadow: var(--el-shadow-sm);
+    transition: var(--el-transition-premium);
+    overflow: visible; /* Modificado: Permitir que dropdowns y modales escapen el contenedor */
+    color: var(--el-dark);
+}
+
+.card-elite > :first-child,
+.card-elite > .ares-sticky-header:first-child {
+    border-top-left-radius: calc(var(--el-radius-main) - 1px);
+    border-top-right-radius: calc(var(--el-radius-main) - 1px);
+}
+
+.card-elite > :last-child,
+.card-elite > :last-child > :last-child {
+    border-bottom-left-radius: calc(var(--el-radius-main) - 1px);
+    border-bottom-right-radius: calc(var(--el-radius-main) - 1px);
+}
+
+.card-elite:hover {
+    box-shadow: var(--el-shadow-md);
+    border-color: var(--el-primary); /* Realce en hover */
+}
+
+/* ðŸ›¡ï¸ BLINDAJE DE MODALES Ã‰LITE: Delegado a elite_mutations.css para control de capas absoluto */
+
+.modal-content.card-elite {
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.2);
+    box-shadow: var(--el-shadow-lg);
+}
+
+.modal-header {
+    background: linear-gradient(to right, rgba(var(--el-primary-rgb), 0.03), transparent);
+}
+
+/* BLINDAJE DE INPUTS CON ICONO (ESPECIFICIDAD MÃXIMA) */
+.input-with-icon-elite,
+.input-elite-group .input-elite,
+.input-elite-group .form-control,
+input.form-control.input-with-icon-elite {
+    padding-inline-start: 3.2rem; /* Espacio suficiente para el icono */
+}
+
+/* ðŸ“Š SISTEMA DE TABLAS Ã‰LITE (VITRINA 06) */
+.table-responsive-elite {
+    width: 100%;
+    overflow: auto;
+    max-height: var(--el-table-max-height, 75vh);
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1.5rem;
+    border-radius: var(--el-radius-main); /* Prestigio Paneles: 24px */
+    background: var(--el-white);
+    border: 0.0625rem solid var(--el-border);
+}
+
+/* ðŸ“œ SCROLLBARS INSTITUCIONALES (DISEÃ‘O AERO) */
+.table-responsive-elite::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 0.5rem; height: 0.5rem;
+}
+
+.table-responsive-elite::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+    background: rgba(var(--el-primary-rgb), 0.05);
+    border-radius: var(--el-radius-sub);
+}
+
+.table-responsive-elite::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+    background: rgba(var(--el-primary-rgb), 0.4);
+    border-radius: var(--el-radius-sub);
+    border: 0.125rem solid transparent;
+    background-clip: content-box;
+}
+
+.table-responsive-elite::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+    background: var(--el-primary);
+}
+
+/* ðŸ¢ ESTRUCTURA DE TABLAS UNIVERSALES */
+table, .table, .table-elite {
+    width: 100%;
+    table-layout: fixed;
+    margin-bottom: 0;
+    color: var(--el-text-strong);
+    vertical-align: top;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-elite thead th, .table thead th {
+    background-color: var(--el-primary);
+    color: var(--el-white);
+    padding: 0.9375rem 1.25rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.03125rem;
+    border: none;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table-elite thead th:first-child { border-radius: var(--el-radius-sub) 0 0 0; }
+.table-elite thead th:last-child { border-radius: 0 var(--el-radius-sub) 0 0; }
+
+.table-elite tbody td {
+    padding: 0.9375rem 1.25rem;
+    overflow: hidden;
+    background-color: var(--el-white);
+    border-bottom: 0.0625rem solid rgba(var(--el-primary-rgb), 0.05);
+    transition: all 0.2s ease;
+}
+
+.table-elite tbody tr:hover td {
+    background-color: rgba(var(--el-primary-rgb), 0.02);
+}
+
+
+/* Truncado selectivo para columnas específicas (usuario, grado) */
+.table-elite tbody td.truncate-text {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.table-elite tbody tr:last-child td:first-child { border-radius: 0 0 0 0.75rem; }
+.table-elite tbody tr:last-child td:last-child { border-radius: 0 0 0.75rem 0; }
+
+/* ðŸ·ï¸ ELEMENTOS INTERNOS DE TABLA */
+.table-badge-elite {
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--el-radius-pill);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: 0.0625rem solid currentColor;
+}
+
+.table-average-elite {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.8rem;
+    border: 0.09375rem solid var(--el-border);
+    margin: 0 auto;
+}
+
+.student-info-elite {
+    display: flex;
+    flex-direction: column;
+}
+
+.student-name-elite {
+    font-weight: 700;
+    color: var(--el-text-strong);
+    margin-bottom: 0.125rem;
+}
+
+.student-meta-elite {
+    font-size: 0.75rem;
+    color: var(--el-text-muted);
+}
+
+.input-icon-elite {
+    position: absolute;
+    top: 50%;
+    inset-inline-start: 1.2rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 10;
+    font-size: 1.2rem;
+}
+
+/* 1.1 DROPDOWNS SOBERANOS */
+.dropdown-item {
+    font-family: var(--el-font-institutional), sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--el-dark-text);
+    padding: 0.6rem 1.2rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(var(--el-primary-rgb), 0.05);
+    color: var(--el-primary);
+}
+
+.mode-aero-elite .form-control, 
+.mode-aero-elite .form-select, 
+.mode-aero-elite .input-elite, 
+.mode-aero-elite .select-elite {
+    background-color: var(--el-white); /* SoberanÃ­a Blanca exigida */
+    backdrop-filter: blur(0.625rem);
+}
+
+/* 1.2 DROPDOWNS SOBERANOS - MUTACIONES */
+.mode-blade-elite .dropdown-menu {
+    background-color: var(--el-dark-bg-light);
+    border: 0.0625rem solid var(--el-dark-border);
+    border-radius: 0.25rem;
+}
+
+.mode-blade-elite .dropdown-item {
+    color: var(--el-text-light);
+}
+
+.mode-blade-elite .dropdown-item:hover {
+    background-color: var(--el-dark-border);
+    color: var(--el-white);
+}
+
+/* 1. TABLAS UNIFICADAS ELITE - NORMALIZADO */
+.table-scroll-elite {
+    max-height: calc(100vh - 20rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--el-primary) transparent;
+}
+
+@media (max-width: 48rem) {
+    .metric-card-elite {
+        padding: 2.5rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .metric-icon-box-elite {
+        width: 3.75rem;
+        height: 3.75rem;
+    }
+    
+    .metric-icon-box-elite svg {
+        width: 1.875rem;
+        height: 1.875rem;
+    }
+}
+
+/* ðŸ›¡ï¸ CONTENEDOR RESPONSIVE Ã‰LITE (SoberanÃ­a de Datos) - UNIFICADO */
+.table-responsive-elite table {
+    width: 100%;
+}
+
+.table-responsive-elite th, 
+.table-responsive-elite td {
+    padding: 0.75rem 0.5rem;
+    word-break: break-all; /* Evita que el texto empuje la celda hacia afuera */
+}
+
+@media (max-width: 48rem) {
+    .table-responsive-elite {
+        border-radius: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .table td, .table th {
+        padding: 0.6rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* 2. BADGES Y ETIQUETAS DE SOBERANÃA */
+.badge-soberania {
+    background-color: var(--el-accent);
+    color: var(--el-white);
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 0.125rem 0.5rem;
+    border-radius: 3.125rem;
+    letter-spacing: 0.03125rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(var(--el-accent-rgb), 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* COMPONENTE: BADGES DE ESTADO Ã‰LITE */
+.badge-elite-status {
+    pointer-events: none;
+    opacity: 0.9;
+    font-weight: 700;
+}
+
+.badge-elite-score {
+    min-width: 2.1875rem;
+    display: inline-block;
+    text-align: center;
+}
+
+.badge-elite-pill {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--el-radius-pill);
+}
+
+.badge-elite-pill--info {
+    background: rgba(var(--el-primary-rgb), 0.1);
+    color: var(--el-primary);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.2);
+}
+
+.badge-elite-pill--neutral {
+    background: rgba(var(--el-dark-rgb), 0.05);
+    color: var(--el-dark);
+    border: 0.0625rem solid rgba(var(--el-dark-rgb), 0.1);
+}
+
+.btn-elite-icon--danger {
+    color: var(--el-primary);
+}
+
+.btn-elite-icon--danger:hover {
+    background: rgba(var(--el-primary-rgb), 0.1);
+    transform: scale(1.1);
+}
+
+/* 3. AVATARES Y ELEMENTOS DE IDENTIDAD */
+.avatar-user { width: 2rem; height: 2rem; border-radius: 50%; object-fit: cover; }
+.avatar-ficha { 
+    width: 6.25rem; 
+    height: 6.25rem; 
+    font-size: 2.5rem; 
+    border-radius: var(--el-radius-main); /* Prestigio Paneles: 24px */
+}
+
+/* 4. CONTROLES ELITE (CHECKBOXES & RADIOS) */
+.form-check-input {
+    border: 0.1875rem solid var(--el-border-strong);
+    background-color: var(--el-white);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    opacity: 1; /* Asegurar visibilidad total siempre */
+}
+
+.form-check-input:checked {
+    background-color: var(--el-primary);
+    border-color: var(--el-primary);
+    opacity: 1;
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.15);
+}
+
+.form-check-input:focus {
+    border-color: var(--el-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.1);
+}
+/* 5. BLOQUE DE BIENVENIDA ELITE (VITRINA 06) */
+.welcome-section-elite {
+    border-inline-start: 0.25rem solid var(--el-accent);
+    padding: 1.25rem 1.8rem;
+    background: rgba(var(--el-white-rgb), 0.5);
+    backdrop-filter: blur(0.5rem);
+    border-radius: var(--el-radius-sub) var(--el-radius-main) var(--el-radius-main) var(--el-radius-sub);
+    margin-bottom: 2rem;
+    transition: var(--el-transition-premium);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.05);
+    border-inline-start-width: 0.25rem;
+}
+
+.welcome-title-elite {
+    font-family: var(--el-font-institutional);
+    color: var(--el-primary); /* EvoluciÃ³n CromÃ¡tica: TÃ­tulo de Bienvenida en 3er Color */
+    font-size: 1.4rem; /* Escala de IngenierÃ­a */
+    font-weight: 900;
+    margin-bottom: 0.15rem;
+    letter-spacing: -0.03125rem;
+    text-transform: uppercase;
+}
+
+.welcome-subtitle-elite {
+    color: var(--el-dark-text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0;
+    opacity: 0.8;
+}
+
+/* MutaciÃ³n Aero */
+.mode-aero-elite .welcome-section-elite {
+    border-inline-start-color: var(--el-accent);
+    background: linear-gradient(90deg, rgba(var(--el-accent-rgb), 0.12) 0%, rgba(var(--el-accent-rgb), 0.02) 50%, transparent 100%);
+    border-radius: 0.5rem;
+}
+
+/* MutaciÃ³n Blade */
+.mode-blade-elite .welcome-section-elite {
+    border-inline-start: 0.25rem solid var(--el-accent);
+    text-transform: uppercase;
+}
+.mode-blade-elite .welcome-title-elite {
+    letter-spacing: 0.0625rem;
+}
+
+/* MutaciÃ³n Blade para Metric Cards */
+.mode-blade-elite .metric-card-elite {
+    border: 0.09375rem solid var(--el-accent);
+    border-radius: 0.25rem;
+    box-shadow: none;
+    background: var(--el-white);
+}
+
+.mode-blade-elite .metric-label-elite {
+    letter-spacing: 0.09375rem;
+    color: var(--el-primary);
+}
+
+.mode-blade-elite .metric-value-elite {
+    letter-spacing: 0;
+}
+
+.mode-blade-elite .metric-icon-box-elite {
+    border-radius: 0.25rem;
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.1);
+}
+/* 6. METRIC CARDS ELITE - SISTEMA DE DATOS DINÃMICOS */
+.metric-card-elite {
+    background: var(--el-white);
+    border-radius: var(--el-radius-main); /* Prestigio Paneles: 24px */
+    padding: clamp(1rem, 3vw, 1.5rem);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.08);
+    border-top-color: rgba(var(--el-white-rgb), 0.4); /* Glassmorphism 2.0: Edge Glow */
+    transition: var(--el-transition-premium);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--el-shadow-md);
+    max-width: 23.75rem;
+    margin: 0 auto;
+}
+
+@media (max-width: 36rem) {
+    .metric-card-elite {
+        max-width: 100%;
+        border-radius: 1.125rem;
+    }
+}
+
+.metric-card-elite::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.02;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+.metric-card-elite--scaled {
+    min-width: 16.25rem;
+    transform: scale(0.85);
+    transform-origin: inline-start top;
+    margin-bottom: -0.9375rem;
+}
+
+.fs-large-elite { font-size: 1.6rem; }
+.fs-nano-elite { font-size: 0.7rem; }
+
+.metric-card-elite:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: var(--el-shadow-lg);
+    border-color: var(--el-primary);
+}
+
+.metric-header-elite {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.metric-icon-box-elite {
+    width: var(--el-height-elite);
+    height: var(--el-height-elite);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--el-radius-sub);
+    transition: var(--el-transition-fast);
+}
+
+/* Variantes de Icono */
+.variant-success .metric-icon-box-elite { background: rgba(var(--el-primary-rgb), 0.1); color: var(--el-primary); }
+.variant-danger .metric-icon-box-elite { background: rgba(var(--el-primary-rgb), 0.1); color: var(--el-primary); }
+.variant-info .metric-icon-box-elite { background: rgba(var(--el-primary-rgb), 0.1); color: var(--el-primary); }
+.variant-accent .metric-icon-box-elite { background: rgba(var(--el-accent-rgb), 0.1); color: var(--el-accent); }
+
+.metric-label-elite {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    color: var(--el-dark-text-muted);
+    opacity: 0.8;
+}
+
+body.dark-theme-mode .metric-label-elite {
+    color: var(--el-text-light);
+    opacity: 0.6;
+}
+
+
+/* ðŸ›¡ï¸ REFUERZO SOBERANO PARA MÃ“VILES (v2.0) */
+@media (max-width: 48rem) {
+    html { font-size: 1rem; } /* Base mÃ¡s grande */
+    
+    .welcome-title-elite {
+        font-size: 1.8rem;
+        line-height: 1.1;
+        margin-bottom: 0.8rem;
+    }
+
+    .metric-value-elite {
+        font-size: 3.5rem; /* IMPACTO TOTAL */
+        margin-top: 0.3125rem;
+    }
+
+    .metric-label-elite {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+}
+
+/* ðŸ›¡ï¸ CINTA DE ACCIÃ“N RÃPIDA (GRID DE PRECISIÃ“N 8) */
+.action-ribbon-elite {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* 8 Columnas obligatorias */
+    gap: 0.5rem;
+    padding: 0.625rem 0;
+    width: 100%;
+}
+
+.btn-action-pill-elite {
+    display: flex;
+    flex-direction: column; /* Cambio a vertical para mÃ¡xima compresiÃ³n */
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    background: rgba(var(--el-white-rgb), 0.5);
+    backdrop-filter: blur(0.3125rem);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.08);
+    padding: 0.5rem 0.25rem;
+    border-radius: var(--el-radius-sub);
+    transition: var(--el-transition-fast);
+    min-width: 0; /* Permitir encogimiento total */
+}
+
+.btn-action-pill-elite:hover {
+    transform: translateY(-0.1875rem);
+    background: var(--el-white);
+    border-color: var(--el-accent);
+}
+
+.btn-action-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1rem;
+}
+
+.btn-action-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--el-primary);
+    letter-spacing: 0.03125rem;
+    white-space: nowrap;
+}
+
+/* ðŸ›¡ï¸ POWER HEADER: AUTORIDAD VISUAL */
+.navbar.sticky-top {
+    min-height: 5rem;
+    display: flex;
+    align-items: center;
+}
+
+/* SECCIÃ“N REPETIDA PURGADA POR HIGIENE TÃ‰CNICA - SOBERANÃA RESTAURADA */
+
+/* SECCIÃ“N REPETIDA ELIMINADA POR HIGIENE TÃ‰CNICA */
+
+/* Variantes de métrica card */
+.metric-card-elite.variant-success { border-inline-start: 0.25rem solid var(--el-primary); }
+.metric-card-elite.variant-danger { border-inline-start: 0.25rem solid var(--el-primary); }
+.metric-card-elite.variant-info { border-inline-start: 0.25rem solid var(--el-primary); }
+
+/* ðŸ›¡ï¸ REFINAMIENTO DE NAVEGACIÃ“N */
+.navbar.sticky-top {
+    background: var(--el-white);
+    box-shadow: 0 0.25rem 0.75rem rgba(var(--el-dark-rgb), 0.08);
+    border-bottom: 0.0625rem solid rgba(var(--el-primary-rgb), 0.1);
+}
+
+.btn-toggle-sidebar i { 
+    color: var(--el-primary);
+    font-size: 1.8rem;
+    font-weight: 900;
+}
+
+.metric-footer-elite {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: auto;
+}
+
+/* Animaciones de Pulso para Estado */
+.logo-container-elite {
+    width: 8.125rem;
+    height: 8.125rem;
+    margin-inline: auto;
+    padding: 0.625rem;
+}
+
+/* ðŸ† COMPONENTE: BADGE ELITE v1.0 */
+.badge-elite {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 50rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    border: 0.0625rem solid transparent;
+    line-height: 1.2;
+}
+
+.badge-elite--primary { 
+    background: var(--el-primary); 
+    color: var(--el-white); 
+    border: none;
+    font-weight: 800;
+}
+
+.badge-elite--outline {
+    background: transparent;
+    color: var(--el-primary);
+    border: 0.0625rem solid var(--el-primary);
+}
+.badge-elite--success { background: rgba(var(--el-primary-rgb), 0.1); color: var(--el-primary); border-color: rgba(var(--el-primary-rgb), 0.2); }
+.badge-elite--danger  { background: rgba(var(--el-primary-rgb), 0.1);  color: var(--el-primary);  border-color: rgba(var(--el-primary-rgb), 0.2);  }
+.badge-elite--info    { background: rgba(var(--el-primary-rgb), 0.1);    color: var(--el-primary);    border-color: rgba(var(--el-primary-rgb), 0.2);    }
+.badge-elite--warning { background: rgba(var(--el-primary-rgb), 0.1); color: var(--el-primary); border-color: rgba(var(--el-primary-rgb), 0.2); }
+.badge-elite--accent  { background: var(--el-accent); color: var(--el-dark); }
+
+
+.pulsar-status-elite {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentColor;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.pulsar-status-elite::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: currentColor;
+    animation: metricPulse 2s infinite;
+}
+
+/* Variante Pulso Primario (Color del Tema) */
+.pulsar-primary-elite {
+    color: var(--el-primary);
+}
+
+@keyframes metricPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+/* 7. BOTONERÃA Y NAVEGACIÃ“N PRIORITARIA (PROTOTIPO ATÃ“MICO) */
+.btn-elite {
+    height: var(--el-height-elite); /* MÃ©trica Ricardo: 44px */
+    padding: 0 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--el-radius-sub); /* Prestigio Controles: 12px */
+    font-weight: 800;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    transition: var(--el-transition-premium);
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+    border: 0.0625rem solid var(--el-primary);
+    background: var(--el-primary);
+    color: var(--el-white);
+}
+
+.btn-elite:hover {
+    filter: brightness(1.1);
+    transform: translateY(-0.125rem);
+    box-shadow: var(--el-shadow-md);
+}
+
+/* MODIFICADORES CROMÃTICOS (PIELES) */
+.btn-elite--primary {
+    background: var(--el-primary);
+    color: var(--el-white);
+    border-color: var(--el-primary);
+}
+
+.btn-elite--secondary {
+    background: var(--el-white);
+    color: var(--el-primary);
+    border-color: var(--el-primary);
+}
+
+.btn-elite--outline {
+    background: transparent;
+    color: var(--el-primary); /* Erradicar Gris: Normalizado a la paleta del tema */
+    border-color: rgba(var(--el-primary-rgb), 0.4);
+}
+
+.btn-elite--danger {
+    background: var(--el-primary);
+    color: var(--el-white);
+    border-color: var(--el-primary);
+}
+
+/* MODIFICADORES DE TAMAÃ‘O */
+.btn-elite--sm {
+    height: 2.2rem; /* VersiÃ³n Compacta: 50% de la mÃ©trica */
+    padding: 0 1.2rem;
+}
+
+/* MODIFICADOR GHOST: Transparente con hover sutil */
+.btn-elite--ghost {
+    background: transparent;
+    color: var(--el-primary);
+    border-color: transparent;
+}
+.btn-elite--ghost:hover {
+    background: rgba(var(--el-primary-rgb), 0.08);
+    border-color: rgba(var(--el-primary-rgb), 0.2);
+}
+
+/* MODIFICADOR ICON-ONLY: Cuadrado de 44px sin padding lateral */
+.btn-elite--icon-only {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* AJUSTE AERO: SOBERANÃA CROMÃTICA v11.0 */
+.mode-aero-elite .btn-elite--primary {
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.3);
+    background: var(--el-primary);
+    box-shadow: 0 0.5rem 1.25rem rgba(var(--el-primary-rgb), 0.3);
+    color: var(--el-white);
+}
+
+.mode-aero-elite .btn-elite--secondary {
+    background: var(--el-white);
+    color: var(--el-primary);
+    border-color: var(--el-primary);
+}
+
+.mode-aero-elite .btn-elite-icon {
+    border: none;
+    background: rgba(var(--el-primary-rgb), 0.12); /* Consistencia Aero */
+}
+
+.btn-elite-icon--danger:hover {
+    background: rgba(var(--el-primary-rgb), 0.1);
+}
+
+/* AJUSTE BLADE: CONTRASTE DE ICONOS */
+.mode-blade-elite .btn-elite-icon {
+    background: rgba(var(--el-primary-rgb), 0.15);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.2);
+}
+
+.mode-blade-elite .btn-elite-icon--danger {
+    border-color: rgba(var(--el-primary-rgb), 0.3);
+}
+
+/* UNIFICACIÃ“N DE ICONOGRAFÃA Ã‰LITE (BOTONES Y TARJETAS) */
+.btn-elite svg, .btn-elite i, 
+.metric-card-elite svg, .metric-card-elite i {
+    width: 1.375rem;
+    height: 1.375rem;
+    font-size: 1.375rem;
+    stroke-width: 0.125rem;
+    -webkit-text-stroke: 0.025rem currentColor;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: inherit; /* ðŸ”˜ DESPLEGABLES: UNIFICACIÃ“N ANATÃ“MICA (ANTI-FRANKENSTEIN) */
+}
+
+
+.btn-elite:hover i, .btn-elite:hover svg {
+    transform: scale(1.15) rotate(-5deg);
+    color: var(--el-white);
+}
+
+/* 8. FORZADO TIPOGRÃFICO GLOBAL */
+body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
+    font-family: var(--el-font-institutional);
+}
+
+/* 9. ESTÃNDARES DE CONTROL Y FOCO */
+
+.input-elite-group {
+    position: relative;
+    width: 100%;
+    max-width: 25rem; /* Ancho mÃ¡ximo sugerido para controles Ã‰lite */
+    margin-inline: auto; /* Centrado horizontal automÃ¡tico */
+    margin-bottom: 0.85rem; /* SeparaciÃ³n compacta Ã‰lite */
+}
+
+
+
+
+
+
+/* ELIMINAR BORDES RESIDUALES (CON ESPECIFICIDAD) */
+.border-elite-soft { border-color: rgba(var(--el-primary-rgb), 0.1); }
+.border-accent { border-color: var(--el-text-muted); } /* Acento de Objeto = Terciario */
+.border-primary { border-color: var(--el-primary); }
+
+/* 10. LOGOTIPOS Y MARCA - Centralizado en layout.css */
+
+/* ðŸ“… COMPONENTE: CRONOGRAMA INSTITUCIONAL Ã‰LITE v1.5 */
+.calendar-header-elite {
+    background: var(--el-primary);
+    color: var(--el-white);
+    border-radius: var(--el-radius-sub) var(--el-radius-sub) 0 0;
+}
+
+.calendar-header-elite h4 {
+    color: var(--el-white);
+}
+
+.calendar-btn-nav-elite {
+    color: var(--el-white);
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    transition: var(--el-transition-fast);
+}
+
+.calendar-btn-nav-elite:hover {
+    transform: scale(1.2);
+    opacity: 0.8;
+}
+
+.calendar-weekdays-elite {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--el-bg);
+    text-align: center;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.0625rem;
+    padding: 0.75rem 0;
+    color: var(--el-primary);
+    border-top: 0.0625rem solid var(--el-border);
+}
+
+.calendar-days-elite {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.0625rem;
+    background: var(--el-border);
+}
+
+.day-elite {
+    background: var(--el-white);
+    min-height: 7.5rem;
+    padding: 0.75rem;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.day-elite:hover {
+    background: rgba(var(--el-primary-rgb), 0.02);
+}
+
+.day-number {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--el-dark);
+    opacity: 0.4;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.today-elite {
+    background: rgba(var(--el-primary-rgb), 0.04);
+}
+
+.today-elite .day-number {
+    color: var(--el-primary);
+    opacity: 1;
+}
+
+.prev-date, .next-date {
+    opacity: 0.4;
+    background: var(--el-border);
+}
+
+.past-date-blocked {
+    background: var(--el-bg);
+}
+
+.event-pill-elite {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--el-radius-sub);
+    color: var(--el-white);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: var(--el-shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--el-event-color, var(--el-primary));
+}
+
+.flag-colombia {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.5rem;
+    background: linear-gradient(to bottom, var(--el-flag-yellow) 50%, var(--el-flag-blue) 50%, var(--el-flag-blue) 75%, var(--el-flag-red) 75%);
+    border-radius: 0.125rem;
+}
+
+/* ðŸ† COMPONENTE: ALERTA DE SOBERANÃA Ã‰LITE */
+.alert-soberania-elite {
+    background: var(--el-white);
+    border-inline-start: 0.25rem solid var(--el-primary);
+    border-radius: var(--el-radius-sub);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    animation: slideInLeft 0.5s ease-out;
+}
+
+.alert-soberania-icon {
+    width: 3.125rem;
+    height: 3.125rem;
+    background: rgba(var(--el-primary-rgb), 0.1);
+    color: var(--el-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.alert-soberania-content h4 {
+    margin-bottom: 0.25rem;
+    font-weight: 800;
+    color: var(--el-dark);
+}
+
+.alert-soberania-content p {
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    color: var(--el-dark-text-muted);
+}
+
+/* ðŸ” COMPONENTE: CONTENEDOR DE BÃšSQUEDA Ã‰LITE (VITRINA 06) */
+.search-wrapper-elite {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--el-white);
+    border-radius: 50rem;
+    border: 0.0625rem solid var(--el-border-strong); /* Retorno a 0.0625rem */
+    transition: all 0.3s ease;
+}
+
+.search-wrapper-elite:focus-within {
+    border-color: var(--el-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.1);
+}
+
+.search-elite {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0.75rem 1.25rem 0.75rem 3rem;
+    font-size: 0.85rem;
+    height: 2.75rem;
+}
+
+/* El botÃ³n de cierre ahora usa la clase estÃ¡ndar .btn-close-elite definida arriba */
+/* El botÃ³n de cierre ahora usa la clase estÃ¡ndar .btn-close-elite definida arriba */
+.btn-clear-search {
+    position: absolute;
+    inset-inline-end: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-clear-search:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.btn-clear-search.d-none { display: none; }
+
+.search-icon-elite-fixed {
+    position: absolute;
+    inset-inline-start: 1.2rem;
+    color: var(--el-primary);
+    opacity: 0.6;
+    pointer-events: none;
+    display: flex;
+}
+
+/* 13. ANIMACIONES Ã‰LITE (Micro-interacciones) */
+@keyframes mercury-neural {
+    0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
+    2%   { transform: translate(0.3125rem, -0.1875rem) rotate(2deg); } /* Jitter rÃ¡pido */
+    4%   { transform: translate(-0.125rem, 0.125rem) rotate(-1deg); }
+    6%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(-0.375rem, 0.25rem) scale(1.05); } /* Deriva lenta */
+    45%  { transform: translate(0.1875rem, -0.3125rem) scale(1); }
+    48%  { transform: translate(0.5rem, 0.125rem) rotate(4deg); } /* Latigazo de datos */
+    50%  { transform: translate(0, 0) rotate(0deg); }
+    75%  { transform: translate(-0.25rem, 0.375rem) rotate(-2deg); }
+    88%  { transform: translate(0.25rem, -0.25rem) scale(1.03); }
+    90%  { transform: translate(-0.375rem, 0.125rem) rotate(3deg); } /* Jitter final */
+    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+
+.animate-float-elite {
+    animation: mercury-neural 6s ease-in-out infinite;
+}
+
+/* 14. SOBERANÃA DE TAMAÃ‘O (Override de NormalizaciÃ³n) */
+.icon-elite--master svg {
+    width: 11.25rem;
+    height: 11.25rem;
+}
+
+/* 15. COMPONENTES MERCURIO (MENSAJERÃA) */
+.elite-channel-name {
+    font-size: 0.65rem; /* ESCALA NANO DEFINITIVA */
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(var(--el-primary-rgb), 0.4); /* Azul Primario al 40% */
+}
+
+/* ETIQUETAS DE ESTADO Y SUBTEXTOS */
+.status-label-elite {
+    color: var(--el-accent); /* Color Secundario */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+}
+
+.message-bubble {
+    border-radius: 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-width: 85%;
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.05);
+}
+
+.message-out .message-bubble {
+    background: var(--el-primary);
+    color: var(--el-white);
+    border-end-end-radius: 0.25rem;
+}
+
+.message-in .message-bubble {
+    background: var(--el-bg);
+    color: var(--el-dark);
+    border-end-start-radius: 0.25rem;
+}
+
+/* 11. SISTEMA DE AVATARES Y MÃ‰TRICAS COMPACTAS */
+.avatar-elite {
+    width: 2.75rem;
+    height: 2.75rem;
+    aspect-ratio: 1 / 1;
+    color: var(--el-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--el-radius-sub); /* Soft square institutional */
+    font-weight: 700;
+    font-size: 1.1rem;
+    line-height: 1; /* Evita desplazamientos por line-height */
+    flex-shrink: 0;
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.1);
+    text-transform: uppercase;
+    overflow: hidden;
+}
+
+/* ðŸ’  CONTROLES Ã‰LITE: CONFIGURACIÃ“N Y DATOS */
+
+.config-preview-card {
+    width: 100%;
+    max-width: 20rem;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    background: var(--el-white);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.08);
+    border-radius: var(--el-radius-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow: hidden;
+    box-shadow: var(--el-shadow-sm);
+}
+
+.preview-img-fit {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s ease;
+}
+
+.config-preview-card:hover .preview-img-fit {
+    transform: scale(1.05);
+}
+
+.avatar-elite--sm {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1;
+    border-radius: 0.5rem;
+}
+
+.avatar-elite--circle {
+    border-radius: 50%;
+}
+
+/* 12. CHECKBOX Ã‰LITE (SoberanÃ­a de SelecciÃ³n) */
+.form-check-input-elite {
+    width: 1.25em;
+    height: 1.25em;
+    margin-top: 0.125em;
+    vertical-align: top;
+    background-color: var(--el-white);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: 0.125rem solid rgba(var(--el-primary-rgb), 0.2);
+    appearance: none;
+    print-color-adjust: exact;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.form-check-input-elite:checked {
+    background-color: var(--el-primary);
+    border-color: var(--el-primary);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+.form-check-input-elite:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.15);
+    outline: 0;
+}
+
+/* ðŸ’  ELITE GLASS MODAL OVERRIDE (For SweetAlert2) */
+.glass-modal-elite {
+    background: rgba(var(--el-white-rgb), 0.75);
+    backdrop-filter: blur(1.5625rem) saturate(180%);
+    -webkit-backdrop-filter: blur(1.5625rem) saturate(180%);
+    border: 0.0625rem solid rgba(var(--el-white-rgb), 0.4);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem rgba(var(--el-dark-rgb), 0.5);
+}
+
+.glass-modal-elite .swal2-title {
+    color: var(--el-primary);
+    font-weight: 800;
+    letter-spacing: -0.03125rem;
+    font-family: var(--el-font-institutional);
+}
+
+/* ðŸ•¹ï¸ ELITE ACTION BUTTONS (Micro-interactions) */
+.btn-action-elite {
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background: rgba(var(--el-dark-rgb), 0.05);
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.btn-action-elite:hover {
+    background: rgba(var(--el-dark-rgb), 0.1);
+    transform: translateY(-0.125rem);
+}
+
+.btn-action-elite.text-danger:hover {
+    background: rgba(var(--el-primary-rgb), 0.1);
+    color: var(--el-primary);
+}
+
+.btn-action-elite.text-primary:hover {
+    background: rgba(var(--el-primary-rgb), 0.1);
+    color: var(--el-primary);
+}
+
+/* ðŸ›¡ï¸ ESCUDO DE ORIENTACIÃ“N Ã‰LITE (SoberanÃ­a Horizontal) */
+#escudo-orientacion-elite {
+    position: fixed;
+    inset: 0;
+    background: var(--el-primary); /* Azul Institucional SÃ³lido */
+    z-index: 100000;
+    display: none; 
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    padding: 10vw;
+}
+
+@media screen and (max-width: 62rem) and (orientation: portrait) and (pointer: coarse) {
+    #escudo-orientacion-elite {
+        display: flex; 
+    }
+    body {
+        overflow: hidden;
+    }
+}
+
+.escudo-icon-box {
+    font-size: 25vw; /* GIGANTE: 25% del ancho del celular */
+    color: var(--el-accent);
+    margin-bottom: 5vw;
+    animation: rotatePhoneElite 2.5s infinite ease-in-out;
+    display: flex;
+    justify-content: center;
+}
+
+.escudo-icon-box i {
+    display: block;
+    font-size: inherit;
+}
+
+@keyframes rotatePhoneElite {
+    0% { transform: rotate(0deg) scale(1); }
+    40% { transform: rotate(-90deg) scale(1.1); }
+    60% { transform: rotate(-90deg) scale(1.1); }
+    100% { transform: rotate(0deg) scale(1); }
+}
+
+.escudo-titulo {
+    font-weight: 900;
+    letter-spacing: 1vw;
+    margin-bottom: 4vw;
+    font-size: 8vw; /* TITULAR DE IMPACTO */
+    text-transform: uppercase;
+}
+
+.escudo-texto {
+    font-size: 4.5vw; /* TEXTO LEGIBLE */
+    opacity: 0.9;
+    max-width: 80vw;
+    line-height: 1.4;
+    margin: 0 auto;
+    font-weight: 600;
+}
+
+/* ðŸ”„ OPTIMIZACIÃ“N GLOBAL MÃ“VIL (VITRINA 06) */
+@media screen and (max-width: 62rem) {
+    #btnDarkMode, #campanaNotificaciones { display: none; }
+}
+
+/* ðŸ”„ OPTIMIZACIÃ“N HORIZONTAL (LANDSCAPE Ã‰LITE) */
+@media screen and (max-width: 62rem) and (orientation: landscape) {
+    .metric-card-elite {
+        padding: 1.5rem; 
+        min-height: 11.25rem;
+    }
+    
+    .metric-value-elite {
+        font-size: 2.5rem;
+    }
+
+    /* Forzar 3 columnas en horizontal mÃ³vil para el Dashboard */
+    #inicio-container-master .row.g-3 {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: hidden;
+    }
+
+    #inicio-container-master .col-xl-4, 
+    #inicio-container-master .col-lg-6,
+    #inicio-container-master .col-md-12 {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+    }
+
+    /* Grid de Apps en horizontal */
+    #app-grid-navigation .col-6 {
+        flex: 0 0 16.666%;
+        max-width: 16.666%;
+    }
+}
+/* ðŸ›¡ï¸ UTILIDADES DE SOBERANÃA Ã‰LITE (ARES & DASHBOARD) */
+.border-white-10 { border-color: rgba(var(--el-white-rgb), 0.1); }
+.badge-soberania--context {
+    background: rgba(var(--el-white-rgb), 0.1);
+    color: rgba(var(--el-white-rgb), 0.7);
+    font-size: 0.65rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 50rem;
+}
+.u-max-h-70vh { max-height: 70vh; }
+.u-h-200 { height: 12.5rem; }
+
+/* 11. NAVEGACIÃ“N Y MENÃšS Ã‰LITE (SoberanÃ­a Centralizada) */
+.menu-elite { list-style: none; padding: 0; margin: 0; }
+.menu-item-elite { 
+    position: relative; 
+    margin-bottom: 0.125rem;
+    z-index: 1000; /* Base sÃ³lida */
+}
+
+.menu-item-elite:hover {
+    z-index: 100000001; /* ElevaciÃ³n atÃ³mica al interactuar */
+}
+
+.sidebar-container {
+    width: var(--sidebar-width, 17.5rem);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    inset-inline-start: 0;
+    z-index: 1030;
+    background: var(--el-sidebar-bg, var(--el-primary));
+    color: var(--el-white);
+    transition: var(--el-transition-premium);
+    overflow-y: visible;
+    overflow-x: visible;
+    scrollbar-width: none;
+    border-inline-end: 0.0625rem solid var(--el-glass-border, rgba(255,255,255,0.1));
+    box-shadow: var(--el-sidebar-shadow, none);
+    /* El contenedor padre debe estar LIMPIO de filtros para no bloquear a los hijos */
+}
+
+.sidebar-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    backdrop-filter: var(--el-glass-blur, none);
+    -webkit-backdrop-filter: var(--el-glass-blur, none);
+    pointer-events: none;
+}
+
+.sidebar-container::-webkit-scrollbar { display: none; }
+
+@media (max-width: 62rem) {
+    .sidebar-container {
+        transform: translateX(-100%);
+    }
+    .sidebar-container.active {
+        transform: translateX(0);
+        box-shadow: 0.625rem 0 1.875rem rgba(var(--el-dark-rgb), 0.3);
+    }
+}
+
+.menu-link-elite { 
+    display: flex; align-items: center; justify-content: space-between; 
+    padding: 0.625rem 1.125rem 0.625rem 1.5rem; border-radius: var(--el-radius-sub); 
+    color: var(--el-glass-text, var(--el-white)); 
+    text-decoration: none; font-weight: 700; transition: var(--el-transition-premium);
+    background: transparent; position: relative; font-size: 0.9rem;
+}
+
+.menu-link-elite i, .menu-link-elite svg { 
+    transition: var(--el-transition-fast); 
+    color: var(--el-accent); 
+    stroke: var(--el-accent);
+}
+
+.menu-item-elite:hover > .menu-link-elite { 
+    background: var(--el-glass-bg-hover); 
+    color: var(--el-menu-hover-text, var(--el-white));
+    transform: translateX(0.25rem);
+}
+
+.menu-link-elite.active {
+    background: var(--el-menu-active-bg, rgba(var(--el-accent-rgb), 0.15));
+    color: var(--el-menu-active-text, var(--el-white));
+    box-shadow: none;
+}
+
+/* INDICADOR LATERAL DE ACENTO (SELLO ELITE) */
+.menu-link-elite::before {
+    content: ""; position: absolute; inset-inline-start: 0; top: 20%; 
+    width: 0.25rem; height: 0; background: var(--el-accent);
+    border-radius: 0 0.25rem 0.25rem 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: none; /* Purga de Sombras en Indicador (Ing. Ricardo) */
+}
+
+.menu-link-elite.active::before,
+.menu-item-elite:hover > .menu-link-elite::before {
+    height: 60%;
+}
+
+/* SUBMENÃšS (Posicionamiento Absoluto Nativo) */
+.submenu-elite {
+    list-style: none; padding: 0.3125rem 0 0.625rem 0; margin: 0;
+    display: none;
+    border-inline-start: var(--el-submenu-border, 0.25rem solid rgba(var(--el-white-rgb), 0.2));
+    background: transparent; /* LIBERTAD TOTAL PARA EL CRISTAL */
+    transition: opacity 0.08s ease-out, inset-inline-start 0.08s ease-out;
+    position: relative;
+    z-index: 100;
+    box-shadow: var(--el-submenu-shadow, 0 0.9375rem 2.8125rem rgba(var(--el-primary-rgb), 0.5));
+}
+
+.submenu-elite::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--el-submenu-bg, var(--el-primary));
+    backdrop-filter: var(--el-submenu-blur, none);
+    -webkit-backdrop-filter: var(--el-submenu-blur, none);
+    border-radius: inherit;
+    filter: var(--el-submenu-brightness, brightness(0.5));
+}
+
+.submenu-link-elite {
+    display: flex; align-items: center; padding: 0.625rem 1.25rem;
+    color: var(--el-submenu-text, var(--el-white)); text-decoration: none; font-size: 0.9rem;
+    transition: all 0.2s ease;
+    border-inline-start: 0.25rem solid transparent;
+}
+
+.submenu-link-elite:hover {
+    background: rgba(var(--el-white-rgb), 0.15);
+    color: var(--el-white);
+    padding-inline-start: 1.5625rem;
+    border-inline-start: 0.25rem solid var(--el-secondary); /* Vivito de 1pt reforzado */
+}
+
+.submenu-link-elite.active {
+    color: var(--el-accent);
+    opacity: 1; font-weight: 800;
+}
+
+.submenu-link-elite:hover { 
+    background: rgba(var(--el-accent-rgb), 0.2);
+    opacity: 1; color: var(--el-white);
+}
+
+/* ADAPTABILIDAD DE NAVEGACIÃ“N (SoberanÃ­a EstÃ¡tica) */
+@media (min-width: 62.0625rem) {
+    .menu-item-elite { position: relative; } /* Ancla para el submenÃº */
+
+    .submenu-elite { 
+        position: absolute; 
+        inset-inline-start: calc(100% - 0.625rem); 
+        top: var(--el-submenu-offset-y, 0); /* SincronizaciÃ³n con Motor de Gravedad v2.0 */
+        transform: translateX(0.9375rem); /* Offset de entrada horizontal */
+        min-width: 15rem; 
+        opacity: 0; 
+        visibility: hidden;
+        z-index: 100000000;
+        border-radius: 0 var(--el-radius-sub) var(--el-radius-sub) 0;
+        box-shadow: var(--el-submenu-shadow, none);
+        display: block; 
+        transition: opacity 0.15s ease-out, transform 0.15s ease-out, visibility 0.15s ease-out;
+    }
+
+    .menu-item-elite:hover > .submenu-elite {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0); /* AtracciÃ³n MagnÃ©tica horizontal */
+    }
+    
+    /* LEY DE GRAVEDAD: Gestionado por sidebar_gravity.js v2.0 */
+    .menu-item-elite.drop-up-elite > .submenu-elite {
+        transform: translateY(-100%) translateX(0);
+    }
+
+    /* PURGA DE SOMBRAS Y FONDOS ACTIVO (Ing. Ricardo) */
+    .menu-link-elite.active {
+        background: transparent; /* Fondo Transparente solicitado */
+        color: var(--el-white);
+        box-shadow: none;
+        border: none;
+    }
+}
+
+@media (max-width: 62rem) {
+    .submenu-elite { max-height: 0; opacity: 0; }
+    .menu-item-elite:hover .submenu-elite { max-height: 31.25rem; opacity: 1; padding: 0.3125rem 0; }
+}
+
+.u-h-34 { height: 2.125rem; }
+.u-w-70 { width: 4.375rem; }
+
+/* 12. PILDORITAS Y ETIQUETAS (BADGES Ã‰LITE) */
+
+/* 13. NOTIFICACIONES FLOTANTES (TOASTS Ã‰LITE) */
+.toast-elite {
+    background: var(--el-glass-bg); backdrop-filter: blur(0.75rem);
+    -webkit-backdrop-filter: blur(0.75rem); border-radius: var(--el-radius-sub);
+    border: 0.0625rem solid var(--el-glass-border); padding: 0.9375rem 1.25rem;
+    box-shadow: var(--el-shadow-lg); display: flex; align-items: center; gap: 0.9375rem;
+    max-width: 21.875rem; position: relative; overflow: hidden;
+}
+
+.toast-elite::before {
+    content: ''; position: absolute; inset-inline-start: 0; top: 0; height: 100%; width: 0.25rem;
+    background: var(--el-primary);
+}
+.toast-elite.toast-elite--success::before { background: var(--el-primary); }
+.toast-elite.toast-elite--danger::before { background: var(--el-primary); }
+
+/* ðŸ” BUSCADOR GLOBAL Ã‰LITE (PROTOCOLO INSTITUCIONAL) */
+/* 
+   ==========================================================================
+   ELITE UI KIT v10.0 - COMPONENTES RESIDUALES
+   Archivo en proceso de extinciÃ³n. La soberanÃ­a estÃ©tica reside en UI_KIT.CSS
+   ==========================================================================
+*/
+
+/* 1. COMPONENTES DE INTERRUPCIÃ“N (SWITCH Ã‰LITE) */
+.switch-elite {
+    position: relative; display: inline-block; width: 2.75rem; height: 1.5rem;
+}
+.switch-elite input { opacity: 0; width: 0; height: 0; }
+.switch-slider { 
+    position: absolute; cursor: pointer; top: 0; inset-inline-start: 0; inset-inline-end: 0; bottom: 0; 
+    background: var(--el-border); border-radius: 2.125rem; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 0.0625rem solid var(--el-border-strong);
+}
+.switch-slider:before { 
+    content: ""; position: absolute; height: 1rem; width: 1rem; inset-inline-start: 0.25rem; bottom: 0.1875rem; 
+    background: white; border-radius: 50%; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+input:checked + .switch-slider { background: var(--el-accent); border-color: var(--el-accent); }
+input:checked + .switch-slider:before { transform: translateX(1.25rem); }
+
+/* 2. MICRO-ANIMACIONES Y CARGADORES */
+.loader-elite-orbital {
+    width: 2rem; height: 2rem; border: 0.15625rem solid rgba(var(--el-primary-rgb), 0.1);
+    border-radius: 50%; display: inline-block; position: relative;
+    animation: rotation 1s linear infinite;
+}
+.loader-elite-orbital::after {
+    content: ''; position: absolute; inset-inline-start: 0; top: 0;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    border: 0.1875rem solid transparent; border-bottom-color: var(--el-accent);
+}
+@keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* 3. CONTROLES SEGMENTADOS (TÃCTICA) */
+.segmented-control-elite {
+    display: inline-flex; background: rgba(var(--el-primary-rgb), 0.05); border-radius: 50rem; 
+    padding: 0.25rem; position: relative; gap: 0.25rem;
+}
+.segmented-control-elite label {
+    padding: 0.375rem 1.25rem; font-size: 0.75rem; font-weight: 700; border-radius: 50rem;
+    cursor: pointer; transition: 0.3s; color: var(--el-dark); text-transform: uppercase;
+}
+.segmented-control-elite input:checked + label { color: white; background: var(--el-primary); }
+
+/* 4. DROPZONE (CARGA DE DOCUMENTOS) */
+.dropzone-elite {
+    border: 0.125rem dashed rgba(var(--el-primary-rgb), 0.2); border-radius: var(--el-radius-main);
+    padding: 2.5rem 1.25rem; text-align: center; background: rgba(var(--el-primary-rgb), 0.02);
+    transition: 0.4s; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.9375rem;
+}
+.dropzone-elite:hover { border-color: var(--el-primary); background: rgba(var(--el-primary-rgb), 0.05); }
+
+/* 5. TIMELINE ACADÃ‰MICO */
+
+/* ==========================================================================
+   BLINDAJE DE TERCEROS: SWEETALERT2 (ADN Ã‰LITE)
+   ========================================================================== */
+.swal2-popup {
+    border-radius: var(--el-radius-main);
+    font-family: var(--el-font-institutional), sans-serif;
+    padding: 2rem;
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem var(--el-shadow-primary);
+}
+
+.swal2-title {
+    font-weight: 900;
+    color: var(--el-primary);
+    text-transform: uppercase;
+    letter-spacing: -0.03125rem;
+    font-size: 1.5rem;
+}
+
+.swal2-html-container {
+    color: var(--el-text-secondary);
+    font-size: 1rem;
+}
+/* --- CONFIGURACIÃ“N: DASHBOARD FIJO (CERO SCROLL) --- */
+.config-container-master {
+    min-height: calc(100vh - 7.5rem);
+    display: flex;
+    flex-direction: column;
+    overflow: visible; /* Permitir que fluya si es necesario */
+    padding-bottom: 0.5rem;
+}
+
+.tab-content {
+    background: var(--el-glass-bg);
+    backdrop-filter: var(--el-glass-blur);
+    border: var(--el-border-width) solid var(--el-glass-border);
+    padding: 1rem 2rem 5rem; /* Pista de aterrizaje ampliada */
+    border-radius: var(--el-card-radius);
+    box-shadow: var(--el-card-shadow);
+    overflow: visible; /* SincronizaciÃ³n Aero: Permite flujo de dropdowns */
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+/* Scrollbar Ã‰lite para Webkit */
+.tab-content::-webkit-scrollbar { width: 0.375rem; }
+.tab-content::-webkit-scrollbar-track { background: transparent; }
+.tab-content::-webkit-scrollbar-thumb { 
+    background-color: var(--el-primary); 
+    border-radius: 0.625rem;
+}
+
+/* CompactaciÃ³n de Tarjetas Internas */
+.config-main-card-elite {
+    background: var(--el-glass-bg);
+    backdrop-filter: var(--el-glass-blur);
+    border: var(--el-border-width) solid var(--el-glass-border);
+    border-radius: var(--el-card-radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--el-card-shadow);
+    transition: var(--el-transition-premium);
+    overflow: visible; /* SoberanÃ­a de controles: Evita el corte en Aero Glass */
+}
+
+/* --- CONTENEDOR MAESTRO DE CABECERA --- */
+.nav-elite-header-container {
+    background: var(--el-bg-card-muted);
+    border: 0.0625rem solid var(--el-border);
+    border-radius: 1rem 1rem 0 0;
+    margin-bottom: -0.0625rem;
+    z-index: 20;
+    position: relative;
+}
+
+.nav-pills-elite {
+    display: flex;
+    gap: 0.125rem;
+    padding: 0;
+    padding-inline-start: 0.5rem;
+    background: transparent;
+    border-bottom: 0.0625rem solid var(--el-border);
+    position: relative;
+    z-index: 10;
+    margin-bottom: 0;
+    align-items: flex-end;
+}
+
+.nav-pills-elite .nav-item,
+.nav-item-elite {
+    margin-bottom: -0.0625rem; /* Enganche con el panel */
+}
+
+.nav-pills-elite .nav-link,
+.nav-link-elite {
+    color: var(--el-text-muted);
+    font-weight: 800;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.375rem 0.375rem 0 0;
+    border: 0.0625rem solid var(--el-border);
+    border-bottom: none;
+    background: var(--el-surface-2);
+    transition: var(--el-transition-fast);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.nav-pills-elite .nav-link i,
+.nav-link-elite i {
+    font-size: 0.85rem;
+    margin-inline-end: 0.3125rem;
+}
+
+.nav-pills-elite .nav-link:hover,
+.nav-link-elite:hover {
+    background: var(--el-bg-card);
+    color: var(--el-primary);
+}
+
+.nav-pills-elite .nav-link.active,
+.nav-link-elite.active {
+    background: var(--el-white);
+    color: var(--el-primary);
+    border-top: 0.1875rem solid var(--el-primary);
+    border-inline: 0.0625rem solid var(--el-border);
+    position: relative;
+    z-index: 5;
+    box-shadow: none;
+}
+
+/* --- CENTINELA DE SINCRONIZACIÃ“N REACTIVA --- */
+.sync-indicator-elite {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 1.25rem;
+    background: rgba(var(--el-primary-rgb), 0.05);
+    color: var(--el-text-muted);
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: 0.0625rem solid transparent;
+}
+
+
+
+.sync-indicator-elite.saving {
+    color: var(--el-primary);
+    background: rgba(var(--el-primary-rgb), 0.1);
+    border-color: rgba(var(--el-primary-rgb), 0.2);
+}
+
+.sync-indicator-elite.saving i {
+    animation: rotateSync 1.5s linear infinite;
+}
+
+@keyframes rotateSync {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.sync-indicator-elite.synced {
+    color: var(--el-primary);
+    background: rgba(var(--el-primary-rgb), 0.05);
+}
+
+/* --- LA 'BASESITA' DE LOS TÃTULOS --- */
+.config-section-header {
+    background: var(--el-surface-1); /* SÃ³lido Institucional */
+    border-bottom: 0.125rem solid var(--el-primary);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 0.25rem;
+}
+
+.config-section-header h5, 
+.config-section-header h6 {
+    margin: 0;
+    color: var(--el-primary);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+}
+
+.swal2-actions {
+    gap: 0.75rem;
+}
+
+.swal2-confirm, .swal2-deny, .swal2-cancel {
+    height: var(--el-height-elite);
+    border-radius: var(--el-radius-sub);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    padding: 0 2rem;
+    font-size: 0.85rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.swal2-confirm {
+    background-color: var(--el-primary);
+    color: var(--el-white);
+    box-shadow: 0 0.25rem 0.75rem var(--el-shadow-primary);
+}
+
+.swal2-cancel {
+    background-color: var(--el-white);
+    color: var(--el-primary);
+    border: 0.0625rem solid var(--el-primary);
+}
+
+.swal2-deny {
+    background-color: var(--el-primary-faded, #e2eafc);
+    color: var(--el-primary);
+    border: 0.0625rem solid var(--el-primary);
+}
+
+/* Evitar salto lateral manteniendo el botÃ³n Cancelar visible pero inactivo en estado de carga */
+.swal2-popup.swal2-loading .swal2-cancel {
+    display: inline-block;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Ocultar el cargador nativo fuera de flujo para evitar saltos y descuadres de flexbox */
+.swal2-loader {
+    display: none;
+}
+
+/* Inyectar un micro-spinner elegante directamente dentro del botÃ³n de confirmaciÃ³n */
+.swal2-confirm.swal2-loading::after {
+    content: "";
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-inline-start: 0.5rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: swal2-rotate-loading 0.75s linear infinite;
+    vertical-align: middle;
+}
+
+.swal2-confirm:hover {
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.375rem 0.9375rem var(--el-shadow-primary);
+}
+
+/* ðŸ“‚ COMPONENTE: INPUT DE CARGA Ã‰LITE (GENBETA STYLE) */
+.file-upload-elite-wrapper {
+    position: relative;
+    width: 100%;
+    height: 3.375rem;
+    background: rgba(var(--el-primary-rgb), 0.05);
+    border: 0.0625rem solid var(--el-border-strong);
+    border-radius: var(--el-radius-sub);
+    display: flex;
+    align-items: center;
+    padding: 0.375rem;
+    transition: all 0.3s var(--el-transition-standard);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.file-upload-elite-wrapper:hover {
+    background: rgba(var(--el-primary-rgb), 0.08);
+    border-color: var(--el-primary);
+    box-shadow: 0 0.25rem 0.75rem rgba(var(--el-primary-rgb), 0.1);
+}
+
+.file-upload-elite-btn {
+    height: 2.625rem;
+    background: var(--el-primary);
+    color: var(--el-white);
+    padding: 0 1.25rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.03125rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: transform 0.2s ease;
+    z-index: 2;
+}
+
+.file-upload-elite-wrapper:active .file-upload-elite-btn {
+    transform: scale(0.96);
+}
+
+.file-upload-elite-text {
+    margin-inline-start: 0.9375rem;
+    font-size: 0.8125rem;
+    color: var(--el-text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.file-upload-elite-input {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+/* ðŸ•’ COMPONENTE: TARJETA DE INPUT KHRONOS (PRESTIGE STYLE) */
+.config-input-card-elite {
+    background: var(--el-glass-bg);
+    backdrop-filter: var(--el-glass-blur);
+    border: var(--el-border-width) solid var(--el-glass-border);
+    border-radius: var(--el-card-radius);
+    padding: 0.85rem 1rem;
+    height: 100%;
+    width: 100%; /* Forzar ocupaciÃ³n total para evitar el colapso intrÃ­nseco */
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    position: relative;
+    box-shadow: var(--el-card-shadow);
+}
+
+.config-input-card-elite:hover {
+    border-color: var(--el-primary);
+    box-shadow: 0 0.25rem 0.9375rem rgba(var(--el-primary-rgb), 0.08);
+}
+
+.config-input-card-elite label {
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: var(--el-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    border-bottom: 0.125rem solid var(--el-accent); /* ADN Institucional: Color Receso */
+    padding-bottom: 0.125rem;
+}
+
+/* ðŸ•’ INPUT DE HORA NATIVO KHRONOS (Sin interferencia de appearance) */
+.input-time-khronos {
+    width: 100%;
+    min-width: 130px; /* ReducciÃ³n experimental extrema */
+    max-width: 140px; /* ReducciÃ³n experimental extrema */
+    height: var(--el-height-elite);
+    padding-inline: 0.35rem 0.15rem; /* Ajuste de padding para maximizar Ã¡rea Ãºtil */
+    border-radius: var(--el-radius-sub);
+    border: 0.0938rem solid rgba(var(--el-primary-rgb), 0.8);
+    background-color: var(--el-white);
+    color: var(--el-dark);
+    font-family: var(--el-font-institutional), sans-serif;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+    transition: var(--el-transition-premium);
+    box-shadow: 0 0.25rem 0.75rem rgba(var(--el-primary-rgb), 0.08);
+    display: block;
+    margin-inline: auto; /* Centrado dentro de la tarjeta */
+}
+
+.input-time-khronos::-webkit-datetime-edit {
+    padding: 0;
+}
+
+.input-time-khronos::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+}
+
+/* Fine-tuning para asegurar espaciado limpio en el indicador AM/PM */
+.input-time-khronos::-webkit-datetime-edit-ampm-field {
+    padding-inline-start: 0.25rem;
+    text-transform: uppercase; /* Fuerza estÃ©tica institucional */
+}
+
+.input-time-khronos::-webkit-calendar-picker-indicator {
+    margin: 0;
+    padding-inline-start: 0.25rem;
+    cursor: pointer;
+}
+
+.input-time-khronos:focus {
+    outline: none;
+    border-color: var(--el-primary);
+    box-shadow: 0 0 0 0.1875rem rgba(var(--el-primary-rgb), 0.15);
+}
+
+/* ðŸ“ UTILIDADES DE LAYOUT Ã‰LITE */
+.config-flex-row-elite {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -0.625rem;
+}
+
+.config-flex-col-elite {
+    padding: 0.625rem;
+    width: 100%; /* Una columna en dispositivos mÃ³viles para evitar encimamiento */
+}
+
+@media (min-width: 576px) {
+    .config-flex-col-elite {
+        width: 50%; /* Dos columnas en pantallas medianas y grandes */
+    }
+}
+
+.palette-scroll-area-elite {
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-inline-end: 0.5rem;
+}
+
+.config-soberania-label-elite {
+    letter-spacing: 0.03125rem;
+    margin-block-end: 0.75rem; /* CompresiÃ³n Ã‰lite: ReducciÃ³n del 50% */
+    font-size: 0.6rem;
+    opacity: 0.9;
+}
+
+/* ðŸ“… COMPONENTE: MONEDAS DE DÃA (KHRONOS) */
+.btn-check-elite {
+    display: none;
+}
+
+.day-coin-elite {
+    width: 2.375rem; /* CompactaciÃ³n de monedas */
+    height: 2.375rem;
+    background: var(--el-white);
+    border: 0.125rem solid var(--el-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 900;
+    color: var(--el-text-muted);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.btn-check-elite:checked + .day-coin-elite {
+    background: var(--el-primary);
+    color: var(--el-white);
+    border-color: var(--el-primary);
+    box-shadow: 0 0.25rem 0.75rem rgba(var(--el-primary-rgb), 0.3);
+    transform: scale(1.1);
+}
+
+.day-coin-elite:hover {
+    border-color: var(--el-primary);
+    color: var(--el-primary);
+}
+
+/* ðŸŽ¨ COMPONENTE: SWATCH DE PALETAS REGISTRADAS */
+.palette-swatch-elite-mini {
+    background: var(--el-white);
+    border: 0.0625rem solid var(--el-border);
+    border-radius: var(--el-radius-sub);
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.palette-swatch-elite-mini:hover {
+    transform: translateX(0.3125rem);
+    border-color: var(--el-primary);
+    box-shadow: var(--el-shadow-sm);
+}
+
+.palette-swatch-elite-mini.active {
+    border-color: var(--el-primary);
+    border-width: 0.125rem;
+    background: rgba(var(--el-primary-rgb), 0.02);
+}
+
+.color-circle-elite-micro {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+    background: var(--swatch-bg, var(--el-primary));
+    border: 0.0625rem solid var(--el-border-subtle);
+    box-shadow: var(--el-shadow-muted);
+}
+
+/* â³ COMPONENTE: TIMELINE KHRONOS (ALTA FIDELIDAD) */
+.khronos-timeline-elite {
+    padding: 1rem;
+    position: relative;
+}
+
+.timeline-item-elite {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.25rem;
+    position: relative;
+    padding-inline-start: 1.5rem;
+}
+
+/* LÃ­nea de Autoridad (RÃ©plica Identica) */
+.timeline-item-elite::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -0.0625rem;
+    top: 0;
+    height: 100%;
+    width: 0.0625rem;
+    background: var(--el-primary);
+}
+
+.timeline-number {
+    position: absolute;
+    inset-inline-start: -0.875rem; /* Centrado para 1.75rem */
+    width: 1.75rem;
+    height: 1.75rem;
+    background: var(--el-white);
+    border: 0.0625rem solid var(--el-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 500; /* Peso ligero de referencia */
+    color: var(--el-primary);
+    z-index: 5;
+}
+
+.timeline-content {
+    flex: 1;
+    background: rgba(var(--el-primary-rgb), 0.02);
+    padding: 0.3rem 0.85rem;
+    border-radius: var(--el-radius-sub, 0.25rem); /* Tokenizado para MutaciÃ³n Blade */
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.05);
+}
+
+.timeline-title {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--el-dark);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.125rem;
+}
+
+.timeline-time {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--el-primary);
+    background: rgba(var(--el-primary-rgb), 0.05);
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.timeline-break-elite {
+    margin: 0.25rem 0 0.25rem 1rem;
+    padding: 0.35rem 0.85rem;
+    background: var(--el-bg-card); /* Tono Institucional Sincronizado */
+    border-inline-start: 0.25rem solid var(--el-accent);
+    color: var(--el-accent);
+    font-size: 0.6rem;
+    font-weight: 700;
+    border-radius: 0 0.25rem 0.25rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+}
+
+.config-main-card-elite--primary {
+    position: relative;
+    z-index: 10;
+}
+} /* Fin de @layer components */
+
+@layer utilities {
+    /* ðŸ›¡ï¸ SOBERANÃA DE MODALES (Z-INDEX FIJO Y PROTEGIDO) */
+    .modal-backdrop { z-index: 1040; }
+    .modal { z-index: 1055; }
+    .swal2-container { z-index: 1060; }
+    
+    /* ðŸŽ¯ OVERRIDES DE MAQUETACIÃ“N: HERMES INPUT ENGINE */
+    .chat-input-form .input-elite {
+        flex: 1;
+        width: auto;
+    }
+    
+    /* ðŸš¥ SELECTOR DE PRIORIDAD POR SWITCHES DE COLOR (VITRINA 06) */
+    .priority-selector-dots {
+        display: flex;
+        gap: 0.85rem;
+        align-items: center;
+        background: rgba(var(--el-primary-rgb), 0.04);
+        padding: 0 1rem;
+        border-radius: var(--el-radius-pill);
+        border: 0.0625rem solid var(--el-border);
+        height: var(--el-height-elite);
+        box-sizing: border-box;
+    }
+    
+    .priority-dot {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.15rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        position: relative;
+        padding-block: 0.2rem;
+    }
+    
+    .priority-dot .dot-inner {
+        width: 1.15rem;
+        height: 1.15rem;
+        border-radius: 50%;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 0.125rem solid var(--el-white);
+        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.05);
+        box-sizing: border-box;
+        background-color: var(--el-border-strong);
+    }
+    
+    .priority-label {
+        font-size: 0.52rem;
+        font-weight: 800;
+        color: var(--el-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        transition: color 0.3s ease;
+        line-height: 1;
+    }
+    
+    .priority-dot--success input:checked + .dot-inner {
+        background-color: var(--el-primary);
+        color: var(--el-primary);
+        box-shadow: 0 0 0.5rem currentColor;
+        transform: scale(1.15);
+    }
+    .priority-dot--warning input:checked + .dot-inner {
+        background-color: var(--el-accent);
+        color: var(--el-accent);
+        box-shadow: 0 0 0.5rem currentColor;
+        transform: scale(1.15);
+    }
+    .priority-dot--danger input:checked + .dot-inner {
+        background-color: var(--el-primary);
+        color: var(--el-primary);
+        box-shadow: 0 0 0.5rem currentColor;
+        transform: scale(1.15);
+    }
+    
+    .priority-dot input:checked ~ .priority-label {
+        color: var(--el-dark);
+    }
+    
+    .priority-dot:hover .dot-inner {
+        transform: scale(1.1);
+    }
+
+    /* ðŸ·ï¸ ACCORDION BUTTONS CONTRAST FIX */
+    .custom-acc-btn {
+        font-family: var(--el-font-institutional);
+        font-weight: 800;
+        transition: var(--el-transition-organic);
+    }
+
+    .custom-acc-btn:not(.collapsed) {
+        background-color: var(--el-primary);
+        color: var(--el-white);
+        box-shadow: 0 0.5rem 1rem rgba(var(--el-primary-rgb), 0.15);
+    }
+
+    .custom-acc-btn:not(.collapsed) i,
+    .custom-acc-btn:not(.collapsed) svg {
+        color: var(--el-white);
+    }
+
+    /* ðŸ”” NOTIFICACIONES DROPDOWN MINI */
+    .notif-mini-avatar {
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+    .notif-mini-name {
+        max-width: 7.5rem;
+    }
+    .notif-mini-text {
+        max-width: 11.5rem;
+    }
+
+    /* ðŸ”” PREMIUM BELL RINGING MICRO-ANIMATION (VITRINA 06) */
+    @keyframes bell-ring-elite {
+        0%, 100% { transform: rotate(0deg); }
+        10% { transform: rotate(10deg); }
+        20% { transform: rotate(-10deg); }
+        30% { transform: rotate(8deg); }
+        40% { transform: rotate(-8deg); }
+        50% { transform: rotate(5deg); }
+        60% { transform: rotate(-5deg); }
+        70% { transform: rotate(3deg); }
+        80% { transform: rotate(-3deg); }
+        90% { transform: rotate(1deg); }
+    }
+    
+    .bell-ring-active {
+        animation: bell-ring-elite 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        transform-origin: top center;
+        display: inline-block;
+        color: var(--el-primary);
+    }
+
+    /* ðŸŒ€ ELITE BALL 3x3 ROTATING LOADER (VITRINA 06) */
+    .loader-ball-elite {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        margin: 2rem auto;
+        display: inline-block;
+        transform: rotate(45deg);
+    }
+    .loader-ball-elite--mini {
+        position: relative;
+        width: 18px;
+        height: 18px;
+        margin: 0 0.5rem 0 0;
+        display: inline-flex;
+        transform: scale(0.3) rotate(45deg);
+        transform-origin: left center;
+        vertical-align: middle;
+    }
+    .loader-ball-elite > div,
+    .loader-ball-elite--mini > div {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: var(--el-primary);
+        border-radius: 50%;
+    }
+    .loader-ball-elite .balls-1 { animation: anm-bl-1-a 1s ease-in-out infinite; top: 0; left: 0; }
+    .loader-ball-elite .balls-2 { animation: anm-bl-1-b 1s ease-in-out infinite; top: 0; left: 20px; }
+    .loader-ball-elite .balls-3 { animation: anm-bl-1-c 1s ease-in-out infinite; top: 0; left: 40px; }
+    .loader-ball-elite .balls-4 { animation: anm-bl-1-d 1s ease-in-out infinite; top: 20px; left: 0; }
+    .loader-ball-elite .balls-5 { animation: anm-bl-1-e 1s ease-in-out infinite; top: 20px; left: 20px; }
+    .loader-ball-elite .balls-6 { animation: anm-bl-1-f 1s ease-in-out infinite; top: 20px; left: 40px; }
+    .loader-ball-elite .balls-7 { animation: anm-bl-1-g 1s ease-in-out infinite; top: 40px; left: 0; }
+    .loader-ball-elite .balls-8 { animation: anm-bl-1-h 1s ease-in-out infinite; top: 40px; left: 20px; }
+    .loader-ball-elite .balls-9 { animation: anm-bl-1-i 1s ease-in-out infinite; top: 40px; left: 40px; }
+
+    @keyframes anm-bl-1-a { 50%, 100% { top: 20px; left: 0; } }
+    @keyframes anm-bl-1-b { 50%, 100% { top: 0; left: 0; } }
+    @keyframes anm-bl-1-c { 50%, 100% { top: 0; left: 20px; } }
+    @keyframes anm-bl-1-d { 50%, 100% { top: 40px; left: 0; } }
+    @keyframes anm-bl-1-f { 50%, 100% { top: 0; left: 40px; } }
+    @keyframes anm-bl-1-g { 50%, 100% { top: 40px; left: 20px; } }
+    @keyframes anm-bl-1-h { 50%, 100% { top: 40px; left: 40px; } }
+    @keyframes anm-bl-1-i { 50%, 100% { top: 20px; left: 40px; } }
+}
+
+select[data-ares-initialized="true"] {
+    display: none;
+}
+
+/* Banner de Alerta de RecuperaciÃ³n en el Constructor */
+.alert-recuperacion-elite {
+    background-color: var(--el-primary);
+    color: var(--el-white);
+    border: 1px solid var(--el-border);
+    border-radius: var(--el-radius-sub);
+}
+.alert-recuperacion-elite strong,
+.alert-recuperacion-elite span {
+    color: var(--el-white);
+}
+.alert-recuperacion-elite .avatar-icono-recuperacion {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--el-white);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.alert-recuperacion-elite .opacity-90 {
+    opacity: 0.9;
+}
+
+/* Asegurar que el menÃº del select premium flote por encima de todo en los modales */
+html body div.modal div.ares-select-wrapper ul.dropdown-menu-elite,
+html body div.modal div.ares-select-wrapper ul.dropdown-menu {
+    z-index: 2050;
+}
+
+html body div.modal div.ares-select-wrapper.show,
+html body div.modal div.ares-select-wrapper:focus-within {
+    z-index: 2090;
+}
+
+/* Elevar el contenedor del select dinÃ¡mico si estÃ¡ abierto */
+html body div.modal div:has(> div.ares-select-wrapper.show),
+html body div.modal div:has(> div.ares-select-wrapper:focus-within) {
+    position: relative;
+    z-index: 2095;
+}
+
+/* Forzar forma redonda a los inputs de tipo radio en toda la aplicaciÃ³n */
+.form-check-input[type="radio"],
+input[type="radio"].form-check-input {
+    border-radius: 50%;
+}
+
+/* BLINDAJE DE TERCEROS: Overrides de mensajes de validaciÃ³n SweetAlert2 (Cero HEX / ADN Ã‰lite) */
+.swal2-validation-message {
+    background: rgba(var(--el-primary-rgb), 0.1);
+    color: var(--el-primary);
+    border: 1px solid rgba(var(--el-primary-rgb), 0.2);
+    border-radius: var(--el-radius-main, 12px);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-block-start: 1rem;
+}
+.swal2-validation-message::before {
+    background-color: var(--el-primary);
+    color: var(--el-bg-card, white);
+    border-radius: 50%;
+}
+
+.toast-floating-elite {
+    position: fixed;
+    top: 1rem;
+    inset-inline-end: 1rem;
+    z-index: 150000;
+}
+
+/* BLINDAJE DE TERCEROS: HomologaciÃ³n de esquinas redondeadas en formularios SweetAlert2 (Vitrina 06) */
+.swal2-popup .swal2-input,
+.swal2-popup .swal2-select,
+.swal2-popup .swal2-textarea,
+.swal2-popup select.form-select {
+    border-radius: var(--el-radius-sub, 12px);
+}
+
+/* Ajuste de ancho de la ventana modal del Plan Maestro (Protocolo Atlas) */
+#modalPlanMaster .modal-dialog {
+    max-width: 720px;
+}
+
+/* Ajuste de ancho de inputs de intensidad horaria (Plan Maestro Atlas) */
+#lista-materias-plan input.zulu-intensidad-input,
+#lista-materias-plan .zulu-intensidad-input {
+    width: 85px; /* Aumentado a 85px para dar holgura a 14px + flechas */
+    max-width: 85px;
+    min-width: 85px;
+    flex: 0 0 85px;
+    font-size: 14px; /* Forzar 14px solicitado */
+}
+
+/* Reducir los contenedores de las materias para que quepan en dos columnas estrechas */
+#lista-materias-plan .col-md-6 > div {
+    max-width: 300px;
+    width: 100%;
+    margin-inline: auto;
+}
+
+
+

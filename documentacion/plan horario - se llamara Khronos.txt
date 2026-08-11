@@ -1,0 +1,14 @@
+la idea es crear el horario de clases
+
+esto conlleva varios pasos anteriores 
+
+1.- Definir los horarios del colegio entrada recreo y salida (configuración)
+2.- Definir la extensión de la horas académicas (configuración)
+3.- Puede haber 2 modalidades 
+	3.1.- La automática: El sistema en base a estos datos y con la carga académica de cada curso hará el horario asignando los espacios de tiempo y orden de las 		clases diarias
+	3.2.- La manual: Así como se asignan los profesores por materia a cada salón, también mediante una plantilla master, se pueden asignar las horas de clase a cada 	curso (+ TRABAJO E IMPERFECCIONES - CRUCES DE HORAS ETC ETC)
+
+    	Pero también aun siendo creado el horario automáticamente se podrá mover (arrastrar) dichas horas de clase entro del horario establecido anteriormente, el sistema supervisará 	que ninguna hora interfiera con el horario entre cursos por ejemplo poner al mismo profesor en un curso y a la misma hora en otro curso(no habrán traslapes de 	profesores
+4.- Al crear el profesor se puede definir su disponibilidad en las horas laborales del colegio, esta opción se podrá activas o no desde un panel de configuración en el                sistema (configuración)
+5.- La opción  ira dentro 
+

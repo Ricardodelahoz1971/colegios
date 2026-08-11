@@ -1,0 +1,21 @@
+/* 🏛️ MÓDULO: CONSTRUCTOR DE ACTIVIDADES ARES (ADN ELITE) */
+@layer modules {
+    /* 🔘 CONFIGURACIÓN DE CONTROLES E INPUTS */
+    .form-check-input-elite {
+        margin-block-start: 0.3rem;
+        margin-block-end: 0;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    /* 🍞 TOASTS ELITE - ELEVACIÓN MÁXIMA */
+    html body .swal2-container.swal2-top-end, 
+    html body .swal2-container.swal2-bottom-end {
+        z-index: 1000000;
+    }
+
+    html body .swal2-toast {
+        box-shadow: 0 10px 30px rgba(var(--el-primary-rgb), 0.2);
+        border-inline-start: 4px solid var(--el-primary);
+    }
+}

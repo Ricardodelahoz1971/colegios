@@ -1,0 +1,196 @@
+@layer modules {
+/* 
+   ==========================================================================
+   MÓDULO: LAYOUT MAESTRO Y ESTRUCTURA v9.2
+   Gestión de contenedores, rejilla principal y elementos de identidad.
+   ==========================================================================
+*/
+
+/* .sidebar-container purgado: la lÃ³gica reside en UI_KIT.CSS */
+
+.sidebar-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+/* LENGÜETA DE CONTENIDO PRINCIPAL */
+.flex-fill.overflow-auto {
+    overflow-y: auto;
+    overflow-x: visible;
+    height: 100%;
+}
+
+.main-content-fixed {
+    margin-inline-start: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width)); /* AJUSTE MATEMÃTICO */
+    height: 100vh;
+    overflow-y: auto; /* LiberaciÃ³n de Datos Ricardo */
+    z-index: 1;
+}
+
+/* GESTIÃ“N DE IDENTIDAD (LOGOS) */
+/* GESTIÃ“N DE IDENTIDAD (LOGOS) */
+.sidebar-header-elite {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 14rem; 
+    padding: 1.25rem 0.625rem;
+}
+
+/* .logo-container-elite purgado: vive en ui_kit.css */
+
+.logo-img-elite { 
+    height: 8rem; 
+    width: 8rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0 0.625rem var(--el-glass-border));
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 62rem) {
+    .sidebar-header-elite { height: 8rem; }
+    .logo-img-elite { height: 4rem; }
+    .school-name-elite { font-size: 0.9rem; }
+    
+    /* Redundancias de cabezal purgadas (sticky-top, hero-module-title) */
+}
+
+.school-name-container-elite {
+    width: 100%;
+}
+
+.school-name-elite {
+    font-size: 0.85rem;
+    line-height: 1.3;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    color: var(--el-white); /* GarantÃ­a de contraste institucional */
+}
+
+.sidebar-scroll-elite {
+    overflow: visible; /* Vuelo libre por defecto (PC) */
+}
+
+@media (max-width: 62rem) {
+    .sidebar-scroll-elite {
+        overflow-y: auto; /* Scroll solo en MÃ³vil */
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
+}
+
+.sidebar-scroll-elite::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+/* ADAPTACIÃ“N MÃ“VIL Ã‰LITE (Pattern Drawer) */
+@media (max-width: 62rem) {
+    :root {
+        --sidebar-width: 17.5rem;
+    }
+
+    /* LÃ³gica de sidebar movida a ui_kit.css */
+
+    .main-content-fixed {
+        margin-inline-start: 0;
+        width: 100%;
+    }
+
+    /* ðŸ›¡ï¸ SOBERANÃA DEL OVERLAY: El escudo que protege el contenido al abrir el menÃº */
+    .sidebar-overlay {
+        position: fixed;
+        inset-block-start: 0; inset-inline-start: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(var(--el-dark-rgb), 0.4);
+        backdrop-filter: blur(0.25rem);
+        z-index: 1025;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-overlay.is-sidebar-active {
+        opacity: 1;
+        visibility: visible;
+        backdrop-filter: blur(0.5rem);
+        -webkit-backdrop-filter: blur(0.5rem);
+    }
+}
+
+/* Soporte para el botÃ³n de hamburguesa en pantallas grandes si se desea (opcional) */
+.btn-toggle-sidebar {
+    display: none;
+}
+
+@media (max-width: 62rem) {
+    .btn-toggle-sidebar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--el-height-elite); height: var(--el-height-elite);
+        background: transparent;
+        border: none;
+        color: var(--el-primary);
+        cursor: pointer;
+        z-index: 1031;
+    }
+}
+
+/* ========================================================================== */
+/* AVATAR DE USUARIO EN HEADER - SOBRESCRITURA ARQUITECTÓNICA */
+/* Especificidad controlada: solo para contexto de header/navbar */
+/* ========================================================================== */
+
+/* Avatar específico del header de usuario */
+.avatar-user-header {
+    width: 2.5rem;
+    height: 2.5rem;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    border-radius: 50%;
+    background: var(--el-primary);
+    color: var(--el-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0.25rem 0.75rem rgba(var(--el-primary-rgb), 0.2);
+    border: 2px solid var(--el-white);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.avatar-user-header:hover {
+    transform: scale(1.08);
+    filter: brightness(1.1);
+    box-shadow: 0 0.5rem 1rem rgba(var(--el-primary-rgb), 0.3);
+}
+
+/* SVG dentro del avatar */
+.avatar-user-header svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.3s ease;
+}
+
+.avatar-user-header:hover svg {
+    transform: scale(1.08);
+}
+
+/* Soporte futuro: imagen de perfil (reemplaza el SVG) */
+.avatar-user-header img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+} /* Fin de @layer modules */

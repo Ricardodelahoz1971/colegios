@@ -1,0 +1,242 @@
+﻿@layer modules {
+    /* ðŸ›ï¸ PRUEBAS FORMALES - ESTILOS SOBERANOS VITRINA 06 */
+    
+    .pruebas-master {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        font-family: var(--el-font-institutional);
+    }
+
+    .pruebas-master__header-card {
+        background-color: var(--bs-tertiary-bg);
+        border-radius: var(--el-border-radius-lg, 24px);
+        padding: 2.2rem;
+        box-shadow: 0 10px 30px -10px rgba(var(--el-primary-rgb), 0.15);
+        border: 1px solid var(--el-border);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .pruebas-master__title-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .pruebas-master__title {
+        color: var(--el-primary);
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.025em;
+    }
+
+    .pruebas-master__subtitle {
+        color: var(--bs-body-color);
+        opacity: 0.7;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .pruebas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .pruebas-grid__card {
+        background-color: rgba(var(--el-primary-rgb), 0.03);
+        border: 1px solid var(--el-border);
+        border-radius: var(--el-border-radius-m, 12px);
+        padding: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .pruebas-grid__card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px -6px rgba(var(--el-primary-rgb), 0.1);
+    }
+
+    .pruebas-grid__label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--bs-body-color);
+        opacity: 0.6;
+        letter-spacing: 0.05em;
+    }
+
+    .pruebas-grid__value {
+        font-size: 1.4rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+
+    .pruebas-master__content-card {
+        background-color: var(--bs-tertiary-bg);
+        border-radius: var(--el-border-radius-lg, 24px);
+        padding: 2.2rem;
+        box-shadow: 0 10px 30px -10px rgba(var(--el-primary-rgb), 0.15);
+        border: 1px solid var(--el-border);
+        display: flex;
+        flex-direction: column;
+        gap: 1.8rem;
+    }
+
+    .pruebas-master__table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .pruebas-master__table-title {
+        font-weight: 700;
+        color: var(--el-primary);
+        margin: 0;
+    }
+
+    .pruebas-master__buttons-group {
+        display: flex;
+        gap: 0.8rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .pruebas-master__back-btn {
+        height: 44px;
+        border-radius: var(--el-border-radius-m, 12px);
+        padding-inline-start: 1.5rem;
+        padding-inline-end: 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(var(--el-primary-rgb), 0.02);
+        color: var(--el-primary);
+        border: 1px solid var(--el-border-strong);
+    }
+
+    .pruebas-master__back-btn:hover {
+        background-color: rgba(var(--el-primary-rgb), 0.07);
+        border-color: var(--el-primary);
+        color: var(--el-primary);
+    }
+
+    .pruebas-master__reload-btn {
+        height: 44px;
+        border-radius: var(--el-border-radius-m, 12px);
+        padding-inline-start: 1.5rem;
+        padding-inline-end: 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pruebas-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .pruebas-table__header-row {
+        background-color: rgba(var(--el-primary-rgb), 0.03);
+    }
+
+    .pruebas-table__header-cell {
+        padding: 1.1rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--el-primary);
+        border-bottom: 2px solid var(--el-border-strong);
+        letter-spacing: 0.05em;
+        text-align: center;
+    }
+
+    .pruebas-table__row {
+        transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .pruebas-table__row:hover {
+        background-color: rgba(var(--el-primary-rgb), 0.01);
+    }
+
+    .pruebas-table__cell {
+        padding: 1.1rem 1rem;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--el-border);
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .pruebas-table__badge-policy {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: var(--el-border-radius-s, 6px);
+        background-color: rgba(var(--el-primary-rgb), 0.1);
+        color: var(--el-primary);
+        text-transform: uppercase;
+    }
+
+    .pruebas-table__badge-success {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: var(--el-border-radius-m, 12px);
+        background-color: rgba(var(--el-primary-rgb), 0.1);
+        color: var(--el-primary);
+    }
+
+    .pruebas-table__badge-danger {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: var(--el-border-radius-m, 12px);
+        background-color: rgba(var(--el-primary-rgb), 0.1);
+        color: var(--el-primary);
+    }
+
+    .pruebas-master__summary {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--el-border);
+    }
+
+    .pruebas-master__summary-text {
+        font-size: 0.95rem;
+        color: var(--bs-body-color);
+    }
+
+    .pruebas-master__summary-bar {
+        height: 12px;
+        background-color: rgba(var(--el-primary-rgb), 0.05);
+        border-radius: var(--el-border-radius-s, 6px);
+        overflow: hidden;
+    }
+
+    .pruebas-master__summary-progress {
+        height: 100%;
+        background-color: var(--el-primary);
+        border-radius: var(--el-border-radius-s, 6px);
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+

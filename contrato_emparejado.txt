@@ -1,0 +1,41 @@
+AÑO LECTIVO: [ANIO_LECTIVO]
+MATRÍCULA NÚMERO: [NUMERO_MATRICULA] | FECHA DE REGISTRO: [FECHA_REGISTRO]
+
+Entre los suscritos a saber, por una parte, [NOMBRE_INSTITUCION], institución educativa debidamente autorizada por la Secretaría de Educación mediante Resolución No. [NUMERO_RESOLUCION] del [FECHA_RESOLUCION], con NIT [NIT_COLEGIO], representada legalmente por [NOMBRE_RECTOR_REPRESENTANTE], quien para efectos del presente documento se denominará el ESTABLECIMIENTO, y por la otra parte:
+
+[NOMBRE_PADRE_MADRE_ACUDIENTE], mayor de edad, identificado(a) con la cédula No. [NUMERO_DOC_ACUDIENTE] expedida en [LUGAR_EXP_DOC_ACUDIENTE], actuando en calidad de padre, madre o acudiente legal, quien en adelante se denominará el RESPONSABLE ECONÓMICO Y CONVIVENCIAL.
+
+Los comparecientes suscriben de mutuo acuerdo el presente documento de matrícula formal para el ingreso y permanencia del estudiante:
+
+[NOMBRES_ESTUDIANTE] [APELLIDOS_ESTUDIANTE], menor de edad, identificado(a) con [TIPO_DOC_ESTUDIANTE] No. [NUMERO_DOC_ESTUDIANTE], nacido(a) el [FECHA_NACIMIENTO_ESTUDIANTE], para cursar el Grado [GRADO_A_CURSAR] en la jornada [JORNADA_ESCOLAR], quien en adelante se denominará el ESTUDIANTE.
+
+El presente vínculo jurídico, académico y civil se regirá por la Constitución Política de Colombia, la Ley 115 de 1994 (Ley General de Educación), el Decreto 1075 de 2015, las directrices del Ministerio de Educación Nacional y las siguientes cláusulas obligatorias:
+
+CLÁUSULAS CONTRATUALES Y DE CORRESPONSABILIDAD
+
+PRIMERA. Objeto del Contrato: Formalizar la vinculación del ESTUDIANTE al sistema académico del ESTABLECIMIENTO para el periodo lectivo correspondiente, garantizando el acceso a las actividades pedagógicas programadas.
+
+SEGUNDA. Sistema de Información (SIMAT): El RESPONSABLE autoriza expresamente la inscripción, actualización y reporte de los datos del ESTUDIANTE en el Sistema de Matrículas de la Educación Oficial (SIMAT) y demás plataformas gubernamentales colombianas.
+
+TERCERA. Aceptación del Manual de Convivencia: Las partes declaran conocer, aceptar y obligarse a cumplir de manera estricta el Manual de Convivencia vigente de la institución, el cual rige los procesos pedagógicos, correctivos y disciplinarios.
+
+CUARTA. Obligaciones Económicas (Aplica para Colegios Privados): El RESPONSABLE se obliga a cancelar los valores autorizados por concepto de matrícula por la suma de $[VALOR_MATRICULA] M/CTE, y una pensión mensual de $[VALOR_PENSION] M/CTE, los cuales deberán pagarse dentro de los primeros [DIAS_PLAZO_PAGO] días de cada mes.
+
+QUINTA. Autorización de Datos (Habeas Data): En cumplimiento de la Ley 1581 de 2012, las partes autorizan al ESTABLECIMIENTO para el tratamiento, almacenamiento y uso de los datos personales, biométricos e imágenes recolectadas con fines estrictamente académicos, institucionales y de seguridad.
+
+SEXTA. Compromiso Familiar: El RESPONSABLE se compromete a realizar un acompañamiento permanente al proceso formativo del ESTUDIANTE, asistir a las citaciones programadas y velar por su asistencia puntual a las jornadas escolares.
+
+SÉPTIMA. Causales de Terminación: El presente contrato finalizará por la culminación del año escolar, por mutuo acuerdo, por retiro voluntario debidamente notificado, o por sanción disciplinaria de exclusión definitiva ejecutada bajo el debido proceso.
+
+CONTROL DE DOCUMENTACIÓN ANEXA (SIMAT)
+
+El ESTABLECIMIENTO certifica la recepción y verificación física o digital de los siguientes folios obligatorios:
+[   ] Copia del Registro Civil de Nacimiento.
+[   ] Copia del Documento de Identidad (T.I. / C.C. / PEP / PPT).
+[   ] Certificado vigente de afiliación a salud (EPS o SISBÉN).
+[   ] Certificados académicos de años anteriores.
+[   ] Paz y salvo de la institución educativa de procedencia.
+
+Para constancia de lo anterior y en señal de aceptación total de los deberes y derechos aquí consagrados, se firma en la ciudad de [CIUDAD_EXPEDICION], a los [DIA_FIRMA] días del mes de [MES_FIRMA] del año [ANIO_FIRMA].
+
+(Espacio diseñado para firmas, cédulas y huellas dactilares)

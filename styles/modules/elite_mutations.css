@@ -1,0 +1,71 @@
+﻿/*
+   ==========================================================================
+   SISTEMA DE MUTACIONES ELITE v10.0 - SOBERANIA MAESTRA
+   Gestion de estados Aero (Glass) y Blade (Industrial).
+   ==========================================================================
+*/
+
+/* 1. ESTANDARES DE CONTROL Y FOCO (UNIFICADOS) */
+/* 1. ESTANDARES DE CONTROL Y FOCO: Delegados a ui_kit.css para evitar redundancias */
+
+/* 2. GESTION DE CAPAS (Z-INDEX SOBERANO) */
+@layer modules {
+.modal-backdrop {
+    z-index: 109990;
+    background-color: rgba(var(--el-dark-rgb), 0.7);
+    backdrop-filter: blur(0.25rem);
+}
+.modal { z-index: 110000; }
+#modalCalificar { z-index: 110001; }
+body .swal2-container { z-index: 120000; }
+
+/* 3. NORMALIZACION DE TABLAS INSTITUCIONALES */
+.table thead th {
+    background-color: var(--el-primary);
+    color: var(--el-white);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 1rem 0.75rem;
+    border: none;
+}
+
+.table tbody td {
+    border-color: var(--el-border);
+}
+
+/* NORMALIZACION DATATABLES ELITE: Sincronizado con Prototipo Maestre */
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    border: 0.0625rem solid var(--el-border);
+    border-radius: var(--el-radius-pill);
+    padding: 0.3rem 1.2rem;
+    height: 2.2rem;
+    background-color: var(--el-white);
+    color: var(--el-dark);
+    outline: none;
+}
+.dataTables_wrapper .dataTables_filter input:focus {
+    border-color: var(--el-primary);
+    box-shadow: 0 0 0 0.1875rem rgba(var(--el-primary-rgb), 0.1);
+}
+
+/* SIDEBAR RESPONSIVO AL CAMBIO DE PALETA */
+/* El sidebar debe usar --el-sidebar-bg que responde a cambios dinÃ¡micos de color */
+.sidebar-container {
+    background: var(--el-sidebar-bg, var(--el-primary));
+}
+
+/* SOBERANIA DE BOTONES PERGAMINO: Azul institucional fijo en dark-theme-mode */
+.dark-theme-mode .btn-elite--primary {
+    background: var(--el-primary);
+    border-color: var(--el-primary);
+    color: var(--el-white);
+}
+.dark-theme-mode .btn-elite--danger {
+    background: var(--el-primary);
+    border-color: var(--el-primary);
+    color: var(--el-white);
+}
+} /* Fin de @layer modules */
+

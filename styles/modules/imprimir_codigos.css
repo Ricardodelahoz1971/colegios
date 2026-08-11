@@ -1,0 +1,64 @@
+/* ðŸ›ï¸ MÃ“DULO: IMPRESIÃ“N DE CÃ“DIGOS CONTROL ARES */
+@layer modules {
+@media print {
+    .no-print { display: none; }
+    body { background: white; }
+}
+
+body { 
+    background: var(--el-aero-slate); 
+    font-family: var(--el-font-institutional), sans-serif; 
+    color: var(--el-primary);
+}
+
+.sheet {
+    background: white;
+    width: 21.59cm; /* Carta */
+    min-height: 27.94cm;
+    padding: 2cm;
+    margin: 1rem auto;
+    box-shadow: 0 0.5rem 1rem rgba(var(--el-primary-rgb), 0.1);
+    border-radius: var(--el-radius-panel);
+}
+
+.qr-card {
+    border: 1px solid var(--el-border);
+    padding: 1rem;
+    text-align: center;
+    border-radius: var(--el-radius-sub);
+    margin-block-end: 2rem;
+    page-break-inside: avoid;
+    transition: var(--el-transition-fast);
+}
+
+.qr-card:hover {
+    border-color: var(--el-primary);
+    background: rgba(var(--el-primary-rgb), 0.02);
+}
+
+.student-name {
+    font-size: 0.8rem;
+    font-weight: 800;
+    margin-block-start: 0.75rem;
+    text-transform: uppercase;
+    color: var(--el-primary);
+}
+
+.course-badge { 
+    font-size: 0.65rem; 
+    color: var(--el-primary); 
+    opacity: 0.6;
+    font-weight: 600;
+}
+
+.qr-render { 
+    margin: 0 auto; 
+    width: 120px; 
+    height: 120px; 
+}
+
+/* Overrides para la librerÃ­a QRCode */
+.qr-render img {
+    margin: 0 auto;
+}
+} /* Fin de @layer modules */

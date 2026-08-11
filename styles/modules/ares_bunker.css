@@ -1,0 +1,253 @@
+﻿@layer modules {
+/* 
+   ==========================================================================
+   ARES BÃšNKER - MÃ“DULO DE EVALUACIÃ“N DE ALTA SEGURIDAD v1.5
+   Sincronizado con ADN Institucional Ã‰lite (ROBOTO).
+   ==========================================================================
+*/
+
+/* 0. SOBERANÃƒÂA TIPOGRÃƒÂFICA Y CROMÃƒÂTICA */
+* { 
+    font-family: var(--el-font-institutional), sans-serif; 
+}
+
+body {
+    color: var(--el-primary); /* Texto institucional por defecto, CERO NEGRO */
+    background-color: var(--el-aero-slate);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(var(--el-primary-rgb), 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(var(--el-accent-rgb), 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+/* Ã°Å¸â€ºÂ¡Ã¯Â¸Â SOBERANÃƒÂA CROMÃƒÂTICA Ãƒâ€°LITE */
+.bg-primary { background-color: var(--el-primary); }
+
+.text-accent-elite { color: var(--el-accent); }
+
+/* CABECERA SOBERANA */
+.bunker-header {
+    backdrop-filter: blur(0.9375rem);
+    -webkit-backdrop-filter: blur(0.9375rem);
+    background: rgba(var(--el-white-rgb), 0.95);
+    border-block-end: 0.1875rem solid var(--el-primary);
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1000;
+    box-shadow: 0 0.625rem 1.875rem rgba(var(--el-primary-rgb), 0.1);
+    padding-block: 0.75rem;
+}
+
+.timer-display {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--el-accent);
+    text-shadow: 0 0.3125rem 0.9375rem rgba(var(--el-accent-rgb), 0.2);
+}
+
+.timer-warning {
+    color: var(--el-primary);
+    animation: elPulseAlert 1s infinite alternate;
+}
+
+@keyframes elPulseAlert {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* BOTÃƒâ€œN FINALIZAR / ENTREGAR */
+.btn-finish-elite {
+    background: var(--el-primary);
+    color: var(--el-white);
+    border: none;
+    border-radius: var(--el-radius-sub);
+    font-weight: 900;
+    box-shadow: 0 0.25rem 0.9375rem rgba(var(--el-primary-rgb), 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: var(--el-height-elite);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 1.5rem;
+    cursor: pointer;
+}
+
+.btn-finish-elite:hover {
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.5rem 1.25rem rgba(var(--el-primary-rgb), 0.4);
+    filter: brightness(1.1);
+}
+
+.badge-item-elite { 
+    background: var(--el-primary); 
+    color: var(--el-white); 
+    padding-block: 0.25rem;
+    padding-inline: 0.75rem;
+    border-radius: var(--el-radius-sub);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.0313rem;
+}
+
+/* EL CRISTAL DE ENFOQUE (Verticalidad y Orden) */
+.question-card {
+    background: rgba(var(--el-white-rgb), 0.9);
+    backdrop-filter: blur(1.25rem);
+    border-radius: var(--el-radius-main);
+    padding: 2.5rem;
+    margin-block-end: 1.5rem;
+    box-shadow: 0 1.25rem 3.125rem rgba(var(--el-primary-rgb), 0.05);
+    border-inline-start: 0.5rem solid var(--el-primary);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.3);
+}
+
+.enunciado-texto {
+    font-size: 1.15rem;
+    color: var(--el-primary);
+    font-weight: 500;
+    line-height: 1.6;
+    margin-block-end: 2rem;
+}
+
+.opciones-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-block-end: 2rem;
+}
+
+.option-container {
+    flex: 0 1 auto; /* Ajuste al contenido */
+    min-width: 5rem;
+    position: relative;
+}
+
+.option-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    padding-inline-start: 3rem;
+    background: var(--el-white);
+    border: 0.125rem solid rgba(var(--el-primary-rgb), 0.3);
+    border-radius: var(--el-radius-sub);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--el-primary);
+    font-weight: 500;
+}
+
+.option-label:hover {
+    border-color: var(--el-primary);
+    transform: translateX(0.5rem);
+    background: rgba(var(--el-primary-rgb), 0.02);
+}
+
+.option-input:checked + .checkmark-elite {
+    background-color: var(--el-primary);
+    box-shadow: inset 0 0 0 0.125rem var(--el-white);
+}
+
+.option-input:checked ~ .option-label {
+    border-color: var(--el-primary);
+    background: rgba(var(--el-primary-rgb), 0.05);
+    font-weight: 700;
+}
+
+.checkmark-elite {
+    position: absolute;
+    top: 50%;
+    inset-inline-start: 1rem;
+    transform: translateY(-50%);
+    height: 0.9rem;
+    width: 0.9rem;
+    background-color: var(--el-white);
+    border: 0.125rem solid var(--el-primary);
+    border-radius: var(--el-radius);
+}
+
+/* NAVEGACIÃƒâ€œN MAPA */
+.nav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.5rem, 1fr)); gap: 0.75rem; }
+.nav-btn {
+    width: 2.5rem; height: 2.5rem; border-radius: var(--el-radius-sub); border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.2);
+    background: var(--el-white); color: var(--el-primary); font-weight: 800; transition: all 0.3s ease;
+}
+.nav-btn.answered { background: var(--el-primary); color: var(--el-white); }
+.nav-btn.is-active-bunker { border-color: var(--el-primary); transform: scale(1.1); box-shadow: 0 0.5rem 1rem rgba(var(--el-primary-rgb), 0.3); }
+
+/* BOTONERA NAVEGACIÃƒâ€œN */
+.nav-arrows-wrapper {
+    display: flex; 
+    justify-content: space-between; 
+    margin-block-start: 1.5rem;
+}
+
+.btn-nav-elite {
+    width: 3rem; 
+    height: 3rem; 
+    border-radius: var(--el-radius-sub); 
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.2);
+    background: var(--el-white); 
+    color: var(--el-primary); 
+    font-size: 1.25rem; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.btn-nav-elite:hover { 
+    background: var(--el-primary); 
+    color: var(--el-white); 
+    transform: translateY(-0.125rem); 
+}
+
+/* ESTADO SINCRO */
+.bunker-status-line {
+    padding-block-start: 1rem; 
+    margin-block-start: 1.5rem; 
+    border-block-start: 0.0625rem solid rgba(var(--el-primary-rgb), 0.3);
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 0.5rem;
+}
+
+.status-pulse { 
+    width: 0.5rem; 
+    height: 0.5rem; 
+    background: var(--el-primary); 
+    border-radius: var(--el-radius); 
+    animation: pulse-green 2s infinite; 
+}
+
+@keyframes pulse-green {
+    0% { box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0.7); }
+    70% { box-shadow: 0 0 0 0.625rem rgba(var(--el-primary-rgb), 0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0); }
+}
+
+/* Ã°Å¸â€ºÂ¡Ã¯Â¸Â REGLAS DE NAVEGACIÃƒâ€œN SOBERANA (ARES BÃƒÅ¡NKER) */
+.bunker--lineal .nav-panel, 
+.bunker--lineal .pagination-controls { 
+    display: none; 
+}
+
+.bunker--paginada .question-card,
+.bunker--libre .question-card { 
+    display: none; 
+}
+
+.bunker--paginada .question-card.active,
+.bunker--libre .question-card.active { 
+    display: block; 
+}
+} /* Fin de @layer modules */
+

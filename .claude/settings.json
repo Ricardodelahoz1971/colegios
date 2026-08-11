@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Move-Item -Path \"c:\\\\xampp\\\\htdocs\\\\sistema_escolar\\\\InconsistenciasCSS.md\" -Destination \"c:\\\\xampp\\\\htdocs\\\\sistema_escolar\\\\claude_docs\\\\AUDITORIA_CSS.md\" -Force)"
+    ]
+  }
+}

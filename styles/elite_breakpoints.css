@@ -1,0 +1,177 @@
+@layer base {
+/*
+   ==========================================================================
+   ELITE BREAKPOINTS - ESTÁNDARES RESPONSIVOS v10.0
+   ÚNICA fuente de breakpoints. Estandarizado con Bootstrap pero centralizado.
+   ==========================================================================
+*/
+
+:root {
+  /* ========================================
+     BREAKPOINTS ESTÁNDARES
+     Basados en Bootstrap pero variables CSS
+     ======================================== */
+
+  /* Extra small: Mobile */
+  --breakpoint-xs: 0;             /* Todos los dispositivos */
+  --breakpoint-xs-max: 575.98px;  /* Máximo antes de SM */
+
+  /* Small: Tablets pequeñas */
+  --breakpoint-sm: 576px;
+  --breakpoint-sm-max: 767.98px;
+
+  /* Medium: Tablets grandes */
+  --breakpoint-md: 768px;
+  --breakpoint-md-max: 991.98px;
+
+  /* Large: Laptops pequeñas */
+  --breakpoint-lg: 992px;
+  --breakpoint-lg-max: 1199.98px;
+
+  /* Extra large: Monitores */
+  --breakpoint-xl: 1200px;
+  --breakpoint-xl-max: 1399.98px;
+
+  /* Extra extra large: Monitores grandes */
+  --breakpoint-2xl: 1400px;
+
+  /* ========================================
+     ALIASES PERSONALIZADAS
+     Si necesitas nombres más descriptivos
+     ======================================== */
+  --breakpoint-mobile: var(--breakpoint-sm);
+  --breakpoint-tablet: var(--breakpoint-md);
+  --breakpoint-desktop: var(--breakpoint-lg);
+  --breakpoint-widescreen: var(--breakpoint-xl);
+}
+
+/*
+   MIXIN-STYLE MEDIA QUERIES
+   Ejemplos de uso en CSS:
+
+   .elemento {
+     /* Mobile first (default) */
+     font-size: 1rem;
+
+     /* Tablet y arriba */
+     @media (min-width: var(--breakpoint-md)) {
+       font-size: 1.2rem;
+     }
+
+     /* Desktop y arriba */
+     @media (min-width: var(--breakpoint-lg)) {
+       font-size: 1.5rem;
+     }
+   }
+
+   O para máximos:
+   @media (max-width: var(--breakpoint-sm-max)) {
+     /* Solo en mobile */
+   }
+*/
+
+/*
+   UTILIDADES RESPONSIVAS DE BOOTSTRAP
+   Mantener compatibilidad con clases existentes
+*/
+
+/* Display utilities - Bootstrap standard */
+@media (max-width: var(--breakpoint-sm-max)) {
+  .d-sm-none { display: none; }
+  .d-sm-inline { display: inline; }
+  .d-sm-block { display: block; }
+  .d-sm-flex { display: flex; }
+  .d-sm-grid { display: grid; }
+}
+
+@media (min-width: var(--breakpoint-md)) {
+  .d-md-none { display: none; }
+  .d-md-inline { display: inline; }
+  .d-md-block { display: block; }
+  .d-md-flex { display: flex; }
+  .d-md-grid { display: grid; }
+}
+
+@media (min-width: var(--breakpoint-lg)) {
+  .d-lg-none { display: none; }
+  .d-lg-inline { display: inline; }
+  .d-lg-block { display: block; }
+  .d-lg-flex { display: flex; }
+  .d-lg-grid { display: grid; }
+}
+
+@media (min-width: var(--breakpoint-xl)) {
+  .d-xl-none { display: none; }
+  .d-xl-inline { display: inline; }
+  .d-xl-block { display: block; }
+  .d-xl-flex { display: flex; }
+  .d-xl-grid { display: grid; }
+}
+
+/*
+   GRID COLUMN RESPONSIVENESS
+   Usar con .col-sm-*, .col-md-*, etc. (Bootstrap)
+*/
+
+@media (max-width: var(--breakpoint-sm-max)) {
+  /* Mobile: 1 columna por defecto */
+  .container-fluid { padding-left: 0.75rem; padding-right: 0.75rem; }
+}
+
+@media (min-width: var(--breakpoint-md)) {
+  /* Tablet: ajustar sidebar */
+  .main-content-fixed {
+    margin-inline-start: 17.5rem;
+  }
+}
+
+@media (max-width: var(--breakpoint-md-max)) {
+  /* Hide sidebar en tablet pequeña */
+  .sidebar-container {
+    position: absolute;
+    left: -100%;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar-container.active {
+    left: 0;
+  }
+
+  .main-content-fixed {
+    margin-inline-start: 0;
+    width: 100%;
+  }
+}
+
+/*
+   FONT SIZE RESPONSIVENESS
+   Usar clamp() para escalado fluido
+*/
+
+/* Ejemplo de uso en otros archivos:
+   h1 {
+     font-size: clamp(1.5rem, 5vw, 3rem);
+   }
+
+   Esta técnica reemplaza media queries para muchos casos
+*/
+
+/*
+   CONTAINER QUERIES (Futuro)
+   Cuando todos los navegadores soporten @container
+*/
+
+@supports (container-type: inline-size) {
+  .container-flex {
+    container-type: inline-size;
+  }
+
+  @container (min-width: 400px) {
+    .container-flex .item {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+
+} /* Fin @layer base */

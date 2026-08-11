@@ -1,0 +1,33 @@
+@layer modules {
+/* 
+   ==========================================================================
+   MÓDULO: ATLAS (GESTIÓN ACADÉMICA) v9.2
+   Jerarquía de capas, scrollbars de precisión y control de foco.
+   ==========================================================================
+*/
+
+/* SOBERANÍA DE CAPAS: La tarjeta con menú abierto siempre al frente */
+.card-zulu-elite:focus-within,
+.card-zulu-elite:hover {
+    z-index: 1050;
+}
+
+/* AJUSTE DE SCROLLBAR PARA EL MENÚ DE CARGA DETALLADA */
+.list-group.overflow-auto::-webkit-scrollbar {
+    width: 0.375rem;
+}
+
+.list-group.overflow-auto::-webkit-scrollbar-track {
+    background: rgba(var(--el-dark-rgb), 0.05);
+    border-radius: var(--el-radius-sub);
+}
+
+.list-group.overflow-auto::-webkit-scrollbar-thumb {
+    background: rgba(var(--el-primary-rgb), 0.2);
+    border-radius: var(--el-radius-sub);
+}
+
+.list-group.overflow-auto::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--el-primary-rgb), 0.4);
+}
+} /* Fin de @layer modules */

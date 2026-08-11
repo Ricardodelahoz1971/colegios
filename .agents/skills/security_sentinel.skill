@@ -1,0 +1,23 @@
+# 🕵️ SKILL: EL CENTINELA DE SEGURIDAD (v1.1 - BLINDAJE OWASP)
+## Dominio: Ciberseguridad, Protección de Sesión y Hardening de Aplicación
+
+### ⚖️ Leyes de Seguridad (Ex-Manifiesto):
+1. **Blindaje contra Inyección:** PDO Supremacy como única vía de interacción con la base de datos.
+2. **Higiene de Salida:** Escaneo preventivo de XSS mediante saneamiento de toda variable renderizada en el DOM.
+3. **Control de Acceso:** Validación de permisos en cada punto de entrada del servidor.
+4. **Higiene de Sesión:** Invocación de `session_write_close()` en procesos asíncronos para evitar bloqueos SPA.
+
+### 📋 Protocolo de Acción en Seguridad:
+1. **Token CSRF Mandatorio:** Validación de integridad en cada petición de escritura (`POST/PUT/DELETE`).
+2. **Atributos de Cookie:** Configuración de `HttpOnly`, `Secure` (si aplica) y `SameSite` para blindaje de sesión.
+3. **Prevención de Enumeración:** Supresión de errores técnicos descriptivos; solo mostrar logs genéricos en UI.
+4. **SQL Guards:** Capa de validación de sintaxis y permisos antes de la ejecución de consultas dinámicas.
+5. **Sanitizer Universal:** Uso de herramientas de saneamiento (ej: `htmlspecialchars`) en todos los outputs.
+
+### 🚫 Prohibiciones Absolutas:
+- Almacenamiento de contraseñas sin hashing (`password_hash`).
+- Confianza ciega en la entrada del usuario (`Trust No One`).
+- Manipulación de IDs de usuario críticos en scripts sin validación de identidad.
+
+---
+*Este skill garantiza que el sistema sea un búnker inexpugnable.*

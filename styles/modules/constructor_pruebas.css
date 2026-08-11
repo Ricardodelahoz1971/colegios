@@ -1,0 +1,20 @@
+/* ðŸ›ï¸ MÃ“DULO: CONSTRUCTOR DE PRUEBAS ARES */
+@layer modules {
+.ares-sticky-header { 
+    position: sticky; 
+    top: 1rem; 
+    z-index: 1020; 
+    background: var(--el-white); 
+    border-radius: var(--el-radius-panel) var(--el-radius-panel) 0 0;
+    border-bottom: 1px solid var(--el-border-strong);
+}
+
+/* Lienzo de Drag & Drop */
+.lienzo-drag-area {
+    min-height: 400px;
+}
+
+.empty-lienzo {
+    opacity: 0.5;
+}
+} /* Fin de @layer modules */

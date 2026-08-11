@@ -1,0 +1,17 @@
+# ⚡ SKILL: EL ALQUIMISTA DE RENDIMIENTO (v1.0)
+## Dominio: Core Web Vitals, Optimización de Activos y Caching
+
+### 📋 Protocolo de Intervención:
+1. **Ruta Crítica de Renderizado:** Identificar y priorizar el "Critical CSS" para que el usuario perciba una carga instantánea (LCP < 2.5s).
+2. **Lazy Loading Universal:** Implementar carga perezosa para imágenes, videos y módulos de JS que no sean visibles en el primer pantallazo (Viewport).
+3. **Minificación Quirúrgica:** Asegurar que todos los activos de CSS y JS entregados a producción estén minificados y libres de código muerto (Tree Shaking).
+4. **Optimización de Consultas SQL:** Evitar el problema del `N+1` en las queries y asegurar que cada tabla crítica tenga los índices necesarios para una respuesta veloz.
+5. **Caching Estratégico:** Implementar capas de caché en el cliente (LocalStorage/SessionStorage) para datos que no cambian frecuentemente, reduciendo las peticiones al servidor.
+
+### 🚫 Prohibiciones Absolutas:
+- Cargar librerías pesadas completas si solo se usa una fracción de su funcionalidad.
+- Imágenes sin dimensiones definidas (`width` y `height`) que causen saltos de layout (CLS).
+- Procesos síncronos pesados en el hilo principal de JS que bloqueen la interfaz.
+
+---
+*Este skill garantiza que la potencia del sistema se sienta en cada milisegundo.*

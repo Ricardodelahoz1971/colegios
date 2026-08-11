@@ -1,0 +1,417 @@
+﻿/* 
+   ==========================================================================
+   MÃ“DULO: MENSAJERÃA Ã‰LITE v14.0 (HERMES ENGINE)
+   ESTÃNDAR: VITRINA 06 - SOBERANÃA VISUAL TOTAL
+   ==========================================================================
+*/
+
+@layer modules {
+.chat-elite-wrapper { 
+    height: calc(100vh - 8rem);
+    height: calc(100dvh - 8rem);
+    background-color: var(--el-white);
+    border: 0.0625rem solid var(--el-border-strong);
+    border-radius: var(--el-radius-main); /* Radio de Prestigio: 24px */
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 1rem 3rem rgba(var(--el-primary-rgb), 0.08);
+}
+
+.hermes-sidebar { 
+    width: 22rem; 
+    min-width: 22rem; 
+    background-color: var(--el-white);
+    border-inline-end: 0.0625rem solid var(--el-border-strong);
+    display: flex;
+    flex-direction: column;
+    z-index: 20;
+}
+
+.chat-main { 
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--el-white);
+    position: relative;
+}
+
+/* BOTÃ“N DE RETROCESO (MÃ“VIL ONLY) */
+.btn-back-chat {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--el-primary);
+    padding: 0.5rem;
+    margin-inline-end: 0.5rem;
+    border-radius: var(--el-radius-sub);
+    transition: background 0.3s ease;
+}
+
+.btn-back-chat:hover {
+    background: rgba(var(--el-primary-rgb), 0.05);
+}
+
+@media (max-width: 64rem) {
+    .btn-back-chat {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* BUSCADOR DE CONTACTOS (PRECISIÃ“N 44px) */
+.hermes-search-box {
+    padding: 1.5rem;
+    border-block-end: 0.0625rem solid var(--el-border);
+}
+
+/* LISTA DE CONTACTOS Ã‰LITE */
+.contact-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.contact-item {
+    padding: 0.875rem 1.25rem;
+    border-radius: var(--el-radius-sub);
+    margin-block-end: 0.25rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: 0.0625rem solid transparent;
+    display: flex;
+    align-items: center;
+}
+
+.contact-item:hover {
+    background-color: rgba(var(--el-primary-rgb), 0.04);
+}
+
+.contact-item.is-active-elite {
+    background-color: rgba(var(--el-primary-rgb), 0.08);
+    border-color: rgba(var(--el-primary-rgb), 0.1);
+}
+
+.contact-item.is-active-elite .elite-chat-contact-name {
+    color: var(--el-primary);
+}
+
+.elite-chat-contact-name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--el-dark);
+    margin-block-end: 0.125rem;
+}
+
+/* ðŸ’¬ BURBUJAS DE CONVERSACIÃ“N (SEDA Ã‰LITE) */
+.chat-history {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background-image: 
+        radial-gradient(var(--el-border) 0.0625rem, transparent 0.0625rem);
+    background-size: 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message-bubble-elite {
+    max-width: 70%;
+    padding: 0.875rem 1.25rem;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    word-break: break-word;
+    overflow: hidden;
+}
+
+.message-in .message-bubble-elite {
+    background-color: var(--el-white);
+    border-radius: var(--el-radius-sub) var(--el-radius-main) var(--el-radius-main) var(--el-radius-main); 
+    border: 0.0625rem solid var(--el-border-strong);
+    box-shadow: 0 0.25rem 1rem rgba(var(--el-primary-rgb), 0.03);
+}
+
+.message-out .message-bubble-elite { 
+    background: var(--el-primary); 
+    color: var(--el-white);
+    border-radius: var(--el-radius-main) var(--el-radius-main) var(--el-radius-sub) var(--el-radius-main); 
+    box-shadow: 0 0.5rem 1.5rem rgba(var(--el-primary-rgb), 0.15);
+}
+
+.message-bubble-elite:hover {
+    transform: translateY(-0.125rem);
+}
+
+/* INDICADORES DE ESTADO */
+.status-indicator {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: var(--el-radius-pill);
+    border: 0.125rem solid var(--el-white);
+    position: absolute;
+    bottom: 0;
+    inset-inline-end: 0;
+}
+
+.status-indicator.online {
+    background-color: var(--el-primary);
+    box-shadow: 0 0 0.5rem rgba(var(--el-primary-rgb), 0.4);
+}
+
+/* ÃREA DE ENTRADA (MÃ‰TRICA 44px - LEY ÃšNICA) */
+.chat-input-container {
+    padding: 1.25rem 1.5rem;
+    background-color: var(--el-white);
+    border-block-start: 0.0625rem solid var(--el-border-strong);
+}
+
+.chat-input-form {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* CONTROL MAESTRO DE PRIORIDAD (ANCHO PROPORCIONAL +20%) */
+.chat-input-form .select-elite,
+.chat-input-form .elite-select-container,
+.chat-input-form .select-elite-reborn {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 120px;
+    padding-inline: 1rem 2rem;
+    white-space: nowrap;
+}
+
+/* INPUT DE MENSAJE (MAXIMIZACIÃ“N TOTAL) */
+.chat-input-form .input-elite {
+    flex: 1;
+    width: auto;
+}
+
+.chat-input-form .btn-elite {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--el-radius-sub);
+    flex-shrink: 0;
+}
+
+/* ANIMACIONES */
+@keyframes slideInUp {
+    from { transform: translateY(1rem); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.message-group {
+    animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* RESPONSIVE: ADAPTACIÃ“N TÃCTICA */
+@media (max-width: 64rem) {
+    .hermes-sidebar {
+        width: 100%;
+        min-width: 100%;
+    }
+    
+    .chat-elite-wrapper.show-chat .hermes-sidebar {
+        display: none;
+    }
+    
+    .chat-elite-wrapper:not(.show-chat) .chat-main {
+        display: none;
+    }
+}
+
+/* FIJACIÃ“N DE CONTRASTE EN PESTAÃ‘AS (ACORDEÃ“N HERMES) */
+.custom-acc-btn {
+    font-family: var(--el-font-institutional);
+    font-weight: 800;
+    transition: var(--el-transition-organic);
+}
+
+.hermes-sidebar .accordion-item:nth-child(1) .custom-acc-btn.collapsed {
+    color: var(--el-primary);
+}
+.hermes-sidebar .accordion-item:nth-child(2) .custom-acc-btn.collapsed {
+    color: var(--el-text-muted);
+}
+.hermes-sidebar .accordion-item:nth-child(3) .custom-acc-btn.collapsed {
+    color: var(--el-primary);
+}
+
+.hermes-sidebar .custom-acc-btn:not(.collapsed) {
+    background-color: var(--el-primary);
+    color: var(--el-white);
+    box-shadow: 0 0.5rem 1rem rgba(var(--el-primary-rgb), 0.15);
+}
+
+.hermes-sidebar .custom-acc-btn:not(.collapsed) i,
+.hermes-sidebar .custom-acc-btn:not(.collapsed) svg {
+    color: var(--el-white);
+}
+
+/* PROTOCOLO DE CONFIRMACIÃ“N DE LECTURA (TICKS) */
+.ticks-chat {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    vertical-align: middle;
+    margin-inline-start: 0.35rem;
+}
+
+.ticks-chat svg {
+    display: block;
+    stroke-width: 3.5px;
+}
+
+.ticks-chat svg.tick-second {
+    margin-inline-start: -0.45rem; /* WhatsApp-like overlap */
+}
+
+/* Colores de Ticks segÃºn Estado */
+.ticks-elite--sent {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.ticks-elite--delivered {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.ticks-elite--read {
+    color: var(--el-accent); /* Acento Institucional Destacado (Glow / Oro Elite) */
+    filter: drop-shadow(0 0 0.125rem rgba(255, 215, 0, 0.4));
+}
+
+/* TÃ­tulo e Ã­conos discretos para prioridad */
+.priority-tag-elite {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-block-end: 0.375rem;
+}
+
+.priority-tag-elite--important {
+    color: var(--el-primary);
+}
+
+.priority-tag-elite--urgent {
+    color: var(--el-primary);
+}
+
+/* El emisor tiene fondo de color de marca, por lo que la etiqueta urgente debe ser blanca para contraste */
+.message-out .priority-tag-elite--urgent {
+    color: var(--el-white);
+}
+
+/* Contenedor de Filtros de la Barra Lateral */
+.hermes-filters-container {
+    display: flex;
+    gap: 0.5rem;
+    padding-inline: 1.5rem;
+    margin-block-end: 1rem;
+}
+
+.btn-filter-elite {
+    flex: 1;
+    height: 44px;
+    border: 0.0625rem solid var(--el-border-strong);
+    background-color: var(--el-white);
+    color: var(--el-text-muted);
+    border-radius: var(--el-radius-sub);
+    font-family: var(--el-font-institutional);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-filter-elite:hover {
+    background-color: rgba(var(--el-primary-rgb), 0.04);
+    color: var(--el-primary);
+    border-color: rgba(var(--el-primary-rgb), 0.2);
+}
+
+.btn-filter-elite.is-active {
+    background-color: var(--el-primary);
+    color: var(--el-white);
+    border-color: var(--el-primary);
+    box-shadow: 0 0.25rem 1rem rgba(var(--el-primary-rgb), 0.15);
+}
+
+/* BotÃ³n de Acuse de Recibo en Burbujas */
+.btn-acknowledge-elite {
+    margin-block-start: 0.75rem;
+    background-color: var(--el-primary);
+    color: var(--el-white);
+    border: 0.0625rem solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--el-radius-sub);
+    padding: 0.5rem 1rem;
+    font-family: var(--el-font-institutional);
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    transition: all 0.2s ease;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-acknowledge-elite:hover {
+    background-color: var(--el-white);
+    color: var(--el-primary);
+    border-color: var(--el-white);
+}
+
+.message-in .btn-acknowledge-elite {
+    background-color: var(--el-white);
+    color: var(--el-primary);
+    border-color: var(--el-primary);
+}
+
+.message-in .btn-acknowledge-elite:hover {
+    background-color: var(--el-primary);
+    color: var(--el-white);
+}
+
+.acknowledged-badge-elite {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    margin-block-start: 0.5rem;
+}
+
+.badge-elite-curso {
+    font-size: 0.65rem;
+    padding: 0.125rem 0.375rem;
+    background-color: rgba(var(--el-primary-rgb), 0.1);
+    color: var(--el-primary);
+    border: 0.0625rem solid rgba(var(--el-primary-rgb), 0.2);
+    font-weight: 800;
+}
+
+.elite-grid-masivo {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    max-height: 200px; /* Suficiente para aprox. 5 filas */
+    overflow-y: auto;
+    padding: 0.25rem;
+}
+
+} /* Fin de @layer modules */
+
+

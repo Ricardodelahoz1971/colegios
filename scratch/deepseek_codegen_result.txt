@@ -1,0 +1,95 @@
+Aquí tienes los fragmentos de código modificados para implementar el salto de página físico y la duplicación de cabeceras:
+
+## 1. Modificación en `formatos_matricula.php`
+
+**Insertar después de la línea 595 (después de la tarjeta 'Línea Divisoria'):**
+
+```html
+<div class="ares-var-card" onclick="seleccionarVariableCatalogo('salto_pagina', 'Salto de Página', true)">
+    <i class="bi bi-file-earmark-break text-danger"></i>
+    <div><strong>Salto de Página</strong><span>Forzar salto de página físico</span></div>
+</div>
+```
+
+## 2. Modificación en `formatos_matricula_builder.js`
+
+**En la función `insertarBloqueEnCanvas`, añadir después del bloque de 'linea_divisoria':**
+
+```javascript
+} else if (codigo === 'salto_pagina') {
+    wrapper.style.height = '20px';
+    wrapper.dataset.height = '20px';
+    wrapper.classList.add('ares-bloque-salto-pagina');
+    contenido = `
+        <div class="block-content-wysiwyg p-0" style="height: 100%; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--el-danger); background-color: rgba(var(--el-danger-rgb), 0.05);">
+            <span style="font-size: 8px; font-weight: bold; color: var(--el-danger); text-transform: uppercase;"><i class="bi bi-file-earmark-break me-1"></i>Salto de Página Físico</span>
+            <div class="bloque-backend-html d-none" data-type="salto_pagina">[[BLOQUE_SALTO_PAGINA]]</div>
+        </div>
+    `;
+}
+```
+
+## 3. Modificación en `imprimir_matricula.css`
+
+**Añadir al final del archivo:**
+
+```css
+.ares-salto-pagina-render {
+    page-break-before: always !important;
+    break-before: page !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+```
+
+## 4. Modificación en `imprimir_matricula.php`
+
+**En el renderizador de bloques (aproximadamente línea 536), añadir:**
+
+```php
+if ($tipo_bloque === 'salto_pagina') {
+    $html_bloque = '<div class="ares-salto-pagina-render"></div>';
+}
+```
+
+**Al final del script, antes de renderizar el layout final HTML, añadir la lógica de división:**
+
+```php
+// Verificar si hay saltos de página en el contenido
+if (strpos($html_contenido, 'ares-salto-pagina-render') !== false) {
+    // Dividir el contenido por los saltos de página
+    $partes = explode('<div class="ares-salto-pagina-render"></div>', $html_contenido);
+    
+    // Identificar bloques de cabecera para duplicar
+    $bloques_cabecera = [];
+    preg_match_all('/<div[^>]*data-tipo="(logo|titulo_colegio|lema_colegio|metadatos)"[^>]*>.*?<\/div>/s', $partes[0], $matches);
+    if (!empty($matches[0])) {
+        $bloques_cabecera = $matches[0];
+    }
+    
+    // Construir múltiples contenedores
+    $html_final = '';
+    foreach ($partes as $indice => $parte) {
+        if (trim($parte) === '') continue;
+        
+        $html_final .= '<div class="print-container">';
+        
+        // Duplicar cabecera en cada página (excepto la primera si ya la tiene)
+        if ($indice > 0 && !empty($bloques_cabecera)) {
+            foreach ($bloques_cabecera as $bloque_cabecera) {
+                $html_final .= $bloque_cabecera;
+            }
+        }
+        
+        $html_final .= $parte;
+        $html_final .= '</div>';
+    }
+    
+    $html_contenido = $html_final;
+}
+```
+
+**Nota:** Asegúrate de que la variable `$html_contenido` contenga el HTML renderizado de todos los bloques antes de aplicar esta lógica de división.

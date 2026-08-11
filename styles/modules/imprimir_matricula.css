@@ -1,0 +1,660 @@
+﻿@layer components {
+    :root {
+        --margen-sup: 20mm;
+        --margen-inf: 20mm;
+        --margen-izq: 20mm;
+        --margen-der: 20mm;
+    }
+
+    /* Paged.js eliminado, se usarÃ¡ impresiÃ³n nativa. */
+
+    body {
+        font-family: var(--el-font-institutional), sans-serif;
+        color: var(--el-dark);
+        margin: 0;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Asegurar que el contenedor principal no rompa los mÃ¡rgenes de pÃ¡gina */
+    .print-content,
+    .matricula-container {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+    strong, b {
+        font-weight: 800;
+    }
+    .btn-fab-print {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        background-color: var(--el-primary);
+        border: none;
+        border-radius: var(--el-radius-full, 50%);
+        box-shadow: 0 4px 12px rgba(var(--el-primary-rgb, 0, 0, 0), 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--el-white, rgb(255, 255, 255));
+        cursor: pointer;
+        outline: none;
+    }
+    .btn-fab-print:hover,
+    .btn-fab-print:focus-visible {
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 6px 16px rgba(var(--el-primary-rgb, 0, 0, 0), 0.4);
+    }
+    .btn-fab-print:active {
+        transform: scale(0.95);
+        transition: all 0.1s ease;
+    }
+    .print-icon {
+        width: 22px;
+        height: 22px;
+        stroke: var(--el-white, rgb(255, 255, 255));
+        stroke-width: 1.5;
+        fill: none;
+        transition: transform 0.3s ease;
+    }
+
+
+
+
+    .print-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .print-content {
+        width: 100%;
+    }
+
+    @media print {
+        .btn-fab-print {
+            display: none;
+        }
+    }
+
+    /* Bloques del constructor visual â€” flujo vertical por defecto */
+    .bloque-avanzado, .bloque-texto {
+        position: relative;
+        display: block;
+        box-sizing: border-box;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* Logo institucional â€” respetar ancho del bloque diseÃ±ado */
+    .ares-logo-cabecera {
+        width: 100%;
+        height: auto;
+        max-height: 100%;
+        object-fit: contain;
+        display: block;
+    }
+
+    /* TÃ­tulo y lema de cabecera */
+    .ares-titulo-cabecera {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--el-primary);
+        text-transform: uppercase;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+    .ares-lema-cabecera {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.2;
+        white-space: nowrap;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    /* Contenedor de flujo vertical para todos los bloques */
+    .print-body-flow {
+        display: flex;
+        flex-direction: column;
+        gap: 1mm;
+    }
+    
+    .bloque-texto, .block-content-texto {
+        text-align: justify;
+        white-space: normal;
+        word-break: break-word;
+        font-size: 11px;
+        line-height: 15px;
+    }
+    .block-content-texto[data-text-align="left"] { text-align: left; }
+    .block-content-texto[data-text-align="center"] { text-align: center; }
+    .block-content-texto[data-text-align="right"] { text-align: right; }
+    .block-content-texto[data-text-align="justify"] { text-align: justify; }
+    .bloque-texto strong, .block-content-texto strong {
+        font-weight: 800;
+    }
+    
+    /* Forzar peso tipogrÃ¡fico de variables para neutralizar estilos inline heredados */
+    .print-container .bloque-texto .ares-campo-valor,
+    .print-container .block-content-texto .ares-campo-valor,
+    .bloque-texto strong.ares-campo-valor,
+    .block-content-texto strong.ares-campo-valor,
+    .ares-campo-valor,
+    strong.ares-campo-valor,
+    span.ares-variable-badge {
+        font-weight: 800;
+    }
+
+    body .print-container .bloque-texto p,
+    body .print-container .bloque-texto div,
+    body .print-container .block-content-texto p,
+    body .print-container .block-content-texto div {
+        margin: 0;
+        padding: 0;
+        line-height: 15px;
+    }
+
+    /* =========================================================
+       BLINDAJE ELITE CONTRA BOOTSTRAP (ImpresiÃ³n)
+       Anulamos mÃ¡rgenes heredados del framework para 
+       garantizar cajas delimitadoras exactas en TODOS los bloques.
+       ========================================================= */
+    body .print-container .bloque-avanzado h1,
+    body .print-container .bloque-avanzado h2,
+    body .print-container .bloque-avanzado h3,
+    body .print-container .bloque-avanzado h4,
+    body .print-container .bloque-avanzado h5,
+    body .print-container .bloque-avanzado h6,
+    body .print-container .bloque-avanzado p,
+    body .print-container .bloque-avanzado hr,
+    body .print-container .bloque-texto h1,
+    body .print-container .bloque-texto h2,
+    body .print-container .bloque-texto h3,
+    body .print-container .bloque-texto h4,
+    body .print-container .bloque-texto h5,
+    body .print-container .bloque-texto h6,
+    body .print-container .bloque-texto p,
+    body .print-container .bloque-texto hr {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    /* Estilos Premium para ImpresiÃ³n de Componentes */
+    .cabecera-plantilla {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        border-bottom: 3px double var(--el-primary);
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+    .cabecera-plantilla__logo {
+        width: 80px;
+        height: 80px;
+        background-color: rgba(var(--el-primary-rgb), 0.1);
+        border: 2px solid var(--el-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: var(--el-primary);
+    }
+    .cabecera-plantilla__texto {
+        flex: 1;
+    }
+    .cabecera-plantilla__nombre {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--el-primary);
+        text-transform: uppercase;
+    }
+    .cabecera-plantilla__lema {
+        margin: 5px 0 0 0;
+        font-size: 13px;
+        color: var(--el-text-muted);
+        font-style: italic;
+    }
+
+    .ficha-plantilla {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+    .ficha-plantilla td, .ficha-plantilla th {
+        border: 1px solid rgba(var(--el-primary-rgb), 0.15);
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    .ficha-plantilla td.label {
+        font-weight: bold;
+        background-color: rgba(var(--el-primary-rgb), 0.03);
+        width: 13%;
+        text-transform: uppercase;
+        color: var(--el-primary);
+    }
+    .ficha-plantilla th.header-seccion {
+        background-color: rgba(var(--el-primary-rgb), 0.08);
+        color: var(--el-primary);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-align: left;
+    }
+    .ficha-plantilla__foto {
+        width: 120px;
+        text-align: center;
+        vertical-align: middle;
+        padding: 8px;
+        border: 1px solid rgba(var(--el-primary-rgb), 0.12);
+        background-color: rgba(var(--el-primary-rgb), 0.02);
+    }
+    .ficha-plantilla__foto-placeholder {
+        width: 120px;
+        height: 140px;
+        background-color: rgba(var(--el-primary-rgb), 0.05);
+        border: 2px dashed rgba(var(--el-primary-rgb), 0.3);
+        border-radius: var(--el-radius-sub);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--el-primary);
+        font-size: 11px;
+        font-weight: bold;
+    }
+    .ficha-plantilla__foto-placeholder i {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    .ficha-plantilla__foto-placeholder span {
+        font-size: 8px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .tabla-calificaciones-render {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+    .tabla-calificaciones-render th,
+    .tabla-calificaciones-render td {
+        border: 1px solid rgba(var(--el-primary-rgb), 0.2);
+        padding: 8px 12px;
+        font-size: 12px;
+        text-align: left;
+    }
+    .tabla-calificaciones-render th {
+        background-color: var(--el-primary);
+        color: var(--el-white);
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .tabla-calificaciones-render tr:nth-child(even) {
+        background-color: rgba(var(--el-primary-rgb), 0.02);
+    }
+
+    /* Clases de utilidad para evitar estilos inline */
+    .text-center {
+        text-align: center;
+    }
+    .nota-destacada {
+        font-weight: bold;
+    }
+    .nota-reprobada {
+        font-weight: bold;
+        color: var(--el-primary);
+    }
+    .badge-estado-aprobado {
+        background-color: rgba(var(--el-primary-rgb), 0.1);
+        color: var(--el-primary);
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: var(--el-radius-sub);
+        font-weight: bold;
+    }
+    .badge-estado-reprobado {
+        background-color: rgba(var(--el-primary-rgb), 0.1);
+        color: var(--el-primary);
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: var(--el-radius-sub);
+        font-weight: bold;
+    }
+
+    /* Garantizar renderizado idÃ©ntico al canvas (1 sola lÃ­nea) */
+    .metadatos-plantilla, 
+    .metadatos-plantilla h3, 
+    .metadatos-plantilla h2, 
+    .metadatos-plantilla h4,
+    .metadatos-titulo-linea,
+    .cabecera-plantilla__nombre, 
+    .cabecera-plantilla__lema {
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    /* Estilos de FotografÃ­a Estudiantil Oficial 3x4 */
+    .ares-foto-estudiante {
+        width: 110px;
+        height: 140px;
+        object-fit: cover;
+        border: 2px solid var(--el-primary);
+        border-radius: var(--el-radius-sub);
+        box-shadow: 0 2px 8px rgba(var(--el-primary-rgb), 0.15);
+    }
+    .ares-foto-estudiante-placeholder {
+        width: 110px;
+        height: 140px;
+        background-color: rgba(var(--el-primary-rgb), 0.05);
+        border: 2px dashed rgba(var(--el-primary-rgb), 0.3);
+        border-radius: var(--el-radius-sub);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--el-primary);
+        font-size: 11px;
+        font-weight: bold;
+    }
+
+    .dynamic-firmas-container-print {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 5mm;
+        margin-top: 5mm;
+        width: 100%;
+    }
+    .dynamic-firmas-container-print .firma-grupo-col {
+        display: flex;
+        flex-direction: column;
+        gap: 15mm;
+        flex: 1 1 0px;
+        max-width: 48%;
+    }
+    .dynamic-firmas-container-print .firma-col {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .dynamic-firmas-container-print .firma-linea {
+        border-top: 1.5px solid var(--el-dark);
+        width: 100%;
+        margin-bottom: 2mm;
+    }
+    .dynamic-firmas-container-print .firmas-plantilla__cargo {
+        font-size: 8pt;
+        display: block;
+        line-height: 1.2;
+        white-space: normal;
+    }
+    .dynamic-firmas-container-print .firmas-plantilla__nombre {
+        font-size: 7pt;
+        display: block;
+        margin-top: 0.5mm;
+        white-space: normal;
+    }
+
+    /* AÃ±adir estilos para la lÃ­nea divisoria grafica */
+    .ares-bloque-linea {
+        padding: 0;
+        display: flex;
+        align-items: center;
+        height: 1.5pt; /* Grosor por defecto si data-height no se define */
+    }
+    .ares-linea-grafica {
+        width: 100%;
+        height: 100%;
+        background-color: var(--el-primary);
+        border-radius: var(--el-radius-sub);
+    }
+
+    /* Ficha de matrÃ­cula - anchos de columna */
+    .ares-table-header {
+        background-color: var(--el-primary);
+        color: var(--el-white);
+    }
+    .ares-table-header th {
+        color: var(--el-white);
+    }
+    .ficha-td--label-sm {
+        width: 18%;
+    }
+    .ficha-td--value-lg {
+        width: 30%;
+    }
+    .ficha-td--value-md {
+        width: 20%;
+    }
+    .ficha-td--foto {
+        width: 14%;
+    }
+    /* Negrita para los valores dinÃ¡micos de la ficha */
+    .table-ficha-matricula td:not(.bg-light) {
+        font-weight: 600;
+    }
+    .ficha-foto-marco {
+        width: 85px;
+        height: 105px;
+        overflow: hidden;
+        margin: 0 auto;
+        border: 1px dashed var(--el-primary);
+        border-radius: var(--el-radius-sub);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .ficha-foto-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Tabla de calificaciones - anchos de columna */
+    .cal-th--nota {
+        width: 15%;
+    }
+    .cal-th--estado {
+        width: 20%;
+    }
+
+    /* Bloque de firmas */
+    .firmas-row {
+        page-break-inside: avoid;
+    }
+    .firma-item {
+        width: 45%;
+    }
+    .firma-linea-superior {
+        width: 80%;
+        border-top: 1.5px solid var(--el-primary);
+        margin: 0 auto 5px auto;
+    }
+
+    /* LÃ­nea divisoria grÃ¡fica de backend */
+    .ares-linea-render {
+        width: 100%;
+        height: 100%;
+        background-color: var(--el-primary);
+        margin: 0;
+        border-radius: var(--el-radius-sub);
+    }
+    .ares-salto-pagina-render {
+        page-break-before: always;
+        break-before: page;
+        height: 0;
+        overflow: hidden;
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* =========================================================
+       ARQUITECTURA DE FLUJO PURO (Pantalla + ImpresiÃ³n)
+       ========================================================= */
+
+    /* Contenedor principal con ancho mÃ¡ximo A4 y centrado */
+    .print-document {
+        width: 100%;
+        max-width: 210mm;
+        margin: 0 auto;
+        padding: var(--margen-sup) var(--margen-der) var(--margen-inf) var(--margen-izq);
+        box-sizing: border-box;
+    }
+
+    /* Fila superior flexible con logo e informaciÃ³n */
+    .print-header-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 1mm;
+        margin-bottom: 1mm;
+        gap: 3mm;
+    }
+
+    /* Bloques de cabecera alineados al inicio verticalmente y compactos */
+    .print-header-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        min-width: 0;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+
+    /* Contenedor del logo/escudo */
+    .print-header-logo {
+        flex-shrink: 0;
+        max-width: 25mm;
+        height: auto;
+    }
+
+    /* Cuerpo del documento en flujo normal */
+    .print-body-flow {
+        display: block;
+        width: 100%;
+    }
+
+    /* Bloque de firmas al final del documento */
+    .print-firmas-flow {
+        margin-top: 5mm;
+    }
+
+    /* Tabla invisible para soporte de thead en impresiÃ³n */
+    .print-band-table {
+        width: 100%;
+        border: none;
+        border-spacing: 0;
+    }
+
+    .print-band-td {
+        border: none;
+        padding: 0;
+    }
+
+    /* =========================================================
+       REGLAS EXCLUSIVAS DE IMPRESIÃ“N (@MEDIA PRINT)
+       ========================================================= */
+
+    @media print {
+        /* Resetear restricciones de pantalla para que Chrome maneje el papel */
+        .print-document {
+            max-width: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Tabla de bandas para repetir cabecera en cada hoja */
+        .print-band-table {
+            width: 100%;
+            border: none;
+            border-spacing: 0;
+        }
+
+        .print-band-thead {
+            display: table-header-group;
+        }
+
+        .print-band-td {
+            border: none;
+            padding: 0;
+        }
+
+        /* Firmas no se cortan entre pÃ¡ginas */
+        .print-firmas-flow {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* Ocultar botones flotantes en impresiÃ³n */
+        .btn-fab-print {
+            display: none;
+        }
+
+        /* Mantener cabeceras de tabla repetidas */
+        table thead {
+            display: table-header-group;
+        }
+
+        /* Evitar cortes en bloques de datos */
+        .datos-estudiante,
+        .datos-acudiente,
+        .datos-financieros,
+        .firmas-section,
+        .firma-individual,
+        .table-ficha-matricula,
+        .tabla-calificaciones-render {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* Control de lÃ­neas huÃ©rfanas/viudas en textos */
+        .bloque-texto,
+        .block-content-texto,
+        .observaciones,
+        .info-section {
+            page-break-inside: auto;
+            break-inside: auto;
+            orphans: 3;
+            widows: 3;
+        }
+
+        table tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .page-break-before,
+        .ares-salto-pagina-render {
+            page-break-before: always;
+            break-before: page;
+        }
+
+        /* Forzar reproducciÃ³n exacta de colores */
+        * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* MÃ¡rgenes fÃ­sicos del documento */
+        body {
+            margin: var(--margen-sup) var(--margen-der) var(--margen-inf) var(--margen-izq);
+        }
+    }
+}

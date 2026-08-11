@@ -1,0 +1,76 @@
+﻿/* Ã°Å¸Ââ€ºÃ¯Â¸Â MÃƒâ€œDULO: AULA VIRTUAL ESTUDIANTE ARES */
+@layer modules {
+.badge-new-pulse {
+    animation: pulse-new 2s infinite;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(var(--el-white-rgb), 0.3);
+}
+
+@keyframes pulse-new {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(var(--el-primary-rgb), 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(var(--el-primary-rgb), 0); }
+}
+
+.materia-card-elite {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    background: linear-gradient(145deg, var(--el-white), var(--el-aero-slate));
+}
+
+.materia-card-elite:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px -10px rgba(var(--el-primary-rgb), 0.2);
+    border-color: var(--el-primary);
+}
+
+.materia-card-elite:hover .icon-materia-circle {
+    transform: rotate(15deg) scale(1.1);
+}
+
+.icon-materia-circle {
+    width: 52px; 
+    height: 52px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.recurso-item-hover {
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.recurso-item-hover:hover {
+    background: rgba(var(--el-primary-rgb), 0.05);
+    border-color: rgba(var(--el-primary-rgb), 0.2);
+    transform: translateX(5px);
+}
+
+.scroll-materia-elite {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.banner-icon-elite {
+    transform: translateX(20px);
+}
+
+.recurso-reciente-compacto {
+    transition: all 0.2s ease;
+    border-inline-start: 3px solid transparent;
+    cursor: pointer;
+}
+
+.recurso-reciente-compacto:hover {
+    background: var(--el-white);
+    border-inline-start-color: var(--el-primary);
+    transform: translateX(3px);
+    box-shadow: 0 4px 12px rgba(var(--el-primary-rgb), 0.05);
+}
+
+.text-titulo-compacto { font-size: 0.75rem; }
+.text-sub-compacto { font-size: 0.6rem; }
+} /* Fin de @layer modules */
+

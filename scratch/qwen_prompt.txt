@@ -1,0 +1,39 @@
+Realiza los siguientes cambios en php/vistas/formatos_matricula.php:
+
+1. En el catálogo de bloques (dentro de <div class="col-lg-3 col-md-6"> de Bloques y Estructuras, cerca del div de firmas), añade la tarjeta para el bloque 'linea':
+                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('linea', 'Línea Divisoria', true)">
+                                <i class="bi bi-dash-lg text-primary"></i>
+                                <div><strong>Línea Divisoria</strong><span>Línea gráfica decorativa</span></div>
+                            </div>
+
+2. En el modal #modalConfigBloque (dentro de <form id="form-config-bloque">), agrega la sección de configuración para la línea:
+                    <!-- Configuración para Línea -->
+                    <div id="config-section-linea" class="d-none">
+                        <div class="mb-3">
+                            <label for="config-linea-grosor" class="form-label small fw-bold text-uppercase d-flex justify-content-between">
+                                <span>Grosor de la Línea (px)</span>
+                                <span id="config-linea-grosor-value">2px</span>
+                            </label>
+                            <input type="range" id="config-linea-grosor" class="form-range" min="1" max="15" step="1" value="2" oninput="document.getElementById('config-linea-grosor-value').textContent = this.value + 'px'; if (activeConfigNode) { activeConfigNode.dataset.height = this.value; activeConfigNode.style.height = this.value + 'px'; }">
+                        </div>
+                    </div>
+
+3. En la función javascript abrirConfiguracionBloque(idUnico), añade la lógica para ocultar/mostrar la sección de la línea y cargar el valor de su grosor (dataset.height o por defecto 2):
+   - En la lista de ocultar (donde se añaden las clases d-none a las secciones config-section-logo, etc.), añade:
+     document.getElementById('config-section-linea').classList.add('d-none');
+   - En los bloques condicionales (if/else), añade el soporte para:
+     } else if (tipo === 'linea') {
+         document.getElementById('config-section-linea').classList.remove('d-none');
+         const grosor = activeConfigNode.dataset.height || '2';
+         document.getElementById('config-linea-grosor').value = grosor;
+         document.getElementById('config-linea-grosor-value').textContent = grosor + 'px';
+     }
+
+4. En la función guardarAjustesBloque(e), añade en la cadena de condiciones (if/else):
+     } else if (tipo === 'linea') {
+         const grosor = document.getElementById('config-linea-grosor').value;
+         activeConfigNode.dataset.height = grosor;
+         activeConfigNode.style.height = grosor + 'px';
+     }
+
+Asegúrate de respetar la sintaxis y no borrar nada existente.

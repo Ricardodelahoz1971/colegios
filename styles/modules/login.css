@@ -1,0 +1,179 @@
+@layer modules {
+/* 
+   ==========================================================================
+   ELITE UI KIT - MODULO LOGIN (CONECTOR) v1.2
+   ==========================================================================
+*/
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    /* FONDO INSTITUCIONAL VITRINA: Tinte ~10% azul, logo visible */
+    background-color: hsl(var(--el-primary-h, 224), var(--el-primary-s, 78%), 93%);
+    background-image:
+        radial-gradient(ellipse 70% 50% at 20% 15%, rgba(var(--el-white-rgb), 0.60) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 70% at 80% 85%, rgba(var(--el-primary-rgb), 0.05) 0%, transparent 60%);
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* Capa de brillo animado sobre el fondo */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 40% 40% at 70% 30%, rgba(var(--el-white-rgb), 0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 30% 50% at 20% 70%, rgba(var(--el-white-rgb), 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: login-bg-pulse 12s ease-in-out infinite alternate;
+}
+
+@keyframes login-bg-pulse {
+    from { opacity: 0.6; }
+    to   { opacity: 1; }
+}
+
+.login-container-elite {
+    width: 100%;
+    max-width: 27.5rem;
+    padding: clamp(0.9375rem, 4vw, 1.5625rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+.login-card-elite {
+    background: rgba(var(--el-white-rgb), 0.10);
+    backdrop-filter: blur(1.5625rem);
+    -webkit-backdrop-filter: blur(1.5625rem);
+    border: 0.0625rem solid rgba(var(--el-white-rgb), 0.22);
+    border-top-color: rgba(var(--el-white-rgb), 0.40);
+    border-radius: var(--el-radius-main);
+    box-shadow:
+        0 1.5rem 4rem rgba(var(--el-primary-rgb), 0.45),
+        0 0 0 0.0625rem rgba(var(--el-white-rgb), 0.08) inset;
+    overflow: hidden;
+    position: relative;
+    padding: clamp(1.25rem, 5vw, 2.1875rem);
+    transition: var(--el-transition-premium);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Efecto Aurora interior de la card */
+.login-card-elite::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    inset-inline-start: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(var(--el-white-rgb), 0.05) 0%, transparent 70%);
+    z-index: -1;
+    animation: aurora-glow 15s infinite linear;
+}
+
+@keyframes aurora-glow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* Forzar texto blanco dentro del card en login */
+.login-card-elite .hero-login-title {
+    color: var(--el-white);
+    text-shadow: 0 0.125rem 0.5rem rgba(var(--el-primary-rgb), 0.5);
+}
+
+.login-card-elite .text-secondary,
+.login-card-elite .text-muted,
+.login-card-elite p.small {
+    color: rgba(var(--el-white-rgb), 0.75);
+}
+
+.login-card-elite .footer-login-elite {
+    color: rgba(var(--el-white-rgb), 0.6);
+}
+
+.login-logo-elite {
+    height: clamp(4.375rem, 15vw, 6.875rem);
+    width: auto;
+    filter: drop-shadow(0 0.25rem 1rem rgba(var(--el-primary-rgb), 0.5));
+    transition: var(--el-transition-premium);
+    display: inline-block;
+}
+
+.login-logo-elite:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0.5rem 1.5rem rgba(var(--el-primary-rgb), 0.6));
+}
+
+.hero-login-title {
+    font-family: var(--el-font-institutional), sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.4rem, 7vw, 2.2rem);
+    letter-spacing: -0.09375rem;
+    color: var(--el-white);
+    text-transform: uppercase;
+    line-height: 1.1;
+    text-shadow: 0 0.125rem 0.5rem rgba(var(--el-primary-rgb), 0.5);
+}
+
+.footer-login-elite {
+    margin-block-start: clamp(1.25rem, 6vw, 2rem);
+    text-align: center;
+    opacity: 0.7;
+    font-size: clamp(0.75rem, 3vw, 0.85rem);
+    font-weight: 600;
+    color: rgba(var(--el-white-rgb), 0.7);
+}
+
+/* SOBERANIA DEL SELLO PERSEUS */
+.perseus-watermark {
+    position: fixed;
+    bottom: 1.875rem;
+    inset-inline-end: 1.875rem;
+    width: clamp(3.75rem, 12vw, 7.5rem);
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.85;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.perseus-watermark img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0.25rem 0.625rem rgba(var(--el-primary-rgb), 0.35));
+}
+
+/* AJUSTES MOVILES */
+@media (max-width: 30rem) {
+    .perseus-watermark {
+        bottom: 0.625rem;
+        inset-inline-end: 0.625rem;
+        opacity: 0.4;
+    }
+
+    .login-card-elite {
+        border-radius: var(--el-radius-main);
+    }
+}
+
+@media (max-height: 31.25rem) {
+    .perseus-watermark {
+        display: none;
+    }
+}
+} /* Fin de @layer modules */

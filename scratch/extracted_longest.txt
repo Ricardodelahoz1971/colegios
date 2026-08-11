@@ -1,0 +1,96 @@
+Created At: 2026-07-29T12:49:36Z
+Completed At: 2026-07-29T12:49:40Z
+
+				The command completed successfully.
+				Output:
+				.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+.Line : El t�rmino '.Line' no se reconoce como nombre de un cmdlet, funci�n, archivo de script o programa ejecutable. 
+Compruebe si escribi� correctamente el nombre o, si incluy� una ruta de acceso, compruebe que dicha ruta es correcta e 
+int�ntelo de nuevo.
+En l�nea: 1 Car�cter: 168
++ ... attern 'CENTRO DE MANDO DE HORARIOS' | ForEach-Object { .Line } | Sel ...
++                                                             ~~~~~
+    + CategoryInfo          : ObjectNotFound: (.Line:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+

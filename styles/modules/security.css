@@ -1,0 +1,88 @@
+﻿/* Ã°Å¸â€ºÂ¡Ã¯Â¸Â MÃƒâ€œDULO: ESCUDO DE SEGURIDAD Ãƒâ€°LITE (LOCKDOWN) */
+@layer modules {
+body { 
+    background: var(--el-black); /* Negro absoluto institucional */
+    color: var(--lockdown-color, var(--el-primary)); 
+    font-family: var(--el-font-institutional), sans-serif; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    height: 100vh; 
+    margin: 0; 
+    overflow: hidden; 
+}
+
+.lockdown-container { 
+    text-align: center; 
+    border: 0.3125rem solid var(--lockdown-color, var(--el-primary)); 
+    padding: 3.75rem; 
+    background: rgba(var(--el-black-rgb), 0.9); 
+    box-shadow: 0 0 9.375rem rgba(var(--lockdown-color-rgb), 0.3); 
+    max-width: 50rem; 
+    position: relative;
+    backdrop-filter: blur(0.625rem);
+}
+
+h1 { 
+    font-size: 2.5rem; 
+    margin-block-end: 1.25rem; 
+    text-transform: uppercase; 
+    letter-spacing: 0.3125rem; 
+    font-weight: 900;
+}
+
+.strike-count { 
+    position: absolute; 
+    top: 0.625rem; 
+    inset-inline-end: 1.25rem; 
+    font-size: 1.5rem; 
+    border: 0.0625rem solid var(--lockdown-color, var(--el-primary)); 
+    padding: 0.3125rem 0.9375rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.data-box { 
+    background: rgba(var(--el-black-rgb), 0.5); 
+    border: 0.0625rem solid rgba(var(--el-black-rgb), 0.3); 
+    padding: 1.5625rem; 
+    text-align: left; 
+    margin: 1.875rem 0; 
+    color: var(--lockdown-color, var(--el-primary)); 
+    font-size: 0.85rem; 
+    line-height: 1.6; 
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.timer-box { 
+    font-size: 5rem; 
+    font-weight: 900; 
+    margin-block-start: 1.25rem; 
+}
+
+/* Ã°Å¸Å’â‚¬ ANIMACIONES SOBERANAS */
+@keyframes shake { 
+    0% { transform: translate(1px, 1px); } 
+    50% { transform: translate(-3px, -2px); } 
+    100% { transform: translate(1px, 1px); } 
+}
+.glitch { animation: shake 0.2s infinite; }
+
+@keyframes dance {
+    0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+    25% { transform: rotate(5deg) scale(1.1); filter: hue-rotate(90deg); }
+    50% { transform: rotate(-5deg) scale(0.9); filter: hue-rotate(180deg); }
+    75% { transform: rotate(10deg) scale(1.1); filter: hue-rotate(270deg); }
+    100% { transform: rotate(0deg) scale(1); filter: hue-rotate(360deg); }
+}
+.troll-dancing { animation: dance 0.5s infinite linear; border-radius: var(--el-radius); }
+
+.ascii-troll { 
+    font-size: 0.5rem; 
+    line-height: 0.5rem; 
+    white-space: pre; 
+    margin-block-start: 1.25rem; 
+    opacity: 0.7; 
+    font-family: monospace;
+}
+} /* Fin de @layer modules */
+

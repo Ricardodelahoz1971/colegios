@@ -1,0 +1,20 @@
+# 🤖 SKILL: GENERADOR DEEPSEEK CLOUD (v1.0)
+## Dominio: Orquestación Híbrida, Generación de Código Eficiente y Optimización de Tokens en la Nube
+
+### ⚖️ Leyes de Orquestación Híbrida:
+1. **Antigravity como Arquitecto:** Antigravity diseña la lógica de alto nivel, define el plan de integración, estructura los prompts y supervisa la correcta incorporación del código en la base de datos y archivos.
+2. **DeepSeek como Ejecutor en la Nube:** El modelo en la nube `deepseek-v4-pro` vía la API oficial (`https://deepseek.com`) realiza la generación y procesamiento de bloques de código extensos para optimizar el rendimiento de la máquina local (CPU/RAM).
+3. **Ahorro Activo de Tokens y Carga Local:** Se delega a DeepSeek la generación pesada y carpintería de código complejo utilizando la API en la nube.
+
+### 📋 Protocolo de Ejecución:
+1. **Estructuración del Prompt:** Diseñar un prompt quirúrgico para ser procesado por el ejecutor en la nube.
+2. **Ejecución en la Nube:** Realizar la llamada HTTP/API a `https://deepseek.com` usando la clave Bearer configurada.
+3. **Revisión y Refinamiento:** Antigravity analiza la salida devuelta por DeepSeek, asegura que cumpla con el `STYLE_MANIFESTO.md`, `FRONTEND_MANIFESTO.md` y `BACKEND_MANIFESTO.md`, y la integra en los archivos de producción correspondientes.
+4. **Auditoría Ineludible:** Correr `antigravity_auditor.php` sobre todo cambio realizado antes de dar por finalizada la tarea.
+
+### 🚫 Prohibiciones Absolutas:
+- Utilizar el ejecutor local Qwen en Ollama o cualquier otro puerto local que consuma la RAM del sistema.
+- Ignorar los estándares de vitrina (Vitrina 06) en el código generado por la nube.
+
+---
+*Este skill regula la sinergia con el motor DeepSeek en la nube.*

@@ -1,0 +1,132 @@
+﻿@layer utilities {
+/* 
+   ==========================================================================
+   MÃ“DULO: UTILIDADES Y MICRO-TIPOGRAFÃA v9.2
+   Clases de apoyo, truncado y escalado tipogrÃ¡fico auxiliar.
+   ==========================================================================
+*/
+
+/* ESCALA ELITE COMPACTA */
+.fs-xs { font-size: 0.85rem ; }
+.fs-vsm { font-size: 0.75rem ; }
+.fs-sm-elite { font-size: 0.75rem ; }
+.fs-mini { font-size: 0.7rem ; }
+.fs-nano { font-size: 0.65rem ; }
+.fs-md-elite { font-size: 0.9rem ; }
+.fs-gigantic { font-size: 4rem ; }
+
+.text-xs { font-size: 0.75rem ; }
+
+.text-label-mini {
+    font-size: 0.7rem ;
+    font-weight: 700 ;
+    letter-spacing: 0.03125rem ;
+    opacity: 0.7;
+}
+
+/* TRUNCADO DE TEXTO (ESTÃNDAR v9.2) */
+.text-truncate-2 { 
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; 
+    line-clamp: 2; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden; 
+}
+
+/* ESTADOS Y CURSORES */
+.cursor-pointer { cursor: pointer ; }
+.tracking-widest { letter-spacing: 0.1em ; }
+.w-badge-fixed { min-width: 2.8125rem ; }
+
+/* ANIMACIONES DE INTERFAZ */
+.animate__fadeIn { animation: elFadeIn 0.5s ease forwards; }
+@keyframes elFadeIn { from { opacity: 0; transform: translateY(0.3125rem); } to { opacity: 1; transform: translateY(0); } }
+
+/* SCROLLBARS PERSONALIZADAS */
+.sidebar-scroll-elite::-webkit-scrollbar {
+    width: 0.25rem;
+}
+.sidebar-scroll-elite::-webkit-scrollbar-thumb {
+    background: var(--el-glass-bg);
+    border-radius: var(--el-radius-sub) ;
+}
+
+/* LAYOUT SOBERANO v9.2 */
+.container-max-elite {
+    max-width: 75rem ;
+    margin-inline: auto ;
+}
+
+.w-fixed-280 { width: 17.5rem ; }
+.w-fixed-110 { width: 6.875rem ; }
+.w-fixed-130 { width: 8.125rem ; }
+.w-fixed-140 { width: 8.75rem ; }
+
+/* ESPACIADO Y DIMENSIONES SOBERANAS */
+.px-elite-1-5 { padding-inline: 1.5rem ; }
+.ps-elite-0-5 { padding-inline-start: 0.5rem ; }
+.size-48 { width: 3rem ; height: 3rem ; }
+.size-50 { width: 3.125rem ; height: 3.125rem ; }
+.size-20 { width: 1.25rem ; height: 1.25rem ; }
+.size-16 { width: 1rem ; height: 1rem ; }
+.size-10 { width: 0.625rem ; height: 0.625rem ; }
+.min-h-180 { min-height: 11.25rem ; }
+.min-w-130 { min-width: 8.125rem ; }
+.min-w-250 { min-width: 15.625rem ; }
+.min-w-280 { min-width: 17.5rem ; }
+.max-w-150 { max-width: 9.375rem ; }
+.max-w-300 { max-width: 18.75rem ; }
+.max-w-400 { max-width: 25rem ; }
+.max-w-600 { max-width: 37.5rem ; }
+.max-h-320 { max-height: 20rem ; }
+.max-h-400 { max-height: 25rem ; }
+.h-35 { height: 2.1875rem ; }
+.h-38 { height: 2.375rem ; }
+.size-180 { width: 11.25rem ; height: 11.25rem ; }
+.size-250 { width: 15.625rem ; height: 15.625rem ; }
+.u-pointer-events-auto { pointer-events: auto ; }
+.u-h-auto { height: auto ; }
+.text-primary-80 { color: rgba(var(--el-primary-rgb), 0.8) ; }
+.fs-xl-elite { font-size: 1.8rem ; }
+.z-1060 { z-index: 1060 ; }
+
+/* 6. UTILIDADES DE FONDO INSTITUCIONAL */
+.bg-blade { background-color: var(--el-dark-bg) ; }
+.bg-blade-light { background-color: var(--el-dark-bg-light) ; }
+.bg-aero-glass { background-color: var(--el-glass-bg) ; backdrop-filter: blur(0.625rem); }
+.bg-elite-light { background-color: var(--el-bg) ; }
+.bg-primary-faded { background-color: rgba(var(--el-primary-rgb), 0.1) ; }
+.bg-info-faded { background-color: rgba(var(--el-primary-rgb), 0.1) ; }
+.bg-danger-faded { background-color: rgba(var(--el-primary-rgb), 0.1) ; }
+
+/* 7. REDONDEADO Y ESTRUCTURA */
+.rounded-elite { border-radius: var(--el-radius-sub) ; }
+.rounded-elite-lg { border-radius: var(--el-radius-main) ; }
+.rounded-bottom-elite { border-radius: 0 0 var(--el-radius-sub) var(--el-radius-sub) ; }
+
+/* 8. DIMENSIONES FIJAS INSTITUCIONALES */
+.w-80 { width: 5rem ; }
+.w-120 { width: 7.5rem ; }
+.h-18 { height: 1.125rem ; }
+.h-30 { height: 1.875rem ; }
+.h-32 { height: 2rem ; }
+.h-60 { height: 3.75rem ; }
+.h-120 { height: 7.5rem ; }
+.size-60 { width: 3.75rem ; height: 3.75rem ; }
+.size-120 { width: 7.5rem ; height: 7.5rem ; }
+
+/* 9. UTILIDADES DE BORDE DINÃMICAS */
+.border-top-white { border-top-color: var(--el-white) ; }
+.border-is-aero { border-inline-start-color: var(--el-glass-border) ; }
+/* 10. UTILIDADES DE VISIBILIDAD Y ESTADO SOBERANO */
+.u-hidden { display: none ; }
+.u-block { display: block ; }
+.u-flex { display: flex ; }
+.u-invisible { opacity: 0 ; pointer-events: none ; }
+.u-visible { opacity: 1 ; pointer-events: auto ; }
+.u-overflow-hidden { overflow: hidden ; }
+.u-opacity-muted { opacity: 0.5 ; }
+.u-opacity-full { opacity: 1 ; }
+.u-z-modal { z-index: 2000 ; }
+} /* Fin de @layer utilities */
+

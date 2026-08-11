@@ -1,0 +1,54 @@
+Created At: 2026-07-06T18:27:32Z
+Completed At: 2026-07-06T18:27:32Z
+File Path: `file:///c:/xampp/htdocs/sistema_escolar/php/vistas/zulu.php`
+Total Lines: 355
+Total Bytes: 22716
+Showing lines 300 to 345
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+300:         <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+301:             <div class="modal-header bg-primary text-white border-0 py-3 px-4">
+302:                 <h5 class="modal-title fw-bold">Configuración: Plan Maestro Atlas</h5>
+303:                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+304:             </div>
+305:             <div class="modal-body p-4">
+306:                 <div class="mb-4">
+307:                     <label class="form-label fw-bold text-uppercase small text-muted mb-2">1. Seleccionar Nivel Académico</label>
+308:                     <select id="nivel-plan-zulu" class="select-elite w-100" onchange="cargarPlanMaestro(this.value)">
+309:                         <option value="">-- Seleccionar nivel institucional --</option>
+310:                         <?php 
+311:                         $stmt_niveles = $db->prepare("SELECT DISTINCT nivel_id FROM cursos WHERE nivel_id > 0 ORDER BY nivel_id ASC");
+312:                         $stmt_niveles->execute();
+313:                         $res_niveles = $stmt_niveles;
+314:                         while($rn = $res_niveles->fetch(PDO::FETCH_ASSOC)): ?>
+315:                             <option value="<?php echo $rn['nivel_id']; ?>">Nivel Académico <?php echo $rn['nivel_id']; ?></option>
+316:                         <?php endwhile; ?>
+317:                     </select>
+318:                 </div>
+319: 
+320:                 <div class="mb-2 d-flex justify-content-between align-items-center">
+321:                     <h6 class="fw-bold text-dark text-uppercase small mb-0">2. Malla Curricular Obligatoria</h6>
+322:                     <span class="badge-elite badge-elite--info">Horas / Sem</span>
+323:                 </div>
+324:                 
+325:                 <div class="row g-2 overflow-auto max-h-400" id="lista-materias-plan">
+326:                     <?php 
+327:                     $stmt_mats = $db->prepare("SELECT id, nombre_especialidad FROM especialidades ORDER BY nombre_especialidad ASC");
+328:                     $stmt_mats->execute();
+329:                     $res_mats = $stmt_mats;
+330:                     while($rm = $res_mats->fetch(PDO::FETCH_ASSOC)): ?>
+331:                         <div class="col-md-6">
+332:                             <div class="p-2 rounded-3 border bg-white h-100 d-flex align-items-center justify-content-between">
+333:                                 <div class="m-0 d-flex align-items-center">
+334:                                     <input class="form-check-input-elite me-2" type="checkbox" value="<?php echo $rm['id']; ?>" id="chk-mat-<?php echo $rm['id']; ?>" onchange="toggleIntensidad(<?php echo $rm['id']; ?>, this.checked)">
+335:                                     <label class="form-check-label small fw-bold text-dark text-truncate max-w-150 cursor-pointer" for="chk-mat-<?php echo $rm['id']; ?>">
+336:                                         <?php echo htmlspecialchars($rm['nombre_especialidad']); ?>
+337:                                     </label>
+338:                                 </div>
+339:                                 <input type="number" id="intensidad-mat-<?php echo $rm['id']; ?>" class="input-elite text-center fw-bold text-primary w-60 h-35 rounded-3 fs-md-elite" value="1" min="1" max="20" disabled>
+340:                             </div>
+341:                         </div>
+342:                     <?php endwhile; ?>
+343:                 </div>
+344:             </div>
+345:             <div class="modal-footer border-0 p-4 bg-light">
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

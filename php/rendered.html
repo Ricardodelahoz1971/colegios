@@ -1,0 +1,737 @@
+﻿
+Notice: session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\sistema_escolar\php\dashboard.php on line 9
+<!-- DEBUG ELITE: STYLE = [aero] | TOTAL_KEYS = 26 -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MÓDULO BANCO DE REACTIVOS (ARES)</title>
+    
+    <!-- LIBRERÍAS NUCLEARES (PRE-CARGA ÉLITE) -->
+    <script src="../assets/vendor/jquery/jquery.min.js"></script>
+    <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/vendor/sweetalert2/sweetalert2.all.min.js"></script>
+    
+    <script src="../js/rendered.js" defer></script>
+    
+    <!-- Componentes Élite (Carga Local Sello Ares) -->
+    <!-- 0. MANIFIESTO DE CAPAS (Soberanía de Cascada) -->
+    <link rel="stylesheet" href="../styles/elite_layers.css?v=1780720421">
+
+    <!-- 1. BASE LEGACY & VENDORS (Carga vía Capas) -->
+    <link rel="stylesheet" href="../assets/vendor/datatables/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="../styles/utilities.css?v=1780720421">
+
+    <!-- 2. TOKENS & IDENTIDAD (Variables de Diseño) -->
+    <link rel="stylesheet" href="../styles/elite_themes.css?v=1780720421">
+
+    <!-- 3. MÓDULOS ESPECÍFICOS (Estructura Local) -->
+    <link rel="stylesheet" href="../styles/modules/layout.css?v=1780720421">
+    <link rel="stylesheet" href="../styles/modules/sidebar.css?v=1780720421">
+    <link rel="stylesheet" href="../styles/modules/mensajeria.css?v=1780720421">
+    <link rel="stylesheet" href="../styles/modules/agenda.css?v=1780720421">
+    <link rel="stylesheet" href="../styles/modules/zulu.css?v=1780720421">
+    <link rel="stylesheet" href="../styles/modules/khronos.css?v=1780720421">
+    <link rel="stylesheet" href="../styles/modules/ares.css?v=1780720421">
+    <link rel="stylesheet" href="../styles/modules/ares_editor.css?v=1780720421">
+    <link rel="stylesheet" href="../styles/modules/dashboard_elite.css?v=1780720421">
+
+    <!-- 4. NÚCLEO ÉLITE (Autoridad Suprema) -->
+    <link rel="stylesheet" href="../styles/ui_kit.css?v=1780720421">
+    <link rel="stylesheet" href="../styles/modules/elite_mutations.css?v=1780720421">
+
+    <!-- 5. CARGA DINÁMICA DE MÓDULOS (Soberanía Modular) -->
+        
+    <!-- Librerías Ares (Evaluación) - Sincronización Local -->
+    <link rel="stylesheet" href="../assets/vendor/katex/katex.min.css">
+    <script src="../assets/vendor/katex/kt_engine.js"></script>
+    <script src="../assets/vendor/mathlive/ml_engine.js"></script>
+    <link href="../assets/vendor/quill/quill.snow.min.css" rel="stylesheet">
+    <script src="../assets/vendor/quill/quill.min.js"></script>
+    <script src="../assets/vendor/sortablejs/Sortable.min.js"></script>
+    <script src="../js/modules/ares_select_engine.js?v=1780720421"></script>
+    
+    <!-- CARGADOR DE MODELOS SOBERANOS -->
+            <link rel="stylesheet" href="../styles/modules/elite_aero.css?v=1780720421">
+            
+    <!-- Google Fonts: ADN Textual Maestro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Montserrat:wght@400;500;700;800;900&family=Roboto:wght@300;400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+
+    
+    <style>
+        :root {
+            /* ADN ÉLITE: TOKENS DE IDENTIDAD INSTITUCIONAL */
+            --el-primary: #046731;
+            --el-primary-rgb: 4, 103, 49;
+            --el-accent: #61a003;
+            --el-accent-rgb: 97, 160, 3;
+            --el-info: #00ffe1;
+            --el-info-rgb: 0, 255, 225;
+            --el-success: #166534;
+            --el-success-rgb: 22, 101, 52;
+            --el-danger: #991b1b;
+            --el-danger-rgb: 153, 27, 27;
+            --el-white: rgb(255, 255, 255);
+            --el-white-rgb: 255, 255, 255;
+            --el-dark-rgb: 30, 41, 59;
+
+            /* COMPATIBILIDAD BOOTSTRAP */
+            --bs-primary: var(--el-primary);
+            --bs-primary-rgb: var(--el-primary-rgb);
+            --bs-btn-hover-bg: #1a3275;
+            --bs-success: var(--el-success);
+            --bs-success-rgb: var(--el-success-rgb);
+            --bs-danger: var(--el-danger);
+            --bs-danger-rgb: var(--el-danger-rgb);
+            --bs-warning-rgb: 255, 193, 7;
+            --bs-info: var(--el-info);
+            --bs-info-rgb: var(--el-info-rgb);
+            --bs-btn-active-bg: #1a3275 !important;
+            --bs-body-bg: #f8fafc !important;
+            --bs-tertiary-bg: #ffffff !important;
+            --bs-body-color: #334155 !important;
+            --bs-border-color: rgba(var(--el-primary-rgb), 0.15);
+            --el-border: rgba(var(--el-primary-rgb), 0.1);
+            --el-border-strong: rgba(var(--el-primary-rgb), 0.2);
+            --el-font-institutional: 'Inter', sans-serif;
+            --sidebar-width: 280px;
+        }
+        body {
+            font-family: var(--el-font-institutional) !important;
+        }
+
+        /* Refinamiento de Inputs Numéricos (Flechitas siempre visibles) */
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            opacity: 1 !important;
+            height: 30px;
+        }
+        input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+
+        /* 🛡️ SOBERANÍA DEL SELECT ÉLITE (Inyección Dinámica de Flecha) */
+                select.form-select, select.select-elite, select.select-elite-reborn, select.select-elite-sm {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23046731' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        }
+    </style>
+
+    </head>
+<body class="bg-light  mode-aero-elite">
+
+<div class="container-fluid overflow-hidden p-0">
+    <div class="row vh-100 g-0">
+        
+        <!-- SIDEBAR (Navegación Élite) -->
+        <nav class="sidebar-container d-flex flex-column p-0 shadow-lg" id="sidebarMaestro">
+            <div class="sidebar-header-elite p-4 border-bottom">
+                <div class="logo-container-elite mb-3">
+                                            <img src="../uploads/branding/logo_institucional_1777692837.png" alt="Logo" class="logo-img-elite school-logo-global">
+                                    </div>
+                <div class="school-name-container-elite">
+                    <h2 class="school-name-elite school-name-global">Colegio Atanasio Girardot</h2>
+                </div>
+            </div>
+            
+            <div class="flex-fill py-3 sidebar-scroll-elite">
+                <ul class="menu-elite px-3">
+                    
+                    <!-- INICIO -->
+                    <li class="menu-item-elite">
+                        <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                <span>Inicio</span>
+                            </div>
+                        </a>
+                    </li>
+
+                    <!-- EVALUACIÓN (ESTUDIANTES) -->
+                    
+Warning: Undefined array key "rol_nombre" in C:\xampp\htdocs\sistema_escolar\php\dashboard.php on line 390
+
+                                        <li class="menu-item-elite">
+                        <a href="javascript:void(0)" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                <span>Estudiantes</span>
+                            </div>
+                            <i class="bi bi-chevron-right small arrow-icon"></i>
+                        </a>
+                        <ul class="submenu-elite">
+                                                            <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('matricula')">Nueva Matrícula</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('matriculados')">Gestión de Matriculados</a></li>
+                                                    </ul>
+                    </li>
+                    
+                    <!-- CATEGORÍA: ACADÉMICO -->
+                                        <li class="menu-item-elite">
+                        <a href="#!" onclick="event.preventDefault()" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 17 17H20"></path><path d="M6.5 20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                                <span>Académico</span>
+                            </div>
+                            <i class="bi bi-chevron-right small arrow-icon"></i>
+                        </a>
+                        <ul class="submenu-elite">
+                                                            <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('areas')">Áreas Curriculares</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('especialidades')">Especialidades</a></li>
+                                                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('cursos')">Cursos / Grupos</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('zulu')">Carga Académica</a></li>
+                                <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('khronos')">Horario Escolar</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('reporte_listas')">Centro de Reportes</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('aula_virtual_gestion')">Aula Virtual</a></li>
+                                                                                        <li><a class="submenu-link-elite active" href="javascript:void(0)" onclick="navegarModulo('editor_preguntas')">Banco de Reactivos</a></li>
+                                <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('constructor_pruebas')">Creador de exámenes</a></li>
+                                <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('constructor_actividades')">Gestor de Actividades</a></li>
+                                <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('calificar_pruebas')">Calificación de pruebas</a></li>
+                                                                    <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('sabana_calificaciones')">Sábana de Notas</a></li>
+                                                                                    </ul>
+                    </li>
+                    
+                    <!-- CATEGORÍA: AGENDA -->
+                                        <li class="menu-item-elite">
+                        <a href="#!" onclick="event.preventDefault()" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                <span>Agenda</span>
+                            </div>
+                            <i class="bi bi-chevron-right small arrow-icon"></i>
+                        </a>
+                        <ul class="submenu-elite">
+                                                            <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('asistencia')">Control de Asistencia</a></li>
+                                                        
+                                                            <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('agenda')">Agenda Académica</a></li>
+                            
+                                                            <li><a class="submenu-link-elite " href="javascript:void(0)" onclick="navegarModulo('calendario')">Cronograma Escolar</a></li>
+                                                    </ul>
+                    </li>
+                    
+                    <!-- MENSAJERÍA -->
+                    
+                    <!-- ADMINISTRACIÓN -->
+                                        <li class="menu-item-elite">
+                        <a href="#!" onclick="event.preventDefault()" class="menu-link-elite ">
+                            <div class="d-flex align-items-center">
+                                <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                <span>Administración</span>
+                            </div>
+                            <i class="bi bi-chevron-right small arrow-icon"></i>
+                        </a>
+                        <ul class="submenu-elite">
+                                                            <li><a class="submenu-link-elite " href="#!" onclick="event.preventDefault(); navegarModulo('configuracion')">Configuración</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="#!" onclick="event.preventDefault(); navegarModulo('personal')">Talento Humano</a></li>
+                                                                                        <li><a class="submenu-link-elite " href="#!" onclick="event.preventDefault(); navegarModulo('auditoria')">Bitácora de Sistema</a></li>
+                                                        
+                                                            <li class="py-2"><hr class="dropdown-divider opacity-25"></li>
+                                <li class="px-4 pb-1"><span class="text-uppercase fw-bold opacity-50 fs-nano tracking-widest">Mantenimiento / Resets</span></li>
+                                <li>
+                                    <a class="submenu-link-elite text-danger fw-bold" href="#!" onclick="purgarIntentosAres()">
+                                        <i class="bi bi-fire me-2"></i> Resetear Intentos Ares
+                                    </a>
+                                </li>
+                                                    </ul>
+                    </li>
+                                    </ul>
+                <div class="px-3 py-2 text-center border-top mt-2 border-white-10">
+                    <span class="badge-soberania badge-soberania--context">
+                        CONTEXTO: ESCRITORIO                    </span>
+                </div>
+            </div>
+            
+            <div class="p-3 mt-auto">
+                <!-- Espacio para expansión futura -->
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="d-flex flex-column p-0 main-content-fixed">
+            
+            <!-- HEADER -->
+            <header class="navbar navbar-white sticky-top bg-white p-2 shadow-sm border-bottom">
+                <div class="container-fluid d-flex flex-nowrap align-items-center justify-content-between">
+                    <div class="d-flex align-items-center overflow-hidden">
+                        <button class="btn-toggle-sidebar me-2" type="button" onclick="toggleSidebarElite()">
+                            <i class="bi bi-list fs-2"></i>
+                        </button>
+                        <h1 class="h3 fw-bold mb-0 hero-module-title text-topbar-elite text-truncate header-title-truncate">MÓDULO BANCO DE REACTIVOS (ARES)</h1>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                        <!-- TOGGLE MODO OSCURO -->
+                        <button onclick="toggleDarkMode()" class="btn btn-link text-dark no-print p-1 shadow-none" id="btnDarkMode">
+                            <svg id="icon-moon" class="" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                            <svg id="icon-sun" class="d-none" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        </button>
+
+                        <!-- CAMPANA DE NOTIFICACIONES -->
+                        <div class="dropdown no-print" id="campanaNotificaciones">
+                            <a href="#" class="text-dark position-relative p-1 d-block" data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                                <span id="punto-rojo-mensajes" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none notif-badge-offset"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 w-fixed-280" id="lista-notificaciones-mini">
+                                <li class="dropdown-header fw-bold text-uppercase small pb-2">Notificaciones</li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="text-center py-3 text-muted small">Cargando...</li>
+                            </ul>
+                        </div>
+
+                        <!-- PERFIL DE USUARIO -->
+                        <div class="dropdown no-print ms-2">
+                            <a href="#" class="d-flex align-items-center text-decoration-none" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="d-none d-md-flex flex-column text-end me-3">
+                                    <span class="text-dark fw-bold fs-xs lh-1">Usuario</span>
+                                    <span class="text-muted text-uppercase fs-nano fw-semibold">Personal</span>
+                                </div>
+                                <div class="avatar-elite avatar-elite--circle bg-primary text-white shadow-sm border border-2 border-white">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 animate__animated animate__fadeIn fs-7">
+                                <li class="px-3 py-2 border-bottom mb-1">
+                                    <div class="fw-bold text-dark">Admin</div>
+                                    <small class="text-muted text-uppercase fs-nano">Personal</small>
+                                </li>
+                                <li><a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="navegarModulo('mi_perfil')">
+                                    <i class="bi bi-person me-2"></i> Mi Perfil</a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger d-flex align-items-center py-2" href="logout.php">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- DINAMIC VIEW CONTENT -->
+            <div class="flex-fill overflow-auto">
+                <div class="p-0">
+                    
+<link rel="stylesheet" href="../styles/modules/ares_editor.css?v=1780720421">
+<link rel="stylesheet" href="../styles/modules/ares_canvas_lab_editor.css?v=1780720421">
+
+<div class="container-fluid py-4 animate__animated animate__fadeIn">
+    <div class="header-module-elite">
+        <h4 class="h3 fw-bold mb-0 text-titulo-elite">Centro de Inteligencia Ares</h4>
+        <p class="subtitle-elite">Gestión soberana y banco universal de reactivos académicos.</p>
+    </div>
+    
+    <div class="row g-4">
+        <!-- LATERAL: EXPLORADOR -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card card-elite shadow-sm ares-panel-radius">
+                <div class="card-header bg-white border-bottom p-3 ares-sticky-header">
+                    <div class="nav-elite-tabs mb-3 d-flex p-1 bg-light rounded-pill ares-h-44">
+                        <button id="tab-mine" class="nav-link-elite active w-50 rounded-pill border-0" onclick="cambiarScope('mine')">MIS REACTIVOS</button>
+                        <button id="tab-universal" class="nav-link-elite w-50 rounded-pill border-0" onclick="cambiarScope('universal')">UNIVERSAL</button>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <select id="filtro-materia-banco" class="select-elite w-75 u-hidden" onchange="cargarBanco()">
+                            <option value="">Todas las Materias</option>
+                                                    </select>
+                        <button id="btn-crear-reactivo" class="btn-elite btn-elite--primary px-3 ms-auto ares-h-44" onclick="clickNuevoReactivo()">
+                            <i class="bi bi-plus-lg fs-5"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="search-wrapper-elite">
+                        <span class="search-icon-elite-fixed"><i class="bi bi-search"></i></span>
+                        <input type="text" id="buscar-pregunta" class="search-elite ares-h-44" placeholder="Filtrar reactivos..." onkeyup="filtrarBanco()">
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="lista-reactivos" class="list-group list-group-flush"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRINCIPAL: LABORATORIO -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card card-elite shadow-sm ares-panel-radius" id="card-editor-ares" data-user-id="1" data-csrf="dummy_token" data-is-admin="false">
+                <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center ares-sticky-header">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-0" id="editor-titulo">CONFIGURACIÓN DE REACTIVO</h5>
+                        <p class="text-secondary small mb-0">Defina la estructura y metodología de evaluación.</p>
+                    </div>
+                    <div id="badge-estado-editor">
+                        <span class="badge-elite-pill badge-elite-pill--info">NUEVO REACTIVO</span>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- ESTADO INACTIVO / BIENVENIDA -->
+                    <div id="editor-empty-state" class="text-center py-5 text-muted animate__animated animate__fadeIn">
+                        <i class="bi bi-plus-circle fs-1 d-block mb-3 opacity-25"></i>
+                        <p class="fs-nano fw-bold text-uppercase">Presione [+] o seleccione un reactivo para activar el laboratorio</p>
+                    </div>
+
+                    <form id="form-pregunta-ares" class="d-none">
+                        <input type="hidden" id="pregunta-id" value="0">
+                        <input type="hidden" id="es-propia" value="1">
+                        
+                        <div class="mb-4">
+                            <label for="titulo_pregunta" class="form-label fw-bold text-uppercase fs-nano text-muted">Título Técnico del Reactivo</label>
+                            <input type="text" id="titulo_pregunta" name="titulo_pregunta" class="input-elite ares-h-44" placeholder="Ej: Ley de Ohm - Cálculo de Resistencia" required>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="d-flex flex-column">
+                                    <label for="materia_id" class="form-label fw-bold text-uppercase fs-nano text-muted mb-2">Materia / Especialidad</label>
+                                    <select class="select-elite" id="materia_id" name="materia_id" required onchange="sincronizarAreaMEN(this.value)">
+                                        <option value="">-- Seleccionar --</option>
+                                                                            </select>
+                                    <div id="area-badge" class="mt-2 d-none">
+                                        <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 py-2 px-3 fs-nano italic">
+                                            <i class="bi bi-diagram-3-fill me-1"></i> Área MEN: <span id="area-name">---</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex flex-column">
+                                    <label for="tipo_id" class="form-label fw-bold text-uppercase fs-nano text-muted mb-2">Tipo de Pregunta</label>
+                                    <select id="tipo_id" name="tipo_id" class="select-elite" onchange="renderizarEstructuraMetadatos(this.value, null, true)" required></select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="d-flex flex-column">
+                                    <label for="complejidad" class="form-label fw-bold text-uppercase fs-nano text-muted mb-2">Dificultad</label>
+                                    <select id="complejidad" name="complejidad" class="select-elite">
+                                        <option value="Baja">Baja</option>
+                                        <option value="Media" selected>Media</option>
+                                        <option value="Alta">Alta</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PANEL DE ALINEACIÓN CURRICULAR MEN -->
+                        <div class="p-4 bg-white rounded-4 border mb-4 shadow-sm ares-panel-men d-none" id="panel-alineacion-men">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-circle-elite me-2 bg-primary bg-opacity-10 text-primary">
+                                    <i class="bi bi-diagram-3"></i>
+                                </div>
+                                <h6 class="fw-bold text-dark m-0 text-uppercase fs-nano">Alineación Curricular (Estándares MEN)</h6>
+                            </div>
+                            
+                            <div class="ares-grid-men">
+                                <div>
+                                    <label class="ares-label-men">GRADO</label>
+                                    <select class="select-elite" id="men-grado-id" onchange="cargarDBAs(this.value)">
+                                        <option value="">Grado...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="ares-label-men">APRENDIZAJE / DBA</label>
+                                    <div class="ares-custom-dropdown" id="dba_dropdown_wrapper">
+                                        <button type="button" class="select-elite ares-dropdown-trigger text-truncate" id="dba_dropdown_trigger" onclick="toggleDropdown('aprendizaje_list')" disabled>
+                                            -- Seleccionar DBA --
+                                        </button>
+                                        <div class="ares-dropdown-menu" id="aprendizaje_list">
+                                            <div class="text-muted small italic p-3 text-center">Seleccione un grado para cargar los DBA...</div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="aprendizaje_id" name="aprendizaje_id" value="">
+                                </div>
+                                <div>
+                                    <label class="ares-label-men">EVIDENCIA A EVALUAR</label>
+                                    <div class="ares-custom-dropdown" id="evidencia_dropdown_wrapper">
+                                        <button type="button" class="select-elite ares-dropdown-trigger text-truncate" id="evidencia_dropdown_trigger" onclick="toggleDropdown('evidencia_list')" disabled>
+                                            -- Seleccionar Evidencia --
+                                        </button>
+                                        <div class="ares-dropdown-menu" id="evidencia_list">
+                                            <div class="text-muted small italic p-3 text-center">Seleccione un DBA para cargar las evidencias...</div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="evidencia_id" name="evidencia_id" value="">
+                                </div>
+                            </div>
+
+                            <div id="preview-dba" class="mt-2 rounded-3 border-start border-4 border-primary d-none ares-preview-box"></div>
+                            <input type="hidden" id="men-area-id" name="area_id">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-uppercase fs-nano text-muted">Enunciado del Reactivo</label>
+                            <div id="editor-enunciado" class="bg-white rounded-3 ares-editor-box"></div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="fs-nano text-muted"><i class="bi bi-info-circle me-1"></i> Doble clic en una fórmula en el editor para modificarla.</span>
+                                <button type="button" class="btn btn-link p-0 fs-nano text-primary fw-bold text-decoration-none" onclick="toggleLatexHelp()">
+                                    <i class="bi bi-file-earmark-code me-1"></i> ¿AYUDA CON FÓRMULAS?
+                                </button>
+                            </div>
+                            
+                            <div id="latex-help-panel" class="mt-3 p-3 bg-white rounded-3 border d-none animate__animated animate__fadeIn">
+                                <h6 class="fw-bold text-dark mb-3 fs-nano text-uppercase"><i class="bi bi-journal-code me-2 text-primary"></i> Guía Rápida de Fórmulas Matemáticas</h6>
+                                <div class="row g-2">
+                                    <div class="col-md-4">
+                                        <div class="p-2 bg-light rounded-3 small">
+                                            <strong>Fracción:</strong> <code class="text-primary">\frac{a}{b}</code> <span class="text-muted">(e.g., \frac{2}{x})</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-2 bg-light rounded-3 small">
+                                            <strong>Potencia:</strong> <code class="text-primary">x^2</code> o <code class="text-primary">x^{n}</code>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-2 bg-light rounded-3 small">
+                                            <strong>Raíz Cuadrada:</strong> <code class="text-primary">\sqrt{x}</code>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-2 bg-light rounded-3 small">
+                                            <strong>Raíz Enésima:</strong> <code class="text-primary">\sqrt[3]{x}</code>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-2 bg-light rounded-3 small">
+                                            <strong>Multiplicar:</strong> <code class="text-primary">\cdot</code> <span class="text-muted">(a \cdot b)</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="p-2 bg-light rounded-3 small">
+                                            <strong>Dividir:</strong> <code class="text-primary">\div</code> <span class="text-muted">(a \div b)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-muted fs-nano italic">
+                                    <i class="bi bi-lightbulb-fill text-warning me-1"></i> <strong>Tip:</strong> Inserte estos códigos dentro del cuadro al presionar el botón <strong>f(x)</strong> del editor.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-light rounded-4 ares-border-dashed mb-4" id="contenedor-metadatos"></div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-3 border-top" id="botones-editor">
+                            <button type="button" class="btn-elite btn-elite--outline px-4 ares-h-44" onclick="nuevaPregunta()">CANCELAR</button>
+                            <button type="submit" class="btn-elite btn-elite--primary px-5 shadow-sm ares-h-44">
+                                <i class="bi bi-shield-check me-2"></i> GUARDAR EN BÓVEDA
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     MODAL FLOTANTE DE PANTALLA COMPLETA: ARES VISUAL CANVAS (INTEGRACIÓN)
+     ========================================================================== -->
+<div class="modal-canvas-fullscreen" id="modal-ares-canvas-fullscreen">
+    <div class="modal-canvas-header">
+        <div class="d-flex align-items-center gap-2">
+            <h5 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-palette-fill text-primary"></i> ARES VISUAL CANVAS (LIENZO DE EVALUACIÓN)
+            </h5>
+            <span class="badge-elite-pill badge-elite-pill--warning fs-nano">Entorno Gráfico v2.0</span>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn-elite btn-elite--outline px-4 ares-h-44" id="btn-modal-canvas-cancel" data-tooltip="Descartar cambios y salir">
+                CANCELAR
+            </button>
+            <button type="button" class="btn-elite btn-elite--primary btn-modal-close" id="btn-modal-canvas-save" data-tooltip="Confirmar Diseño y Aplicar">
+                <i class="bi bi-check-lg"></i> APLICAR AL EXAMEN
+            </button>
+        </div>
+    </div>
+    
+    <div class="modal-canvas-body">
+        <div class="canvas-lab-container">
+            
+            <!-- BARRA DE HERRAMIENTAS AERO GLASS (MINIMALISTA) -->
+            <aside class="canvas-toolbar aero-glass">
+                <div class="toolbar-header" data-tooltip="Caja de Herramientas">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div class="toolbar-body">
+                    <div class="tool-draggable" draggable="true" data-type="text" data-tooltip="Texto Dinámico">
+                        <i class="bi bi-fonts"></i>
+                    </div>
+                    <div class="tool-draggable" draggable="true" data-type="image" data-tooltip="Contenedor Multimedia">
+                        <i class="bi bi-image"></i>
+                    </div>
+                    <div class="tool-draggable" draggable="true" data-type="choice" data-tooltip="Ranura de Opción (Choice)">
+                        <i class="bi bi-ui-radios"></i>
+                    </div>
+                    <div class="tool-draggable" draggable="true" data-type="hotspot" data-tooltip="Zona Caliente (Hotspot)">
+                        <i class="bi bi-pin-angle"></i>
+                    </div>
+                    <div class="tool-draggable" draggable="true" data-type="dropzone" data-tooltip="Hueco Receptor (Dropzone)">
+                        <span class="dropzone-text-icon">|----|</span>
+                    </div>
+                    <div class="tool-draggable" draggable="true" data-type="draggable" data-tooltip="Etiqueta Arrastrable (Draggable)">
+                        <i class="bi bi-grip-horizontal"></i>
+                    </div>
+                </div>
+                <div class="toolbar-footer" data-tooltip="Previsualizar Estructura JSON">
+                    <button type="button" class="btn-elite btn-elite--primary w-100" id="btn-preview-json">
+                        <i class="bi bi-code-slash"></i>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- ÁREA DE TRABAJO (LIENZO CUADRICULADO) -->
+            <main class="canvas-workspace">
+                <div class="canvas-header">
+                    <div class="canvas-header__info">
+                        <h4 class="h6 fw-bold mb-0 text-dark">Lienzo Técnico de Disposición Visual</h4>
+                    </div>
+                    <div class="canvas-workspace-controls">
+                        <select id="select-canvas-maqueta" class="select-elite select-canvas-maqueta ares-h-44 px-3" data-tooltip="Cargar una maqueta pedagógica pre-calculada">
+                            <option value="">-- Cargar Maqueta --</option>
+                            <option value="template-choice">Opción Múltiple con Imagen</option>
+                            <option value="template-match">Apareamiento</option>
+                            <option value="template-hotspot">Zona Activa (Hotspot)</option>
+                            <option value="template-dragdrop">Completar Arrastrando (Drag & Drop)</option>
+                        </select>
+                        <button type="button" class="btn-workspace-action active" id="btn-grid-toggle" data-tooltip="Mostrar/Ocultar Malla">
+                            <i class="bi bi-grid-3x3"></i>
+                        </button>
+                        <button type="button" class="btn-workspace-action active" id="btn-snap-toggle" data-tooltip="Activar/Desactivar Magnetismo">
+                            <i class="bi bi-magnet"></i>
+                        </button>
+                        <button type="button" class="btn-workspace-action" id="btn-clear-canvas" data-tooltip="Limpiar Lienzo">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="canvas-scroll-area">
+                    <div id="ares-canvas-board" class="canvas-board" data-grid-size="20">
+                        <!-- Capa SVG para conexiones vectoriales -->
+                        <svg class="canvas-board__connections" id="canvas-connections-svg">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--el-primary)" />
+                                </marker>
+                            </defs>
+                        </svg>
+                        <!-- Los elementos aparecerán aquí dinámicamente -->
+                    </div>
+                </div>
+            </main>
+
+            <!-- PANEL DEL INSPECTOR SLIDING AERO DERECHO -->
+            <aside class="canvas-inspector aero-glass" id="canvas-inspector">
+                <button type="button" class="inspector-toggle-tab" id="btn-inspector-toggle" data-tooltip="Mostrar/Ocultar Inspector">
+                    <i class="bi bi-chevron-left" id="inspector-tab-icon"></i>
+                </button>
+
+                <div class="inspector-header">
+                    <i class="bi bi-sliders"></i> INSPECTOR
+                </div>
+                <div class="inspector-body" id="inspector-default-message">
+                    <div class="inspector-empty-state">
+                        <i class="bi bi-info-circle"></i>
+                        <p>Seleccione un elemento del lienzo para configurar.</p>
+                    </div>
+                </div>
+                <div class="inspector-body d-none" id="inspector-form-container">
+                    <div class="inspector-section">
+                        <label class="inspector-label">Identificador</label>
+                        <input type="text" class="inspector-input" id="inp-node-id" readonly>
+                    </div>
+                    <div class="inspector-section">
+                        <label class="inspector-label">Tipo</label>
+                        <input type="text" class="inspector-input" id="inp-node-type" readonly>
+                    </div>
+                    
+                    <div class="inspector-row">
+                        <div class="inspector-section">
+                            <label class="inspector-label">Posición X</label>
+                            <input type="number" class="inspector-input" id="inp-node-x">
+                        </div>
+                        <div class="inspector-section">
+                            <label class="inspector-label">Posición Y</label>
+                            <input type="number" class="inspector-input" id="inp-node-y">
+                        </div>
+                    </div>
+
+                    <div class="inspector-row">
+                        <div class="inspector-section">
+                            <label class="inspector-label">Ancho</label>
+                            <input type="number" class="inspector-input" id="inp-node-w">
+                        </div>
+                        <div class="inspector-section">
+                            <label class="inspector-label">Alto</label>
+                            <input type="number" class="inspector-input" id="inp-node-h">
+                        </div>
+                    </div>
+
+                    <div class="inspector-section">
+                        <label class="inspector-label">Organizar Capas</label>
+                        <div class="inspector-layer-actions">
+                            <button type="button" class="btn-inspector-action" id="btn-node-front" data-tooltip="Traer al Frente">
+                                <i class="bi bi-layer-forward"></i>
+                            </button>
+                            <button type="button" class="btn-inspector-action" id="btn-node-back" data-tooltip="Enviar al Fondo">
+                                <i class="bi bi-layer-backward"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="inspector-section">
+                        <label class="inspector-label">Estado de Bloqueo</label>
+                        <button type="button" class="btn-inspector-action btn-inspector-action--toggle w-100" id="btn-node-lock" data-tooltip="Bloquear/Desbloquear Arrastre">
+                            <i class="bi bi-unlock"></i> Desbloqueado
+                        </button>
+                    </div>
+
+                    <div id="inspector-dynamic-fields"></div>
+                </div>
+            </aside>
+            
+        </div>
+    </div>
+</div>
+
+<script src="../js/modules/ares_canvas_engine.js?v=1780720421"></script>
+<script src="../js/modules/ares_editor.js?v=1780720421"></script>
+                </div>
+            </div>
+        </main>
+
+    </div>
+</div>
+
+<!-- 🛡️ ESCUDO DE ORIENTACIÓN ÉLITE (Soberanía Horizontal) -->
+<div id="escudo-orientacion-elite">
+    <div class="escudo-contenido">
+        <div class="escudo-icon-box">
+            <i class="bi bi-phone-landscape-fill"></i>
+        </div>
+        <h2 class="escudo-titulo">GIRE SU DISPOSITIVO</h2>
+        <p class="escudo-texto">Para una visualización institucional óptima y legible, el sistema requiere el uso en modo horizontal.</p>
+        <div class="escudo-loader"></div>
+    </div>
+</div>
+
+<!-- 🛡️ ESCUDO DE NAVEGACIÓN (OVERLAY) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebarElite()"></div>
+
+<!-- Scripts Nucleares (Carga Local) -->
+<script src="../assets/vendor/datatables/dataTables.min.js"></script>
+<script src="../assets/vendor/datatables/dataTables.bootstrap5.min.js"></script>
+
+<script src="../js/sidebar_gravity.js?v=1780720421"></script>
+<script src="../js/elite_showroom.js?v=1780720421"></script>
+<!-- 🛠️ MOTOR DE SEGURIDAD ÉLITE (Inyección de Tokens) -->
+
+<!-- JS EXTERNO -->
+<script src="../js/modules/hermes_global.js?v=1780720421"></script>
+<script src="../js/modules/ui_navigator.js?v=1780720421"></script>
+<script src="../js/modules/security_core.js?v=1780720421"></script>
+<script src="../js/modules/academic_manager.js?v=1780720421"></script>
+<script src="../js/modules/perseus_engine.js?v=1780720421"></script>
+<script src="../js/script.js?v=1780720421"></script>
+</body>
+</html>

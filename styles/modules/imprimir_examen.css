@@ -1,0 +1,156 @@
+/* ðŸ›ï¸ MÃ“DULO: MOTOR DE IMPRESIÃ“N DE EXÃMENES ARES */
+@layer modules {
+@page {
+    size: letter;
+    margin: 1cm;
+}
+
+@media print {
+    .no-print { display: none; }
+    body { background: white; }
+    .hoja-examen { 
+        border: none; 
+        box-shadow: none; 
+        margin: 0; 
+        width: 100%; 
+        page-break-after: always; 
+    }
+    .hoja-examen:last-child { page-break-after: auto; }
+    header, footer { display: none; }
+}
+
+body { 
+    background: var(--el-aero-slate); 
+    font-family: var(--el-font-institutional), system-ui, sans-serif;
+    color: var(--el-primary);
+}
+
+.hoja-examen {
+    background: white;
+    width: 21cm;
+    min-height: 27.9cm;
+    padding: 1.5cm;
+    margin: 1rem auto;
+    border: 1px solid var(--el-border);
+    box-shadow: 0 0.5rem 1rem rgba(var(--el-primary-rgb), 0.1);
+    position: relative;
+}
+
+.header-examen {
+    border-bottom: 2px solid var(--el-primary);
+    margin-block-end: 1.5rem;
+    padding-block-end: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.qr-placeholder {
+    width: 100px;
+    height: 100px;
+    border: 1px solid var(--el-border);
+    padding: 5px;
+}
+
+.school-title { 
+    font-size: 1.4rem; 
+    text-transform: uppercase; 
+    margin-block-end: 0.25rem; 
+    font-weight: 900; 
+    color: var(--el-primary);
+}
+
+.exam-title { 
+    font-size: 1.1rem; 
+    color: var(--el-primary); 
+    opacity: 0.7;
+    margin-block-end: 0; 
+}
+
+.student-data {
+    margin-block-end: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.data-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin-block-end: 10px;
+}
+
+.data-label {
+    font-weight: 800;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.student-field {
+    border-bottom: 1px solid var(--el-primary);
+    flex-grow: 1;
+    padding-inline-start: 5px;
+    min-height: 1.2rem;
+}
+
+.field-fixed { flex-grow: 0; min-width: 150px; }
+
+.item-container {
+    margin-block-end: 1.5rem;
+    page-break-inside: avoid;
+}
+
+.item-enunciado {
+    font-weight: 700;
+    margin-block-end: 0.8rem;
+    line-height: 1.4;
+    color: var(--el-primary);
+}
+
+.option-box {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--el-primary);
+    border-radius: var(--el-radius);
+    display: inline-block;
+    vertical-align: middle;
+    margin-inline-end: 0.5rem;
+}
+
+.linea-ensayo {
+    border-bottom: 1px solid var(--el-border-strong);
+    height: 1.5rem;
+    margin-block-end: 0.5rem;
+}
+
+.badge-tipo {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 900;
+    background: rgba(var(--el-primary-rgb), 0.1);
+    padding: 2px 8px;
+    border-radius: var(--el-radius-sub);
+    color: var(--el-primary);
+    margin-inline-end: 8px;
+}
+
+.instrucciones-box {
+    font-size: 0.85rem;
+    border: 1px dashed var(--el-primary);
+    padding: 1rem;
+    background: rgba(var(--el-primary-rgb), 0.02);
+    border-radius: var(--el-radius-sub);
+    margin-block-end: 1.5rem;
+    color: var(--el-primary);
+}
+
+.footer-examen {
+    text-align: center;
+    margin-block-start: 3rem;
+    padding-block-start: 1rem;
+    border-top: 1px solid var(--el-border);
+    opacity: 0.5;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+} /* Fin de @layer modules */

@@ -1,0 +1,48 @@
+<?php
+declare(strict_types=1);
+require_once __DIR__ . '/../security.php';
+guardia_sesion();
+    session_write_close();
+// PHP/LOGICA/BORRAR_ROL.PHP - PROCESADOR DE BAJA DE CARGOS v1.1
+header('Content-Type: application/json');
+require_once '../db.php';
+require_once '../auth.php';
+
+try {
+    proteccion_extrema();
+
+    // 🛡️ CAPA 2: VALIDACIÓN DE PERMISOS
+    if (!tiene_permiso('roles')) { 
+        throw new Exception("Acceso denegado: Rango insuficiente."); 
+    }
+
+    $id = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
+    if (!$id) {
+        throw new Exception("Identificador de rol inválido.");
+    }
+
+    // PROTECCIÓN DE SEGURIDAD: No borrar el Administrador o Director
+    $check = $db->prepare("SELECT nombre_rol FROM roles WHERE id = :id");
+    $check->bindValue(':id', $id, PDO::PARAM_INT);
+    $check->execute();
+    $res = $check->fetch(PDO::FETCH_ASSOC);
+
+    if ($res && ($res['nombre_rol'] === 'Administrador' || $res['nombre_rol'] === 'Director')) {
+        throw new Exception("Este perfil está protegido por el protocolo del sistema.");
+    }
+
+    $stmt = $db->prepare('DELETE FROM roles WHERE id = :id');
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+    
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success', 'message' => 'Perfil de usuario eliminado permanentemente.']);
+    } else {
+        throw new Exception("Error en la ejecución de base de datos.");
+    }
+
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+}
+exit();
+?>
+
