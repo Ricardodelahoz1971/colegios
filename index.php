@@ -2,6 +2,7 @@
 
 // @sast-ignore - Deuda técnica legacy controlada bajo línea base de seguridad v5.0
 declare(strict_types=1);
+// Test de integración de Git hooks y validación de cambios v1.0
 /**
  * INDEX.PHP - ACCESO INSTITUCIONAL ELITE v9.2
  * Corazón del sistema bajo estándares de Ingeniería Senior y Elite UI Kit.
