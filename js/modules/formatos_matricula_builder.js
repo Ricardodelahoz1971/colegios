@@ -175,6 +175,7 @@ function insertarBloqueEnCanvas(codigo, label, x, y) {
     wrapper.className = 'canvas-block-wrapper animate__animated animate__fadeIn';
     wrapper.id = idUnico;
     wrapper.dataset.bloque = codigo;
+    wrapper.dataset.zone = activeZone;  // Marcar zona a la que pertenece
     
     // Remover empty state si existe
     const emptyState = document.getElementById('canvas-empty-state');
@@ -503,6 +504,7 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     const left_mm = parseFloat(jsonBlock.left_mm) || 10;
     const top_mm = parseFloat(jsonBlock.top_mm) || 10;
     const width_mm = jsonBlock.width_mm || null;
+    const zone = jsonBlock.zone || 'body';
 
     const left_px = mmToPixels(left_mm);
     const top_px = mmToPixels(top_mm);
@@ -512,6 +514,7 @@ function insertarBloqueDesdeJSON(jsonBlock) {
 
     const insertedNode = canvas.lastElementChild;
 
+    insertedNode.dataset.zone = zone;  // Restaurar zona
     insertedNode.dataset.left_mm = left_mm.toFixed(2);
     insertedNode.dataset.top_mm = top_mm.toFixed(2);
     insertedNode.style.left = left_px + 'px';
@@ -722,6 +725,7 @@ async function guardarFormato(e) {
 
             configJson.push({
                 type: 'texto',
+                zone: bloque.dataset.zone || 'body',
                 left_mm: left_mm,
                 top_mm: top_mm,
                 width_mm: width_mm,
@@ -746,6 +750,7 @@ async function guardarFormato(e) {
 
                 const jsonBlock = {
                     type: tipo,
+                    zone: bloque.dataset.zone || 'body',
                     left_mm: left_mm,
                     top_mm: top_mm,
                     width_mm: width_mm,
@@ -910,6 +915,8 @@ function arrastrarBloque(e) {
     const canvasRect = canvas.getBoundingClientRect();
 
     const margenesPx = getMargensInPixels();
+    const headerEndPx = mmToPixels(50);
+    const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
 
     let left = (e.clientX - canvasRect.left) - offsetX;
     let top = (e.clientY - canvasRect.top) - offsetY;
@@ -917,21 +924,20 @@ function arrastrarBloque(e) {
     const blockW = bloqueArrastrando.offsetWidth;
     const blockH = bloqueArrastrando.offsetHeight;
 
-    const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
     const minLeft = margenesPx.izquierdo;
     const maxLeft = Math.max(margenesPx.izquierdo, canvas.offsetWidth - margenesPx.derecho - blockW);
 
     left = Math.max(minLeft, Math.min(left, maxLeft));
+    top = Math.max(0, top);
 
-    let minTop = margenesPx.superior;
-
-    if (cabeceraAbierta) {
-        minTop = 38;
-        const maxTop = Math.max(margenesPx.superior, 250);
-        top = Math.max(minTop, Math.min(top, maxTop));
-    } else {
-        top = Math.max(minTop, top);
+    // Actualizar zona automáticamente según posición Y
+    let newZone = 'body';
+    if (top < headerEndPx) {
+        newZone = 'header';
+    } else if (top > footerStartPx) {
+        newZone = 'footer';
     }
+    bloqueArrastrando.dataset.zone = newZone;
 
     left = Math.round(left);
     top = Math.round(top);
@@ -941,7 +947,6 @@ function arrastrarBloque(e) {
     bloqueArrastrando.dataset.left_mm = pixelsToMm(left).toFixed(2);
     bloqueArrastrando.dataset.top_mm = pixelsToMm(top).toFixed(2);
 
-    // Estirar el papel del lienzo dinámicamente si el bloque se arrastra hacia abajo
     ajustarAlturaLienzo();
 }
 
@@ -1518,22 +1523,43 @@ function updateZonesUI() {
         zoneOverlays.footer = footerOverlay;
     }
 
-    // Oscurecer bloques de zonas INACTIVAS
+    // Mostrar/ocultar bloques según zona activa
     document.querySelectorAll('.canvas-block-wrapper').forEach(bloque => {
-        const bloqueTop = bloque.offsetTop;
-        let bloqueZone = 'body';
-        if (bloqueTop < headerEndPx) {
-            bloqueZone = 'header';
-        } else if (bloqueTop > footerStartPx) {
-            bloqueZone = 'footer';
-        }
+        const bloqueZone = bloque.dataset.zone || 'body';
 
-        if (activeZone !== 'body' && bloqueZone !== activeZone) {
-            bloque.style.opacity = '0.3';
-            bloque.style.pointerEvents = 'none';
-        } else {
-            bloque.style.opacity = '1';
-            bloque.style.pointerEvents = 'auto';
+        if (activeZone === 'body') {
+            // En zona body, mostrar bloques de body, ocultar header y footer
+            if (bloqueZone === 'body') {
+                bloque.style.opacity = '1';
+                bloque.style.pointerEvents = 'auto';
+                bloque.style.display = 'block';
+            } else {
+                bloque.style.opacity = '0.2';
+                bloque.style.pointerEvents = 'none';
+                bloque.style.display = 'none';
+            }
+        } else if (activeZone === 'header') {
+            // En zona header, mostrar solo header, ocultar otros
+            if (bloqueZone === 'header') {
+                bloque.style.opacity = '1';
+                bloque.style.pointerEvents = 'auto';
+                bloque.style.display = 'block';
+            } else {
+                bloque.style.opacity = '0.2';
+                bloque.style.pointerEvents = 'none';
+                bloque.style.display = 'none';
+            }
+        } else if (activeZone === 'footer') {
+            // En zona footer, mostrar solo footer, ocultar otros
+            if (bloqueZone === 'footer') {
+                bloque.style.opacity = '1';
+                bloque.style.pointerEvents = 'auto';
+                bloque.style.display = 'block';
+            } else {
+                bloque.style.opacity = '0.2';
+                bloque.style.pointerEvents = 'none';
+                bloque.style.display = 'none';
+            }
         }
     });
 }
