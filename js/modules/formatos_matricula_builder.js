@@ -717,6 +717,11 @@ async function guardarFormato(e) {
             const width_mm = bloque.dataset.width_mm ? parseFloat(bloque.dataset.width_mm) : null;
             const height_mm = bloque.dataset.height ? parseFloat(bloque.dataset.height) : null;
 
+            const widthAttr = width_mm !== null ? ` data-width_mm="${width_mm}"` : '';
+            const heightAttr = height_mm !== null ? ` data-height="${height_mm}"` : '';
+            const styleAttrs = `style="position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${height_mm !== null ? `height:${height_mm}mm;` : ''}"`;
+            htmlCompilado += `<div class="bloque-texto" data-left_mm="${left_mm}" data-top_mm="${top_mm}"${widthAttr}${heightAttr} ${styleAttrs}>${contenidoCaja.innerHTML}</div><br>`;
+
             configJson.push({
                 type: 'texto',
                 left_mm: left_mm,
@@ -725,14 +730,21 @@ async function guardarFormato(e) {
                 height: height_mm,
                 content: contenidoCaja.innerHTML
             });
-            
+
         } else {
             const htmlBackend = bloque.querySelector('.bloque-backend-html');
             if(htmlBackend) {
                 const tipo = htmlBackend.dataset.type;
+                const innerTag = htmlBackend.innerHTML;
                 const left_mm = parseFloat(bloque.dataset.left_mm) || 10;
                 const top_mm = parseFloat(bloque.dataset.top_mm) || 10;
                 const width_mm = bloque.dataset.width_mm ? parseFloat(bloque.dataset.width_mm) : null;
+
+                let extraAttrs = ` data-left_mm="${left_mm}" data-top_mm="${top_mm}"`;
+                if (width_mm !== null) extraAttrs += ` data-width_mm="${width_mm}"`;
+                if (bloque.dataset.height) extraAttrs += ` data-height="${bloque.dataset.height}"`;
+
+                const stylePos = `position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${bloque.dataset.height ? `height:${bloque.dataset.height}mm;` : ''}`;
 
                 const jsonBlock = {
                     type: tipo,
@@ -743,16 +755,29 @@ async function guardarFormato(e) {
                     size: bloque.dataset.size || null,
                     content: bloque.querySelector('.block-content-wysiwyg') ? bloque.querySelector('.block-content-wysiwyg').innerHTML : null
                 };
-                
+
+                if (tipo === 'titulo_colegio') {
+                    const size = bloque.dataset.size || '20';
+                    extraAttrs += ` data-size="${size}"`;
+                } else if (tipo === 'metadatos') {
+                    const size = bloque.dataset.size || '16';
+                    extraAttrs += ` data-size="${size}"`;
+                }
+
                 // Configs específicas que usamos
                 if (tipo === 'calificaciones') {
-                    jsonBlock.diseno = bloque.dataset.diseno || 'elite';
-                    jsonBlock.filtro = bloque.dataset.filtro || 'todas';
-                    jsonBlock.columnas = bloque.getAttribute('data-columnas') || bloque.dataset.columnas || 'materia,docente,definitiva,estado';
+                    const diseno = bloque.dataset.diseno || 'elite';
+                    const filtro = bloque.dataset.filtro || 'todas';
+                    const columnas = bloque.dataset.columnas || 'materia,docente,definitiva,estado';
+                    extraAttrs += ` data-diseno="${diseno}" data-filtro="${filtro}" data-columnas="${columnas}"`;
+                    jsonBlock.diseno = diseno;
+                    jsonBlock.filtro = filtro;
+                    jsonBlock.columnas = columnas;
                 } else if (tipo === 'firmas') {
                     const columnas = bloque.getAttribute('data-columnas') || bloque.dataset.columnas || '3';
+                    extraAttrs += ` data-columnas="${columnas}"`;
                     jsonBlock.columnas = columnas;
-                    
+
                     // Extraer los textos específicos escritos en caliente por el usuario desde los firma-item-canvas
                     const fData = [];
                     bloque.querySelectorAll('.dynamic-firmas-container .firma-item-canvas').forEach(div => {
@@ -763,6 +788,8 @@ async function guardarFormato(e) {
                     });
                     jsonBlock.firmas_data = fData;
                 }
+
+                htmlCompilado += `<div class="bloque-avanzado" data-tipo="${tipo}"${extraAttrs} style="${stylePos}">${innerTag}</div><br>`;
                 configJson.push(jsonBlock);
             }
         }
