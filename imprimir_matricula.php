@@ -722,61 +722,64 @@ $contenido_renderizado = preg_replace_callback(
 // PASO 4: Eliminar <br> sueltos entre bloques que el editor de contenido hereda
 $contenido_renderizado = preg_replace('/<\/div>\s*<br\s*\/?>\s*<div/i', '</div><div', $contenido_renderizado);
 
-// PASO 5: Reestructuración para impresión de flujo puro (sin coordenadas absolutas)
+// PASO 5: Mantener posicionamiento absoluto en MM respetando zonas
 usort($bloques_paginador, function($a, $b) {
     return $a['y_mm'] <=> $b['y_mm'];
 });
 
-// Clasificar bloques por tipo
-$header_info = [];
-$header_logo = '';
-$cuerpo_bloques = [];
-$firmas_bloques = [];
+// Dimensiones del papel (Carta por defecto)
+$papel_width_mm = 215.9;
+$papel_height_mm = 279.4;
+$zona_header_limit_mm = 50;  // Hasta 50mm es header
+$zona_footer_start_mm = 219.4;  // A partir de 219.4mm es footer
+
+// Separar bloques por zona (header/body/footer)
+$header_bloques = [];
+$body_bloques = [];
+$footer_bloques = [];
 
 foreach ($bloques_paginador as $bloque) {
-    $html = $bloque['html'];
     $tipo = $bloque['tipo'];
-    
-    // Eliminar position absolute, left y top de TODOS los bloques
-    $html = preg_replace('/\s*position\s*:\s*absolute\s*;?/i', '', $html);
-    $html = preg_replace('/\s*left\s*:\s*[^;]+;/i', '', $html);
-    $html = preg_replace('/\s*top\s*:\s*[^;]+;/i', '', $html);
-    
-    // Clasificar según tipo
-    if ($tipo === 'logo') {
-        $header_logo = $html;
-    } elseif (in_array($tipo, ['titulo_colegio', 'lema_colegio', 'metadatos'])) {
-        $header_info[] = $html;
-    } elseif ($tipo === 'firmas') {
-        $firmas_bloques[] = $html;
+    $y_mm = $bloque['y_mm'];
+
+    // Determinar zona según Y
+    if ($y_mm < $zona_header_limit_mm) {
+        $header_bloques[] = $bloque;
+    } elseif ($y_mm > $zona_footer_start_mm) {
+        $footer_bloques[] = $bloque;
     } else {
-        $cuerpo_bloques[] = $html;
+        $body_bloques[] = $bloque;
     }
 }
 
-// Construir cabecera (flex container)
+// Construir HTML de cada zona manteniendo posiciones absolutas
 $header_html = '';
-if (!empty($header_info) || !empty($header_logo)) {
-    $header_html .= '<div class="print-header-row">';
-    if (!empty($header_info)) {
-        $header_html .= '<div class="print-header-info">' . implode('', $header_info) . '</div>';
-    }
-    if (!empty($header_logo)) {
-        $header_html .= '<div class="print-header-logo">' . $header_logo . '</div>';
+if (!empty($header_bloques)) {
+    $header_html .= '<div style="position: relative; height: ' . $zona_header_limit_mm . 'mm; background: #f9f9f9; border-bottom: 1px dashed #ccc;">';
+    foreach ($header_bloques as $bloque) {
+        $header_html .= $bloque['html'];
     }
     $header_html .= '</div>';
 }
 
-// Construir cuerpo
 $cuerpo_html = '';
-if (!empty($cuerpo_bloques)) {
-    $cuerpo_html = '<div class="print-body-flow">' . implode('', $cuerpo_bloques) . '</div>';
+if (!empty($body_bloques)) {
+    $cuerpo_height_mm = $zona_footer_start_mm - $zona_header_limit_mm;
+    $cuerpo_html .= '<div style="position: relative; height: ' . $cuerpo_height_mm . 'mm;">';
+    foreach ($body_bloques as $bloque) {
+        $cuerpo_html .= $bloque['html'];
+    }
+    $cuerpo_html .= '</div>';
 }
 
-// Construir firmas
 $firmas_html = '';
-if (!empty($firmas_bloques)) {
-    $firmas_html = '<div class="print-firmas-flow">' . implode('', $firmas_bloques) . '</div>';
+if (!empty($footer_bloques)) {
+    $footer_height_mm = $papel_height_mm - $zona_footer_start_mm;
+    $firmas_html .= '<div style="position: relative; height: ' . $footer_height_mm . 'mm; background: #f9f9f9; border-top: 1px dashed #ccc;">';
+    foreach ($footer_bloques as $bloque) {
+        $firmas_html .= $bloque['html'];
+    }
+    $firmas_html .= '</div>';
 }
 
 ?>
