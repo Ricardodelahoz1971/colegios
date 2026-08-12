@@ -1526,40 +1526,21 @@ function updateZonesUI() {
     // Mostrar/ocultar bloques según zona activa
     document.querySelectorAll('.canvas-block-wrapper').forEach(bloque => {
         const bloqueZone = bloque.dataset.zone || 'body';
+        const isActive = (activeZone === 'body' && bloqueZone === 'body') ||
+                         (activeZone === 'header' && bloqueZone === 'header') ||
+                         (activeZone === 'footer' && bloqueZone === 'footer');
 
-        if (activeZone === 'body') {
-            // En zona body, mostrar bloques de body, ocultar header y footer
-            if (bloqueZone === 'body') {
-                bloque.style.opacity = '1';
-                bloque.style.pointerEvents = 'auto';
-                bloque.style.display = 'block';
-            } else {
-                bloque.style.opacity = '0.2';
-                bloque.style.pointerEvents = 'none';
-                bloque.style.display = 'none';
-            }
-        } else if (activeZone === 'header') {
-            // En zona header, mostrar solo header, ocultar otros
-            if (bloqueZone === 'header') {
-                bloque.style.opacity = '1';
-                bloque.style.pointerEvents = 'auto';
-                bloque.style.display = 'block';
-            } else {
-                bloque.style.opacity = '0.2';
-                bloque.style.pointerEvents = 'none';
-                bloque.style.display = 'none';
-            }
-        } else if (activeZone === 'footer') {
-            // En zona footer, mostrar solo footer, ocultar otros
-            if (bloqueZone === 'footer') {
-                bloque.style.opacity = '1';
-                bloque.style.pointerEvents = 'auto';
-                bloque.style.display = 'block';
-            } else {
-                bloque.style.opacity = '0.2';
-                bloque.style.pointerEvents = 'none';
-                bloque.style.display = 'none';
-            }
+        // Remover clases de bloqueo antiguas
+        bloque.classList.remove('header-locked', 'body-locked');
+
+        if (isActive) {
+            // Zona activa: completamente visible y editable
+            bloque.style.opacity = '';
+            bloque.style.pointerEvents = 'auto';
+        } else {
+            // Zona inactiva: aplicar clase de atenuación
+            bloque.classList.add('header-locked');
+            bloque.style.pointerEvents = 'none';
         }
     });
 }
