@@ -2,45 +2,6 @@
  * Motor Drag & Drop - Formatos de Matrícula (Elite Architecture)
  */
 
-const UNIT_CONFIG = {
-    MM_TO_PX: 3.78,
-    PX_TO_MM: 1 / 3.78,
-    CANVAS_WIDTH_PX: 816,
-    CANVAS_HEIGHT_PX: 1056,
-    CANVAS_WIDTH_MM: 215.9,
-    CANVAS_HEIGHT_MM: 279.4
-};
-
-function mmToPixels(mm) {
-    return mm * UNIT_CONFIG.MM_TO_PX;
-}
-
-function pixelsToMm(px) {
-    return px * UNIT_CONFIG.PX_TO_MM;
-}
-
-function getMargensInPixels() {
-    const sup = parseFloat(document.getElementById('formato-margen-superior')?.value || 20);
-    const inf = parseFloat(document.getElementById('formato-margen-inferior')?.value || 20);
-    const izq = parseFloat(document.getElementById('formato-margen-izquierdo')?.value || 20);
-    const der = parseFloat(document.getElementById('formato-margen-derecho')?.value || 20);
-    return {
-        superior: mmToPixels(sup),
-        inferior: mmToPixels(inf),
-        izquierdo: mmToPixels(izq),
-        derecho: mmToPixels(der)
-    };
-}
-
-function getMargensInMilimeters() {
-    return {
-        superior: parseFloat(document.getElementById('formato-margen-superior')?.value || 20),
-        inferior: parseFloat(document.getElementById('formato-margen-inferior')?.value || 20),
-        izquierdo: parseFloat(document.getElementById('formato-margen-izquierdo')?.value || 20),
-        derecho: parseFloat(document.getElementById('formato-margen-derecho')?.value || 20)
-    };
-}
-
 function initFormatosBuilder() {
 
     const canvas = document.getElementById('canvas-builder');
@@ -116,13 +77,15 @@ function canvasDrop(e) {
 
     if (tipo === 'bloque') {
         const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX - rect.left) - 150;
-        const y = (e.clientY - rect.top) - 30;
+        const zoomScale = obtenerEscalaLienzo(canvas);
+        const x = ((e.clientX - rect.left) / zoomScale) - 150;
+        const y = ((e.clientY - rect.top) / zoomScale) - 30;
 
-        const margenesPx = getMargensInPixels();
+        const factorMmPx = 3.78;
+        const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
         const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
 
-        if (cabeceraAbierta && y >= margenesPx.superior) {
+        if (cabeceraAbierta && y >= margenSup) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Zona Bloqueada',
@@ -135,7 +98,7 @@ function canvasDrop(e) {
             return;
         }
 
-        if (!cabeceraAbierta && y < margenesPx.superior) {
+        if (!cabeceraAbierta && y < margenSup) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Zona Bloqueada',
@@ -184,62 +147,73 @@ function insertarBloqueEnCanvas(codigo, label, x, y) {
     const emptyState = document.getElementById('canvas-empty-state');
     if (emptyState) emptyState.remove();
 
-    const margenesMm = getMargensInMilimeters();
-    const margenesPx = getMargensInPixels();
+    // Obtener márgenes configurados en mm y convertirlos a px (1mm = 3.78px aprox)
+    const factorMmPx = 3.78;
+    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
+    const margenInf = Math.round((parseFloat(document.getElementById('formato-margen-inferior').value) || 20) * factorMmPx);
+    const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factorMmPx);
+    const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factorMmPx);
 
-    const canvasW = canvas.offsetWidth || UNIT_CONFIG.CANVAS_WIDTH_PX;
-    const canvasH = canvas.offsetHeight || UNIT_CONFIG.CANVAS_HEIGHT_PX;
-
-    let estW = 300;
+    const canvasW = canvas.offsetWidth || 816;
+    const canvasH = canvas.offsetHeight || 1056;
+    
+    let estW = 300; // Ancho genérico más ajustado
     if (codigo === 'logo' || codigo === 'qr_estudiante') estW = 110;
     if (codigo === 'foto_estudiante') estW = 120;
     if (codigo === 'titulo_colegio') estW = 400;
     if (codigo === 'lema_colegio') estW = 360;
     if (codigo === 'metadatos') estW = 500;
-    if (codigo === 'ficha' || codigo === 'calificaciones' || codigo === 'texto_certificacion' || codigo === 'linea') estW = canvasW - margenesPx.izquierdo - margenesPx.derecho;
-    if (codigo === 'firmas') estW = canvasW - margenesPx.izquierdo - margenesPx.derecho - 100;
-
-    const maxAnchoSeguro = canvasW - margenesPx.izquierdo - margenesPx.derecho;
+    if (codigo === 'ficha' || codigo === 'calificaciones' || codigo === 'texto_certificacion' || codigo === 'linea') estW = canvasW - margenIzq - margenDer;
+    if (codigo === 'firmas') estW = canvasW - margenIzq - margenDer - 100;
+    
+    // Si el ancho calculado excede los márgenes permitidos, limitar al ancho máximo de la zona segura
+    const maxAnchoSeguro = canvasW - margenIzq - margenDer;
     if (estW > maxAnchoSeguro) {
         estW = maxAnchoSeguro;
     }
-
+    
+    // Posicionamiento en el centro geométrico exacto del lienzo o según zona activa
     const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
     const estH = codigo === 'foto_estudiante' ? 140 : (codigo === 'linea' ? 2 : 90);
 
     if (x === undefined || y === undefined) {
-        x = Math.max(margenesPx.izquierdo, Math.round((canvasW - estW) / 2));
+        x = Math.max(margenIzq, Math.round((canvasW - estW) / 2));
         if (cabeceraAbierta) {
+            // Nace en la zona activa de cabecera (10mm = 38px)
             y = 38;
         } else {
-            y = margenesPx.superior + 15;
+            // Nace en la zona activa del cuerpo (Margen superior + 15px)
+            y = margenSup + 15;
         }
     }
 
-    const maxLeft = Math.max(margenesPx.izquierdo, canvasW - margenesPx.derecho - estW);
-    x = Math.max(margenesPx.izquierdo, Math.min(x, maxLeft));
-
+    // Asegurar que respeta los límites de los márgenes reales
+    const maxLeft = Math.max(margenIzq, canvasW - margenDer - estW);
+    x = Math.max(margenIzq, Math.min(x, maxLeft));
+    
     if (cabeceraAbierta) {
-        const maxTop = Math.max(margenesPx.superior, 250);
+        const maxTop = Math.max(margenSup, 250);
         y = Math.max(38, Math.min(y, maxTop));
+        // Dejar el bloque desbloqueado pero marcar el cuerpo
         wrapper.classList.remove('header-locked');
     } else {
-        y = Math.max(margenesPx.superior, y);
-        if (y < margenesPx.superior) {
+        y = Math.max(margenSup, y);
+        // Dejar el bloque desbloqueado pero marcar la cabecera
+        if (y < margenSup) {
             wrapper.classList.add('header-locked');
         }
     }
-
+    
     x = Math.round(x);
     y = Math.round(y);
-
+    
     wrapper.style.left = x + 'px';
     wrapper.style.top = y + 'px';
     wrapper.style.width = estW + 'px';
-
-    wrapper.dataset.left_mm = pixelsToMm(x).toFixed(2);
-    wrapper.dataset.top_mm = pixelsToMm(y).toFixed(2);
-    wrapper.dataset.width_mm = pixelsToMm(estW).toFixed(2);
+    
+    wrapper.dataset.left = x;
+    wrapper.dataset.top = y;
+    wrapper.dataset.width = estW;
     
     if (codigo === 'linea') {
         wrapper.style.height = '1.5pt';
@@ -908,6 +882,18 @@ async function guardarFormato(e) {
 if (typeof bloqueArrastrando === 'undefined') {
     var bloqueArrastrando = null;
 }
+function obtenerEscalaLienzo(canvas) {
+    if (!canvas) return 1;
+    const rect = canvas.getBoundingClientRect();
+    if (canvas.offsetWidth > 0 && rect.width > 0) {
+        return rect.width / canvas.offsetWidth;
+    }
+    const computedZoom = parseFloat(window.getComputedStyle(canvas).zoom);
+    if (!isNaN(computedZoom) && computedZoom > 0) {
+        return computedZoom;
+    }
+    return 1;
+}
 
 function iniciarArrastreBloque(e) {
     // Ignorar controles flotantes y redimensionador
@@ -922,10 +908,13 @@ function iniciarArrastreBloque(e) {
     }
     
     bloqueArrastrando = this;
+    const canvas = document.getElementById('canvas-builder');
+    const zoomFactor = obtenerEscalaLienzo(canvas);
     const rect = bloqueArrastrando.getBoundingClientRect();
-
-    offsetX = (e.clientX - rect.left);
-    offsetY = (e.clientY - rect.top);
+    
+    // Normalizar offset exactamente a coordenadas unscaled
+    offsetX = (e.clientX - rect.left) / zoomFactor;
+    offsetY = (e.clientY - rect.top) / zoomFactor;
     
     bloqueArrastrando.classList.add('dragging');
     
@@ -935,17 +924,20 @@ function iniciarArrastreBloque(e) {
 
 function arrastrarBloque(e) {
     if (!bloqueArrastrando) return;
-
+    
     const canvas = document.getElementById('canvas-builder');
     const canvasRect = canvas.getBoundingClientRect();
-
-    const margenSup = parseFloat(document.getElementById('formato-margen-superior').value) || 20;
-    const margenInf = parseFloat(document.getElementById('formato-margen-inferior').value) || 20;
-    const margenIzq = parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20;
-    const margenDer = parseFloat(document.getElementById('formato-margen-derecho').value) || 20;
-
-    let left = (e.clientX - canvasRect.left) - offsetX;
-    let top = (e.clientY - canvasRect.top) - offsetY;
+    const zoomFactor = obtenerEscalaLienzo(canvas);
+    
+    // Obtener márgenes reales
+    const factorMmPx = 3.78;
+    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
+    const margenInf = Math.round((parseFloat(document.getElementById('formato-margen-inferior').value) || 20) * factorMmPx);
+    const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factorMmPx);
+    const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factorMmPx);
+    
+    let left = ((e.clientX - canvasRect.left) / zoomFactor) - offsetX;
+    let top = ((e.clientY - canvasRect.top) / zoomFactor) - offsetY;
     
     // Ancho y alto del bloque actual
     const blockW = bloqueArrastrando.offsetWidth;
@@ -1006,21 +998,28 @@ function iniciarRedimension(e, handleType, targetWrapper) {
     const startLeft = parseFloat(wrapper.style.left) || 0;
     const startTop = parseFloat(wrapper.style.top) || 0;
     
+    // Guardar escala absoluta de inicio de este arrastre
+    wrapper.dataset.startAbsoluteScale = wrapper.dataset.scale || "1.0";
+
+    // Capturar TODOS los nodos visuales para asegurar que no se nos escape ningún tag (como <font> o <div> internos)
     const wysiwygNodes = Array.from(wrapper.querySelectorAll('.block-content-wysiwyg, .block-content-wysiwyg *')).filter(n => !n.classList?.contains('bloque-backend-html'));
     wysiwygNodes.forEach(node => {
         if (!node.dataset.baseFontSize) {
             node.dataset.baseFontSize = parseFloat(window.getComputedStyle(node).fontSize) || 14;
         }
     });
-
+    
     const canvas = document.getElementById('canvas-builder');
-
+    const zoomFactor = obtenerEscalaLienzo(canvas);
+    
     function redimensionar(moveEvent) {
-        const dx = (moveEvent.clientX - startX);
-        const dy = (moveEvent.clientY - startY);
-
-        const margenIzq = parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20;
-        const margenDer = parseFloat(document.getElementById('formato-margen-derecho').value) || 20;
+        const dx = (moveEvent.clientX - startX) / zoomFactor;
+        const dy = (moveEvent.clientY - startY) / zoomFactor;
+        
+        const canvas = document.getElementById('canvas-builder');
+        const factorMmPx = 3.78;
+        const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factorMmPx);
+        const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factorMmPx);
         const canvasW = canvas.offsetWidth || 816;
         
         const maxRightPos = canvasW - margenDer;
@@ -1282,13 +1281,14 @@ function actualizarZonaSeguraLienzo() {
     const canvas = document.getElementById('canvas-builder');
     if (!canvas) return;
 
+    // Remover guía anterior
     canvas.querySelector('.ares-safe-zone-guide')?.remove();
 
-    const factor = 3.78;
-    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factor);
-    const margenInf = Math.round((parseFloat(document.getElementById('formato-margen-inferior').value) || 20) * factor);
-    const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factor);
-    const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factor);
+    const factorMmPx = 3.78;
+    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
+    const margenInf = Math.round((parseFloat(document.getElementById('formato-margen-inferior').value) || 20) * factorMmPx);
+    const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factorMmPx);
+    const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factorMmPx);
 
     // Altura base física de una hoja Carta (1056px)
     const alturaPapelCarta = 1056;

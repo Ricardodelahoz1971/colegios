@@ -201,29 +201,24 @@
         box-shadow: 0 25px 70px rgba(var(--el-dark-rgb), 0.25), 0 5px 20px rgba(var(--el-dark-rgb), 0.15);
         margin: 0 auto 2rem auto;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        zoom: 1; /* Escala real 1:1 absoluta */
     }
     .ares-paper-sheet--carta {
         width: 816px;
         min-height: 1056px;
-        zoom: 1;
     }
     .ares-paper-sheet--media_carta {
         width: 816px;
         min-height: 528px;
-        zoom: 1;
     }
     .ares-paper-sheet--carne_v {
         width: 324px;
         min-height: 512px;
-        zoom: 1;
         border-radius: var(--el-radius-sub);
         border: 1px solid rgba(var(--el-primary-rgb), 0.15);
     }
     .ares-paper-sheet--carne_h {
         width: 512px;
         min-height: 324px;
-        zoom: 1;
         border-radius: var(--el-radius-sub);
         border: 1px solid rgba(var(--el-primary-rgb), 0.15);
     }

@@ -1,0 +1,76 @@
+---
+name: git-hooks-validator
+description: Valida cumplimiento CLAUDE.md antes de commits (→query, var, reload, credenciales, strict_types)
+trigger: /git-hooks-validate
+---
+
+# Git Hooks Validator
+
+**Propósito:** Ejecutar validaciones CLAUDE.md antes de cualquier commit. Bloquea violaciones automáticamente.
+
+## Uso
+
+```bash
+/git-hooks-validate
+```
+
+## Lo que valida
+
+1. ✅ No hay `→query()` sin prepared statements
+2. ✅ No hay `var` en JavaScript
+3. ✅ No hay `window.location.reload()`
+4. ✅ No hay credenciales hardcodeadas en `php/db.php`
+5. ✅ Todos los PHP tienen `declare(strict_types=1)`
+
+## Resultado
+
+**Si todo pasa:**
+```
+✅ VALIDACIÓN PASADA — commit permitido
+```
+
+**Si hay violaciones:**
+```
+❌ ERROR: Encontré →query() sin prepared statements
+❌ VALIDACIÓN FALLIDA — corrige y intenta de nuevo
+```
+
+## Para desarrolladores
+
+### Antes de hacer commit:
+```bash
+/git-hooks-validate
+git add .
+git commit -m "mensaje"
+```
+
+### Si rechaza:
+```bash
+# Arregla el código violador
+# Luego:
+git add .
+git commit -m "mensaje"
+```
+
+### Para saltarse validación (SOLO con aprobación del lead):
+```bash
+git commit --no-verify
+```
+
+## Implementación técnica
+
+El hook está en `.git/hooks/pre-commit` y se ejecuta automáticamente en cada `git commit`.
+
+Puedes validar manualmente con este skill antes de hacer commit.
+
+## Archivos monitoreados
+
+- `php/logica/*.php` — Prepared statements, strict_types, credenciales
+- `js/modules/*.js` — var, window.location.reload()
+- `php/db.php` — Credenciales hardcodeadas
+
+---
+
+**Activado por:** Fase 4 - Prevención Permanente
+**Versión:** 1.0
+**Última actualización:** 2026-08-11

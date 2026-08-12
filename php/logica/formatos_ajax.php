@@ -36,6 +36,11 @@ try {
         if (!$formato) {
             throw new Exception("El formato solicitado no existe.");
         }
+
+        if (!empty($formato['configuracion_json'])) {
+            $formato['configuracion_json'] = json_decode($formato['configuracion_json'], true);
+        }
+
         echo json_encode(['status' => 'success', 'data' => $formato]);
         exit();
     }
@@ -52,6 +57,10 @@ try {
         $margen_derecho = (int)($_POST['margen_derecho'] ?? 20);
         $tipo_documento = trim($_POST['tipo_documento'] ?? 'matricula');
         $tamano_lienzo = trim($_POST['tamano_lienzo'] ?? 'carta');
+
+        // DEBUG: Log del JSON guardado
+        error_log("📝 GUARDANDO FORMATO '$nombre' - JSON recibido del frontend:");
+        error_log($configuracion_json);
 
         $tipos_permitidos = ['matricula', 'carne', 'certificado', 'constancia'];
         if (!in_array($tipo_documento, $tipos_permitidos, true)) {

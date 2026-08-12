@@ -38,7 +38,9 @@ function abrirReferenciaCatalogo() {
     modalRef.show();
 }
 
-let activeConfigNode = null;
+if (typeof activeConfigNode === 'undefined') {
+    var activeConfigNode = null;
+}
 
 function abrirConfiguracionBloque(idUnico) {
     activeConfigNode = document.getElementById(idUnico);
@@ -200,7 +202,7 @@ function editarFormato(id) {
     formData.append('id', id);
     formData.append('csrf_token', window.CSRF_TOKEN || '');
 
-    fetch('logica/formatos_ajax.php', { method: 'POST', body: formData })
+    fetch('/sistema_escolar/php/logica/formatos_ajax.php', { method: 'POST', body: formData })
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
@@ -230,7 +232,9 @@ function editarFormato(id) {
                 
                 if (res.data.configuracion_json) {
                     try {
-                        const blocks = JSON.parse(res.data.configuracion_json);
+                        const blocks = Array.isArray(res.data.configuracion_json)
+                            ? res.data.configuracion_json
+                            : JSON.parse(res.data.configuracion_json);
                         blocks.forEach(block => {
                             insertarBloqueDesdeJSON(block);
                         });
@@ -286,7 +290,7 @@ function eliminarFormato(id) {
             formData.append('id', id);
             formData.append('csrf_token', window.CSRF_TOKEN || '');
 
-            fetch('logica/formatos_ajax.php', { method: 'POST', body: formData })
+            fetch('/sistema_escolar/php/logica/formatos_ajax.php', { method: 'POST', body: formData })
             .then(res => res.json())
             .then(async (res) => {
                 if (res.status === 'success') {
