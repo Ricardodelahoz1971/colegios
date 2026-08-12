@@ -582,9 +582,9 @@ $contenido_renderizado = preg_replace_callback(
         }
         
         $x_mm = 0; $y_mm = 0; $w_mm = null; $h_mm = null;
-        if (preg_match('/data-left="([^"]+)"/i', $attrs, $x_m)) $x_mm = (float)$x_m[1];
-        if (preg_match('/data-top="([^"]+)"/i', $attrs, $y_m)) $y_mm = (float)$y_m[1];
-        if (preg_match('/data-width="([^"]+)"/i', $attrs, $w_m)) $w_mm = (float)$w_m[1];
+        if (preg_match('/data-left_mm="([^"]+)"/i', $attrs, $x_m)) $x_mm = (float)$x_m[1];
+        if (preg_match('/data-top_mm="([^"]+)"/i', $attrs, $y_m)) $y_mm = (float)$y_m[1];
+        if (preg_match('/data-width_mm="([^"]+)"/i', $attrs, $w_m)) $w_mm = (float)$w_m[1];
         if (preg_match('/data-height="([^"]+)"/i', $attrs, $h_m)) $h_mm = (float)$h_m[1];
 
         $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
