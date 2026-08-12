@@ -780,7 +780,7 @@ if (!empty($firmas_bloques)) {
 }
 
 ?>
-<div class="print-document">
+<div class="print-document" style="border: 1px solid #333;">
     <table class="print-band-table">
         <thead class="print-band-thead">
             <tr><td class="print-band-td">
