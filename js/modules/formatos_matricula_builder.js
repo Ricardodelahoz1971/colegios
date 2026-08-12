@@ -502,26 +502,26 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     const canvas = document.getElementById('canvas-builder');
     document.getElementById('canvas-empty-state')?.remove();
 
-    const left = parseFloat(jsonBlock.left) || 50;
-    const top = parseFloat(jsonBlock.top) || 50;
-    const width = jsonBlock.width || null;
+    const left_mm = parseFloat(jsonBlock.left_mm || jsonBlock.left) || 10;
+    const top_mm = parseFloat(jsonBlock.top_mm || jsonBlock.top) || 10;
+    const width_mm = jsonBlock.width_mm || jsonBlock.width || null;
 
-    insertarBloqueEnCanvas(jsonBlock.type, null, left, top);
+    const left_px = mmToPixels(left_mm);
+    const top_px = mmToPixels(top_mm);
+    const width_px = width_mm ? mmToPixels(width_mm) : null;
+
+    insertarBloqueEnCanvas(jsonBlock.type, null, left_px, top_px);
 
     const insertedNode = canvas.lastElementChild;
 
-    // 2. Aplicar propiedades JSON PRIMERO (antes de que se recalculen)
-    insertedNode.dataset.left = left;
-    insertedNode.dataset.top = top;
-    insertedNode.style.left = left + 'px';
-    insertedNode.style.top = top + 'px';
+    insertedNode.dataset.left_mm = left_mm.toFixed(2);
+    insertedNode.dataset.top_mm = top_mm.toFixed(2);
+    insertedNode.style.left = left_px + 'px';
+    insertedNode.style.top = top_px + 'px';
 
-    // CRÍTICO: Si el JSON tiene width, aplicarlo INMEDIATAMENTE pero NO recalcular left (ya viene del JSON)
-    if (width) {
-        insertedNode.dataset.width = width;
-        insertedNode.style.width = width + 'px';
-        // NO recalcular posición X - confiar en el JSON guardado
-        // Los márgenes ya se consideraron cuando se guardó el JSON
+    if (width_mm) {
+        insertedNode.dataset.width_mm = width_mm;
+        insertedNode.style.width = width_px + 'px';
     }
     if (jsonBlock.height) {
         insertedNode.dataset.height = jsonBlock.height;
@@ -691,119 +691,55 @@ async function guardarFormato(e) {
         return;
     }
 
-    // COMPILAR EL HTML FINAL PARA EL BACKEND Y EL JSON ESTRUCTURADO
     let htmlCompilado = '';
     const configJson = [];
-    
+
     const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
     bloques.forEach(bloque => {
         const tipoBloque = bloque.dataset.bloque;
 
-        // CRÍTICO: Extraer posiciones REALES (computed style si no hay inline)
-        const obtenerPosicion = (elem, prop) => {
-            let valor = elem.style[prop];
-            if (valor && valor !== '') {
-                return parseFloat(valor);
-            }
-            valor = elem.dataset[prop === 'left' ? 'left' : 'top'];
-            if (valor && valor !== '') {
-                return parseFloat(valor);
-            }
-            return prop === 'left' ? 50 : 153;
-        };
-
         if (tipoBloque === 'texto') {
             const contenidoCaja = bloque.querySelector('.block-content-texto').cloneNode(true);
 
-            // Normalizar y limpiar los chips visuales (.ares-variable-badge) para evitar corrupciones de estilos y atributos
             const chips = contenidoCaja.querySelectorAll('.ares-variable-badge');
             chips.forEach(chip => {
                 const varName = chip.dataset.var || '';
                 const labelText = chip.textContent.trim();
-
-                // Remover cualquier basura inyectada por el navegador
                 chip.removeAttribute('style');
                 chip.removeAttribute('contenteditable');
-
-                // Sello de integridad de atributos
                 chip.className = 'ares-variable-badge';
                 chip.setAttribute('data-var', varName);
                 chip.textContent = labelText;
             });
 
-            const left = obtenerPosicion(bloque, 'left');
-            const top = obtenerPosicion(bloque, 'top');
-            const widthVal = bloque.dataset.width || null;
-            const heightVal = bloque.dataset.height || null;
+            const left_mm = parseFloat(bloque.dataset.left_mm) || 10;
+            const top_mm = parseFloat(bloque.dataset.top_mm) || 10;
+            const width_mm = bloque.dataset.width_mm ? parseFloat(bloque.dataset.width_mm) : null;
+            const height_mm = bloque.dataset.height ? parseFloat(bloque.dataset.height) : null;
 
-            // Extraer el texto HTML final de este bloque
-            const width = widthVal ? ` data-width="${widthVal}"` : '';
-            const height = heightVal ? ` data-height="${heightVal}"` : '';
-            const align = 'justify';
-            const styleAttrs = `style="position:absolute;left:${left}px;top:${top}px;${widthVal ? `width:${widthVal}px;` : ''}${heightVal ? `height:${heightVal}px;` : ''}"`;
-            htmlCompilado += `<div class="bloque-texto" data-left="${left}" data-top="${top}"${width}${height} data-align="${align}" ${styleAttrs}>${contenidoCaja.innerHTML}</div><br>`;
-            
-            // Guardar en JSON (Taxonomía Data-Driven)
             configJson.push({
                 type: 'texto',
-                left: left,
-                top: top,
-                width: bloque.dataset.width || null,
-                height: bloque.dataset.height || null,
-                align: align,
+                left: left_mm,
+                top: top_mm,
+                width: width_mm,
+                height: height_mm,
                 content: contenidoCaja.innerHTML
             });
             
         } else {
-            // Para bloques avanzados, generar el div bloque-avanzado que el backend reconoce
             const htmlBackend = bloque.querySelector('.bloque-backend-html');
             if(htmlBackend) {
                 const tipo = htmlBackend.dataset.type;
-                const innerTag = htmlBackend.innerHTML;
-                const left = obtenerPosicion(bloque, 'left');
-                const top = obtenerPosicion(bloque, 'top');
-                
-                // Determinar el ancho correcto para evitar duplicidad de data-width
-                let wVal = bloque.dataset.width;
-                if (tipo === 'logo') {
-                    const img = bloque.querySelector('.ares-logo-cabecera');
-                    wVal = img ? img.getAttribute('width') : (bloque.dataset.width || '120');
-                    // Sincronizar el dataset para que el JSON quede idéntico
-                    bloque.dataset.width = wVal;
-                }
+                const left_mm = parseFloat(bloque.dataset.left_mm) || 10;
+                const top_mm = parseFloat(bloque.dataset.top_mm) || 10;
+                const width_mm = bloque.dataset.width_mm ? parseFloat(bloque.dataset.width_mm) : null;
 
-                let extraAttrs = ` data-left="${left}" data-top="${top}"`;
-                if (wVal) extraAttrs += ` data-width="${wVal}"`;
-                if (bloque.dataset.height) extraAttrs += ` data-height="${bloque.dataset.height}"`;
-                if (bloque.dataset.scale) extraAttrs += ` data-scale="${bloque.dataset.scale}"`;
-
-                const stylePos = `position:absolute;left:${left}px;top:${top}px;${wVal ? `width:${wVal}px;` : ''}${bloque.dataset.height ? `height:${bloque.dataset.height}px;` : ''}`;
-
-                if (tipo === 'titulo_colegio') {
-                    const size = bloque.dataset.size || '20';
-                    extraAttrs += ` data-size="${size}"`;
-                } else if (tipo === 'metadatos') {
-                    const size = bloque.dataset.size || '16';
-                    extraAttrs += ` data-size="${size}"`;
-                } else if (tipo === 'calificaciones') {
-                    const diseno = bloque.dataset.diseno || 'elite';
-                    const filtro = bloque.dataset.filtro || 'todas';
-                    const columnas = bloque.dataset.columnas || 'materia,docente,definitiva,estado';
-                    extraAttrs += ` data-diseno="${diseno}" data-filtro="${filtro}" data-columnas="${columnas}"`;
-                } else if (tipo === 'firmas') {
-                    const columnas = bloque.getAttribute('data-columnas') || bloque.dataset.columnas || '3';
-                    extraAttrs += ` data-columnas="${columnas}"`;
-                }
-                htmlCompilado += `<div class="bloque-avanzado" data-tipo="${tipo}"${extraAttrs} style="${stylePos}">${innerTag}</div><br>`;
-                
-                // Guardar en JSON
                 const jsonBlock = {
                     type: tipo,
-                    left: left,
-                    top: top,
-                    width: bloque.dataset.width || null,
+                    left: left_mm,
+                    top: top_mm,
+                    width: width_mm,
                     height: bloque.dataset.height || null,
-                    scale: bloque.dataset.scale || null,
                     size: bloque.dataset.size || null,
                     content: bloque.querySelector('.block-content-wysiwyg') ? bloque.querySelector('.block-content-wysiwyg').innerHTML : null
                 };
@@ -835,15 +771,16 @@ async function guardarFormato(e) {
     const tipoDocumento = document.getElementById('formato-tipo-documento')?.value || 'matricula';
     const tamanoLienzo = document.getElementById('formato-tamano-lienzo')?.value || 'carta';
 
+    const margenesMm = getMargensInMilimeters();
     const formData = new FormData();
     formData.append('action', 'guardar');
     formData.append('id', id);
     formData.append('nombre', nombre);
     formData.append('descripcion', descripcion);
-    formData.append('margen_superior', margen_superior);
-    formData.append('margen_inferior', margen_inferior);
-    formData.append('margen_izquierdo', margen_izquierdo);
-    formData.append('margen_derecho', margen_derecho);
+    formData.append('margen_superior', margenesMm.superior);
+    formData.append('margen_inferior', margenesMm.inferior);
+    formData.append('margen_izquierdo', margenesMm.izquierdo);
+    formData.append('margen_derecho', margenesMm.derecho);
     formData.append('tipo_documento', tipoDocumento);
     formData.append('tamano_lienzo', tamanoLienzo);
     formData.append('contenido_html', htmlCompilado);
@@ -946,38 +883,34 @@ function arrastrarBloque(e) {
 
     let left = (e.clientX - canvasRect.left) - offsetX;
     let top = (e.clientY - canvasRect.top) - offsetY;
-    
-    // Ancho y alto del bloque actual
+
     const blockW = bloqueArrastrando.offsetWidth;
     const blockH = bloqueArrastrando.offsetHeight;
-    
-    // Restricciones de Márgenes Dinámicos según zona activa
+
+    const margenesPx = getMargensInPixels();
     const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
-    const minLeft = margenIzq;
-    const maxLeft = Math.max(margenIzq, canvas.offsetWidth - margenDer - blockW);
-    
-    const anchoZonaSegura = canvas.offsetWidth - margenIzq - margenDer;
+    const minLeft = margenesPx.izquierdo;
+    const maxLeft = Math.max(margenesPx.izquierdo, canvas.offsetWidth - margenesPx.derecho - blockW);
+
     left = Math.max(minLeft, Math.min(left, maxLeft));
-    
-    let minTop = margenSup;
-    
+
+    let minTop = margenesPx.superior;
+
     if (cabeceraAbierta) {
-        // En modo Cabecera abierta, nos movemos en la franja superior (1cm = 38px hasta un área razonable de 250px para dar espacio)
         minTop = 38;
-        const maxTop = Math.max(margenSup, 250); 
+        const maxTop = Math.max(margenesPx.superior, 250);
         top = Math.max(minTop, Math.min(top, maxTop));
     } else {
-        // En modo Cabecera cerrada en el Diseñador, permitimos arrastre vertical libre hacia abajo (lienzo infinito)
         top = Math.max(minTop, top);
     }
-    
+
     left = Math.round(left);
     top = Math.round(top);
-    
+
     bloqueArrastrando.style.left = left + 'px';
     bloqueArrastrando.style.top = top + 'px';
-    bloqueArrastrando.dataset.left = left;
-    bloqueArrastrando.dataset.top = top;
+    bloqueArrastrando.dataset.left_mm = pixelsToMm(left).toFixed(2);
+    bloqueArrastrando.dataset.top_mm = pixelsToMm(top).toFixed(2);
 
     // Estirar el papel del lienzo dinámicamente si el bloque se arrastra hacia abajo
     ajustarAlturaLienzo();
@@ -1074,25 +1007,16 @@ function iniciarRedimension(e, handleType, targetWrapper) {
         const startAbsoluteScale = parseFloat(wrapper.dataset.startAbsoluteScale) || 1.0;
         const absoluteScale = startAbsoluteScale * deltaScale;
         
+        const scaleRatio = newWidth / startWidth;
         wysiwygNodes.forEach(node => {
             const baseSize = parseFloat(node.dataset.baseFontSize);
-            const newSize = Math.max(4, baseSize * absoluteScale);
+            const newSize = Math.max(4, baseSize * scaleRatio);
             node.style.setProperty('font-size', newSize + 'px', 'important');
-            node.style.whiteSpace = 'nowrap'; // Evitar corte de palabra
-            node.style.lineHeight = '1.2';
         });
-        
-        wrapper.dataset.scale = absoluteScale;
-        
-        const wysiwyg = wrapper.querySelector('.block-content-wysiwyg');
-        if (wysiwyg) {
-            wysiwyg.style.whiteSpace = 'nowrap';
-        }
 
         wrapper.style.width = newWidth + 'px';
-        wrapper.style.height = 'auto'; // Altura dinámica al contenido
-        wrapper.dataset.width = Math.round(newWidth);
-        wrapper.dataset.height = '';
+        wrapper.style.height = 'auto';
+        wrapper.dataset.width_mm = pixelsToMm(newWidth).toFixed(2);
         
         // Estirar el papel del lienzo dinámicamente si el bloque al redimensionarse crece verticalmente
         ajustarAlturaLienzo();
