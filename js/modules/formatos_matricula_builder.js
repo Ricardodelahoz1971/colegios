@@ -2,14 +2,16 @@
  * Motor Drag & Drop - Formatos de Matrícula (Elite Architecture)
  */
 
-const UNIT_CONFIG = {
-    MM_TO_PX: 3.78,
-    PX_TO_MM: 1 / 3.78,
-    CANVAS_WIDTH_PX: 816,
-    CANVAS_HEIGHT_PX: 1056,
-    CANVAS_WIDTH_MM: 215.9,
-    CANVAS_HEIGHT_MM: 279.4
-};
+if (typeof UNIT_CONFIG === 'undefined') {
+    var UNIT_CONFIG = {
+        MM_TO_PX: 3.78,
+        PX_TO_MM: 1 / 3.78,
+        CANVAS_WIDTH_PX: 816,
+        CANVAS_HEIGHT_PX: 1056,
+        CANVAS_WIDTH_MM: 215.9,
+        CANVAS_HEIGHT_MM: 279.4
+    };
+}
 
 function mmToPixels(mm) {
     return mm * UNIT_CONFIG.MM_TO_PX;
@@ -831,7 +833,7 @@ async function guardarFormato(e) {
     // Debug detallado de cada bloque
     console.log('📍 Posiciones de bloques guardadas:');
     configJson.forEach((bloque, idx) => {
-        console.log(`  Bloque ${idx} (${bloque.type}): left=${bloque.left}, top=${bloque.top}, width=${bloque.width}, height=${bloque.height}`);
+        console.log(`  Bloque ${idx} (${bloque.type}): left_mm=${bloque.left_mm}, top_mm=${bloque.top_mm}, width_mm=${bloque.width_mm}, height=${bloque.height}`);
     });
 
     console.log('Estructura JSON completa:', configJson);
