@@ -239,8 +239,13 @@ function editarFormato(id) {
                             insertarBloqueDesdeJSON(block);
                         });
                         if (typeof ajustarAlturaLienzo === 'function') ajustarAlturaLienzo();
-                        // Forzar el bloqueo del membrete sobre todos los bloques ya renderizados
-                        if (typeof alternarBloqueoCabecera === 'function') alternarBloqueoCabecera(false);
+
+                        // Detectar si hay bloques en zona de membrete (top_mm menor al margen superior)
+                        const margenSupMm = parseFloat(res.data.margen_superior) || 20;
+                        const hayBloquesEnMembrete = blocks.some(b => (parseFloat(b.top_mm) || 0) < margenSupMm);
+                        if (checkCabecera) checkCabecera.checked = hayBloquesEnMembrete;
+
+                        if (typeof alternarBloqueoCabecera === 'function') alternarBloqueoCabecera(hayBloquesEnMembrete);
                     } catch(e) {
                         canvas.innerHTML = '<div class="alert alert-danger m-4">Error al cargar la plantilla (JSON Invalido).</div>';
                     }
