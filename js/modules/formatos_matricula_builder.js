@@ -502,9 +502,9 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     const canvas = document.getElementById('canvas-builder');
     document.getElementById('canvas-empty-state')?.remove();
 
-    const left_mm = parseFloat(jsonBlock.left_mm || jsonBlock.left) || 10;
-    const top_mm = parseFloat(jsonBlock.top_mm || jsonBlock.top) || 10;
-    const width_mm = jsonBlock.width_mm || jsonBlock.width || null;
+    const left_mm = parseFloat(jsonBlock.left_mm) || 10;
+    const top_mm = parseFloat(jsonBlock.top_mm) || 10;
+    const width_mm = jsonBlock.width_mm || null;
 
     const left_px = mmToPixels(left_mm);
     const top_px = mmToPixels(top_mm);
@@ -520,7 +520,7 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     insertedNode.style.top = top_px + 'px';
 
     if (width_mm) {
-        insertedNode.dataset.width_mm = width_mm;
+        insertedNode.dataset.width_mm = width_mm.toFixed(2);
         insertedNode.style.width = width_px + 'px';
     }
     if (jsonBlock.height) {
@@ -719,9 +719,9 @@ async function guardarFormato(e) {
 
             configJson.push({
                 type: 'texto',
-                left: left_mm,
-                top: top_mm,
-                width: width_mm,
+                left_mm: left_mm,
+                top_mm: top_mm,
+                width_mm: width_mm,
                 height: height_mm,
                 content: contenidoCaja.innerHTML
             });
@@ -736,9 +736,9 @@ async function guardarFormato(e) {
 
                 const jsonBlock = {
                     type: tipo,
-                    left: left_mm,
-                    top: top_mm,
-                    width: width_mm,
+                    left_mm: left_mm,
+                    top_mm: top_mm,
+                    width_mm: width_mm,
                     height: bloque.dataset.height || null,
                     size: bloque.dataset.size || null,
                     content: bloque.querySelector('.block-content-wysiwyg') ? bloque.querySelector('.block-content-wysiwyg').innerHTML : null
@@ -876,10 +876,7 @@ function arrastrarBloque(e) {
     const canvas = document.getElementById('canvas-builder');
     const canvasRect = canvas.getBoundingClientRect();
 
-    const margenSup = parseFloat(document.getElementById('formato-margen-superior').value) || 20;
-    const margenInf = parseFloat(document.getElementById('formato-margen-inferior').value) || 20;
-    const margenIzq = parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20;
-    const margenDer = parseFloat(document.getElementById('formato-margen-derecho').value) || 20;
+    const margenesPx = getMargensInPixels();
 
     let left = (e.clientX - canvasRect.left) - offsetX;
     let top = (e.clientY - canvasRect.top) - offsetY;
@@ -887,7 +884,6 @@ function arrastrarBloque(e) {
     const blockW = bloqueArrastrando.offsetWidth;
     const blockH = bloqueArrastrando.offsetHeight;
 
-    const margenesPx = getMargensInPixels();
     const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
     const minLeft = margenesPx.izquierdo;
     const maxLeft = Math.max(margenesPx.izquierdo, canvas.offsetWidth - margenesPx.derecho - blockW);
