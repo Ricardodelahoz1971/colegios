@@ -168,10 +168,6 @@ function prepararNuevoFormato() {
     document.getElementById('formato-tamano-lienzo').value = 'carta';
     if (typeof cambiarTamanoLienzoBuilder === 'function') cambiarTamanoLienzoBuilder('carta');
     
-    // Asegurar que el checkbox se resetee a desmarcado (membrete cerrado)
-    const checkCabecera = document.getElementById('switch-edicion-cabecera');
-    if (checkCabecera) checkCabecera.checked = false;
-    
     const canvas = document.getElementById('canvas-builder');
     if(canvas) {
         if (typeof initFormatosBuilder === 'function') initFormatosBuilder();
@@ -225,11 +221,7 @@ function editarFormato(id) {
                 if (typeof initFormatosBuilder === 'function') initFormatosBuilder();
                 
                 canvas.innerHTML = '';
-                
-                // Asegurar que el checkbox se resetee a desmarcado (membrete cerrado) antes de cargar
-                const checkCabecera = document.getElementById('switch-edicion-cabecera');
-                if (checkCabecera) checkCabecera.checked = false;
-                
+
                 if (res.data.configuracion_json) {
                     try {
                         const blocks = Array.isArray(res.data.configuracion_json)
@@ -240,12 +232,12 @@ function editarFormato(id) {
                         });
                         if (typeof ajustarAlturaLienzo === 'function') ajustarAlturaLienzo();
 
-                        // Detectar si hay bloques en zona de membrete (top_mm menor al margen superior)
-                        const margenSupMm = parseFloat(res.data.margen_superior) || 20;
-                        const hayBloquesEnMembrete = blocks.some(b => (parseFloat(b.top_mm) || 0) < margenSupMm);
-                        if (checkCabecera) checkCabecera.checked = hayBloquesEnMembrete;
-
-                        if (typeof alternarBloqueoCabecera === 'function') alternarBloqueoCabecera(hayBloquesEnMembrete);
+                        // Cargar zonas si existen
+                        if (res.data.zonas_config) {
+                            const zonas = typeof res.data.zonas_config === 'string' ? JSON.parse(res.data.zonas_config) : res.data.zonas_config;
+                            canvas.dataset.zoneHeaderMm = zonas.header_limit_mm || 50;
+                            canvas.dataset.zoneFooterMm = zonas.footer_limit_mm || 219.4;
+                        }
                     } catch(e) {
                         canvas.innerHTML = '<div class="alert alert-danger m-4">Error al cargar la plantilla (JSON Invalido).</div>';
                     }

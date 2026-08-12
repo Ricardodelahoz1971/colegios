@@ -38,7 +38,15 @@ try {
         }
 
         if (!empty($formato['configuracion_json'])) {
-            $formato['configuracion_json'] = json_decode($formato['configuracion_json'], true);
+            $config_parsed = json_decode($formato['configuracion_json'], true);
+            // Si tiene estructura nueva con "bloques" y "zonas"
+            if (is_array($config_parsed) && isset($config_parsed['bloques'])) {
+                $formato['configuracion_json'] = $config_parsed['bloques'];
+                $formato['zonas_config'] = $config_parsed['zonas'] ?? null;
+            } else {
+                // Estructura legacy: solo bloques
+                $formato['configuracion_json'] = $config_parsed;
+            }
         }
 
         echo json_encode(['status' => 'success', 'data' => $formato]);
@@ -51,12 +59,24 @@ try {
         $descripcion = trim($_POST['descripcion'] ?? '');
         $contenido_html = trim($_POST['contenido_html'] ?? '');
         $configuracion_json = trim($_POST['configuracion_json'] ?? '');
+        $zonas_config = trim($_POST['zonas_config'] ?? '');
         $margen_superior = (int)($_POST['margen_superior'] ?? 20);
         $margen_inferior = (int)($_POST['margen_inferior'] ?? 20);
         $margen_izquierdo = (int)($_POST['margen_izquierdo'] ?? 20);
         $margen_derecho = (int)($_POST['margen_derecho'] ?? 20);
         $tipo_documento = trim($_POST['tipo_documento'] ?? 'matricula');
         $tamano_lienzo = trim($_POST['tamano_lienzo'] ?? 'carta');
+
+        // Agregar zonas al JSON de configuración
+        if (!empty($zonas_config)) {
+            $bloques = json_decode($configuracion_json, true) ?? [];
+            $zonas_data = json_decode($zonas_config, true) ?? [];
+            $config_final = [
+                'bloques' => $bloques,
+                'zonas' => $zonas_data
+            ];
+            $configuracion_json = json_encode($config_final, JSON_UNESCAPED_UNICODE);
+        }
 
         // DEBUG: Log del JSON guardado
         error_log("📝 GUARDANDO FORMATO '$nombre' - JSON recibido del frontend:");

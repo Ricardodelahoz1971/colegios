@@ -52,15 +52,15 @@ function initFormatosBuilder() {
         canvas.removeEventListener('dragover', canvasDragOver);
         canvas.removeEventListener('drop', canvasDrop);
         canvas.removeEventListener('click', canvasClickSelection);
-        
+        canvas.removeEventListener('dblclick', canvasDobleClick);
+
         canvas.addEventListener('dragenter', canvasDragEnter);
         canvas.addEventListener('dragover', canvasDragOver);
         canvas.addEventListener('drop', canvasDrop);
         canvas.addEventListener('click', canvasClickSelection);
-        
+        canvas.addEventListener('dblclick', canvasDobleClick);
+
         ajustarAlturaLienzo();
-        // El membrete inicia cerrado y bloqueado por defecto protegiendo la cabecera
-        alternarBloqueoCabecera(false);
     }
 }
 
@@ -801,6 +801,13 @@ async function guardarFormato(e) {
     const tamanoLienzo = document.getElementById('formato-tamano-lienzo')?.value || 'carta';
 
     const margenesMm = getMargensInMilimeters();
+
+    // Agregar datos de zonas al JSON
+    const zonesData = {
+        header_limit_mm: parseFloat(canvas.dataset.zoneHeaderMm || 50),
+        footer_limit_mm: parseFloat(canvas.dataset.zoneFooterMm || 219.4)
+    };
+
     const formData = new FormData();
     formData.append('action', 'guardar');
     formData.append('id', id);
@@ -814,6 +821,7 @@ async function guardarFormato(e) {
     formData.append('tamano_lienzo', tamanoLienzo);
     formData.append('contenido_html', htmlCompilado);
     formData.append('configuracion_json', JSON.stringify(configJson));
+    formData.append('zonas_config', JSON.stringify(zonesData));
     formData.append('csrf_token', window.CSRF_TOKEN || '');
 
     const canvasBuilder = document.getElementById('canvas-builder');
@@ -1436,3 +1444,161 @@ document.addEventListener('paste', function(e) {
         document.execCommand('insertText', false, text);
     }
 });
+
+// ════════════════════════════════════════════════════════════════════════════════════════
+// 📍 SISTEMA DE ZONAS - Doble click para editar membrete, cuerpo, pie de página
+// ════════════════════════════════════════════════════════════════════════════════════════
+
+let zonesEditorActive = false;
+let draggingZoneLine = null;
+let zoneLines = {
+    header: null,
+    footerStart: null,
+    overlay: null
+};
+
+function canvasDobleClick(e) {
+    if (e.target.closest('.canvas-block-wrapper')) return;
+
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas || zonesEditorActive) return;
+
+    e.preventDefault();
+    zonesEditorActive = true;
+
+    const margenes = getMargensInPixels();
+    const headerHeightPx = mmToPixels(50);
+    const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
+
+    // Crear overlay semi-transparente
+    const overlay = document.createElement('div');
+    overlay.id = 'zones-editor-overlay';
+    overlay.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.05);
+        z-index: 999;
+        cursor: default;
+    `;
+    canvas.style.position = 'relative';
+    canvas.appendChild(overlay);
+    zoneLines.overlay = overlay;
+
+    // Línea superior (membrete)
+    const lineHeader = createZoneLine('header', margenes.superior, 'Membrete', '#e74c3c');
+    canvas.appendChild(lineHeader);
+    zoneLines.header = lineHeader;
+
+    // Línea inferior (pie de página)
+    const lineFooter = createZoneLine('footer', footerStartPx, 'Pie de Página', '#3498db');
+    canvas.appendChild(lineFooter);
+    zoneLines.footerStart = lineFooter;
+
+    // Click fuera cierra editor
+    const closeEditor = (evt) => {
+        if (!evt.target.closest('.zones-zone-line') && evt.target !== overlay) {
+            closeZonesEditor();
+        }
+    };
+
+    overlay.addEventListener('click', closeEditor);
+    document.addEventListener('click', closeEditor, { once: true });
+}
+
+function createZoneLine(type, positionPx, label, color) {
+    const line = document.createElement('div');
+    line.className = 'zones-zone-line';
+    line.dataset.type = type;
+
+    line.style.cssText = `
+        position: absolute;
+        top: ${positionPx}px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: ${color};
+        cursor: ns-resize;
+        z-index: 1000;
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        transition: none;
+    `;
+
+    // Label
+    const labelEl = document.createElement('span');
+    labelEl.style.cssText = `
+        position: absolute;
+        left: 8px;
+        top: -18px;
+        background: ${color};
+        color: white;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: bold;
+        white-space: nowrap;
+        pointer-events: none;
+    `;
+    labelEl.textContent = label;
+    line.appendChild(labelEl);
+
+    // Eventos drag
+    line.addEventListener('mousedown', (e) => {
+        draggingZoneLine = {
+            type: type,
+            startY: e.clientY,
+            startTop: positionPx,
+            element: line
+        };
+        document.addEventListener('mousemove', dragZoneLine);
+        document.addEventListener('mouseup', stopDragZoneLine);
+        e.preventDefault();
+    });
+
+    return line;
+}
+
+function dragZoneLine(e) {
+    if (!draggingZoneLine) return;
+
+    const delta = e.clientY - draggingZoneLine.startY;
+    const newTop = Math.max(0, Math.min(UNIT_CONFIG.CANVAS_HEIGHT_PX, draggingZoneLine.startTop + delta));
+
+    draggingZoneLine.element.style.top = newTop + 'px';
+}
+
+function stopDragZoneLine() {
+    if (!draggingZoneLine) return;
+
+    const newTopPx = parseFloat(draggingZoneLine.element.style.top);
+    const newTopMm = pixelsToMm(newTopPx);
+
+    // Guardar en data del canvas (temporal, se guarda con formato)
+    const canvas = document.getElementById('canvas-builder');
+    canvas.dataset.zoneHeaderMm = newTopMm.toFixed(2);
+    if (draggingZoneLine.type === 'footer') {
+        canvas.dataset.zoneFooterMm = newTopMm.toFixed(2);
+    }
+
+    console.log(`Zona ${draggingZoneLine.type} movida a ${newTopMm.toFixed(2)}mm`);
+
+    document.removeEventListener('mousemove', dragZoneLine);
+    document.removeEventListener('mouseup', stopDragZoneLine);
+    draggingZoneLine = null;
+}
+
+function closeZonesEditor() {
+    if (!zonesEditorActive) return;
+
+    zonesEditorActive = false;
+
+    if (zoneLines.overlay) zoneLines.overlay.remove();
+    if (zoneLines.header) zoneLines.header.remove();
+    if (zoneLines.footerStart) zoneLines.footerStart.remove();
+
+    zoneLines = { header: null, footerStart: null, overlay: null };
+
+    console.log('Editor de zonas cerrado');
+}

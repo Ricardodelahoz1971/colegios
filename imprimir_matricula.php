@@ -589,6 +589,13 @@ $contenido_renderizado = preg_replace_callback(
 
         $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
 
+        // Aplicar márgenes del formato: sumar al posicionamiento absoluto
+        $margen_izq = (float)($formato['margen_izquierdo'] ?? 20);
+        $margen_sup = (float)($formato['margen_superior'] ?? 20);
+
+        $left_final = $x_mm + $margen_izq;
+        $top_final = $y_mm + $margen_sup;
+
         $style_w = '';
         if ($w_mm !== null) {
             $style_w = "width: {$w_mm}mm;";
@@ -604,7 +611,7 @@ $contenido_renderizado = preg_replace_callback(
             $overflow = "overflow: visible;";
         }
 
-        $style_inline = "position: absolute; left: {$x_mm}mm; top: {$y_mm}mm; {$style_w} {$style_h} box-sizing: border-box; {$overflow}";
+        $style_inline = "position: absolute; left: {$left_final}mm; top: {$top_final}mm; {$style_w} {$style_h} box-sizing: border-box; {$overflow}";
         
         // Limpiar style anterior si existe e inyectar el nuevo usando concatenacion indirecta para evadir falso positivo del linter
         $prop_style = 'sty' . 'le';
