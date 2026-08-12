@@ -581,75 +581,30 @@ $contenido_renderizado = preg_replace_callback(
             $tipo_bloque = $t_m[1];
         }
         
-        // Extraer coordenadas originales del canvas en PX (Soporta data-* o style inline)
-        $x = 0; $y = 0; $w = null; $h = null;
-        if (preg_match('/data-left="([^"]+)"/i', $attrs, $x_m)) $x = (float)$x_m[1];
-        elseif (preg_match('/left:\s*([0-9\.]+)px/i', $attrs, $x_m)) $x = (float)$x_m[1];
-        
-        if (preg_match('/data-top="([^"]+)"/i', $attrs, $y_m)) $y = (float)$y_m[1];
-        elseif (preg_match('/top:\s*([0-9\.]+)px/i', $attrs, $y_m)) $y = (float)$y_m[1];
-        
-        if (preg_match('/data-width="([^"]+)"/i', $attrs, $w_m)) $w = (float)$w_m[1];
-        elseif (preg_match('/width:\s*([0-9\.]+)px/i', $attrs, $w_m)) $w = (float)$w_m[1];
-        
-        if (preg_match('/data-height="([^"]+)"/i', $attrs, $h_m)) $h = (float)$h_m[1];
-        elseif (preg_match('/height:\s*([0-9\.]+)px/i', $attrs, $h_m)) $h = (float)$h_m[1];
-        
-        // Extraer escala del atributo data-scale (si no existe, 1.0)
-        $scale = 1.0;
-        if (preg_match('/data-scale="([^"]+)"/i', $attrs, $sc_m)) {
-            $scale = (float)$sc_m[1];
-        }
-        
-        // Conversión exacta a mm
-        // Canvas en editor: 816 px de ancho = 215.9 mm (Carta)
-        // Factor: 1 px = 215.9 / 816 = 0.264583 mm
-        $factor_px_to_mm = 215.9 / 816;
+        $x_mm = 0; $y_mm = 0; $w_mm = null; $h_mm = null;
+        if (preg_match('/data-left="([^"]+)"/i', $attrs, $x_m)) $x_mm = (float)$x_m[1];
+        if (preg_match('/data-top="([^"]+)"/i', $attrs, $y_m)) $y_mm = (float)$y_m[1];
+        if (preg_match('/data-width="([^"]+)"/i', $attrs, $w_m)) $w_mm = (float)$w_m[1];
+        if (preg_match('/data-height="([^"]+)"/i', $attrs, $h_m)) $h_mm = (float)$h_m[1];
 
-        // Márgenes en milímetros
-        $margen_izq_mm = (float)($formato['margen_izquierdo'] ?? 20);
-        $margen_sup_mm = (float)($formato['margen_superior'] ?? 20);
+        $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
 
-        // En el editor, las posiciones están SIN considerar márgenes
-        // En la impresión, necesitamos ajustar: restar margen izquierdo de left, restar margen superior de top
-        $x_mm_sin_margen = round($x * $factor_px_to_mm, 2);
-        $y_mm_sin_margen = round($y * $factor_px_to_mm, 2);
-
-        // Posición final: restar márgenes para obtener coordenada dentro del área imprimible
-        $x_mm = round($x_mm_sin_margen - $margen_izq_mm, 2);
-        $y_mm = round($y_mm_sin_margen - $margen_sup_mm, 2);
-        
-        // Ancho en mm (dividir entre scale para evitar doble escalado visual)
         $style_w = '';
-        if ($w !== null) {
-            $w_unscaled = $w / $scale;
-            $w_mm = round($w_unscaled * $factor_px_to_mm, 2);
+        if ($w_mm !== null) {
             $style_w = "width: {$w_mm}mm;";
         }
-        
-        // Altura auto para textos dinámicos o firmas, fija en mm para los demás
-        $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
+
         $style_h = "height: auto;";
-        if ($h !== null && !$es_dinamico) {
-            $h_unscaled = $h / $scale;
-            $h_mm = round($h_unscaled * $factor_px_to_mm, 2);
+        if ($h_mm !== null && !$es_dinamico) {
             $style_h = "height: {$h_mm}mm;";
         }
-        
-        // Permitir overflow visible en textos y cabeceras para evitar que se corten caracteres
+
         $overflow = "overflow: hidden;";
         if ($tipo_bloque === 'titulo_colegio' || $tipo_bloque === 'lema_colegio' || $tipo_bloque === 'metadatos' || $es_dinamico) {
             $overflow = "overflow: visible;";
         }
-        
-        // Generar transform si la escala no es 1.0
-        $style_transform = '';
-        if ($scale != 1.0) {
-            $style_transform = "transform: scale({$scale}); transform-origin: top left;";
-        }
 
-        // Inyectar style nativo en milímetros (posición sin ajuste manual - CSS maneja márgenes)
-        $style_inline = "position: absolute; left: {$x_mm}mm; top: {$y_mm}mm; {$style_w} {$style_h} {$style_transform} box-sizing: border-box; {$overflow}";
+        $style_inline = "position: absolute; left: {$x_mm}mm; top: {$y_mm}mm; {$style_w} {$style_h} box-sizing: border-box; {$overflow}";
         
         // Limpiar style anterior si existe e inyectar el nuevo usando concatenacion indirecta para evadir falso positivo del linter
         $prop_style = 'sty' . 'le';
@@ -668,7 +623,6 @@ $contenido_renderizado = preg_replace_callback(
             return '<!--BLOQUE_PAG_' . (count($bloques_paginador) - 1) . '-->';
         }
         
-        // Estimar altura física real del bloque para el motor de paginación
         $h_eval = 15.0;
         if ($tipo_bloque === 'ficha') {
             $h_eval = 135.0;
@@ -676,8 +630,8 @@ $contenido_renderizado = preg_replace_callback(
             $h_eval = 65.0;
         } elseif ($tipo_bloque === 'calificaciones') {
             $h_eval = 70.0;
-        } elseif ($h !== null) {
-            $h_eval = round($h * $factor_px_to_mm, 2);
+        } elseif ($h_mm !== null) {
+            $h_eval = (float)$h_mm;
         }
         
         // Renderizar el contenido interno del bloque
