@@ -151,6 +151,10 @@ function canvasDrop(e) {
         }
 
         insertarBloqueEnCanvas(codigo, label, x, y);
+        if (typeof alternarBloqueoCabecera === 'function') {
+            const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
+            alternarBloqueoCabecera(cabeceraAbierta || false);
+        }
     } else if (tipo === 'variable') {
         // Drop de variable directo al canvas no permitido, debe ir dentro de un texto
         Swal.fire({
@@ -224,12 +228,8 @@ function insertarBloqueEnCanvas(codigo, label, x, y) {
     if (cabeceraAbierta) {
         const maxTop = Math.max(margenesPx.superior, 250);
         y = Math.max(38, Math.min(y, maxTop));
-        wrapper.classList.remove('header-locked');
     } else {
         y = Math.max(margenesPx.superior, y);
-        if (y < margenesPx.superior) {
-            wrapper.classList.add('header-locked');
-        }
     }
 
     x = Math.round(x);
