@@ -61,6 +61,8 @@ function initFormatosBuilder() {
         canvas.addEventListener('dblclick', canvasDobleClick);
 
         ajustarAlturaLienzo();
+        activeZone = 'body';
+        updateZonesUI();
     }
 }
 
@@ -102,7 +104,6 @@ function canvasDrop(e) {
     const canvas = document.getElementById('canvas-builder');
     canvas.classList.remove('drag-over');
 
-    // Quitar empty state
     const emptyState = document.getElementById('canvas-empty-state');
     if (emptyState) emptyState.remove();
 
@@ -113,50 +114,39 @@ function canvasDrop(e) {
         codigo = data.codigo;
         label = data.label;
     } catch(err) {
-        return; // Datos no válidos
+        return;
     }
 
     if (tipo === 'bloque') {
         const rect = canvas.getBoundingClientRect();
+        const dropY = (e.clientY - rect.top);
+        const headerEndPx = mmToPixels(50);
+        const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
+
+        // Determinar en qué zona cae el drop
+        let dropZone = 'body';
+        if (dropY < headerEndPx) dropZone = 'header';
+        else if (dropY > footerStartPx) dropZone = 'footer';
+
+        // Validar que el drop esté en la zona activa
+        if (activeZone !== 'body' && dropZone !== activeZone) {
+            const zoneName = activeZone === 'header' ? 'MEMBRETE' : 'PIE DE PÁGINA';
+            Swal.fire({
+                icon: 'warning',
+                title: 'Zona Bloqueada',
+                text: `Solo puede soltar bloques en la zona activa (${zoneName}). Doble click para cambiar.`,
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            return;
+        }
+
         const x = (e.clientX - rect.left) - 150;
-        const y = (e.clientY - rect.top) - 30;
-
-        const margenesPx = getMargensInPixels();
-        const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
-
-        if (cabeceraAbierta && y >= margenesPx.superior) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Zona Bloqueada',
-                text: 'El membrete está abierto. Solo puede soltar bloques en la cabecera (parte superior).',
-                toast: true,
-                position: 'bottom-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            return;
-        }
-
-        if (!cabeceraAbierta && y < margenesPx.superior) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Zona Bloqueada',
-                text: 'El membrete está cerrado. Abra la edición de cabecera si desea colocar elementos allí.',
-                toast: true,
-                position: 'bottom-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            return;
-        }
-
+        const y = dropY - 30;
         insertarBloqueEnCanvas(codigo, label, x, y);
-        if (typeof alternarBloqueoCabecera === 'function') {
-            const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
-            alternarBloqueoCabecera(cabeceraAbierta || false);
-        }
     } else if (tipo === 'variable') {
-        // Drop de variable directo al canvas no permitido, debe ir dentro de un texto
         Swal.fire({
             icon: 'info',
             title: 'Variable no insertada',
@@ -210,13 +200,17 @@ function insertarBloqueEnCanvas(codigo, label, x, y) {
         estW = maxAnchoSeguro;
     }
 
-    const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
     const estH = codigo === 'foto_estudiante' ? 140 : (codigo === 'linea' ? 2 : 90);
+    const headerEndPx = mmToPixels(50);
+    const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
 
     if (x === undefined || y === undefined) {
         x = Math.max(margenesPx.izquierdo, Math.round((canvasW - estW) / 2));
-        if (cabeceraAbierta) {
+        // Posición por defecto según zona activa
+        if (activeZone === 'header') {
             y = 38;
+        } else if (activeZone === 'footer') {
+            y = footerStartPx + 15;
         } else {
             y = margenesPx.superior + 15;
         }
@@ -225,11 +219,13 @@ function insertarBloqueEnCanvas(codigo, label, x, y) {
     const maxLeft = Math.max(margenesPx.izquierdo, canvasW - margenesPx.derecho - estW);
     x = Math.max(margenesPx.izquierdo, Math.min(x, maxLeft));
 
-    if (cabeceraAbierta) {
-        const maxTop = Math.max(margenesPx.superior, 250);
-        y = Math.max(38, Math.min(y, maxTop));
+    // Restricción de Y según zona
+    if (activeZone === 'header') {
+        y = Math.max(0, Math.min(y, headerEndPx - 10));
+    } else if (activeZone === 'footer') {
+        y = Math.max(footerStartPx, Math.min(y, UNIT_CONFIG.CANVAS_HEIGHT_PX - estH));
     } else {
-        y = Math.max(margenesPx.superior, y);
+        y = Math.max(headerEndPx, Math.min(y, footerStartPx));
     }
 
     x = Math.round(x);
@@ -1292,44 +1288,6 @@ function actualizarZonaSeguraLienzo() {
     canvas.appendChild(cutLine);
 }
 
-function alternarBloqueoCabecera(abierto) {
-    const canvas = document.getElementById('canvas-builder');
-    if (!canvas) return;
-
-    const factorMmPx = 3.78;
-    // El membrete va desde 1 cm (38px) hasta el inicio del Margen Superior
-    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
-
-    const label = document.getElementById('switch-cabecera-label');
-    if (label) {
-        label.className = abierto ? 'small fw-bold text-uppercase text-primary m-0 cursor-pointer' : 'small fw-bold text-uppercase text-secondary m-0 cursor-pointer';
-    }
-
-    const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
-    bloques.forEach(bloque => {
-        const topVal = parseFloat(bloque.style.top) || 0;
-        
-        // Bloqueo Cruzado exacto
-        if (topVal < margenSup) {
-            // Zona de Cabecera / Membrete
-            if (abierto) {
-                bloque.classList.remove('header-locked');
-            } else {
-                bloque.classList.add('header-locked');
-                bloque.classList.remove('selected');
-            }
-        } else {
-            // Zona del Cuerpo del Documento
-            if (abierto) {
-                bloque.classList.add('body-locked');
-                bloque.classList.remove('selected');
-            } else {
-                bloque.classList.remove('body-locked');
-            }
-        }
-    });
-}
-
 function actualizarBloqueFirmasCanvas(bloque, numColumnas, dataHeredada) {
     if (!bloque) return;
     const container = bloque.querySelector('.dynamic-firmas-container');
@@ -1446,159 +1404,136 @@ document.addEventListener('paste', function(e) {
 });
 
 // ════════════════════════════════════════════════════════════════════════════════════════
-// 📍 SISTEMA DE ZONAS - Doble click para editar membrete, cuerpo, pie de página
+// 📍 SISTEMA DE 3 ZONAS - Header, Body, Footer con toggle doble click
 // ════════════════════════════════════════════════════════════════════════════════════════
 
-let zonesEditorActive = false;
-let draggingZoneLine = null;
-let zoneLines = {
+let activeZone = 'body';  // 'header', 'body', 'footer'
+let zoneOverlays = {
     header: null,
-    footerStart: null,
-    overlay: null
+    body: null,
+    footer: null
 };
 
 function canvasDobleClick(e) {
-    if (e.target.closest('.canvas-block-wrapper')) return;
+    const wrapper = e.target.closest('.canvas-block-wrapper');
+    if (wrapper) return;
 
     const canvas = document.getElementById('canvas-builder');
-    if (!canvas || zonesEditorActive) return;
+    if (!canvas) return;
 
-    e.preventDefault();
-    zonesEditorActive = true;
-
+    const rect = canvas.getBoundingClientRect();
+    const clickY = e.clientY - rect.top;
     const margenes = getMargensInPixels();
-    const headerHeightPx = mmToPixels(50);
+    const headerEndPx = mmToPixels(50);
     const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
 
-    // Crear overlay semi-transparente
-    const overlay = document.createElement('div');
-    overlay.id = 'zones-editor-overlay';
-    overlay.style.cssText = `
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.05);
-        z-index: 999;
-        cursor: default;
-    `;
-    canvas.style.position = 'relative';
-    canvas.appendChild(overlay);
-    zoneLines.overlay = overlay;
-
-    // Línea superior (membrete)
-    const lineHeader = createZoneLine('header', margenes.superior, 'Membrete', '#e74c3c');
-    canvas.appendChild(lineHeader);
-    zoneLines.header = lineHeader;
-
-    // Línea inferior (pie de página)
-    const lineFooter = createZoneLine('footer', footerStartPx, 'Pie de Página', '#3498db');
-    canvas.appendChild(lineFooter);
-    zoneLines.footerStart = lineFooter;
-
-    // Click fuera cierra editor
-    const closeEditor = (evt) => {
-        if (!evt.target.closest('.zones-zone-line') && evt.target !== overlay) {
-            closeZonesEditor();
-        }
-    };
-
-    overlay.addEventListener('click', closeEditor);
-    document.addEventListener('click', closeEditor, { once: true });
-}
-
-function createZoneLine(type, positionPx, label, color) {
-    const line = document.createElement('div');
-    line.className = 'zones-zone-line';
-    line.dataset.type = type;
-
-    line.style.cssText = `
-        position: absolute;
-        top: ${positionPx}px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: ${color};
-        cursor: ns-resize;
-        z-index: 1000;
-        box-shadow: 0 0 4px rgba(0,0,0,0.3);
-        transition: none;
-    `;
-
-    // Label
-    const labelEl = document.createElement('span');
-    labelEl.style.cssText = `
-        position: absolute;
-        left: 8px;
-        top: -18px;
-        background: ${color};
-        color: white;
-        padding: 2px 8px;
-        border-radius: 3px;
-        font-size: 11px;
-        font-weight: bold;
-        white-space: nowrap;
-        pointer-events: none;
-    `;
-    labelEl.textContent = label;
-    line.appendChild(labelEl);
-
-    // Eventos drag
-    line.addEventListener('mousedown', (e) => {
-        draggingZoneLine = {
-            type: type,
-            startY: e.clientY,
-            startTop: positionPx,
-            element: line
-        };
-        document.addEventListener('mousemove', dragZoneLine);
-        document.addEventListener('mouseup', stopDragZoneLine);
-        e.preventDefault();
-    });
-
-    return line;
-}
-
-function dragZoneLine(e) {
-    if (!draggingZoneLine) return;
-
-    const delta = e.clientY - draggingZoneLine.startY;
-    const newTop = Math.max(0, Math.min(UNIT_CONFIG.CANVAS_HEIGHT_PX, draggingZoneLine.startTop + delta));
-
-    draggingZoneLine.element.style.top = newTop + 'px';
-}
-
-function stopDragZoneLine() {
-    if (!draggingZoneLine) return;
-
-    const newTopPx = parseFloat(draggingZoneLine.element.style.top);
-    const newTopMm = pixelsToMm(newTopPx);
-
-    // Guardar en data del canvas (temporal, se guarda con formato)
-    const canvas = document.getElementById('canvas-builder');
-    canvas.dataset.zoneHeaderMm = newTopMm.toFixed(2);
-    if (draggingZoneLine.type === 'footer') {
-        canvas.dataset.zoneFooterMm = newTopMm.toFixed(2);
+    let targetZone = 'body';
+    if (clickY < headerEndPx) {
+        targetZone = 'header';
+    } else if (clickY > footerStartPx) {
+        targetZone = 'footer';
     }
 
-    console.log(`Zona ${draggingZoneLine.type} movida a ${newTopMm.toFixed(2)}mm`);
+    // Toggle: si la zona está activa, desactivar; si no, activar
+    if (activeZone === targetZone) {
+        activeZone = 'body';
+    } else {
+        activeZone = targetZone;
+    }
 
-    document.removeEventListener('mousemove', dragZoneLine);
-    document.removeEventListener('mouseup', stopDragZoneLine);
-    draggingZoneLine = null;
+    updateZonesUI();
+    console.log(`✓ Zona activa: ${activeZone}`);
 }
 
-function closeZonesEditor() {
-    if (!zonesEditorActive) return;
+function updateZonesUI() {
+    const canvas = document.getElementById('canvas-builder');
+    const headerEndPx = mmToPixels(50);
+    const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
 
-    zonesEditorActive = false;
+    // Remover overlays anteriores
+    Object.values(zoneOverlays).forEach(ol => ol?.remove());
+    zoneOverlays = { header: null, body: null, footer: null };
 
-    if (zoneLines.overlay) zoneLines.overlay.remove();
-    if (zoneLines.header) zoneLines.header.remove();
-    if (zoneLines.footerStart) zoneLines.footerStart.remove();
+    canvas.style.position = 'relative';
 
-    zoneLines = { header: null, footerStart: null, overlay: null };
+    // Crear overlay para zona ACTIVA
+    const createOverlay = (zone, top, height, bgColor, label) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'zone-overlay';
+        overlay.dataset.zone = zone;
+        overlay.style.cssText = `
+            position: absolute;
+            top: ${top}px;
+            left: 0;
+            width: 100%;
+            height: ${height}px;
+            background: ${bgColor};
+            z-index: 500;
+            border: 2px dashed #666;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
 
-    console.log('Editor de zonas cerrado');
+        const label_el = document.createElement('span');
+        label_el.style.cssText = `
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            pointer-events: none;
+        `;
+        label_el.textContent = label;
+        overlay.appendChild(label_el);
+
+        return overlay;
+    };
+
+    // Header overlay (si está activo)
+    if (activeZone === 'header') {
+        const headerOverlay = createOverlay('header', 0, headerEndPx, 'rgba(231, 76, 60, 0.15)', 'MEMBRETE ACTIVO');
+        canvas.appendChild(headerOverlay);
+        zoneOverlays.header = headerOverlay;
+    }
+
+    // Body overlay (si está activo O si es la única zona)
+    if (activeZone === 'body' || activeZone === 'body') {
+        const bodyHeight = footerStartPx - headerEndPx;
+        const bodyOverlay = activeZone === 'body'
+            ? createOverlay('body', headerEndPx, bodyHeight, 'rgba(255, 255, 255, 0)', '')
+            : null;
+        if (bodyOverlay) {
+            canvas.appendChild(bodyOverlay);
+            zoneOverlays.body = bodyOverlay;
+        }
+    }
+
+    // Footer overlay (si está activo)
+    if (activeZone === 'footer') {
+        const footerOverlay = createOverlay('footer', footerStartPx, UNIT_CONFIG.CANVAS_HEIGHT_PX - footerStartPx, 'rgba(52, 152, 219, 0.15)', 'PIE DE PÁGINA ACTIVO');
+        canvas.appendChild(footerOverlay);
+        zoneOverlays.footer = footerOverlay;
+    }
+
+    // Oscurecer bloques de zonas INACTIVAS
+    document.querySelectorAll('.canvas-block-wrapper').forEach(bloque => {
+        const bloqueTop = bloque.offsetTop;
+        let bloqueZone = 'body';
+        if (bloqueTop < headerEndPx) {
+            bloqueZone = 'header';
+        } else if (bloqueTop > footerStartPx) {
+            bloqueZone = 'footer';
+        }
+
+        if (activeZone !== 'body' && bloqueZone !== activeZone) {
+            bloque.style.opacity = '0.3';
+            bloque.style.pointerEvents = 'none';
+        } else {
+            bloque.style.opacity = '1';
+            bloque.style.pointerEvents = 'auto';
+        }
+    });
 }
