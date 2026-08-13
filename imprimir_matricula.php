@@ -272,8 +272,8 @@ $primary_rgb = "$r_c, $g_c, $b_c";
 </head>
 <body>
 
-<!-- BOTÓN FAB DE IMPRESIÓN -->
-<button class="btn-fab-print" onclick="window.print()" aria-label="Imprimir">
+<!-- BOTONES FAB DE IMPRESIÓN -->
+<button class="btn-fab-print" onclick="window.print()" aria-label="Imprimir" title="Imprimir (Ctrl+P)">
     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="print-icon">
         <polyline points="6 9 6 2 18 2 18 9"></polyline>
         <path d="M6 12H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2"></path>
@@ -281,6 +281,29 @@ $primary_rgb = "$r_c, $g_c, $b_c";
         <line x1="8" y1="18" x2="16" y2="18"></line>
     </svg>
 </button>
+
+<button class="btn-fab-pdf" onclick="descargarFormatoPDF()" aria-label="Descargar PDF" title="Descargar PDF exacto">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <text x="9" y="17" font-size="8" fill="currentColor">PDF</text>
+    </svg>
+</button>
+
+<script>
+function descargarFormatoPDF() {
+    const estudianteId = <?php echo json_encode($estudiante_id); ?>;
+    const formatoId = <?php echo json_encode($formato_id); ?>;
+
+    if (!estudianteId || !formatoId) {
+        alert('Error: Parámetros faltantes');
+        return;
+    }
+
+    // Redirigir a generador de PDF
+    window.location.href = `/sistema_escolar/php/logica/generarFormatoPDF.php?estudiante_id=${estudianteId}&formato_id=${formatoId}`;
+}
+</script>
 <?php
 
 $renderizador = function(string $tipo, ?int $cols_override = null) use ($estudiante, $notas, $school_name, $school_motto, $school_logo, $rector_nombre, $secretaria_nombre, $var_map, $alias_extra): string {
