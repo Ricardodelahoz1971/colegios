@@ -727,10 +727,6 @@ async function guardarFormato(e) {
             configJson.push({
                 type: 'texto',
                 zone: bloque.dataset.zone || 'body',
-                left: left_mm,
-                top: top_mm,
-                width: width_mm,
-                height: height_mm,
                 left_mm: left_mm,
                 top_mm: top_mm,
                 width_mm: width_mm,
@@ -757,10 +753,6 @@ async function guardarFormato(e) {
                 const jsonBlock = {
                     type: tipo,
                     zone: bloque.dataset.zone || 'body',
-                    left: left_mm,
-                    top: top_mm,
-                    width: width_mm,
-                    height: height_mm,
                     left_mm: left_mm,
                     top_mm: top_mm,
                     width_mm: width_mm,
@@ -1001,15 +993,12 @@ function iniciarRedimension(e, handleType, targetWrapper) {
                 newWidth = startWidth - appliedDx;
                 
                 wrapper.style.left = newLeft + 'px';
-                wrapper.dataset.left = Math.round(newLeft);
                 wrapper.dataset.left_mm = pixelsToMm(newLeft).toFixed(2);
             }
             newWidth = Math.max(40, newWidth);
             wrapper.style.width = newWidth + 'px';
             wrapper.style.height = 'auto';
-            wrapper.dataset.width = Math.round(newWidth);
             wrapper.dataset.width_mm = pixelsToMm(newWidth).toFixed(2);
-            wrapper.dataset.height = '';
             wrapper.dataset.height_mm = '';
             
             const img = wrapper.querySelector('.ares-logo-cabecera');
@@ -1031,7 +1020,6 @@ function iniciarRedimension(e, handleType, targetWrapper) {
             newWidth = startWidth - appliedDx;
             
             wrapper.style.left = newLeft + 'px';
-            wrapper.dataset.left = Math.round(newLeft);
             wrapper.dataset.left_mm = pixelsToMm(newLeft).toFixed(2);
         }
         newWidth = Math.max(50, newWidth);
@@ -1045,7 +1033,7 @@ function iniciarRedimension(e, handleType, targetWrapper) {
         wysiwygNodes.forEach(node => {
             const baseSize = parseFloat(node.dataset.baseFontSize);
             const newSize = Math.max(4, baseSize * scaleRatio);
-            node.style.setProperty('font-size', newSize + 'px', 'important');
+            node.style.fontSize = newSize + 'px';
         });
 
         wrapper.style.width = newWidth + 'px';
