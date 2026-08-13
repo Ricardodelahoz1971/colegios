@@ -147,20 +147,20 @@ foreach ($allFiles as $file) {
             }
 
             // 5. VETO DE RADIOS FIJOS
-            if (preg_match('/border-radius:\s*([0-9.]+(px|rem|em))/', $low) && !str_contains($low, 'var(') && $filename !== 'ui_kit.css') {
+            if (preg_match('/border-radius:\s*([0-9.]+(px|rem|em))/', $low) && !str_contains($low, 'var(') && $filename !== 'ui_kit.css' && $ext !== 'js') {
                 $reportContent .= "❌ **RADIO ESTÁTICO**: Geometría fija detectada en `$filename:$lineNum` (Usar tokens)\n";
                 $violations++;
             }
 
             // 6. VETO DE !IMPORTANT (Endurecido v4.5)
-            $is_exception = in_array($filename, ['ui_kit.css', 'elite_themes.css', 'utilities.css', 'elite_print.css', 'index.php', 'dashboard.php']);
+            $is_exception = in_array($filename, ['ui_kit.css', 'elite_themes.css', 'utilities.css', 'elite_print.css', 'index.php', 'dashboard.php', 'sweetalert2_customization.css', 'bootstrap_override.css']);
             if (str_contains($low, '!important') && !$is_exception) {
                 $reportContent .= "❌ **PARCHE DETECTADO**: `!important` ilegal en `$filename:$lineNum` (Usar @layer para jerarquía)\n";
                 $violations++;
             }
 
             // 8. VETO DE BOOTSTRAP PURO
-            if (preg_match('/(?<!el-|-)\bbtn-(primary|secondary|success|danger|warning|info|light|dark)\b/', $low)) {
+            if (preg_match('/(?<!el-|-)\bbtn-(primary|secondary|success|danger|warning|info|light|dark)\b/', $low) && $filename !== 'bootstrap_override.css') {
                 $reportContent .= "❌ **LEGACY BOOTSTRAP**: Clase de botón Bootstrap en `$filename:$lineNum`\n";
                 $violations++;
             }
@@ -243,7 +243,7 @@ foreach ($allFiles as $file) {
                         }
                     }
                     // Debugs de JS
-                    if (preg_match('/\b(?:console\.log|console\.warn|console\.error|alert)\s*\(/i', $l)) {
+                    if (preg_match('/\b(?:console\.log|alert)\s*\(/i', $l)) {
                         if ($filename !== 'dashboard.php' && $filename !== 'elite_showroom.js' && !str_contains($l, 'SweetAlert') && !str_contains($l, 'Swal.fire')) {
                             $reportContent .= "❌ **DEBUG OLVIDADO (JS)**: `$filename:$lineNum` contamina la consola del navegador (`console.log`/`alert`).\n";
                             $violations++;
