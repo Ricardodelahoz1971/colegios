@@ -707,9 +707,13 @@
 
     /* Estilos para vista previa en pantalla del documento completo */
     .print-document {
+        width: 215.9mm;
+        height: 279.4mm;
         border: 0.75pt solid black;
         box-shadow: 0 4px 16px rgba(var(--el-primary-rgb), 0.08);
         margin: 20px auto;
         background-color: white;
+        position: relative;
+        box-sizing: border-box;
     }
 }
