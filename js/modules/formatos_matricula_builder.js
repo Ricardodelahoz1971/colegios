@@ -167,16 +167,16 @@ function generarIdUnicoBloque() {
     return 'bloque_' + Date.now() + '_' + contadorBloquesAres + '_' + Math.random().toString(36).substring(2, 6);
 }
 
-function insertarBloqueEnCanvas(codigo, label, x, y) {
+function insertarBloqueEnCanvas(codigo, label, x, y, skipZoneRestrictions = false) {
     const canvas = document.getElementById('canvas-builder');
     const idUnico = generarIdUnicoBloque();
-    
+
     const wrapper = document.createElement('div');
     wrapper.className = 'canvas-block-wrapper animate__animated animate__fadeIn';
     wrapper.id = idUnico;
     wrapper.dataset.bloque = codigo;
     wrapper.dataset.zone = activeZone;  // Marcar zona a la que pertenece
-    
+
     // Remover empty state si existe
     const emptyState = document.getElementById('canvas-empty-state');
     if (emptyState) emptyState.remove();
@@ -220,13 +220,15 @@ function insertarBloqueEnCanvas(codigo, label, x, y) {
     const maxLeft = Math.max(margenesPx.izquierdo, canvasW - margenesPx.derecho - estW);
     x = Math.max(margenesPx.izquierdo, Math.min(x, maxLeft));
 
-    // Restricción de Y según zona
-    if (activeZone === 'header') {
-        y = Math.max(0, Math.min(y, headerEndPx - 10));
-    } else if (activeZone === 'footer') {
-        y = Math.max(footerStartPx, Math.min(y, UNIT_CONFIG.CANVAS_HEIGHT_PX - estH));
-    } else {
-        y = Math.max(headerEndPx, Math.min(y, footerStartPx));
+    // Restricción de Y según zona (SOLO si no está cargando desde JSON)
+    if (!skipZoneRestrictions) {
+        if (activeZone === 'header') {
+            y = Math.max(0, Math.min(y, headerEndPx - 10));
+        } else if (activeZone === 'footer') {
+            y = Math.max(footerStartPx, Math.min(y, UNIT_CONFIG.CANVAS_HEIGHT_PX - estH));
+        } else {
+            y = Math.max(headerEndPx, Math.min(y, footerStartPx));
+        }
     }
 
     x = Math.round(x);
@@ -517,9 +519,9 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     // Guardar el activeZone actual y establecer al zone del bloque temporalmente
     const previousActiveZone = activeZone;
     activeZone = jsonBlock.zone || 'body';
-    
-    insertarBloqueEnCanvas(jsonBlock.type, null, left_px, top_px);
-    
+
+    insertarBloqueEnCanvas(jsonBlock.type, null, left_px, top_px, true);
+
     // Restaurar el activeZone original
     activeZone = previousActiveZone;
 
