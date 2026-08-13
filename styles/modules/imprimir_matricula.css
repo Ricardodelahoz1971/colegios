@@ -1,4 +1,4 @@
-﻿@layer components {
+@layer components {
     :root {
         --margen-sup: 20mm;
         --margen-inf: 20mm;
@@ -694,5 +694,14 @@
         body {
             margin: var(--margen-sup) var(--margen-der) var(--margen-inf) var(--margen-izq);
         }
+    }
+}
+
+/* Borde punteado sutil para bloques en preview (solo pantalla) */
+@media screen {
+    .print-document .bloque-avanzado,
+    .print-document .bloque-texto {
+        outline: 1px dashed var(--el-border-color);
+        outline-offset: 2px;
     }
 }
