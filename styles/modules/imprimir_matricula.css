@@ -704,4 +704,12 @@
         outline: 1px dashed var(--el-border-color);
         outline-offset: 2px;
     }
+
+    /* Estilos para vista previa en pantalla del documento completo */
+    .print-document {
+        border: 1px solid var(--el-border-color);
+        box-shadow: 0 4px 16px rgba(var(--el-primary-rgb), 0.08);
+        margin: 20px auto;
+        background-color: white;
+    }
 }
