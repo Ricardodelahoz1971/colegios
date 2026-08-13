@@ -6,12 +6,16 @@ guardia_sesion();
 session_write_close();
 
 // Cargar TCPDF desde assets/libs/tcpdf
-$tcpdf_path = realpath(__DIR__ . '/../../assets/libs/tcpdf/');
-if (!$tcpdf_path || !is_dir($tcpdf_path)) {
-    die("Error: TCPDF no encontrado en " . __DIR__ . '/../../assets/libs/tcpdf/');
+$tcpdf_path = dirname(__DIR__, 2) . '/assets/libs/tcpdf/';
+
+if (!file_exists($tcpdf_path . 'tcpdf.php')) {
+    die("Error: TCPDF no encontrado en " . $tcpdf_path);
 }
 
-require_once $tcpdf_path . '/tcpdf.php';
+// Cargar autoconfig primero
+require_once $tcpdf_path . 'tcpdf_autoconfig.php';
+// Luego cargar TCPDF
+require_once $tcpdf_path . 'tcpdf.php';
 
 $estudiante_id = (int)($_GET['estudiante_id'] ?? 0);
 $formato_id = (int)($_GET['formato_id'] ?? 0);
