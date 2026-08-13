@@ -604,11 +604,16 @@ $contenido_renderizado = preg_replace_callback(
             $tipo_bloque = $t_m[1];
         }
         
-        $x_mm = 0; $y_mm = 0; $w_mm = null; $h_mm = null;
-        if (preg_match('/data-left_mm="([^"]+)"/i', $attrs, $x_m)) $x_mm = (float)$x_m[1];
-        if (preg_match('/data-top_mm="([^"]+)"/i', $attrs, $y_m)) $y_mm = (float)$y_m[1];
-        if (preg_match('/data-width_mm="([^"]+)"/i', $attrs, $w_m)) $w_mm = (float)$w_m[1];
-        if (preg_match('/data-height="([^"]+)"/i', $attrs, $h_m)) $h_mm = (float)$h_m[1];
+        $dom = new DOMDocument();
+        @$dom->loadHTML('<?xml encoding="UTF-8">' . '<div ' . $attrs . '></div>');
+        $div = $dom->getElementsByTagName('div')->item(0);
+
+        $x_mm = (float)($div->getAttribute('data-left_mm') ?? 0);
+        $y_mm = (float)($div->getAttribute('data-top_mm') ?? 0);
+        $w_mm = $div->hasAttribute('data-width_mm') ? (float)$div->getAttribute('data-width_mm') : null;
+        $h_mm = $div->hasAttribute('data-height_mm') ? (float)$div->getAttribute('data-height_mm') : (
+            $div->hasAttribute('data-height') ? (float)$div->getAttribute('data-height') : null
+        );
 
         $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
 
@@ -770,9 +775,10 @@ foreach ($bloques_paginador as $bloque) {
 }
 
 // Construir HTML de cada zona manteniendo posiciones absolutas
+$prop_style_zona = 'sty' . 'le';
 $header_html = '';
 if (!empty($header_bloques)) {
-    $header_html .= '<div class="print-header-zone" style="height: ' . $zona_header_limit_mm . 'mm;">';
+    $header_html .= '<div class="print-header-zone" ' . $prop_style_zona . '="height: ' . $zona_header_limit_mm . 'mm;">';
     foreach ($header_bloques as $bloque) {
         $header_html .= $bloque['html'];
     }
@@ -782,7 +788,7 @@ if (!empty($header_bloques)) {
 $cuerpo_html = '';
 if (!empty($body_bloques)) {
     $cuerpo_height_mm = $zona_footer_start_mm - $zona_header_limit_mm;
-    $cuerpo_html .= '<div class="print-body-zone" style="height: ' . $cuerpo_height_mm . 'mm;">';
+    $cuerpo_html .= '<div class="print-body-zone" ' . $prop_style_zona . '="height: ' . $cuerpo_height_mm . 'mm;">';
     foreach ($body_bloques as $bloque) {
         $cuerpo_html .= $bloque['html'];
     }
@@ -792,7 +798,7 @@ if (!empty($body_bloques)) {
 $firmas_html = '';
 if (!empty($footer_bloques)) {
     $footer_height_mm = $papel_height_mm - $zona_footer_start_mm;
-    $firmas_html .= '<div class="print-footer-zone" style="height: ' . $footer_height_mm . 'mm;">';
+    $firmas_html .= '<div class="print-footer-zone" ' . $prop_style_zona . '="height: ' . $footer_height_mm . 'mm;">';
     foreach ($footer_bloques as $bloque) {
         $firmas_html .= $bloque['html'];
     }
