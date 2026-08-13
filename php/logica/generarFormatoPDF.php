@@ -5,10 +5,13 @@ require_once __DIR__ . '/../auth.php';
 guardia_sesion();
 session_write_close();
 
-require_once __DIR__ . '/../../assets/libs/tcpdf/tcpdf_autoconfig.php';
-require_once __DIR__ . '/../../assets/libs/tcpdf/tcpdf.php';
+// Cargar TCPDF desde assets/libs/tcpdf
+$tcpdf_path = realpath(__DIR__ . '/../../assets/libs/tcpdf/');
+if (!$tcpdf_path || !is_dir($tcpdf_path)) {
+    die("Error: TCPDF no encontrado en " . __DIR__ . '/../../assets/libs/tcpdf/');
+}
 
-use Com\Tecnick\Pdf\Tcpdf;
+require_once $tcpdf_path . '/tcpdf.php';
 
 $estudiante_id = (int)($_GET['estudiante_id'] ?? 0);
 $formato_id = (int)($_GET['formato_id'] ?? 0);
@@ -79,7 +82,7 @@ $html = <<<EOF
 EOF;
 
 // 5. Crear PDF con TCPDF
-$pdf = new Tcpdf('P', 'mm', 'A4', true, 'UTF-8', false);
+$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 $pdf->SetMargins(0, 0, 0);
 $pdf->SetAutoPageBreak(false, 0);
