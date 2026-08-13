@@ -589,13 +589,6 @@ $contenido_renderizado = preg_replace_callback(
 
         $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
 
-        // Aplicar márgenes del formato: sumar al posicionamiento absoluto
-        $margen_izq = (float)($formato['margen_izquierdo'] ?? 20);
-        $margen_sup = (float)($formato['margen_superior'] ?? 20);
-
-        $left_final = $x_mm + $margen_izq;
-        $top_final = $y_mm + $margen_sup;
-
         $style_w = '';
         if ($w_mm !== null) {
             $style_w = "width: {$w_mm}mm;";
@@ -611,7 +604,8 @@ $contenido_renderizado = preg_replace_callback(
             $overflow = "overflow: visible;";
         }
 
-        $style_inline = "position: absolute; left: {$left_final}mm; top: {$top_final}mm; {$style_w} {$style_h} box-sizing: border-box; {$overflow}";
+        // Usar MM directamente sin sumar márgenes (ya están incluidos en el posicionamiento del editor)
+        $style_inline = "position: absolute; left: {$x_mm}mm; top: {$y_mm}mm; {$style_w} {$style_h} box-sizing: border-box; {$overflow}";
         
         // Limpiar style anterior si existe e inyectar el nuevo usando concatenacion indirecta para evadir falso positivo del linter
         $prop_style = 'sty' . 'le';
@@ -755,7 +749,7 @@ foreach ($bloques_paginador as $bloque) {
 // Construir HTML de cada zona manteniendo posiciones absolutas
 $header_html = '';
 if (!empty($header_bloques)) {
-    $header_html .= '<div style="position: relative; height: ' . $zona_header_limit_mm . 'mm; background: #f9f9f9; border-bottom: 1px dashed #ccc;">';
+    $header_html .= '<div style="position: relative; width: 100%; height: ' . $zona_header_limit_mm . 'mm; background: #f9f9f9; border-bottom: 1px dashed #ccc; overflow: visible;">';
     foreach ($header_bloques as $bloque) {
         $header_html .= $bloque['html'];
     }
@@ -765,7 +759,7 @@ if (!empty($header_bloques)) {
 $cuerpo_html = '';
 if (!empty($body_bloques)) {
     $cuerpo_height_mm = $zona_footer_start_mm - $zona_header_limit_mm;
-    $cuerpo_html .= '<div style="position: relative; height: ' . $cuerpo_height_mm . 'mm;">';
+    $cuerpo_html .= '<div style="position: relative; width: 100%; height: ' . $cuerpo_height_mm . 'mm; overflow: visible;">';
     foreach ($body_bloques as $bloque) {
         $cuerpo_html .= $bloque['html'];
     }
@@ -775,7 +769,7 @@ if (!empty($body_bloques)) {
 $firmas_html = '';
 if (!empty($footer_bloques)) {
     $footer_height_mm = $papel_height_mm - $zona_footer_start_mm;
-    $firmas_html .= '<div style="position: relative; height: ' . $footer_height_mm . 'mm; background: #f9f9f9; border-top: 1px dashed #ccc;">';
+    $firmas_html .= '<div style="position: relative; width: 100%; height: ' . $footer_height_mm . 'mm; background: #f9f9f9; border-top: 1px dashed #ccc; overflow: visible;">';
     foreach ($footer_bloques as $bloque) {
         $firmas_html .= $bloque['html'];
     }
