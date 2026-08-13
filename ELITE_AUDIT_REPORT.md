@@ -1,6 +1,6 @@
 # 🏛️ REPORTE DE INQUISICIÓN ÉLITE
 
-Generado el: 2026-08-13 14:50:06
+Generado el: 2026-08-13 14:55:22
 Estado: **SISTEMA BAJO CERTIFICACIÓN DE PUREZA**
 ⚠️ **REGLA DE ORO**: "A partir de hoy, en el nuevo código que se escriba, está prohibido usar `!important`".
 
@@ -31,12 +31,7 @@ Estado: **SISTEMA BAJO CERTIFICACIÓN DE PUREZA**
 ❌ **COLOREADO ILEGAL**: HEX detectado en `formatos_matricula_builder.js:1477` -> `border: 2px dashed #666;` (Migrar a `var(--el-*)`)
 ❌ **SOMBRA SIN ALMA**: Sombra negra detectada en `formatos_matricula_builder.js:1486` (Usar matiz primario)
 ❌ **RADIO ESTÁTICO**: Geometría fija detectada en `formatos_matricula_builder.js:1489` (Usar tokens)
-❌ **DEBUG OLVIDADO (PHP)**: `generarFormatoPDF.php:12` contiene debug (`var_dump`/`print_r`/`die`).
-❌ **DEBUG OLVIDADO (PHP)**: `generarFormatoPDF.php:24` contiene debug (`var_dump`/`print_r`/`die`).
-❌ **DEBUG OLVIDADO (PHP)**: `generarFormatoPDF.php:33` contiene debug (`var_dump`/`print_r`/`die`).
-❌ **DEBUG OLVIDADO (PHP)**: `generarFormatoPDF.php:48` contiene debug (`var_dump`/`print_r`/`die`).
-❌ **INYECCIÓN CSS**: Bloque `<style>` detectado en `generarFormatoPDF.php:65`
-❌ **COLOREADO ILEGAL**: HEX detectado en `generarFormatoPDF.php:71` -> `border: 1px solid #333;` (Migrar a `var(--el-*)`)
+❌ **INYECCIÓN CSS**: Bloque `<style>` detectado en `generarFormatoPDF.php:57`
 ❌ **ESTILO INLINE**: Atributo `style` prohibido en `configuracion.php:624`
 ❌ **ESTILO INLINE**: Atributo `style` prohibido en `configuracion.php:643`
 ❌ **PARCHE DETECTADO**: `!important` ilegal en `bootstrap_override.css:11` (Usar @layer para jerarquía)
@@ -222,4 +217,4 @@ Estado: **SISTEMA BAJO CERTIFICACIÓN DE PUREZA**
 > **Último Registro de Uso**: [2026-08-06 16:56:05] Prompt: 90 | Completion: 1310 | Total: 1400 | Time: 9.96s
 
 ---
-**VEREDICTO FINAL**: 212 VIOLACIONES RESTANTES.
+**VEREDICTO FINAL**: 207 VIOLACIONES RESTANTES.

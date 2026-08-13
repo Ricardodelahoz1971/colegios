@@ -772,7 +772,7 @@ foreach ($bloques_paginador as $bloque) {
 // Construir HTML de cada zona manteniendo posiciones absolutas
 $header_html = '';
 if (!empty($header_bloques)) {
-    $header_html .= '<div style="position: relative; width: 100%; height: ' . $zona_header_limit_mm . 'mm; background: #f9f9f9; border-bottom: 1px dashed #ccc; overflow: visible;">';
+    $header_html .= '<div class="print-header-zone" style="height: ' . $zona_header_limit_mm . 'mm;">';
     foreach ($header_bloques as $bloque) {
         $header_html .= $bloque['html'];
     }
@@ -782,7 +782,7 @@ if (!empty($header_bloques)) {
 $cuerpo_html = '';
 if (!empty($body_bloques)) {
     $cuerpo_height_mm = $zona_footer_start_mm - $zona_header_limit_mm;
-    $cuerpo_html .= '<div style="position: relative; width: 100%; height: ' . $cuerpo_height_mm . 'mm; overflow: visible;">';
+    $cuerpo_html .= '<div class="print-body-zone" style="height: ' . $cuerpo_height_mm . 'mm;">';
     foreach ($body_bloques as $bloque) {
         $cuerpo_html .= $bloque['html'];
     }
@@ -792,7 +792,7 @@ if (!empty($body_bloques)) {
 $firmas_html = '';
 if (!empty($footer_bloques)) {
     $footer_height_mm = $papel_height_mm - $zona_footer_start_mm;
-    $firmas_html .= '<div style="position: relative; width: 100%; height: ' . $footer_height_mm . 'mm; background: #f9f9f9; border-top: 1px dashed #ccc; overflow: visible;">';
+    $firmas_html .= '<div class="print-footer-zone" style="height: ' . $footer_height_mm . 'mm;">';
     foreach ($footer_bloques as $bloque) {
         $firmas_html .= $bloque['html'];
     }
@@ -800,7 +800,7 @@ if (!empty($footer_bloques)) {
 }
 
 ?>
-<div class="print-document" style="border: 1px solid #333;">
+<div class="print-document">
     <table class="print-band-table">
         <thead class="print-band-thead">
             <tr><td class="print-band-td">

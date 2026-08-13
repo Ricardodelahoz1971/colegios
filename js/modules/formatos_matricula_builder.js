@@ -829,24 +829,6 @@ async function guardarFormato(e) {
     const canvasWidth = canvasBuilder.offsetWidth;
     const canvasHeight = canvasBuilder.offsetHeight;
 
-    console.log('🔍 DEBUG GUARDAR FORMATO:');
-    console.log('Nombre:', nombre);
-    console.log('Descripción:', descripcion);
-    console.log('Tipo Documento:', tipoDocumento);
-    console.log('Tamaño Lienzo:', tamanoLienzo);
-    console.log('Márgenes:', `Superior=${margen_superior}mm, Inferior=${margen_inferior}mm, Izquierdo=${margen_izquierdo}mm, Derecho=${margen_derecho}mm`);
-    console.log('📐 CANVAS ANCHO:', canvasWidth + ' px');
-    console.log('📐 CANVAS ALTO:', canvasHeight + ' px');
-    console.log('Cantidad de bloques:', configJson.length);
-
-    // Debug detallado de cada bloque
-    console.log('📍 Posiciones de bloques guardadas:');
-    configJson.forEach((bloque, idx) => {
-        console.log(`  Bloque ${idx} (${bloque.type}): left_mm=${bloque.left_mm}, top_mm=${bloque.top_mm}, width_mm=${bloque.width_mm}, height=${bloque.height}`);
-    });
-
-    console.log('Estructura JSON completa:', configJson);
-    console.log('HTML compilado (primeros 200 chars):', htmlCompilado.substring(0, 200));
 
     try {
         const res = await fetch('/sistema_escolar/php/logica/formatos_ajax.php', {
@@ -859,7 +841,6 @@ async function guardarFormato(e) {
         }
 
         const data = await res.json();
-        console.log('✅ Respuesta del servidor:', data);
 
         if (data.status === 'success') {
             Swal.fire('¡Éxito!', data.message, 'success').then(() => {
@@ -1447,7 +1428,6 @@ function canvasDobleClick(e) {
     }
 
     updateZonesUI();
-    console.log(`✓ Zona activa: ${activeZone}`);
 }
 
 function updateZonesUI() {
@@ -1474,7 +1454,7 @@ function updateZonesUI() {
             height: ${height}px;
             background: ${bgColor};
             z-index: 500;
-            border: 2px dashed #666;
+            border: 2px dashed var(--el-border-color, #ccc);
             pointer-events: none;
             display: flex;
             align-items: center;
@@ -1483,8 +1463,8 @@ function updateZonesUI() {
 
         const label_el = document.createElement('span');
         label_el.style.cssText = `
-            background: rgba(0,0,0,0.7);
-            color: white;
+            background: var(--el-dark-overlay, rgba(0,0,0,0.7));
+            color: var(--el-white);
             padding: 4px 12px;
             border-radius: 4px;
             font-size: 12px;
