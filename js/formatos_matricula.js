@@ -232,6 +232,12 @@ function editarFormato(id) {
                         });
                         if (typeof ajustarAlturaLienzo === 'function') ajustarAlturaLienzo();
 
+                        // Resetear zona activa a 'body' después de cargar
+                        if (typeof toggleZoneEditMode === 'function') {
+                            activeZone = 'body';
+                            updateZonesUI();
+                        }
+
                         // Cargar zonas si existen
                         if (res.data.zonas_config) {
                             const zonas = typeof res.data.zonas_config === 'string' ? JSON.parse(res.data.zonas_config) : res.data.zonas_config;
