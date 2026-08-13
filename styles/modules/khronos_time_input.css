@@ -1,0 +1,37 @@
+/* khronos_time_input.css - Estilos para input de tiempo */
+
+@layer modules {
+
+.khronos-time-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.khronos-time-input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--el-border);
+    border-radius: var(--el-radius-main);
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    background: var(--el-white);
+    color: var(--el-text-primary);
+    transition: var(--el-transition-premium);
+}
+
+.khronos-time-input:focus {
+    outline: none;
+    border-color: var(--el-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--el-primary-rgb), 0.1);
+}
+
+.khronos-time-input::placeholder {
+    color: var(--el-text-muted);
+}
+
+.khronos-time-separator {
+    color: var(--el-text-muted);
+    font-weight: 500;
+}
+
+}

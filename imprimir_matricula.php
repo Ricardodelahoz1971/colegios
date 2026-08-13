@@ -272,8 +272,8 @@ $primary_rgb = "$r_c, $g_c, $b_c";
 </head>
 <body>
 
-<!-- BOTÓN FAB DE IMPRESIÓN -->
-<button class="btn-fab-print" onclick="window.print()" aria-label="Imprimir">
+<!-- BOTONES FAB DE IMPRESIÓN -->
+<button class="btn-fab-print" onclick="window.print()" aria-label="Imprimir" title="Imprimir (Ctrl+P)">
     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="print-icon">
         <polyline points="6 9 6 2 18 2 18 9"></polyline>
         <path d="M6 12H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2"></path>
@@ -281,6 +281,29 @@ $primary_rgb = "$r_c, $g_c, $b_c";
         <line x1="8" y1="18" x2="16" y2="18"></line>
     </svg>
 </button>
+
+<button class="btn-fab-pdf" onclick="descargarFormatoPDF()" aria-label="Descargar PDF" title="Descargar PDF exacto">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <text x="9" y="17" font-size="8" fill="currentColor">PDF</text>
+    </svg>
+</button>
+
+<script>
+function descargarFormatoPDF() {
+    const estudianteId = <?php echo json_encode($estudiante_id); ?>;
+    const formatoId = <?php echo json_encode($formato_id); ?>;
+
+    if (!estudianteId || !formatoId) {
+        alert('Error: Parámetros faltantes');
+        return;
+    }
+
+    // Redirigir a generador de PDF
+    window.location.href = `/sistema_escolar/php/logica/generarFormatoPDF.php?estudiante_id=${estudianteId}&formato_id=${formatoId}`;
+}
+</script>
 <?php
 
 $renderizador = function(string $tipo, ?int $cols_override = null) use ($estudiante, $notas, $school_name, $school_motto, $school_logo, $rector_nombre, $secretaria_nombre, $var_map, $alias_extra): string {
@@ -581,62 +604,31 @@ $contenido_renderizado = preg_replace_callback(
             $tipo_bloque = $t_m[1];
         }
         
-        // Extraer coordenadas originales del canvas en PX (Soporta data-* o style inline)
-        $x = 0; $y = 0; $w = null; $h = null;
-        if (preg_match('/data-left="([^"]+)"/i', $attrs, $x_m)) $x = (float)$x_m[1];
-        elseif (preg_match('/left:\s*([0-9\.]+)px/i', $attrs, $x_m)) $x = (float)$x_m[1];
-        
-        if (preg_match('/data-top="([^"]+)"/i', $attrs, $y_m)) $y = (float)$y_m[1];
-        elseif (preg_match('/top:\s*([0-9\.]+)px/i', $attrs, $y_m)) $y = (float)$y_m[1];
-        
-        if (preg_match('/data-width="([^"]+)"/i', $attrs, $w_m)) $w = (float)$w_m[1];
-        elseif (preg_match('/width:\s*([0-9\.]+)px/i', $attrs, $w_m)) $w = (float)$w_m[1];
-        
-        if (preg_match('/data-height="([^"]+)"/i', $attrs, $h_m)) $h = (float)$h_m[1];
-        elseif (preg_match('/height:\s*([0-9\.]+)px/i', $attrs, $h_m)) $h = (float)$h_m[1];
-        
-        // Extraer escala del atributo data-scale (si no existe, 1.0)
-        $scale = 1.0;
-        if (preg_match('/data-scale="([^"]+)"/i', $attrs, $sc_m)) {
-            $scale = (float)$sc_m[1];
-        }
-        
-        // Conversión exacta a mm (1px = 0.264583mm)
-        $factor_px_to_mm = 0.264583;
-        $x_mm = round($x * $factor_px_to_mm, 2);
-        $y_mm = round($y * $factor_px_to_mm, 2);
-        
-        // Ancho en mm (dividir entre scale para evitar doble escalado visual)
+        $x_mm = 0; $y_mm = 0; $w_mm = null; $h_mm = null;
+        if (preg_match('/data-left_mm="([^"]+)"/i', $attrs, $x_m)) $x_mm = (float)$x_m[1];
+        if (preg_match('/data-top_mm="([^"]+)"/i', $attrs, $y_m)) $y_mm = (float)$y_m[1];
+        if (preg_match('/data-width_mm="([^"]+)"/i', $attrs, $w_m)) $w_mm = (float)$w_m[1];
+        if (preg_match('/data-height="([^"]+)"/i', $attrs, $h_m)) $h_mm = (float)$h_m[1];
+
+        $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
+
         $style_w = '';
-        if ($w !== null) {
-            $w_unscaled = $w / $scale;
-            $w_mm = round($w_unscaled * $factor_px_to_mm, 2);
+        if ($w_mm !== null) {
             $style_w = "width: {$w_mm}mm;";
         }
-        
-        // Altura auto para textos dinámicos o firmas, fija en mm para los demás
-        $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
+
         $style_h = "height: auto;";
-        if ($h !== null && !$es_dinamico) {
-            $h_unscaled = $h / $scale;
-            $h_mm = round($h_unscaled * $factor_px_to_mm, 2);
+        if ($h_mm !== null && !$es_dinamico) {
             $style_h = "height: {$h_mm}mm;";
         }
-        
-        // Permitir overflow visible en textos y cabeceras para evitar que se corten caracteres
+
         $overflow = "overflow: hidden;";
         if ($tipo_bloque === 'titulo_colegio' || $tipo_bloque === 'lema_colegio' || $tipo_bloque === 'metadatos' || $es_dinamico) {
             $overflow = "overflow: visible;";
         }
-        
-        // Generar transform si la escala no es 1.0
-        $style_transform = '';
-        if ($scale != 1.0) {
-            $style_transform = "transform: scale({$scale}); transform-origin: top left;";
-        }
 
-        // Inyectar style nativo en milímetros (top se inyecta como placeholder, Paso 5 lo recalculará)
-        $style_inline = "position: absolute; left: {$x_mm}mm; top: {$y_mm}mm; {$style_w} {$style_h} {$style_transform} box-sizing: border-box; {$overflow}";
+        // Usar MM directamente sin sumar márgenes (ya están incluidos en el posicionamiento del editor)
+        $style_inline = "position: absolute; left: {$x_mm}mm; top: {$y_mm}mm; {$style_w} {$style_h} box-sizing: border-box; {$overflow}";
         
         // Limpiar style anterior si existe e inyectar el nuevo usando concatenacion indirecta para evadir falso positivo del linter
         $prop_style = 'sty' . 'le';
@@ -655,7 +647,6 @@ $contenido_renderizado = preg_replace_callback(
             return '<!--BLOQUE_PAG_' . (count($bloques_paginador) - 1) . '-->';
         }
         
-        // Estimar altura física real del bloque para el motor de paginación
         $h_eval = 15.0;
         if ($tipo_bloque === 'ficha') {
             $h_eval = 135.0;
@@ -663,8 +654,8 @@ $contenido_renderizado = preg_replace_callback(
             $h_eval = 65.0;
         } elseif ($tipo_bloque === 'calificaciones') {
             $h_eval = 70.0;
-        } elseif ($h !== null) {
-            $h_eval = round($h * $factor_px_to_mm, 2);
+        } elseif ($h_mm !== null) {
+            $h_eval = (float)$h_mm;
         }
         
         // Renderizar el contenido interno del bloque
@@ -748,61 +739,64 @@ $contenido_renderizado = preg_replace_callback(
 // PASO 4: Eliminar <br> sueltos entre bloques que el editor de contenido hereda
 $contenido_renderizado = preg_replace('/<\/div>\s*<br\s*\/?>\s*<div/i', '</div><div', $contenido_renderizado);
 
-// PASO 5: Reestructuración para impresión de flujo puro (sin coordenadas absolutas)
+// PASO 5: Mantener posicionamiento absoluto en MM respetando zonas
 usort($bloques_paginador, function($a, $b) {
     return $a['y_mm'] <=> $b['y_mm'];
 });
 
-// Clasificar bloques por tipo
-$header_info = [];
-$header_logo = '';
-$cuerpo_bloques = [];
-$firmas_bloques = [];
+// Dimensiones del papel (Carta por defecto)
+$papel_width_mm = 215.9;
+$papel_height_mm = 279.4;
+$zona_header_limit_mm = 50;  // Hasta 50mm es header
+$zona_footer_start_mm = 219.4;  // A partir de 219.4mm es footer
+
+// Separar bloques por zona (header/body/footer)
+$header_bloques = [];
+$body_bloques = [];
+$footer_bloques = [];
 
 foreach ($bloques_paginador as $bloque) {
-    $html = $bloque['html'];
     $tipo = $bloque['tipo'];
-    
-    // Eliminar position absolute, left y top de TODOS los bloques
-    $html = preg_replace('/\s*position\s*:\s*absolute\s*;?/i', '', $html);
-    $html = preg_replace('/\s*left\s*:\s*[^;]+;/i', '', $html);
-    $html = preg_replace('/\s*top\s*:\s*[^;]+;/i', '', $html);
-    
-    // Clasificar según tipo
-    if ($tipo === 'logo') {
-        $header_logo = $html;
-    } elseif (in_array($tipo, ['titulo_colegio', 'lema_colegio', 'metadatos'])) {
-        $header_info[] = $html;
-    } elseif ($tipo === 'firmas') {
-        $firmas_bloques[] = $html;
+    $y_mm = $bloque['y_mm'];
+
+    // Determinar zona según Y
+    if ($y_mm < $zona_header_limit_mm) {
+        $header_bloques[] = $bloque;
+    } elseif ($y_mm > $zona_footer_start_mm) {
+        $footer_bloques[] = $bloque;
     } else {
-        $cuerpo_bloques[] = $html;
+        $body_bloques[] = $bloque;
     }
 }
 
-// Construir cabecera (flex container)
+// Construir HTML de cada zona manteniendo posiciones absolutas
 $header_html = '';
-if (!empty($header_info) || !empty($header_logo)) {
-    $header_html .= '<div class="print-header-row">';
-    if (!empty($header_info)) {
-        $header_html .= '<div class="print-header-info">' . implode('', $header_info) . '</div>';
-    }
-    if (!empty($header_logo)) {
-        $header_html .= '<div class="print-header-logo">' . $header_logo . '</div>';
+if (!empty($header_bloques)) {
+    $header_html .= '<div class="print-header-zone" style="height: ' . $zona_header_limit_mm . 'mm;">';
+    foreach ($header_bloques as $bloque) {
+        $header_html .= $bloque['html'];
     }
     $header_html .= '</div>';
 }
 
-// Construir cuerpo
 $cuerpo_html = '';
-if (!empty($cuerpo_bloques)) {
-    $cuerpo_html = '<div class="print-body-flow">' . implode('', $cuerpo_bloques) . '</div>';
+if (!empty($body_bloques)) {
+    $cuerpo_height_mm = $zona_footer_start_mm - $zona_header_limit_mm;
+    $cuerpo_html .= '<div class="print-body-zone" style="height: ' . $cuerpo_height_mm . 'mm;">';
+    foreach ($body_bloques as $bloque) {
+        $cuerpo_html .= $bloque['html'];
+    }
+    $cuerpo_html .= '</div>';
 }
 
-// Construir firmas
 $firmas_html = '';
-if (!empty($firmas_bloques)) {
-    $firmas_html = '<div class="print-firmas-flow">' . implode('', $firmas_bloques) . '</div>';
+if (!empty($footer_bloques)) {
+    $footer_height_mm = $papel_height_mm - $zona_footer_start_mm;
+    $firmas_html .= '<div class="print-footer-zone" style="height: ' . $footer_height_mm . 'mm;">';
+    foreach ($footer_bloques as $bloque) {
+        $firmas_html .= $bloque['html'];
+    }
+    $firmas_html .= '</div>';
 }
 
 ?>

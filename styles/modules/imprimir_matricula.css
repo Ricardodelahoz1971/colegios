@@ -4,6 +4,8 @@
         --margen-inf: 20mm;
         --margen-izq: 20mm;
         --margen-der: 20mm;
+        --print-header-bg: #f9f9f9;
+        --print-zone-border: #ccc;
     }
 
     /* Paged.js eliminado, se usarÃ¡ impresiÃ³n nativa. */
@@ -28,15 +30,33 @@
     strong, b {
         font-weight: 800;
     }
-    .btn-fab-print {
+
+    .print-header-zone {
+        position: relative;
+        width: 100%;
+        background-color: var(--print-header-bg);
+        border-bottom: 1px dashed var(--print-zone-border);
+        overflow: visible;
+    }
+
+    .print-body-zone {
+        position: relative;
+        width: 100%;
+        overflow: visible;
+    }
+
+    .print-footer-zone {
+        position: relative;
+        width: 100%;
+        background-color: var(--print-header-bg);
+        border-top: 1px dashed var(--print-zone-border);
+        overflow: visible;
+    }
+    .btn-fab-print, .btn-fab-pdf {
         position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        z-index: 1000;
         width: 44px;
         height: 44px;
         padding: 0;
-        background-color: var(--el-primary);
         border: none;
         border-radius: var(--el-radius-full, 50%);
         box-shadow: 0 4px 12px rgba(var(--el-primary-rgb, 0, 0, 0), 0.3);
@@ -47,13 +67,30 @@
         color: var(--el-white, rgb(255, 255, 255));
         cursor: pointer;
         outline: none;
+        z-index: 1000;
     }
+
+    .btn-fab-print {
+        bottom: 2rem;
+        right: 2rem;
+        background-color: var(--el-primary);
+    }
+
+    .btn-fab-pdf {
+        bottom: 2rem;
+        right: 5.5rem;
+        background-color: var(--el-danger, #e74c3c);
+    }
+
     .btn-fab-print:hover,
-    .btn-fab-print:focus-visible {
+    .btn-fab-print:focus-visible,
+    .btn-fab-pdf:hover,
+    .btn-fab-pdf:focus-visible {
         transform: scale(1.05) translateY(-2px);
         box-shadow: 0 6px 16px rgba(var(--el-primary-rgb, 0, 0, 0), 0.4);
     }
-    .btn-fab-print:active {
+    .btn-fab-print:active,
+    .btn-fab-pdf:active {
         transform: scale(0.95);
         transition: all 0.1s ease;
     }
@@ -80,7 +117,8 @@
     }
 
     @media print {
-        .btn-fab-print {
+        .btn-fab-print,
+        .btn-fab-pdf {
             display: none;
         }
     }

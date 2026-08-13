@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspector de Formatos - Claude Herramientas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4ec9b0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4ec9b0;
+            padding-bottom: 10px;
+        }
+        .section {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            color: #9cdcfe;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .loader {
+            text-align: center;
+            padding: 20px;
+            color: #ce9178;
+        }
+        .error {
+            background: #5c2e2e;
+            border: 1px solid #c45555;
+            color: #f48771;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #2e5c3e;
+            border: 1px solid #55c455;
+            color: #71f487;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        pre {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        .key { color: #9cdcfe; }
+        .value { color: #ce9178; }
+        .string { color: #ce9178; }
+        .number { color: #b5cea8; }
+        .bool { color: #569cd6; }
+        .null { color: #569cd6; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #3e3e42;
+        }
+        th {
+            background: #2d2d30;
+            color: #9cdcfe;
+        }
+        tr:hover {
+            background: #2d2d30;
+        }
+        .highlight-ok { color: #71f487; }
+        .highlight-warn { color: #ce9178; }
+        .highlight-error { color: #f48771; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Inspector de Formatos de Matrícula</h1>
+
+        <div id="content">
+            <div class="loader">Cargando datos...</div>
+        </div>
+    </div>
+
+    <script>
+        async function cargarDatos() {
+            try {
+                const resp = await fetch('/sistema_escolar/claude_herramientas/debug_formatos.php');
+                const data = await resp.json();
+
+                if (data.error) {
+                    mostrarError(data.error);
+                    return;
+                }
+
+                renderizar(data);
+            } catch (e) {
+                mostrarError('Error: ' + e.message);
+            }
+        }
+
+        function mostrarError(msg) {
+            document.getElementById('content').innerHTML = `<div class="section error">❌ ${msg}</div>`;
+        }
+
+        function renderizar(data) {
+            let html = '';
+
+            // Resumen
+            html += `<div class="section">
+                <h2>📊 Resumen</h2>
+                <p>Timestamp: <strong>${data.timestamp}</strong></p>
+                <p>Formatos en BD: <strong>${data.formatos_totales}</strong></p>
+            </div>`;
+
+            // Listado de formatos
+            if (data.formatos_listado.length > 0) {
+                html += `<div class="section">
+                    <h2>📋 Formatos en BD</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Margen Sup</th>
+                                <th>Margen Inf</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+                data.formatos_listado.forEach(f => {
+                    html += `<tr>
+                        <td>${f.id}</td>
+                        <td>${f.nombre}</td>
+                        <td>${f.tipo}</td>
+                        <td>${f.margen_superior}mm</td>
+                        <td>${f.margen_inferior}mm</td>
+                    </tr>`;
+                });
+
+                html += `</tbody></table></div>`;
+            }
+
+            // Debug del primer formato
+            if (data.debug_primer_formato && Object.keys(data.debug_primer_formato).length > 0) {
+                const debug = data.debug_primer_formato;
+                html += `<div class="section">
+                    <h2>🔬 Auditoría: ${debug.formato_nombre} (ID: ${debug.formato_id})</h2>
+
+                    <h3 style="color: #9cdcfe; margin-top: 15px;">Márgenes Configurados:</h3>
+                    <pre>${JSON.stringify(debug.margenes, null, 2)}</pre>
+
+                    <h3 style="color: #9cdcfe; margin-top: 15px;">configuracion_json:</h3>`;
+
+                if (debug.configuracion_json.error) {
+                    html += `<div class="error">⚠️ ERROR: ${debug.configuracion_json.error}</div>`;
+                } else if (!debug.configuracion_json.existe) {
+                    html += `<div class="highlight-warn">⚠️ configuracion_json ESTÁ VACÍO o NULL</div>`;
+                } else {
+                    html += `<div class="success">✓ configuracion_json EXISTE (${debug.configuracion_json.largo} bytes)</div>`;
+                    html += `<p><strong>Bloques guardados:</strong> ${debug.configuracion_json.bloques_count}</p>`;
+                    if (debug.configuracion_json.primer_bloque) {
+                        html += `<details style="margin-top: 10px;">
+                            <summary>Ver primer bloque...</summary>
+                            <pre>${JSON.stringify(debug.configuracion_json.primer_bloque, null, 2)}</pre>
+                        </details>`;
+                    }
+                    if (debug.configuracion_json.bloques_con_posicion.length > 0) {
+                        html += `<p><strong>Bloques con posición (left/top):</strong></p>
+                            <ul>`;
+                        debug.configuracion_json.bloques_con_posicion.forEach(b => {
+                            html += `<li>${b}</li>`;
+                        });
+                        html += `</ul>`;
+                    } else {
+                        html += `<div class="highlight-error">❌ NO HAY BLOQUES CON POSICIÓN (left/top) GUARDADA</div>`;
+                    }
+                }
+
+                html += `<h3 style="color: #9cdcfe; margin-top: 15px;">contenido_html:</h3>`;
+                if (!debug.contenido_html.existe) {
+                    html += `<div class="highlight-warn">⚠️ contenido_html ESTÁ VACÍO o NULL</div>`;
+                } else {
+                    html += `<div class="success">✓ contenido_html EXISTE (${debug.contenido_html.largo} bytes)</div>`;
+                    html += `<ul>
+                        <li>Tiene &lt;bloque-avanzado&gt;: ${debug.contenido_html.tiene_bloque_avanzado ? '<span class="highlight-ok">SÍ ✓</span>' : '<span class="highlight-error">NO ✗</span>'}</li>
+                        <li>Tiene position:absolute: ${debug.contenido_html.tiene_style_position ? '<span class="highlight-ok">SÍ ✓</span>' : '<span class="highlight-error">NO ✗</span>'}</li>
+                    </ul>`;
+                    html += `<details style="margin-top: 10px;">
+                        <summary>Ver primeros 200 caracteres...</summary>
+                        <pre>${escapeHtml(debug.contenido_html.primeros_200_chars)}</pre>
+                    </details>`;
+                }
+
+                html += `</div>`;
+            }
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Cargar al abrir
+        cargarDatos();
+
+        // Auto-refrescar cada 5 segundos
+        setInterval(cargarDatos, 5000);
+    </script>
+</body>
+</html>

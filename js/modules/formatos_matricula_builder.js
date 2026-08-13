@@ -2,6 +2,47 @@
  * Motor Drag & Drop - Formatos de Matrícula (Elite Architecture)
  */
 
+if (typeof UNIT_CONFIG === 'undefined') {
+    var UNIT_CONFIG = {
+        MM_TO_PX: 3.78,
+        PX_TO_MM: 1 / 3.78,
+        CANVAS_WIDTH_PX: 816,
+        CANVAS_HEIGHT_PX: 1056,
+        CANVAS_WIDTH_MM: 215.9,
+        CANVAS_HEIGHT_MM: 279.4
+    };
+}
+
+function mmToPixels(mm) {
+    return mm * UNIT_CONFIG.MM_TO_PX;
+}
+
+function pixelsToMm(px) {
+    return px * UNIT_CONFIG.PX_TO_MM;
+}
+
+function getMargensInPixels() {
+    const sup = parseFloat(document.getElementById('formato-margen-superior')?.value || 20);
+    const inf = parseFloat(document.getElementById('formato-margen-inferior')?.value || 20);
+    const izq = parseFloat(document.getElementById('formato-margen-izquierdo')?.value || 20);
+    const der = parseFloat(document.getElementById('formato-margen-derecho')?.value || 20);
+    return {
+        superior: mmToPixels(sup),
+        inferior: mmToPixels(inf),
+        izquierdo: mmToPixels(izq),
+        derecho: mmToPixels(der)
+    };
+}
+
+function getMargensInMilimeters() {
+    return {
+        superior: parseFloat(document.getElementById('formato-margen-superior')?.value || 20),
+        inferior: parseFloat(document.getElementById('formato-margen-inferior')?.value || 20),
+        izquierdo: parseFloat(document.getElementById('formato-margen-izquierdo')?.value || 20),
+        derecho: parseFloat(document.getElementById('formato-margen-derecho')?.value || 20)
+    };
+}
+
 function initFormatosBuilder() {
 
     const canvas = document.getElementById('canvas-builder');
@@ -11,15 +52,17 @@ function initFormatosBuilder() {
         canvas.removeEventListener('dragover', canvasDragOver);
         canvas.removeEventListener('drop', canvasDrop);
         canvas.removeEventListener('click', canvasClickSelection);
-        
+        canvas.removeEventListener('dblclick', canvasDobleClick);
+
         canvas.addEventListener('dragenter', canvasDragEnter);
         canvas.addEventListener('dragover', canvasDragOver);
         canvas.addEventListener('drop', canvasDrop);
         canvas.addEventListener('click', canvasClickSelection);
-        
+        canvas.addEventListener('dblclick', canvasDobleClick);
+
         ajustarAlturaLienzo();
-        // El membrete inicia cerrado y bloqueado por defecto protegiendo la cabecera
-        alternarBloqueoCabecera(false);
+        activeZone = 'body';
+        updateZonesUI();
     }
 }
 
@@ -61,7 +104,6 @@ function canvasDrop(e) {
     const canvas = document.getElementById('canvas-builder');
     canvas.classList.remove('drag-over');
 
-    // Quitar empty state
     const emptyState = document.getElementById('canvas-empty-state');
     if (emptyState) emptyState.remove();
 
@@ -72,24 +114,27 @@ function canvasDrop(e) {
         codigo = data.codigo;
         label = data.label;
     } catch(err) {
-        return; // Datos no válidos
+        return;
     }
 
     if (tipo === 'bloque') {
         const rect = canvas.getBoundingClientRect();
-        const zoomScale = obtenerEscalaLienzo(canvas);
-        const x = ((e.clientX - rect.left) / zoomScale) - 150;
-        const y = ((e.clientY - rect.top) / zoomScale) - 30;
+        const dropY = (e.clientY - rect.top);
+        const headerEndPx = mmToPixels(50);
+        const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
 
-        const factorMmPx = 3.78;
-        const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
-        const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
+        // Determinar en qué zona cae el drop
+        let dropZone = 'body';
+        if (dropY < headerEndPx) dropZone = 'header';
+        else if (dropY > footerStartPx) dropZone = 'footer';
 
-        if (cabeceraAbierta && y >= margenSup) {
+        // Validar que el drop esté en la zona activa
+        if (activeZone !== 'body' && dropZone !== activeZone) {
+            const zoneName = activeZone === 'header' ? 'MEMBRETE' : 'PIE DE PÁGINA';
             Swal.fire({
                 icon: 'warning',
                 title: 'Zona Bloqueada',
-                text: 'El membrete está abierto. Solo puede soltar bloques en la cabecera (parte superior).',
+                text: `Solo puede soltar bloques en la zona activa (${zoneName}). Doble click para cambiar.`,
                 toast: true,
                 position: 'bottom-end',
                 showConfirmButton: false,
@@ -98,22 +143,10 @@ function canvasDrop(e) {
             return;
         }
 
-        if (!cabeceraAbierta && y < margenSup) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Zona Bloqueada',
-                text: 'El membrete está cerrado. Abra la edición de cabecera si desea colocar elementos allí.',
-                toast: true,
-                position: 'bottom-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            return;
-        }
-
+        const x = (e.clientX - rect.left) - 150;
+        const y = dropY - 30;
         insertarBloqueEnCanvas(codigo, label, x, y);
     } else if (tipo === 'variable') {
-        // Drop de variable directo al canvas no permitido, debe ir dentro de un texto
         Swal.fire({
             icon: 'info',
             title: 'Variable no insertada',
@@ -126,7 +159,9 @@ function canvasDrop(e) {
     }
 }
 
-let contadorBloquesAres = 0;
+if (typeof contadorBloquesAres === 'undefined') {
+    var contadorBloquesAres = 0;
+}
 function generarIdUnicoBloque() {
     contadorBloquesAres++;
     return 'bloque_' + Date.now() + '_' + contadorBloquesAres + '_' + Math.random().toString(36).substring(2, 6);
@@ -140,78 +175,70 @@ function insertarBloqueEnCanvas(codigo, label, x, y) {
     wrapper.className = 'canvas-block-wrapper animate__animated animate__fadeIn';
     wrapper.id = idUnico;
     wrapper.dataset.bloque = codigo;
+    wrapper.dataset.zone = activeZone;  // Marcar zona a la que pertenece
     
     // Remover empty state si existe
     const emptyState = document.getElementById('canvas-empty-state');
     if (emptyState) emptyState.remove();
 
-    // Obtener márgenes configurados en mm y convertirlos a px (1mm = 3.78px aprox)
-    const factorMmPx = 3.78;
-    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
-    const margenInf = Math.round((parseFloat(document.getElementById('formato-margen-inferior').value) || 20) * factorMmPx);
-    const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factorMmPx);
-    const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factorMmPx);
+    const margenesMm = getMargensInMilimeters();
+    const margenesPx = getMargensInPixels();
 
-    const canvasW = canvas.offsetWidth || 816;
-    const canvasH = canvas.offsetHeight || 1056;
-    
-    let estW = 300; // Ancho genérico más ajustado
+    const canvasW = canvas.offsetWidth || UNIT_CONFIG.CANVAS_WIDTH_PX;
+    const canvasH = canvas.offsetHeight || UNIT_CONFIG.CANVAS_HEIGHT_PX;
+
+    let estW = 300;
     if (codigo === 'logo' || codigo === 'qr_estudiante') estW = 110;
     if (codigo === 'foto_estudiante') estW = 120;
     if (codigo === 'titulo_colegio') estW = 400;
     if (codigo === 'lema_colegio') estW = 360;
     if (codigo === 'metadatos') estW = 500;
-    if (codigo === 'ficha' || codigo === 'calificaciones' || codigo === 'texto_certificacion' || codigo === 'linea') estW = canvasW - margenIzq - margenDer;
-    if (codigo === 'firmas') estW = canvasW - margenIzq - margenDer - 100;
-    
-    // Si el ancho calculado excede los márgenes permitidos, limitar al ancho máximo de la zona segura
-    const maxAnchoSeguro = canvasW - margenIzq - margenDer;
+    if (codigo === 'ficha' || codigo === 'calificaciones' || codigo === 'texto_certificacion' || codigo === 'linea') estW = canvasW - margenesPx.izquierdo - margenesPx.derecho;
+    if (codigo === 'firmas') estW = canvasW - margenesPx.izquierdo - margenesPx.derecho - 100;
+
+    const maxAnchoSeguro = canvasW - margenesPx.izquierdo - margenesPx.derecho;
     if (estW > maxAnchoSeguro) {
         estW = maxAnchoSeguro;
     }
-    
-    // Posicionamiento en el centro geométrico exacto del lienzo o según zona activa
-    const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
+
     const estH = codigo === 'foto_estudiante' ? 140 : (codigo === 'linea' ? 2 : 90);
+    const headerEndPx = mmToPixels(50);
+    const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
 
     if (x === undefined || y === undefined) {
-        x = Math.max(margenIzq, Math.round((canvasW - estW) / 2));
-        if (cabeceraAbierta) {
-            // Nace en la zona activa de cabecera (10mm = 38px)
+        x = Math.max(margenesPx.izquierdo, Math.round((canvasW - estW) / 2));
+        // Posición por defecto según zona activa
+        if (activeZone === 'header') {
             y = 38;
+        } else if (activeZone === 'footer') {
+            y = footerStartPx + 15;
         } else {
-            // Nace en la zona activa del cuerpo (Margen superior + 15px)
-            y = margenSup + 15;
+            y = margenesPx.superior + 15;
         }
     }
 
-    // Asegurar que respeta los límites de los márgenes reales
-    const maxLeft = Math.max(margenIzq, canvasW - margenDer - estW);
-    x = Math.max(margenIzq, Math.min(x, maxLeft));
-    
-    if (cabeceraAbierta) {
-        const maxTop = Math.max(margenSup, 250);
-        y = Math.max(38, Math.min(y, maxTop));
-        // Dejar el bloque desbloqueado pero marcar el cuerpo
-        wrapper.classList.remove('header-locked');
+    const maxLeft = Math.max(margenesPx.izquierdo, canvasW - margenesPx.derecho - estW);
+    x = Math.max(margenesPx.izquierdo, Math.min(x, maxLeft));
+
+    // Restricción de Y según zona
+    if (activeZone === 'header') {
+        y = Math.max(0, Math.min(y, headerEndPx - 10));
+    } else if (activeZone === 'footer') {
+        y = Math.max(footerStartPx, Math.min(y, UNIT_CONFIG.CANVAS_HEIGHT_PX - estH));
     } else {
-        y = Math.max(margenSup, y);
-        // Dejar el bloque desbloqueado pero marcar la cabecera
-        if (y < margenSup) {
-            wrapper.classList.add('header-locked');
-        }
+        y = Math.max(headerEndPx, Math.min(y, footerStartPx));
     }
-    
+
     x = Math.round(x);
     y = Math.round(y);
-    
+
     wrapper.style.left = x + 'px';
     wrapper.style.top = y + 'px';
     wrapper.style.width = estW + 'px';
-    
-    wrapper.dataset.left = x;
-    wrapper.dataset.top = y;
-    wrapper.dataset.width = estW;
+
+    wrapper.dataset.left_mm = pixelsToMm(x).toFixed(2);
+    wrapper.dataset.top_mm = pixelsToMm(y).toFixed(2);
+    wrapper.dataset.width_mm = pixelsToMm(estW).toFixed(2);
     
     if (codigo === 'linea') {
         wrapper.style.height = '1.5pt';
@@ -474,22 +501,28 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     const canvas = document.getElementById('canvas-builder');
     document.getElementById('canvas-empty-state')?.remove();
 
-    // 1. Usar la lógica nativa para construir la carcasa HTML interior
-    // Temporal hack to steal the generated HTML without appending to document
-    // We can just call insertarBloqueEnCanvas(jsonBlock.type) and then modify the LAST inserted element!
-    insertarBloqueEnCanvas(jsonBlock.type);
-    
+    const left_mm = parseFloat(jsonBlock.left_mm) || 10;
+    const top_mm = parseFloat(jsonBlock.top_mm) || 10;
+    const width_mm = jsonBlock.width_mm || null;
+    const zone = jsonBlock.zone || 'body';
+
+    const left_px = mmToPixels(left_mm);
+    const top_px = mmToPixels(top_mm);
+    const width_px = width_mm ? mmToPixels(width_mm) : null;
+
+    insertarBloqueEnCanvas(jsonBlock.type, null, left_px, top_px);
+
     const insertedNode = canvas.lastElementChild;
-    
-    // 2. Aplicar propiedades JSON
-    insertedNode.dataset.left = jsonBlock.left || '50';
-    insertedNode.dataset.top = jsonBlock.top || '50';
-    insertedNode.style.left = insertedNode.dataset.left + 'px';
-    insertedNode.style.top = insertedNode.dataset.top + 'px';
-    
-    if (jsonBlock.width) {
-        insertedNode.dataset.width = jsonBlock.width;
-        insertedNode.style.width = jsonBlock.width + 'px';
+
+    insertedNode.dataset.zone = zone;  // Restaurar zona
+    insertedNode.dataset.left_mm = left_mm.toFixed(2);
+    insertedNode.dataset.top_mm = top_mm.toFixed(2);
+    insertedNode.style.left = left_px + 'px';
+    insertedNode.style.top = top_px + 'px';
+
+    if (width_mm) {
+        insertedNode.dataset.width_mm = width_mm.toFixed(2);
+        insertedNode.style.width = width_px + 'px';
     }
     if (jsonBlock.height) {
         insertedNode.dataset.height = jsonBlock.height;
@@ -594,7 +627,9 @@ function chequearEmptyState() {
 
 // ---- LÓGICA DE VARIABLES DINÁMICAS (CLIC) ----
 
-let lastSavedRange = null;
+if (typeof lastSavedRange === 'undefined') {
+    var lastSavedRange = null;
+}
 
 // Guardar la selección cada vez que se interactúa con un área editable
 document.addEventListener('selectionchange', () => {
@@ -639,7 +674,7 @@ function insertarVariable(codigo, label) {
 
 // ---- PERSISTENCIA Y GUARDADO ----
 
-function guardarFormato(e) {
+async function guardarFormato(e) {
     e.preventDefault();
     
     const id = document.getElementById('formato-id').value;
@@ -657,114 +692,95 @@ function guardarFormato(e) {
         return;
     }
 
-    // COMPILAR EL HTML FINAL PARA EL BACKEND Y EL JSON ESTRUCTURADO
     let htmlCompilado = '';
     const configJson = [];
-    
+
     const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
     bloques.forEach(bloque => {
         const tipoBloque = bloque.dataset.bloque;
-        
+
         if (tipoBloque === 'texto') {
             const contenidoCaja = bloque.querySelector('.block-content-texto').cloneNode(true);
-            
-            // Normalizar y limpiar los chips visuales (.ares-variable-badge) para evitar corrupciones de estilos y atributos
+
             const chips = contenidoCaja.querySelectorAll('.ares-variable-badge');
             chips.forEach(chip => {
                 const varName = chip.dataset.var || '';
                 const labelText = chip.textContent.trim();
-                
-                // Remover cualquier basura inyectada por el navegador
                 chip.removeAttribute('style');
                 chip.removeAttribute('contenteditable');
-                
-                // Sello de integridad de atributos
                 chip.className = 'ares-variable-badge';
                 chip.setAttribute('data-var', varName);
                 chip.textContent = labelText;
             });
-            
-            const left = bloque.dataset.left || '50';
-            const top = bloque.dataset.top || '50';
-            
-            // Extraer el texto HTML final de este bloque
-            const width = bloque.dataset.width ? ` data-width="${bloque.dataset.width}"` : '';
-            const height = bloque.dataset.height ? ` data-height="${bloque.dataset.height}"` : '';
-            const align = 'justify';
-            htmlCompilado += `<div class="bloque-texto" data-left="${left}" data-top="${top}"${width}${height} data-align="${align}">${contenidoCaja.innerHTML}</div><br>`;
-            
-            // Guardar en JSON (Taxonomía Data-Driven)
+
+            const left_mm = parseFloat(bloque.dataset.left_mm) || 10;
+            const top_mm = parseFloat(bloque.dataset.top_mm) || 10;
+            const width_mm = bloque.dataset.width_mm ? parseFloat(bloque.dataset.width_mm) : null;
+            const height_mm = bloque.dataset.height ? parseFloat(bloque.dataset.height) : null;
+
+            const widthAttr = width_mm !== null ? ` data-width_mm="${width_mm}"` : '';
+            const heightAttr = height_mm !== null ? ` data-height="${height_mm}"` : '';
+            const styleAttrs = `style="position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${height_mm !== null ? `height:${height_mm}mm;` : ''}"`;
+            htmlCompilado += `<div class="bloque-texto" data-left_mm="${left_mm}" data-top_mm="${top_mm}"${widthAttr}${heightAttr} ${styleAttrs}>${contenidoCaja.innerHTML}</div><br>`;
+
             configJson.push({
                 type: 'texto',
-                left: left,
-                top: top,
-                width: bloque.dataset.width || null,
-                height: bloque.dataset.height || null,
-                align: align,
+                zone: bloque.dataset.zone || 'body',
+                left_mm: left_mm,
+                top_mm: top_mm,
+                width_mm: width_mm,
+                height: height_mm,
                 content: contenidoCaja.innerHTML
             });
-            
+
         } else {
-            // Para bloques avanzados, generar el div bloque-avanzado que el backend reconoce
             const htmlBackend = bloque.querySelector('.bloque-backend-html');
             if(htmlBackend) {
                 const tipo = htmlBackend.dataset.type;
                 const innerTag = htmlBackend.innerHTML;
-                const left = bloque.dataset.left || '50';
-                const top = bloque.dataset.top || '50';
-                
-                // Determinar el ancho correcto para evitar duplicidad de data-width
-                let wVal = bloque.dataset.width;
-                if (tipo === 'logo') {
-                    const img = bloque.querySelector('.ares-logo-cabecera');
-                    wVal = img ? img.getAttribute('width') : (bloque.dataset.width || '120');
-                    // Sincronizar el dataset para que el JSON quede idéntico
-                    bloque.dataset.width = wVal;
-                }
+                const left_mm = parseFloat(bloque.dataset.left_mm) || 10;
+                const top_mm = parseFloat(bloque.dataset.top_mm) || 10;
+                const width_mm = bloque.dataset.width_mm ? parseFloat(bloque.dataset.width_mm) : null;
 
-                let extraAttrs = ` data-left="${left}" data-top="${top}"`;
-                if (wVal) extraAttrs += ` data-width="${wVal}"`;
+                let extraAttrs = ` data-left_mm="${left_mm}" data-top_mm="${top_mm}"`;
+                if (width_mm !== null) extraAttrs += ` data-width_mm="${width_mm}"`;
                 if (bloque.dataset.height) extraAttrs += ` data-height="${bloque.dataset.height}"`;
-                if (bloque.dataset.scale) extraAttrs += ` data-scale="${bloque.dataset.scale}"`;
-                
+
+                const stylePos = `position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${bloque.dataset.height ? `height:${bloque.dataset.height}mm;` : ''}`;
+
+                const jsonBlock = {
+                    type: tipo,
+                    zone: bloque.dataset.zone || 'body',
+                    left_mm: left_mm,
+                    top_mm: top_mm,
+                    width_mm: width_mm,
+                    height: bloque.dataset.height || null,
+                    size: bloque.dataset.size || null,
+                    content: bloque.querySelector('.block-content-wysiwyg') ? bloque.querySelector('.block-content-wysiwyg').innerHTML : null
+                };
+
                 if (tipo === 'titulo_colegio') {
                     const size = bloque.dataset.size || '20';
                     extraAttrs += ` data-size="${size}"`;
                 } else if (tipo === 'metadatos') {
                     const size = bloque.dataset.size || '16';
                     extraAttrs += ` data-size="${size}"`;
-                } else if (tipo === 'calificaciones') {
+                }
+
+                // Configs específicas que usamos
+                if (tipo === 'calificaciones') {
                     const diseno = bloque.dataset.diseno || 'elite';
                     const filtro = bloque.dataset.filtro || 'todas';
                     const columnas = bloque.dataset.columnas || 'materia,docente,definitiva,estado';
                     extraAttrs += ` data-diseno="${diseno}" data-filtro="${filtro}" data-columnas="${columnas}"`;
+                    jsonBlock.diseno = diseno;
+                    jsonBlock.filtro = filtro;
+                    jsonBlock.columnas = columnas;
                 } else if (tipo === 'firmas') {
                     const columnas = bloque.getAttribute('data-columnas') || bloque.dataset.columnas || '3';
                     extraAttrs += ` data-columnas="${columnas}"`;
-                }
-                htmlCompilado += `<div class="bloque-avanzado" data-tipo="${tipo}"${extraAttrs}>${innerTag}</div><br>`;
-                
-                // Guardar en JSON
-                const jsonBlock = {
-                    type: tipo,
-                    left: left,
-                    top: top,
-                    width: bloque.dataset.width || null,
-                    height: bloque.dataset.height || null,
-                    scale: bloque.dataset.scale || null,
-                    size: bloque.dataset.size || null,
-                    content: bloque.querySelector('.block-content-wysiwyg') ? bloque.querySelector('.block-content-wysiwyg').innerHTML : null
-                };
-                
-                // Configs específicas que usamos
-                if (tipo === 'calificaciones') {
-                    jsonBlock.diseno = bloque.dataset.diseno || 'elite';
-                    jsonBlock.filtro = bloque.dataset.filtro || 'todas';
-                    jsonBlock.columnas = bloque.getAttribute('data-columnas') || bloque.dataset.columnas || 'materia,docente,definitiva,estado';
-                } else if (tipo === 'firmas') {
-                    const columnas = bloque.getAttribute('data-columnas') || bloque.dataset.columnas || '3';
                     jsonBlock.columnas = columnas;
-                    
+
                     // Extraer los textos específicos escritos en caliente por el usuario desde los firma-item-canvas
                     const fData = [];
                     bloque.querySelectorAll('.dynamic-firmas-container .firma-item-canvas').forEach(div => {
@@ -775,6 +791,8 @@ function guardarFormato(e) {
                     });
                     jsonBlock.firmas_data = fData;
                 }
+
+                htmlCompilado += `<div class="bloque-avanzado" data-tipo="${tipo}"${extraAttrs} style="${stylePos}">${innerTag}</div><br>`;
                 configJson.push(jsonBlock);
             }
         }
@@ -783,62 +801,68 @@ function guardarFormato(e) {
     const tipoDocumento = document.getElementById('formato-tipo-documento')?.value || 'matricula';
     const tamanoLienzo = document.getElementById('formato-tamano-lienzo')?.value || 'carta';
 
+    const margenesMm = getMargensInMilimeters();
+
+    // Agregar datos de zonas al JSON
+    const zonesData = {
+        header_limit_mm: parseFloat(canvas.dataset.zoneHeaderMm || 50),
+        footer_limit_mm: parseFloat(canvas.dataset.zoneFooterMm || 219.4)
+    };
+
     const formData = new FormData();
     formData.append('action', 'guardar');
     formData.append('id', id);
     formData.append('nombre', nombre);
     formData.append('descripcion', descripcion);
-    formData.append('margen_superior', margen_superior);
-    formData.append('margen_inferior', margen_inferior);
-    formData.append('margen_izquierdo', margen_izquierdo);
-    formData.append('margen_derecho', margen_derecho);
+    formData.append('margen_superior', margenesMm.superior);
+    formData.append('margen_inferior', margenesMm.inferior);
+    formData.append('margen_izquierdo', margenesMm.izquierdo);
+    formData.append('margen_derecho', margenesMm.derecho);
     formData.append('tipo_documento', tipoDocumento);
     formData.append('tamano_lienzo', tamanoLienzo);
     formData.append('contenido_html', htmlCompilado);
     formData.append('configuracion_json', JSON.stringify(configJson));
+    formData.append('zonas_config', JSON.stringify(zonesData));
     formData.append('csrf_token', window.CSRF_TOKEN || '');
 
+    const canvasBuilder = document.getElementById('canvas-builder');
+    const canvasWidth = canvasBuilder.offsetWidth;
+    const canvasHeight = canvasBuilder.offsetHeight;
+
+
     try {
-        const res = await fetch('logica/formatos_ajax.php', {
+        const res = await fetch('/sistema_escolar/php/logica/formatos_ajax.php', {
             method: 'POST',
             body: formData
         });
 
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+
         const data = await res.json();
 
         if (data.status === 'success') {
-            await Swal.fire('¡Éxito!', data.message, 'success');
-            // Actualizar DOM para reflejar el cambio sin recargar la página
-            if (typeof navegarModulo === 'function') {
-                navegarModulo('formatos&success=guardado&id=' + (id || ''));
-            } else {
-                // Refrescar lista de formatos dinámicamente
-                const listaFormatos = document.querySelector('.formatos-list-container');
-                if (listaFormatos) {
-                    listaFormatos.innerHTML = data.html || '';
+            Swal.fire('¡Éxito!', data.message, 'success').then(() => {
+                window.forceRefreshElite = true;
+                if (typeof navegarModulo === 'function') {
+                    navegarModulo('formatos_matricula');
+                } else {
+                    location.reload();
                 }
-            }
+            });
         } else {
-            Swal.fire('Error', data.message, 'error');
+            Swal.fire('Error', data.message || 'Error desconocido', 'error');
         }
     } catch (err) {
-        Swal.fire('Error', 'No se pudo guardar la plantilla.', 'error');
+        console.error('Error al guardar:', err);
+        Swal.fire('Error', 'No se pudo guardar la plantilla: ' + err.message, 'error');
     }
 }
 
 // ---- CONTROL DE ARRASTRE ABSOLUTO (DRAG & POSITION) ----
-let bloqueArrastrando = null;
-function obtenerEscalaLienzo(canvas) {
-    if (!canvas) return 1;
-    const rect = canvas.getBoundingClientRect();
-    if (canvas.offsetWidth > 0 && rect.width > 0) {
-        return rect.width / canvas.offsetWidth;
-    }
-    const computedZoom = parseFloat(window.getComputedStyle(canvas).zoom);
-    if (!isNaN(computedZoom) && computedZoom > 0) {
-        return computedZoom;
-    }
-    return 1;
+if (typeof bloqueArrastrando === 'undefined') {
+    var bloqueArrastrando = null;
 }
 
 function iniciarArrastreBloque(e) {
@@ -854,13 +878,10 @@ function iniciarArrastreBloque(e) {
     }
     
     bloqueArrastrando = this;
-    const canvas = document.getElementById('canvas-builder');
-    const zoomFactor = obtenerEscalaLienzo(canvas);
     const rect = bloqueArrastrando.getBoundingClientRect();
-    
-    // Normalizar offset exactamente a coordenadas unscaled
-    offsetX = (e.clientX - rect.left) / zoomFactor;
-    offsetY = (e.clientY - rect.top) / zoomFactor;
+
+    offsetX = (e.clientX - rect.left);
+    offsetY = (e.clientY - rect.top);
     
     bloqueArrastrando.classList.add('dragging');
     
@@ -870,59 +891,43 @@ function iniciarArrastreBloque(e) {
 
 function arrastrarBloque(e) {
     if (!bloqueArrastrando) return;
-    
+
     const canvas = document.getElementById('canvas-builder');
     const canvasRect = canvas.getBoundingClientRect();
-    const zoomFactor = obtenerEscalaLienzo(canvas);
-    
-    // Obtener márgenes reales
-    const factorMmPx = 3.78;
-    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
-    const margenInf = Math.round((parseFloat(document.getElementById('formato-margen-inferior').value) || 20) * factorMmPx);
-    const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factorMmPx);
-    const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factorMmPx);
-    
-    let left = ((e.clientX - canvasRect.left) / zoomFactor) - offsetX;
-    let top = ((e.clientY - canvasRect.top) / zoomFactor) - offsetY;
-    
-    // Ancho y alto del bloque actual
+
+    const margenesPx = getMargensInPixels();
+    const headerEndPx = mmToPixels(50);
+    const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
+
+    let left = (e.clientX - canvasRect.left) - offsetX;
+    let top = (e.clientY - canvasRect.top) - offsetY;
+
     const blockW = bloqueArrastrando.offsetWidth;
     const blockH = bloqueArrastrando.offsetHeight;
-    
-    // Restricciones de Márgenes Dinámicos según zona activa
-    const cabeceraAbierta = document.getElementById('switch-edicion-cabecera')?.checked;
-    const minLeft = margenIzq;
-    const maxLeft = Math.max(margenIzq, canvas.offsetWidth - margenDer - blockW);
-    
-    // Si el bloque es de margen a margen (ancho del bloque es >= 95% del ancho seguro), anclar en minLeft
-    const anchoZonaSegura = canvas.offsetWidth - margenIzq - margenDer;
-    if (blockW >= anchoZonaSegura - 10) {
-        left = minLeft;
-    } else {
-        left = Math.max(minLeft, Math.min(left, maxLeft));
+
+    const minLeft = margenesPx.izquierdo;
+    const maxLeft = Math.max(margenesPx.izquierdo, canvas.offsetWidth - margenesPx.derecho - blockW);
+
+    left = Math.max(minLeft, Math.min(left, maxLeft));
+    top = Math.max(0, top);
+
+    // Actualizar zona automáticamente según posición Y
+    let newZone = 'body';
+    if (top < headerEndPx) {
+        newZone = 'header';
+    } else if (top > footerStartPx) {
+        newZone = 'footer';
     }
-    
-    let minTop = margenSup;
-    
-    if (cabeceraAbierta) {
-        // En modo Cabecera abierta, nos movemos en la franja superior (1cm = 38px hasta un área razonable de 250px para dar espacio)
-        minTop = 38;
-        const maxTop = Math.max(margenSup, 250); 
-        top = Math.max(minTop, Math.min(top, maxTop));
-    } else {
-        // En modo Cabecera cerrada en el Diseñador, permitimos arrastre vertical libre hacia abajo (lienzo infinito)
-        top = Math.max(minTop, top);
-    }
-    
+    bloqueArrastrando.dataset.zone = newZone;
+
     left = Math.round(left);
     top = Math.round(top);
-    
+
     bloqueArrastrando.style.left = left + 'px';
     bloqueArrastrando.style.top = top + 'px';
-    bloqueArrastrando.dataset.left = left;
-    bloqueArrastrando.dataset.top = top;
+    bloqueArrastrando.dataset.left_mm = pixelsToMm(left).toFixed(2);
+    bloqueArrastrando.dataset.top_mm = pixelsToMm(top).toFixed(2);
 
-    // Estirar el papel del lienzo dinámicamente si el bloque se arrastra hacia abajo
     ajustarAlturaLienzo();
 }
 
@@ -949,28 +954,21 @@ function iniciarRedimension(e, handleType, targetWrapper) {
     const startLeft = parseFloat(wrapper.style.left) || 0;
     const startTop = parseFloat(wrapper.style.top) || 0;
     
-    // Guardar escala absoluta de inicio de este arrastre
-    wrapper.dataset.startAbsoluteScale = wrapper.dataset.scale || "1.0";
-
-    // Capturar TODOS los nodos visuales para asegurar que no se nos escape ningún tag (como <font> o <div> internos)
     const wysiwygNodes = Array.from(wrapper.querySelectorAll('.block-content-wysiwyg, .block-content-wysiwyg *')).filter(n => !n.classList?.contains('bloque-backend-html'));
     wysiwygNodes.forEach(node => {
         if (!node.dataset.baseFontSize) {
             node.dataset.baseFontSize = parseFloat(window.getComputedStyle(node).fontSize) || 14;
         }
     });
-    
+
     const canvas = document.getElementById('canvas-builder');
-    const zoomFactor = obtenerEscalaLienzo(canvas);
-    
+
     function redimensionar(moveEvent) {
-        const dx = (moveEvent.clientX - startX) / zoomFactor;
-        const dy = (moveEvent.clientY - startY) / zoomFactor;
-        
-        const canvas = document.getElementById('canvas-builder');
-        const factorMmPx = 3.78;
-        const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factorMmPx);
-        const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factorMmPx);
+        const dx = (moveEvent.clientX - startX);
+        const dy = (moveEvent.clientY - startY);
+
+        const margenIzq = parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20;
+        const margenDer = parseFloat(document.getElementById('formato-margen-derecho').value) || 20;
         const canvasW = canvas.offsetWidth || 816;
         
         const maxRightPos = canvasW - margenDer;
@@ -1024,25 +1022,16 @@ function iniciarRedimension(e, handleType, targetWrapper) {
         const startAbsoluteScale = parseFloat(wrapper.dataset.startAbsoluteScale) || 1.0;
         const absoluteScale = startAbsoluteScale * deltaScale;
         
+        const scaleRatio = newWidth / startWidth;
         wysiwygNodes.forEach(node => {
             const baseSize = parseFloat(node.dataset.baseFontSize);
-            const newSize = Math.max(4, baseSize * absoluteScale);
+            const newSize = Math.max(4, baseSize * scaleRatio);
             node.style.setProperty('font-size', newSize + 'px', 'important');
-            node.style.whiteSpace = 'nowrap'; // Evitar corte de palabra
-            node.style.lineHeight = '1.2';
         });
-        
-        wrapper.dataset.scale = absoluteScale;
-        
-        const wysiwyg = wrapper.querySelector('.block-content-wysiwyg');
-        if (wysiwyg) {
-            wysiwyg.style.whiteSpace = 'nowrap';
-        }
 
         wrapper.style.width = newWidth + 'px';
-        wrapper.style.height = 'auto'; // Altura dinámica al contenido
-        wrapper.dataset.width = Math.round(newWidth);
-        wrapper.dataset.height = '';
+        wrapper.style.height = 'auto';
+        wrapper.dataset.width_mm = pixelsToMm(newWidth).toFixed(2);
         
         // Estirar el papel del lienzo dinámicamente si el bloque al redimensionarse crece verticalmente
         ajustarAlturaLienzo();
@@ -1076,8 +1065,12 @@ function agregarNodosRedimension(wrapper) {
 // 🚀 CATÁLOGO DE CAMPOS Y ESTRUCTURAS EN MODAL
 // ==========================================
 
-let activeRangeBeforeModal = null;
-let activeEditableBeforeModal = null;
+if (typeof activeRangeBeforeModal === 'undefined') {
+    var activeRangeBeforeModal = null;
+}
+if (typeof activeEditableBeforeModal === 'undefined') {
+    var activeEditableBeforeModal = null;
+}
 
 function abrirCatalogoVariables() {
     const selection = window.getSelection();
@@ -1228,14 +1221,13 @@ function actualizarZonaSeguraLienzo() {
     const canvas = document.getElementById('canvas-builder');
     if (!canvas) return;
 
-    // Remover guía anterior
     canvas.querySelector('.ares-safe-zone-guide')?.remove();
 
-    const factorMmPx = 3.78;
-    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
-    const margenInf = Math.round((parseFloat(document.getElementById('formato-margen-inferior').value) || 20) * factorMmPx);
-    const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factorMmPx);
-    const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factorMmPx);
+    const factor = 3.78;
+    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factor);
+    const margenInf = Math.round((parseFloat(document.getElementById('formato-margen-inferior').value) || 20) * factor);
+    const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factor);
+    const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factor);
 
     // Altura base física de una hoja Carta (1056px)
     const alturaPapelCarta = 1056;
@@ -1280,44 +1272,6 @@ function actualizarZonaSeguraLienzo() {
     cutLine.appendChild(labelCut);
 
     canvas.appendChild(cutLine);
-}
-
-function alternarBloqueoCabecera(abierto) {
-    const canvas = document.getElementById('canvas-builder');
-    if (!canvas) return;
-
-    const factorMmPx = 3.78;
-    // El membrete va desde 1 cm (38px) hasta el inicio del Margen Superior
-    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
-
-    const label = document.getElementById('switch-cabecera-label');
-    if (label) {
-        label.className = abierto ? 'small fw-bold text-uppercase text-primary m-0 cursor-pointer' : 'small fw-bold text-uppercase text-secondary m-0 cursor-pointer';
-    }
-
-    const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
-    bloques.forEach(bloque => {
-        const topVal = parseFloat(bloque.style.top) || 0;
-        
-        // Bloqueo Cruzado exacto
-        if (topVal < margenSup) {
-            // Zona de Cabecera / Membrete
-            if (abierto) {
-                bloque.classList.remove('header-locked');
-            } else {
-                bloque.classList.add('header-locked');
-                bloque.classList.remove('selected');
-            }
-        } else {
-            // Zona del Cuerpo del Documento
-            if (abierto) {
-                bloque.classList.add('body-locked');
-                bloque.classList.remove('selected');
-            } else {
-                bloque.classList.remove('body-locked');
-            }
-        }
-    });
 }
 
 function actualizarBloqueFirmasCanvas(bloque, numColumnas, dataHeredada) {
@@ -1434,3 +1388,139 @@ document.addEventListener('paste', function(e) {
         document.execCommand('insertText', false, text);
     }
 });
+
+// ════════════════════════════════════════════════════════════════════════════════════════
+// 📍 SISTEMA DE 3 ZONAS - Header, Body, Footer con toggle doble click
+// ════════════════════════════════════════════════════════════════════════════════════════
+
+let activeZone = 'body';  // 'header', 'body', 'footer'
+let zoneOverlays = {
+    header: null,
+    body: null,
+    footer: null
+};
+
+function canvasDobleClick(e) {
+    const wrapper = e.target.closest('.canvas-block-wrapper');
+    if (wrapper) return;
+
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const clickY = e.clientY - rect.top;
+    const margenes = getMargensInPixels();
+    const headerEndPx = mmToPixels(50);
+    const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
+
+    let targetZone = 'body';
+    if (clickY < headerEndPx) {
+        targetZone = 'header';
+    } else if (clickY > footerStartPx) {
+        targetZone = 'footer';
+    }
+
+    // Toggle: si la zona está activa, desactivar; si no, activar
+    if (activeZone === targetZone) {
+        activeZone = 'body';
+    } else {
+        activeZone = targetZone;
+    }
+
+    updateZonesUI();
+}
+
+function updateZonesUI() {
+    const canvas = document.getElementById('canvas-builder');
+    const headerEndPx = mmToPixels(50);
+    const footerStartPx = UNIT_CONFIG.CANVAS_HEIGHT_PX - mmToPixels(60);
+
+    // Remover overlays anteriores
+    Object.values(zoneOverlays).forEach(ol => ol?.remove());
+    zoneOverlays = { header: null, body: null, footer: null };
+
+    canvas.style.position = 'relative';
+
+    // Crear overlay para zona ACTIVA
+    const createOverlay = (zone, top, height, bgColor, label) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'zone-overlay';
+        overlay.dataset.zone = zone;
+        overlay.style.cssText = `
+            position: absolute;
+            top: ${top}px;
+            left: 0;
+            width: 100%;
+            height: ${height}px;
+            background: ${bgColor};
+            z-index: 500;
+            border: 2px dashed var(--el-border-color, #ccc);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        const label_el = document.createElement('span');
+        label_el.style.cssText = `
+            background: var(--el-dark-overlay, rgba(0,0,0,0.7));
+            color: var(--el-white);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            pointer-events: none;
+        `;
+        label_el.textContent = label;
+        overlay.appendChild(label_el);
+
+        return overlay;
+    };
+
+    // Header overlay (si está activo)
+    if (activeZone === 'header') {
+        const headerOverlay = createOverlay('header', 0, headerEndPx, 'rgba(231, 76, 60, 0.15)', 'MEMBRETE ACTIVO');
+        canvas.appendChild(headerOverlay);
+        zoneOverlays.header = headerOverlay;
+    }
+
+    // Body overlay (si está activo O si es la única zona)
+    if (activeZone === 'body' || activeZone === 'body') {
+        const bodyHeight = footerStartPx - headerEndPx;
+        const bodyOverlay = activeZone === 'body'
+            ? createOverlay('body', headerEndPx, bodyHeight, 'rgba(255, 255, 255, 0)', '')
+            : null;
+        if (bodyOverlay) {
+            canvas.appendChild(bodyOverlay);
+            zoneOverlays.body = bodyOverlay;
+        }
+    }
+
+    // Footer overlay (si está activo)
+    if (activeZone === 'footer') {
+        const footerOverlay = createOverlay('footer', footerStartPx, UNIT_CONFIG.CANVAS_HEIGHT_PX - footerStartPx, 'rgba(52, 152, 219, 0.15)', 'PIE DE PÁGINA ACTIVO');
+        canvas.appendChild(footerOverlay);
+        zoneOverlays.footer = footerOverlay;
+    }
+
+    // Mostrar/ocultar bloques según zona activa
+    document.querySelectorAll('.canvas-block-wrapper').forEach(bloque => {
+        const bloqueZone = bloque.dataset.zone || 'body';
+        const isActive = (activeZone === 'body' && bloqueZone === 'body') ||
+                         (activeZone === 'header' && bloqueZone === 'header') ||
+                         (activeZone === 'footer' && bloqueZone === 'footer');
+
+        // Remover clases de bloqueo antiguas
+        bloque.classList.remove('header-locked', 'body-locked');
+
+        if (isActive) {
+            // Zona activa: completamente visible y editable
+            bloque.style.opacity = '';
+            bloque.style.pointerEvents = 'auto';
+        } else {
+            // Zona inactiva: aplicar clase de atenuación
+            bloque.classList.add('header-locked');
+            bloque.style.pointerEvents = 'none';
+        }
+    });
+}

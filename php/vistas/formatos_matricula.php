@@ -110,11 +110,10 @@ if (empty($school_logo)) {
                             </div>
                         </div>
                         <div class="d-flex gap-2 align-items-center">
-                            <!-- Checkbox Control Cabecera -->
-                            <div class="d-flex align-items-center gap-2 user-select-none me-3">
-                                <label class="small fw-bold text-uppercase text-secondary m-0 cursor-pointer" for="switch-edicion-cabecera" id="switch-cabecera-label">Editar Membrete</label>
-                                <input class="form-check-input input-checkbox-elite m-0" type="checkbox" id="switch-edicion-cabecera" onchange="if(typeof alternarBloqueoCabecera === 'function') alternarBloqueoCabecera(this.checked);">
-                            </div>
+                            <!-- Editar Zonas: Doble click en canvas -->
+                            <small class="text-muted fw-normal d-none d-lg-inline me-2">
+                                💡 Doble click en canvas para editar membrete, cuerpo y pie
+                            </small>
                             <button type="button" class="btn-elite btn-elite--outline" onclick="abrirCatalogoVariables()">
                                 <i class="bi bi-tag-fill me-1 text-primary"></i> Insertar Campo...
                             </button>

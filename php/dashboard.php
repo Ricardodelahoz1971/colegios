@@ -243,7 +243,7 @@ if (isset($_GET['raw'])) {
 
     <!-- 3. MÓDULOS ESPECÍFICOS (Estructura Local) -->
     <link rel="stylesheet" href="../styles/modules/layout.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="../styles/modules/sidebar.css?v=<?php echo time(); ?>">
+    <!-- <link rel="stylesheet" href="../styles/modules/sidebar.css?v=<?php echo time(); ?>"> -->
     <link rel="stylesheet" href="../styles/modules/mensajeria.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../styles/modules/agenda.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="../styles/modules/zulu.css?v=<?php echo time(); ?>">

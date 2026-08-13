@@ -38,7 +38,9 @@ function abrirReferenciaCatalogo() {
     modalRef.show();
 }
 
-let activeConfigNode = null;
+if (typeof activeConfigNode === 'undefined') {
+    var activeConfigNode = null;
+}
 
 function abrirConfiguracionBloque(idUnico) {
     activeConfigNode = document.getElementById(idUnico);
@@ -166,10 +168,6 @@ function prepararNuevoFormato() {
     document.getElementById('formato-tamano-lienzo').value = 'carta';
     if (typeof cambiarTamanoLienzoBuilder === 'function') cambiarTamanoLienzoBuilder('carta');
     
-    // Asegurar que el checkbox se resetee a desmarcado (membrete cerrado)
-    const checkCabecera = document.getElementById('switch-edicion-cabecera');
-    if (checkCabecera) checkCabecera.checked = false;
-    
     const canvas = document.getElementById('canvas-builder');
     if(canvas) {
         if (typeof initFormatosBuilder === 'function') initFormatosBuilder();
@@ -200,7 +198,7 @@ function editarFormato(id) {
     formData.append('id', id);
     formData.append('csrf_token', window.CSRF_TOKEN || '');
 
-    fetch('logica/formatos_ajax.php', { method: 'POST', body: formData })
+    fetch('/sistema_escolar/php/logica/formatos_ajax.php', { method: 'POST', body: formData })
         .then(res => res.json())
         .then(res => {
             if (res.status === 'success') {
@@ -223,20 +221,23 @@ function editarFormato(id) {
                 if (typeof initFormatosBuilder === 'function') initFormatosBuilder();
                 
                 canvas.innerHTML = '';
-                
-                // Asegurar que el checkbox se resetee a desmarcado (membrete cerrado) antes de cargar
-                const checkCabecera = document.getElementById('switch-edicion-cabecera');
-                if (checkCabecera) checkCabecera.checked = false;
-                
+
                 if (res.data.configuracion_json) {
                     try {
-                        const blocks = JSON.parse(res.data.configuracion_json);
+                        const blocks = Array.isArray(res.data.configuracion_json)
+                            ? res.data.configuracion_json
+                            : JSON.parse(res.data.configuracion_json);
                         blocks.forEach(block => {
                             insertarBloqueDesdeJSON(block);
                         });
                         if (typeof ajustarAlturaLienzo === 'function') ajustarAlturaLienzo();
-                        // Forzar el bloqueo del membrete sobre todos los bloques ya renderizados
-                        if (typeof alternarBloqueoCabecera === 'function') alternarBloqueoCabecera(false);
+
+                        // Cargar zonas si existen
+                        if (res.data.zonas_config) {
+                            const zonas = typeof res.data.zonas_config === 'string' ? JSON.parse(res.data.zonas_config) : res.data.zonas_config;
+                            canvas.dataset.zoneHeaderMm = zonas.header_limit_mm || 50;
+                            canvas.dataset.zoneFooterMm = zonas.footer_limit_mm || 219.4;
+                        }
                     } catch(e) {
                         canvas.innerHTML = '<div class="alert alert-danger m-4">Error al cargar la plantilla (JSON Invalido).</div>';
                     }
@@ -286,7 +287,7 @@ function eliminarFormato(id) {
             formData.append('id', id);
             formData.append('csrf_token', window.CSRF_TOKEN || '');
 
-            fetch('logica/formatos_ajax.php', { method: 'POST', body: formData })
+            fetch('/sistema_escolar/php/logica/formatos_ajax.php', { method: 'POST', body: formData })
             .then(res => res.json())
             .then(async (res) => {
                 if (res.status === 'success') {
