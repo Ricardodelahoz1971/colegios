@@ -514,7 +514,14 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     const width_px = width_mm ? mmToPixels(width_mm) : null;
     const height_px = height_mm ? mmToPixels(height_mm) : null;
 
+    // Guardar el activeZone actual y establecer al zone del bloque temporalmente
+    const previousActiveZone = activeZone;
+    activeZone = jsonBlock.zone || 'body';
+    
     insertarBloqueEnCanvas(jsonBlock.type, null, left_px, top_px);
+    
+    // Restaurar el activeZone original
+    activeZone = previousActiveZone;
 
     const insertedNode = canvas.lastElementChild;
 
