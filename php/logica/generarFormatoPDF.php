@@ -5,7 +5,10 @@ require_once __DIR__ . '/../auth.php';
 guardia_sesion();
 session_write_close();
 
+require_once __DIR__ . '/../../assets/libs/tcpdf/tcpdf_autoconfig.php';
 require_once __DIR__ . '/../../assets/libs/tcpdf/tcpdf.php';
+
+use Com\Tecnick\Pdf\Tcpdf;
 
 $estudiante_id = (int)($_GET['estudiante_id'] ?? 0);
 $formato_id = (int)($_GET['formato_id'] ?? 0);
@@ -76,7 +79,7 @@ $html = <<<EOF
 EOF;
 
 // 5. Crear PDF con TCPDF
-$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+$pdf = new Tcpdf('P', 'mm', 'A4', true, 'UTF-8', false);
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 $pdf->SetMargins(0, 0, 0);
 $pdf->SetAutoPageBreak(false, 0);
