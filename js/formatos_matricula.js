@@ -167,7 +167,10 @@ function prepararNuevoFormato() {
     document.getElementById('formato-tipo-documento').value = 'matricula';
     document.getElementById('formato-tamano-lienzo').value = 'carta';
     if (typeof cambiarTamanoLienzoBuilder === 'function') cambiarTamanoLienzoBuilder('carta');
-    
+
+    // Resetear zona activa a CUERPO (body)
+    activeZone = 'body';
+
     const canvas = document.getElementById('canvas-builder');
     if(canvas) {
         if (typeof initFormatosBuilder === 'function') initFormatosBuilder();
@@ -180,7 +183,7 @@ function prepararNuevoFormato() {
                 <p class="small text-muted mt-1">Arrastre los bloques desde el panel izquierdo hacia este documento</p>
             </div>
         `;
-        // Limpiar estado
+        if (typeof updateZonesUI === 'function') updateZonesUI();
     }
 }
 
@@ -212,14 +215,17 @@ function editarFormato(id) {
                 document.getElementById('formato-margen-derecho').value = res.data.margen_derecho || 20;
                 document.getElementById('formato-tipo-documento').value = res.data.tipo_documento || 'matricula';
                 document.getElementById('formato-tamano-lienzo').value = res.data.tamano_lienzo || 'carta';
-                
+
+                // Resetear zona activa a CUERPO (body)
+                activeZone = 'body';
+
                 if (typeof cambiarTamanoLienzoBuilder === 'function') {
                     cambiarTamanoLienzoBuilder(res.data.tamano_lienzo || 'carta');
                 }
-                
+
                 const canvas = document.getElementById('canvas-builder');
                 if (typeof initFormatosBuilder === 'function') initFormatosBuilder();
-                
+
                 canvas.innerHTML = '';
 
                 if (res.data.configuracion_json) {
@@ -232,18 +238,14 @@ function editarFormato(id) {
                         });
                         if (typeof ajustarAlturaLienzo === 'function') ajustarAlturaLienzo();
 
-                        // Resetear zona activa a 'body' después de cargar
-                        if (typeof toggleZoneEditMode === 'function') {
-                            activeZone = 'body';
-                            updateZonesUI();
-                        }
-
                         // Cargar zonas si existen
                         if (res.data.zonas_config) {
                             const zonas = typeof res.data.zonas_config === 'string' ? JSON.parse(res.data.zonas_config) : res.data.zonas_config;
                             canvas.dataset.zoneHeaderMm = zonas.header_limit_mm || 50;
                             canvas.dataset.zoneFooterMm = zonas.footer_limit_mm || 219.4;
                         }
+
+                        if (typeof updateZonesUI === 'function') updateZonesUI();
                     } catch(e) {
                         canvas.innerHTML = '<div class="alert alert-danger m-4">Error al cargar la plantilla (JSON Invalido).</div>';
                     }

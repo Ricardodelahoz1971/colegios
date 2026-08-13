@@ -130,7 +130,7 @@ function canvasDrop(e) {
 
         // Validar que el drop esté en la zona activa
         if (activeZone !== 'body' && dropZone !== activeZone) {
-            const zoneName = activeZone === 'header' ? 'MEMBRETE' : 'PIE DE PÁGINA';
+            const zoneName = activeZone === 'header' ? 'CABECERA' : 'PIE DE PÁGINA';
             Swal.fire({
                 icon: 'warning',
                 title: 'Zona Bloqueada',
@@ -1495,7 +1495,7 @@ function updateZonesUI() {
 
     // Header overlay (si está activo)
     if (activeZone === 'header') {
-        const headerOverlay = createOverlay('header', 0, headerEndPx, 'rgba(231, 76, 60, 0.15)', 'MEMBRETE ACTIVO');
+        const headerOverlay = createOverlay('header', 0, headerEndPx, 'rgba(231, 76, 60, 0.15)', 'CABECERA ACTIVA');
         canvas.appendChild(headerOverlay);
         zoneOverlays.header = headerOverlay;
     }
