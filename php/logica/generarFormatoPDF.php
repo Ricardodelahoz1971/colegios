@@ -85,7 +85,7 @@ HTML;
     $pdf->SetMargins(0, 0, 0);
     $pdf->SetAutoPageBreak(false, 0);
     $pdf->AddPage('P', 'A4');
-    $pdf->SetFont('Arial', '', 11);
+    $pdf->SetFont('helvetica', '', 11);
     $pdf->writeHTML($html_document, true, false, true, false, '');
 
     $filename = 'matricula_' . $estudiante_id . '_' . time() . '.pdf';
