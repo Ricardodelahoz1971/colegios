@@ -501,32 +501,36 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     const canvas = document.getElementById('canvas-builder');
     document.getElementById('canvas-empty-state')?.remove();
 
-    const left_mm = parseFloat(jsonBlock.left_mm) || 10;
-    const top_mm = parseFloat(jsonBlock.top_mm) || 10;
-    const width_mm = jsonBlock.width_mm || null;
+    // Convertir a mm con valores por defecto
+    const left_mm = parseFloat(jsonBlock.left_mm) || parseFloat(jsonBlock.left) || 10;
+    const top_mm = parseFloat(jsonBlock.top_mm) || parseFloat(jsonBlock.top) || 10;
+    const width_mm = parseFloat(jsonBlock.width_mm) || parseFloat(jsonBlock.width) || null;
+    const height_mm = parseFloat(jsonBlock.height_mm) || parseFloat(jsonBlock.height) || null;
     const zone = jsonBlock.zone || 'body';
 
+    // Convertir a px solo para representación visual
     const left_px = mmToPixels(left_mm);
     const top_px = mmToPixels(top_mm);
     const width_px = width_mm ? mmToPixels(width_mm) : null;
+    const height_px = height_mm ? mmToPixels(height_mm) : null;
 
     insertarBloqueEnCanvas(jsonBlock.type, null, left_px, top_px);
 
     const insertedNode = canvas.lastElementChild;
 
-    insertedNode.dataset.zone = zone;  // Restaurar zona
+    // Guardar posiciones en mm
+    insertedNode.dataset.zone = zone;
     insertedNode.dataset.left_mm = left_mm.toFixed(2);
     insertedNode.dataset.top_mm = top_mm.toFixed(2);
-    insertedNode.style.left = left_px + 'px';
-    insertedNode.style.top = top_px + 'px';
-
+    
+    // Guardar dimensiones en mm si existen
     if (width_mm) {
         insertedNode.dataset.width_mm = width_mm.toFixed(2);
         insertedNode.style.width = width_px + 'px';
     }
-    if (jsonBlock.height) {
-        insertedNode.dataset.height = jsonBlock.height;
-        insertedNode.style.height = jsonBlock.height + 'px';
+    if (height_mm) {
+        insertedNode.dataset.height_mm = height_mm.toFixed(2);
+        insertedNode.style.height = height_px + 'px';
     }
     
     // Si es texto libre, reemplazar el contenteditable
@@ -534,9 +538,6 @@ function insertarBloqueDesdeJSON(jsonBlock) {
         const cajaTexto = insertedNode.querySelector('.block-content-texto');
         if (cajaTexto) {
             cajaTexto.innerHTML = jsonBlock.content;
-            
-            // Re-hidratar variables (chips) si había texto puro
-            // (Ya no es necesario hacer Regex, el JSON tiene los tags span.ares-variable-badge o texto puro)
         }
     }
     
@@ -548,9 +549,9 @@ function insertarBloqueDesdeJSON(jsonBlock) {
         if (header) header.style.fontSize = jsonBlock.size + 'px';
     }
     
-    if (jsonBlock.type === 'logo' && jsonBlock.width) {
+    if (jsonBlock.type === 'logo' && jsonBlock.width_mm) {
         const img = insertedNode.querySelector('.ares-logo-cabecera');
-        if (img) img.setAttribute('width', Math.max(30, parseInt(jsonBlock.width) - 20));
+        if (img) img.setAttribute('width', Math.max(30, mmToPixels(jsonBlock.width_mm) - 20));
     }
     
     if (jsonBlock.type === 'calificaciones') {
@@ -567,7 +568,7 @@ function insertarBloqueDesdeJSON(jsonBlock) {
         }
     }
     
-    // Si el bloque tiene HTML guardado (wysiwyg), restaurarlo exactamente (excepto ficha para forzar actualización visual)
+    // Si el bloque tiene HTML guardado (wysiwyg), restaurarlo exactamente
     if (jsonBlock.content && jsonBlock.type !== 'texto' && jsonBlock.type !== 'ficha') {
         const wysiwyg = insertedNode.querySelector('.block-content-wysiwyg');
         if (wysiwyg) {
@@ -580,10 +581,10 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     if (tiposSingleLineJSON.indexOf(jsonBlock.type) > -1) {
         function ajustarAnchoCabeceraJSON(el) {
             el.style.width = 'max-content';
-            let anchoReal = el.offsetWidth; // Fuerza reflow
-            if (anchoReal > 0) {
-                el.style.width = anchoReal + 'px';
-                el.dataset.width = anchoReal;
+            let anchoRealMm = pixelsToMm(el.offsetWidth);
+            if (anchoRealMm > 0) {
+                el.style.width = mmToPixels(anchoRealMm) + 'px';
+                el.dataset.width_mm = anchoRealMm.toFixed(2);
             }
         }
         ajustarAnchoCabeceraJSON(insertedNode);
@@ -716,20 +717,24 @@ async function guardarFormato(e) {
             const left_mm = parseFloat(bloque.dataset.left_mm) || 10;
             const top_mm = parseFloat(bloque.dataset.top_mm) || 10;
             const width_mm = bloque.dataset.width_mm ? parseFloat(bloque.dataset.width_mm) : null;
-            const height_mm = bloque.dataset.height ? parseFloat(bloque.dataset.height) : null;
+            const height_mm = bloque.dataset.height_mm ? parseFloat(bloque.dataset.height_mm) : (bloque.dataset.height ? parseFloat(bloque.dataset.height) : null);
 
             const widthAttr = width_mm !== null ? ` data-width_mm="${width_mm}"` : '';
-            const heightAttr = height_mm !== null ? ` data-height="${height_mm}"` : '';
+            const heightAttr = height_mm !== null ? ` data-height_mm="${height_mm}"` : '';
             const styleAttrs = `style="position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${height_mm !== null ? `height:${height_mm}mm;` : ''}"`;
             htmlCompilado += `<div class="bloque-texto" data-left_mm="${left_mm}" data-top_mm="${top_mm}"${widthAttr}${heightAttr} ${styleAttrs}>${contenidoCaja.innerHTML}</div><br>`;
 
             configJson.push({
                 type: 'texto',
                 zone: bloque.dataset.zone || 'body',
+                left: left_mm,
+                top: top_mm,
+                width: width_mm,
+                height: height_mm,
                 left_mm: left_mm,
                 top_mm: top_mm,
                 width_mm: width_mm,
-                height: height_mm,
+                height_mm: height_mm,
                 content: contenidoCaja.innerHTML
             });
 
@@ -741,20 +746,25 @@ async function guardarFormato(e) {
                 const left_mm = parseFloat(bloque.dataset.left_mm) || 10;
                 const top_mm = parseFloat(bloque.dataset.top_mm) || 10;
                 const width_mm = bloque.dataset.width_mm ? parseFloat(bloque.dataset.width_mm) : null;
+                const height_mm = bloque.dataset.height_mm ? parseFloat(bloque.dataset.height_mm) : (bloque.dataset.height ? parseFloat(bloque.dataset.height) : null);
 
                 let extraAttrs = ` data-left_mm="${left_mm}" data-top_mm="${top_mm}"`;
                 if (width_mm !== null) extraAttrs += ` data-width_mm="${width_mm}"`;
-                if (bloque.dataset.height) extraAttrs += ` data-height="${bloque.dataset.height}"`;
+                if (height_mm !== null) extraAttrs += ` data-height_mm="${height_mm}"`;
 
-                const stylePos = `position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${bloque.dataset.height ? `height:${bloque.dataset.height}mm;` : ''}`;
+                const stylePos = `position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${height_mm !== null ? `height:${height_mm}mm;` : ''}`;
 
                 const jsonBlock = {
                     type: tipo,
                     zone: bloque.dataset.zone || 'body',
+                    left: left_mm,
+                    top: top_mm,
+                    width: width_mm,
+                    height: height_mm,
                     left_mm: left_mm,
                     top_mm: top_mm,
                     width_mm: width_mm,
-                    height: bloque.dataset.height || null,
+                    height_mm: height_mm,
                     size: bloque.dataset.size || null,
                     content: bloque.querySelector('.block-content-wysiwyg') ? bloque.querySelector('.block-content-wysiwyg').innerHTML : null
                 };
@@ -903,7 +913,6 @@ function arrastrarBloque(e) {
     let top = (e.clientY - canvasRect.top) - offsetY;
 
     const blockW = bloqueArrastrando.offsetWidth;
-    const blockH = bloqueArrastrando.offsetHeight;
 
     const minLeft = margenesPx.izquierdo;
     const maxLeft = Math.max(margenesPx.izquierdo, canvas.offsetWidth - margenesPx.derecho - blockW);
@@ -920,13 +929,19 @@ function arrastrarBloque(e) {
     }
     bloqueArrastrando.dataset.zone = newZone;
 
+    // Convertir a mm y redondear
+    const left_mm = Math.round(pixelsToMm(left) * 100) / 100;
+    const top_mm = Math.round(pixelsToMm(top) * 100) / 100;
+
     left = Math.round(left);
     top = Math.round(top);
 
     bloqueArrastrando.style.left = left + 'px';
     bloqueArrastrando.style.top = top + 'px';
-    bloqueArrastrando.dataset.left_mm = pixelsToMm(left).toFixed(2);
-    bloqueArrastrando.dataset.top_mm = pixelsToMm(top).toFixed(2);
+    
+    // Guardar posición en mm
+    bloqueArrastrando.dataset.left_mm = left_mm.toFixed(2);
+    bloqueArrastrando.dataset.top_mm = top_mm.toFixed(2);
 
     ajustarAlturaLienzo();
 }
@@ -987,12 +1002,15 @@ function iniciarRedimension(e, handleType, targetWrapper) {
                 
                 wrapper.style.left = newLeft + 'px';
                 wrapper.dataset.left = Math.round(newLeft);
+                wrapper.dataset.left_mm = pixelsToMm(newLeft).toFixed(2);
             }
             newWidth = Math.max(40, newWidth);
             wrapper.style.width = newWidth + 'px';
             wrapper.style.height = 'auto';
             wrapper.dataset.width = Math.round(newWidth);
+            wrapper.dataset.width_mm = pixelsToMm(newWidth).toFixed(2);
             wrapper.dataset.height = '';
+            wrapper.dataset.height_mm = '';
             
             const img = wrapper.querySelector('.ares-logo-cabecera');
             if (img) {
@@ -1014,6 +1032,7 @@ function iniciarRedimension(e, handleType, targetWrapper) {
             
             wrapper.style.left = newLeft + 'px';
             wrapper.dataset.left = Math.round(newLeft);
+            wrapper.dataset.left_mm = pixelsToMm(newLeft).toFixed(2);
         }
         newWidth = Math.max(50, newWidth);
         
