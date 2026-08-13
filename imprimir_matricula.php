@@ -267,6 +267,14 @@ $primary_rgb = "$r_c, $g_c, $b_c";
             root.style.setProperty('--el-font-institutional', "'<?php echo htmlspecialchars($cfg['font_family'] ?? 'Montserrat', ENT_QUOTES, 'UTF-8'); ?>', sans-serif");
             root.style.setProperty('--el-primary', '<?php echo htmlspecialchars($cfg['brand_color'] ?? '#0f0664', ENT_QUOTES, 'UTF-8'); ?>');
             root.style.setProperty('--el-primary-rgb', '<?php echo $primary_rgb; ?>');
+            
+            // Configurar dinámicamente las variables de altura de las zonas
+            document.querySelectorAll('[data-height-mm]').forEach(el => {
+                const height = el.getAttribute('data-height-mm');
+                const zone = el.classList.contains('print-header-zone') ? 'header' :
+                             el.classList.contains('print-body-zone') ? 'body' : 'footer';
+                root.style.setProperty('--' + zone + '-zone-height', height + 'mm');
+            });
         });
     </script>
 </head>
@@ -775,10 +783,9 @@ foreach ($bloques_paginador as $bloque) {
 }
 
 // Construir HTML de cada zona manteniendo posiciones absolutas
-$prop_style_zona = 'sty' . 'le';
 $header_html = '';
 if (!empty($header_bloques)) {
-    $header_html .= '<div class="print-header-zone" ' . $prop_style_zona . '="height: ' . $zona_header_limit_mm . 'mm;">';
+    $header_html .= '<div class="print-header-zone" data-height-mm="' . htmlspecialchars((string)$zona_header_limit_mm, ENT_QUOTES, 'UTF-8') . '">';
     foreach ($header_bloques as $bloque) {
         $header_html .= $bloque['html'];
     }
@@ -788,7 +795,7 @@ if (!empty($header_bloques)) {
 $cuerpo_html = '';
 if (!empty($body_bloques)) {
     $cuerpo_height_mm = $zona_footer_start_mm - $zona_header_limit_mm;
-    $cuerpo_html .= '<div class="print-body-zone" ' . $prop_style_zona . '="height: ' . $cuerpo_height_mm . 'mm;">';
+    $cuerpo_html .= '<div class="print-body-zone" data-height-mm="' . htmlspecialchars((string)$cuerpo_height_mm, ENT_QUOTES, 'UTF-8') . '">';
     foreach ($body_bloques as $bloque) {
         $cuerpo_html .= $bloque['html'];
     }
@@ -798,7 +805,7 @@ if (!empty($body_bloques)) {
 $firmas_html = '';
 if (!empty($footer_bloques)) {
     $footer_height_mm = $papel_height_mm - $zona_footer_start_mm;
-    $firmas_html .= '<div class="print-footer-zone" ' . $prop_style_zona . '="height: ' . $footer_height_mm . 'mm;">';
+    $firmas_html .= '<div class="print-footer-zone" data-height-mm="' . htmlspecialchars((string)$footer_height_mm, ENT_QUOTES, 'UTF-8') . '">';
     foreach ($footer_bloques as $bloque) {
         $firmas_html .= $bloque['html'];
     }
