@@ -2,73 +2,70 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../auth.php';
-guardia_sesion();
-session_write_close();
 
-// Cargar TCPDF desde assets/libs/tcpdf
-$tcpdf_path = dirname(__DIR__, 2) . '/assets/libs/tcpdf/';
+try {
+    guardia_sesion();
+    session_write_close();
 
-if (!file_exists($tcpdf_path . 'tcpdf.php')) {
-    die("Error: TCPDF no encontrado en " . $tcpdf_path);
-}
+    $estudiante_id = (int)($_GET['estudiante_id'] ?? 0);
+    $formato_id = (int)($_GET['formato_id'] ?? 0);
 
-// Cargar autoconfig primero
-require_once $tcpdf_path . 'tcpdf_autoconfig.php';
-// Luego cargar TCPDF
-require_once $tcpdf_path . 'tcpdf.php';
+    if ($estudiante_id <= 0 || $formato_id <= 0) {
+        throw new Exception("Parámetros inválidos.");
+    }
 
-$estudiante_id = (int)($_GET['estudiante_id'] ?? 0);
-$formato_id = (int)($_GET['formato_id'] ?? 0);
+    $stmt_f = $db->prepare("SELECT * FROM formatos_matricula WHERE id = ?");
+    $stmt_f->execute([$formato_id]);
+    $formato = $stmt_f->fetch(PDO::FETCH_ASSOC);
 
-if ($estudiante_id <= 0 || $formato_id <= 0) {
-    die("Parámetros inválidos.");
-}
+    if (!$formato) {
+        throw new Exception("Formato no encontrado.");
+    }
 
-// 1. Obtener formato
-$stmt_f = $db->prepare("SELECT * FROM formatos_matricula WHERE id = ?");
-$stmt_f->execute([$formato_id]);
-$formato = $stmt_f->fetch(PDO::FETCH_ASSOC);
+    $stmt_e = $db->prepare("
+        SELECT e.*, c.nombre_curso, da.*
+        FROM estudiantes e
+        LEFT JOIN cursos c ON e.curso_id = c.id
+        LEFT JOIN estudiantes_datos_adicionales da ON e.id = da.estudiante_id
+        WHERE e.id = ?
+    ");
+    $stmt_e->execute([$estudiante_id]);
+    $estudiante = $stmt_e->fetch(PDO::FETCH_ASSOC);
 
-if (!$formato) {
-    die("Formato no encontrado.");
-}
+    if (!$estudiante) {
+        throw new Exception("Estudiante no encontrado.");
+    }
 
-// 2. Obtener estudiante
-$stmt_e = $db->prepare("
-    SELECT e.*, c.nombre_curso, da.*
-    FROM estudiantes e
-    LEFT JOIN cursos c ON e.curso_id = c.id
-    LEFT JOIN estudiantes_datos_adicionales da ON e.id = da.estudiante_id
-    WHERE e.id = ?
-");
-$stmt_e->execute([$estudiante_id]);
-$estudiante = $stmt_e->fetch(PDO::FETCH_ASSOC);
+    $tcpdf_path = dirname(__DIR__, 2) . '/assets/libs/tcpdf/';
+    if (!file_exists($tcpdf_path . 'tcpdf.php')) {
+        throw new Exception("TCPDF no encontrado en: " . $tcpdf_path);
+    }
 
-if (!$estudiante) {
-    die("Estudiante no encontrado.");
-}
+    require_once $tcpdf_path . 'tcpdf_autoconfig.php';
+    require_once $tcpdf_path . 'tcpdf.php';
 
-// 3. Obtener datos de configuración (igual que imprimir_matricula.php)
-$stmt_estetica = $db->query("SELECT clave, valor FROM ajustes_estetica");
-$cfg = $stmt_estetica->fetchAll(PDO::FETCH_KEY_PAIR);
-$school_name = $cfg['school_name'] ?? 'SISTEMA ESCOLAR ÉLITE';
-$school_motto = $cfg['school_motto'] ?? 'Excelencia en Gestión Educativa';
-$school_logo = $cfg['school_logo'] ?? 'perseus.png';
+    $contenido_html = $formato['contenido_html'] ?? '';
+    if (empty($contenido_html)) {
+        throw new Exception("Contenido de formato vacío.");
+    }
 
-// 4. Generar HTML idéntico al preview (reutilizar lógica de imprimir_matricula.php)
-// Por ahora, HTML básico. Se puede mejorar reutilizando código de imprimir_matricula.php
-$html = <<<EOF
+    $html_document = <<< 'HTML'
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+        }
         .print-document {
             width: 215.9mm;
             height: 279.4mm;
-            border: 1px solid #333;
             position: relative;
             overflow: hidden;
         }
@@ -78,25 +75,29 @@ $html = <<<EOF
     </style>
 </head>
 <body>
-    <div class="print-document">
-        {$formato['contenido_html']}
-    </div>
-</body>
-</html>
-EOF;
+HTML;
 
-// 5. Crear PDF con TCPDF
-$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-$pdf->SetMargins(0, 0, 0);
-$pdf->SetAutoPageBreak(false, 0);
-$pdf->AddPage('P', 'A4');
-$pdf->SetFont('Arial', '', 11);
+    $html_document .= $contenido_html;
+    $html_document .= "\n</body>\n</html>";
 
-// Renderizar HTML
-$pdf->writeHTML($html, true, false, true, false, '');
+    $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+    $pdf->SetMargins(0, 0, 0);
+    $pdf->SetAutoPageBreak(false, 0);
+    $pdf->AddPage('P', 'A4');
+    $pdf->SetFont('Arial', '', 11);
+    $pdf->writeHTML($html_document, true, false, true, false, '');
 
-// 6. Descargar PDF
-$filename = 'matricula_' . $estudiante_id . '_' . time() . '.pdf';
-$pdf->Output($filename, 'D');
+    $filename = 'matricula_' . $estudiante_id . '_' . time() . '.pdf';
+    $pdf->Output($filename, 'D');
+
+} catch (Exception $e) {
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ]);
+    exit();
+}
 ?>
