@@ -531,6 +531,7 @@ async function guardarFormato(e) {
     formData.append('contenido_html', htmlCompilado);
     formData.append('configuracion_json', JSON.stringify(configJson));
     formData.append('zonas_config', JSON.stringify(zonesData));
+    formData.append('csrf_token', window.CSRF_TOKEN || '');
 
     try {
         const res = await fetch('/sistema_escolar/php/logica/formatos_ajax.php', {
