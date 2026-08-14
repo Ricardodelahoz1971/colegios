@@ -207,7 +207,7 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
     `;
 
     const headerHTML = {
-        'logo': '<img class="ares-logo-cabecera" src="perseus.png" width="120" alt="Logo" />',
+        'logo': '<img class="ares-logo-cabecera" src="../../perseus.png" width="120" alt="Logo" />',
         'titulo_colegio': '<h3 class="ares-titulo-cabecera">Nombre del Colegio</h3>',
         'lema_colegio': '<p class="ares-lema-cabecera">Lema Institucional</p>',
         'metadatos': '<h4>Año Lectivo 2024-2025</h4>'
