@@ -737,3 +737,171 @@ function updateZonesUI() {
         }
     });
 }
+
+let activeRangeBeforeModal = null;
+let activeEditableBeforeModal = null;
+
+function canvasDobleClick(e) {
+    const clickY = e.clientY - document.getElementById('canvas-builder').getBoundingClientRect().top;
+    toggleZoneEditMode(determinarZona(clickY));
+}
+
+function abrirCatalogoVariables() {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+        activeRangeBeforeModal = selection.getRangeAt(0).cloneRange();
+        const node = activeRangeBeforeModal.startContainer;
+        const parentElem = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+        activeEditableBeforeModal = parentElem ? parentElem.closest('.block-content-texto') : null;
+    } else {
+        activeRangeBeforeModal = null;
+        activeEditableBeforeModal = null;
+    }
+
+    const modalEl = document.getElementById('modalCatalogoVariables');
+    if (modalEl) {
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    }
+}
+
+function seleccionarVariableCatalogo(codigo, label, esBloque = false) {
+    const modalEl = document.getElementById('modalCatalogoVariables');
+    if (modalEl) {
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        if (modal) modal.hide();
+    }
+
+    if (esBloque) {
+        insertarBloqueEnCanvas(codigo, label);
+        return;
+    }
+
+    let targetEditable = activeEditableBeforeModal;
+
+    const currentSelection = window.getSelection();
+    if (!targetEditable && currentSelection.rangeCount > 0) {
+        const node = currentSelection.getRangeAt(0).startContainer;
+        const parentElem = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+        targetEditable = parentElem ? parentElem.closest('.block-content-texto') : null;
+    }
+
+    if (targetEditable) {
+        targetEditable.focus();
+        if (activeRangeBeforeModal) {
+            currentSelection.removeAllRanges();
+            currentSelection.addRange(activeRangeBeforeModal);
+        }
+        const badgeHtml = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
+        document.execCommand('insertHTML', false, badgeHtml);
+    } else {
+        insertarBloqueEnCanvas('texto', 'Párrafo de Texto');
+        const canvas = document.getElementById('canvas-builder');
+        const ultimoBloque = canvas.querySelector('.canvas-block-wrapper:last-child');
+        if (ultimoBloque) {
+            const nuevoEditable = ultimoBloque.querySelector('.block-content-texto');
+            if (nuevoEditable) {
+                nuevoEditable.focus();
+                nuevoEditable.innerHTML = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
+            }
+        }
+    }
+}
+
+function cambiarTamanoLienzoBuilder(tamano) {
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas) return;
+
+    canvas.classList.remove('ares-paper-sheet--carta', 'ares-paper-sheet--media_carta', 'ares-paper-sheet--carne_v', 'ares-paper-sheet--carne_h');
+    const claseTamano = 'ares-paper-sheet--' + tamano;
+    canvas.classList.add(claseTamano);
+}
+
+function actualizarBloqueFirmasCanvas(bloque, numColumnas, dataHeredada) {
+    if (!bloque) return;
+    const container = bloque.querySelector('.dynamic-firmas-container');
+    if (!container) return;
+
+    const firmasViejas = [];
+    container.querySelectorAll('.firma-item-canvas').forEach(div => {
+        firmasViejas.push({
+            cargo: div.querySelector('.ares-firma-cargo')?.textContent.trim() || '',
+            nombre: div.querySelector('.ares-firma-nombre')?.textContent.trim() || ''
+        });
+    });
+
+    const defaultFirmas = [
+        { cargo: 'Firma del Estudiante', nombre: '[Nombre Estudiante]' },
+        { cargo: 'Firma del Acudiente', nombre: '[Nombre Acudiente]' },
+        { cargo: 'Rector Institucional', nombre: window.SCHOOL_INFO?.name ? 'RIGOBERTO ANDRÉS NUBIA' : '[Nombre Rector]' },
+        { cargo: 'Secretaría Académica', nombre: '[Nombre Secretaria]' }
+    ];
+
+    const firmasFinales = [];
+    for (let idx = 0; idx < 4; idx++) {
+        let cargo = '';
+        let nombre = '';
+
+        if (dataHeredada && dataHeredada[idx]) {
+            cargo = dataHeredada[idx].cargo;
+            nombre = dataHeredada[idx].nombre;
+        } else if (firmasViejas[idx] && firmasViejas[idx].cargo !== '') {
+            cargo = firmasViejas[idx].cargo;
+            nombre = firmasViejas[idx].nombre;
+        } else {
+            cargo = defaultFirmas[idx].cargo;
+            nombre = defaultFirmas[idx].nombre;
+        }
+
+        firmasFinales.push({ cargo: cargo, nombre: nombre });
+    }
+
+    container.innerHTML = '';
+
+    if (numColumnas === 2) {
+        const col1 = document.createElement('div');
+        col1.style.flex = '1';
+        col1.innerHTML = `
+            <div class="firma-item-canvas">
+                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[0].cargo}</div>
+                <div style="height: 40px; border-top: 1px solid #000;"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[0].nombre}</div>
+            </div>
+            <div class="firma-item-canvas">
+                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[1].cargo}</div>
+                <div style="height: 40px; border-top: 1px solid #000;"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[1].nombre}</div>
+            </div>
+        `;
+        container.appendChild(col1);
+
+        const col2 = document.createElement('div');
+        col2.style.flex = '1';
+        col2.innerHTML = `
+            <div class="firma-item-canvas">
+                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[2].cargo}</div>
+                <div style="height: 40px; border-top: 1px solid #000;"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[2].nombre}</div>
+            </div>
+            <div class="firma-item-canvas">
+                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[3].cargo}</div>
+                <div style="height: 40px; border-top: 1px solid #000;"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[3].nombre}</div>
+            </div>
+        `;
+        container.appendChild(col2);
+    } else {
+        for (let f of firmasFinales) {
+            const firmaDiv = document.createElement('div');
+            firmaDiv.className = 'firma-item-canvas';
+            firmaDiv.innerHTML = `
+                <div class="ares-firma-cargo" contenteditable="true">${f.cargo}</div>
+                <div style="height: 40px; border-top: 1px solid #000;"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${f.nombre}</div>
+            `;
+            container.appendChild(firmaDiv);
+        }
+    }
+
+    bloque.dataset.columnas = numColumnas;
+}
