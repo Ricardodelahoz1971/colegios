@@ -14,8 +14,8 @@ try {
         throw new Exception("Parámetros inválidos.");
     }
 
-    // Obtener información del formato para validar que existe
-    $stmt_f = $db->prepare("SELECT id FROM formatos_matricula WHERE id = ?");
+    // 1. Obtener la plantilla y configuración JSON de la base de datos
+    $stmt_f = $db->prepare("SELECT id, configuracion_json, margen_superior, margen_inferior, margen_izquierdo, margen_derecho, tamano_lienzo FROM formatos_matricula WHERE id = ?");
     $stmt_f->execute([$formato_id]);
     $formato = $stmt_f->fetch(PDO::FETCH_ASSOC);
 
@@ -23,102 +23,122 @@ try {
         throw new Exception("Formato no encontrado.");
     }
 
-    // Obtener datos del estudiante para validar que existe
-    $stmt_e = $db->prepare("SELECT id FROM estudiantes WHERE id = ?");
-    $stmt_e->execute([$estudiante_id]);
-    $estudiante = $stmt_e->fetch(PDO::FETCH_ASSOC);
-
-    if (!$estudiante) {
-        throw new Exception("Estudiante no encontrado.");
-    }
-
-    // Iniciar buffer de salida
+    // 2. Ejecutar la lógica de inicialización y renderizado de imprimir_matricula.php en búfer
     ob_start();
-    
-    // Variables necesarias para el renderizado (simulando el GET de imprimir_matricula.php)
+    // Inyectar parámetros que espera imprimir_matricula.php
     $_GET['estudiante_id'] = $estudiante_id;
     $_GET['formato_id'] = $formato_id;
     
-    // Incluir el archivo de renderizado
     require dirname(__DIR__, 2) . '/imprimir_matricula.php';
-    
-    // Capturar el HTML generado
-    $html_completo = ob_get_clean();
+    ob_end_clean();
 
-    // Extraer el div con clase "print-document" de forma segura
-    $patron = '/<div class="print-document"[^>]*>(.*?)<\/div>\s*<\/body>/s';
-    if (preg_match($patron, $html_completo, $matches)) {
-        $contenido_html = '<div class="print-document">' . $matches[1] . '</div>';
-    } else {
-        throw new Exception("No se pudo extraer el contenido del documento.");
+    // 3. Decodificar la configuración de bloques del JSON
+    $config_json = json_decode($formato['configuracion_json'] ?? '[]', true);
+    if (!is_array($config_json)) {
+        throw new Exception("Configuración de formato no válida o vacía.");
     }
 
-    // Definir la raíz del proyecto
-    $raiz_proyecto = dirname(__DIR__, 2);
-    
-    // Reemplazar rutas relativas por rutas absolutas
-    $contenido_html = str_replace('src="perseus.png"', 'src="' . $raiz_proyecto . '/perseus.png"', $contenido_html);
-    $contenido_html = str_replace("src='perseus.png'", "src='" . $raiz_proyecto . "/perseus.png'", $contenido_html);
-    
-    $contenido_html = str_replace('src="uploads/fotos/', 'src="' . $raiz_proyecto . '/uploads/fotos/', $contenido_html);
-    $contenido_html = str_replace("src='uploads/fotos/", "src='" . $raiz_proyecto . "/uploads/fotos/", $contenido_html);
-    
-    // También reemplazar cualquier otra ruta relativa común
-    $contenido_html = str_replace('src="/uploads/', 'src="' . $raiz_proyecto . '/uploads/', $contenido_html);
-    $contenido_html = str_replace("src='/uploads/", "src='" . $raiz_proyecto . "/uploads/", $contenido_html);
-
-    // Construir el documento HTML completo para TCPDF
-    $html_document = <<< 'HTML'
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .print-document {
-            width: 215.9mm;
-            height: 279.4mm;
-            position: relative;
-            overflow: hidden;
-        }
-        .canvas-block-wrapper {
-            position: absolute;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
-</head>
-<body>
-HTML;
-
-    $html_document .= $contenido_html;
-    $html_document .= "\n</body>\n</html>";
-
-    // Configurar y generar el PDF
+    // 4. Instanciar TCPDF
     $tcpdf_path = dirname(__DIR__, 2) . '/assets/libs/tcpdf/';
     if (!file_exists($tcpdf_path . 'tcpdf.php')) {
-        throw new Exception("TCPDF no encontrado en: " . $tcpdf_path);
+        throw new Exception("TCPDF no encontrado.");
     }
 
     require_once $tcpdf_path . 'tcpdf_autoconfig.php';
     require_once $tcpdf_path . 'tcpdf.php';
 
-    $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+    // Determinar tamaño de papel (Carta por defecto, Carta = LETTER)
+    $tamano_lienzo = strtolower($formato['tamano_lienzo'] ?? 'carta') === 'carta' ? 'LETTER' : 'A4';
+    $papel_width = $tamano_lienzo === 'LETTER' ? 215.9 : 210.0;
+
+    $pdf = new TCPDF('P', 'mm', $tamano_lienzo, true, 'UTF-8', false);
+    
+    // Configuración técnica estricta del documento para evadir saltos e inline absolutos
+    $pdf->SetCreator(PDF_CREATOR);
+    $pdf->SetAuthor('Perseus Cloud');
+    $pdf->SetTitle('Ficha de Matrícula');
+    
+    // Desactivar cabeceras y pies de página nativos de TCPDF para liberar los márgenes de 10mm
+    $pdf->setPrintHeader(false);
+    $pdf->setPrintFooter(false);
+    
+    $pdf->AddPage();
+    
+    // Forzar márgenes en 0 y remover paddings internos
     $pdf->SetMargins(0, 0, 0);
+    $pdf->SetHeaderMargin(0);
+    $pdf->SetFooterMargin(0);
     $pdf->SetAutoPageBreak(false, 0);
-    $pdf->AddPage('P', 'A4');
-    $pdf->SetFont('helvetica', '', 11);
-    $pdf->writeHTML($html_document, true, false, true, false, '');
+    $pdf->setCellPaddings(0, 0, 0, 0);
+    $pdf->setCellMargins(0, 0, 0, 0);
+    
+    $pdf->SetFont('helvetica', '', 10);
+
+    $raiz_proyecto = dirname(__DIR__, 2);
+
+    // 5. Iterar e inyectar bloques con posicionamiento nativo
+    foreach ($config_json as $block) {
+        $tipo = $block['type'] ?? '';
+        if ($tipo === 'salto_pagina') {
+            $pdf->AddPage();
+            continue;
+        }
+
+        $x = isset($block['left_mm']) ? (float)$block['left_mm'] : 0.0;
+        $y = isset($block['top_mm']) ? (float)$block['top_mm'] : 0.0;
+        
+        $m_izq = (float)($formato['margen_izquierdo'] ?? 20);
+        $m_der = (float)($formato['margen_derecho'] ?? 20);
+        
+        $w = !empty($block['width_mm']) ? (float)$block['width_mm'] : ($papel_width - $m_izq - $m_der);
+        $h = !empty($block['height_mm']) ? (float)$block['height_mm'] : 0.0;
+
+        $html_block = '';
+
+        if ($tipo === 'texto') {
+            $contenido = $block['content'] ?? '';
+            // Reemplazar dinámicamente las variables badge por sus valores reales del estudiante
+            $html_block = preg_replace_callback(
+                '/<span[^>]*class="[^"]*ares-variable-badge[^"]*"[^>]*data-var="([^"]+)"[^>]*>.*?<\/span>/i',
+                function($m_badge) use ($var_map, $alias_extra) {
+                    $var_code = $m_badge[1];
+                    if (isset($var_map[$var_code])) {
+                        return htmlspecialchars((string)$var_map[$var_code], ENT_QUOTES, 'UTF-8');
+                    }
+                    if (isset($alias_extra[$var_code])) {
+                        return htmlspecialchars((string)$alias_extra[$var_code], ENT_QUOTES, 'UTF-8');
+                    }
+                    return '';
+                },
+                $contenido
+            );
+        } else {
+            // Invocar el renderizador heredado de imprimir_matricula.php para bloques avanzados
+            $cols = isset($block['columnas']) ? (int)$block['columnas'] : null;
+            $html_block = $renderizador($tipo, $cols);
+        }
+
+        if (trim($html_block) === '') {
+            continue;
+        }
+
+        // Escalar la imagen del logo al ancho real en píxeles (1mm = 3.78px) para evitar desbordamiento asimétrico en TCPDF
+        if ($tipo === 'logo') {
+            $w_px = (int)($w * 3.78);
+            $html_block = str_replace('<img class="ares-logo-cabecera"', '<img class="ares-logo-cabecera" width="' . $w_px . '"', $html_block);
+        }
+
+        // Convertir todas las rutas de imágenes locales a rutas absolutas del sistema para TCPDF
+        $html_block = str_replace('src="perseus.png"', 'src="' . $raiz_proyecto . '/perseus.png"', $html_block);
+        $html_block = str_replace("src='perseus.png'", "src='" . $raiz_proyecto . "/perseus.png'", $html_block);
+        $html_block = str_replace('src="uploads/fotos/', 'src="' . $raiz_proyecto . '/uploads/fotos/', $html_block);
+        $html_block = str_replace("src='uploads/fotos/", "src='" . $raiz_proyecto . "/uploads/fotos/", $html_block);
+        $html_block = str_replace('src="/uploads/', 'src="' . $raiz_proyecto . '/uploads/', $html_block);
+        $html_block = str_replace("src='/uploads/", "src='" . $raiz_proyecto . "/uploads/", $html_block);
+
+        // Dibujar el bloque en el PDF usando la API de posicionamiento nativo
+        $pdf->writeHTMLCell($w, $h, $x, $y, $html_block, 0, 0, false, true, '', true);
+    }
 
     $filename = 'matricula_' . $estudiante_id . '_' . time() . '.pdf';
     $pdf->Output($filename, 'D');
@@ -132,4 +152,3 @@ HTML;
     ]);
     exit();
 }
-?>

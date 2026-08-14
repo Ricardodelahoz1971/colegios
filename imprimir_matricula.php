@@ -11,6 +11,7 @@ if (!tiene_permiso('estudiantes')) {
 }
 
 require_once __DIR__ . '/php/db.php';
+require_once __DIR__ . '/php/logica/formatos_controller.php';
 
 $estudiante_id = isset($_GET['estudiante_id']) ? (int)$_GET['estudiante_id'] : 0;
 $formato_id = isset($_GET['formato_id']) ? (int)$_GET['formato_id'] : 0;
@@ -19,41 +20,24 @@ if ($estudiante_id <= 0 || $formato_id <= 0) {
     die("Parámetros inválidos.");
 }
 
-// 1. OBTENER FORMATO
-$stmt_f = $db->prepare("SELECT * FROM formatos_matricula WHERE id = ?");
-$stmt_f->execute([$formato_id]);
-$formato = $stmt_f->fetch(PDO::FETCH_ASSOC);
+// Instanciar el controlador de formatos y obtener todos los datos necesarios
+$controller = new FormatosController($db);
 
-if (!$formato) {
-    die("Formato no encontrado.");
+try {
+    $datos = $controller->obtenerDatosMatricula($estudiante_id, $formato_id);
+} catch (Exception $e) {
+    die("Error al obtener los datos de matrícula: " . $e->getMessage());
 }
 
-// 2. OBTENER ESTUDIANTE Y SUS DATOS ADICIONALES
-$stmt_e = $db->prepare("
-    SELECT e.*, c.nombre_curso, da.* 
-    FROM estudiantes e
-    LEFT JOIN cursos c ON e.curso_id = c.id
-    LEFT JOIN estudiantes_datos_adicionales da ON e.id = da.estudiante_id
-    WHERE e.id = ?
-");
-$stmt_e->execute([$estudiante_id]);
-$estudiante = $stmt_e->fetch(PDO::FETCH_ASSOC);
+// Extraer variables para mantener la compatibilidad con el resto del script
+$formato = $datos['formato'];
+$estudiante = $datos['estudiante'];
+$rector_nombre = $datos['rector_nombre'] ?: 'Rector Institucional';
+$secretaria_nombre = $datos['secretaria_nombre'] ?: 'Secretaria Académica';
+$cfg = $datos['ajustes_estetica'];
+$notas = $datos['notas'];
 
-if (!$estudiante) {
-    die("Estudiante no encontrado.");
-}
-
-// 3. CARGAR RECTOR PARA LA VISTA PREVIA
-$rector_stmt = $db->query("SELECT nombre FROM usuarios WHERE rol_id = 3 LIMIT 1");
-$rector_nombre = $rector_stmt->fetchColumn() ?: 'Rector Institucional';
-
-// 4. CARGAR SECRETARIA
-$secretaria_stmt = $db->query("SELECT nombre FROM usuarios WHERE rol_id = 4 LIMIT 1");
-$secretaria_nombre = $secretaria_stmt->fetchColumn() ?: 'Secretaria Académica';
-
-// 5. CARGAR AJUSTES DE ESTÉTICA
-$stmt_estetica = $db->query("SELECT clave, valor FROM ajustes_estetica");
-$cfg = $stmt_estetica->fetchAll(PDO::FETCH_KEY_PAIR);
+// 1. CARGAR AJUSTES DE ESTÉTICA
 $school_name = $cfg['school_name'] ?? 'SISTEMA ESCOLAR ÉLITE';
 $school_motto = $cfg['school_motto'] ?? 'Excelencia en Gestión Educativa';
 $school_logo = $cfg['school_logo'] ?? '';
@@ -64,17 +48,17 @@ if (empty($school_logo)) {
     $school_logo = 'perseus.png';
 }
 
-// 6. MAPEAR VARIABLES DISPONIBLES
-// Mapa unificado: clave = data-var code del catálogo del builder
-// Cada código se sustituye en tres formas:
-//   a) <span data-var="codigo">[ Label ]</span>  (badge del builder)
-//   b) [CODIGO] o [codigo]                        (texto libre del usuario)
-//   c) [[CODIGO]] o [[codigo]]                    (formato legacy)
 $colegio_nit = $cfg['colegio_nit'] ?? '';
 $colegio_resolucion = $cfg['colegio_resolucion'] ?? '';
 $jornada_escolar = $estudiante['jornada'] ?? '';
 $fecha_registro_fija = !empty($estudiante['fecha_registro']) ? date('d/m/Y', strtotime($estudiante['fecha_registro'])) : date('d/m/Y');
 
+// 2. MAPEAR VARIABLES DISPONIBLES
+// Mapa unificado: clave = data-var code del catálogo del builder
+// Cada código se sustituye en tres formas:
+//   a) <span data-var="codigo">[ Label ]</span>  (badge del builder)
+//   b) [CODIGO] o [codigo]                        (texto libre del usuario)
+//   c) [[CODIGO]] o [[codigo]]                    (formato legacy)
 $var_map = [
     // ESTUDIANTE
     'estudiante_nombre'           => ($estudiante['nombre'] ?? '') . ' ' . ($estudiante['apellido'] ?? ''),
@@ -162,26 +146,6 @@ $alias_extra = [
     'ANIO_FIRMA'                  => date('Y'),
     'JORNADA_ESCOLAR'             => $jornada_escolar,
 ];
-
-// OBTENER CALIFICACIONES PARA EL BLOQUE DE NOTAS (Arquitectura Ares)
-$stmt_n = $db->prepare("
-    SELECT
-        e.nombre_especialidad  AS nombre_materia,
-        AVG(c.calificacion)    AS definitiva,
-        u.nombre               AS docente
-    FROM ares_calificaciones_desglose c
-    INNER JOIN ares_actividades a       ON c.actividad_id = a.id
-    INNER JOIN especialidades e         ON a.especialidad_id = e.id
-    LEFT  JOIN carga_academica ca       ON ca.especialidad_id = e.id AND ca.curso_id = (
-        SELECT curso_id FROM estudiantes WHERE id = ?
-    )
-    LEFT  JOIN usuarios u               ON ca.docente_id = u.id
-    WHERE c.estudiante_id = ?
-    GROUP BY e.id, e.nombre_especialidad, u.nombre
-    ORDER BY e.nombre_especialidad ASC
-");
-$stmt_n->execute([$estudiante_id, $estudiante_id]);
-$notas = $stmt_n->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
 // MOTOR DE SUSTITUCIÓN TRIPLE
 $contenido_sustituido = $formato['contenido_html'];
@@ -304,7 +268,7 @@ function descargarFormatoPDF() {
     const formatoId = <?php echo json_encode($formato_id); ?>;
 
     if (!estudianteId || !formatoId) {
-        alert('Error: Parámetros faltantes');
+        console.error('Error: Parámetros faltantes');
         return;
     }
 

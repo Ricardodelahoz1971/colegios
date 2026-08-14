@@ -1,16 +1,13 @@
-/**
- * Motor Drag & Drop - Formatos de Matrícula (Elite Architecture)
- * 100% MILÍMETROS - Sin conversiones px
- */
-
-if (typeof UNIT_CONFIG === 'undefined') {
-    var UNIT_CONFIG = {
+/* === SECCIÓN 1: CONFIGURACIÓN Y CONSTANTES === */
+if (typeof window.UNIT_CONFIG === 'undefined') {
+    window.UNIT_CONFIG = {
         CANVAS_WIDTH_MM: 215.9,
         CANVAS_HEIGHT_MM: 279.4,
         HEADER_LIMIT_MM: 50,
         FOOTER_START_MM: 219.4
     };
 }
+const UNIT_CONFIG = window.UNIT_CONFIG;
 
 function getMargensInMilimeters() {
     return {
@@ -20,6 +17,35 @@ function getMargensInMilimeters() {
         derecho: parseFloat(document.getElementById('formato-margen-derecho')?.value || 20)
     };
 }
+
+function getCanvasScale() {
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas) return 1;
+    return canvas.offsetWidth / UNIT_CONFIG.CANVAS_WIDTH_MM;
+}
+
+function determinarZona(y) {
+    const headerEndMM = UNIT_CONFIG.HEADER_LIMIT_MM;
+    const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
+    const scale = getCanvasScale();
+
+    const headerEndPx = headerEndMM * scale;
+    const footerStartPx = footerStartMM * scale;
+
+    if (y < headerEndPx) return 'header';
+    if (y > footerStartPx) return 'footer';
+    return 'body';
+}
+
+/* === SECCIÓN 2: INICIALIZACIÓN Y EVENTOS DEL LIENZO === */
+let activeZone = 'body';
+let zoneOverlays = { header: null, body: null, footer: null };
+let bloqueArrastrando = null;
+let offsetX = 0;
+let offsetY = 0;
+let lastSavedRange = null;
+let activeRangeBeforeModal = null;
+let activeEditableBeforeModal = null;
 
 function initFormatosBuilder() {
     const canvas = document.getElementById('canvas-builder');
@@ -47,8 +73,121 @@ function canvasClickSelection(e) {
     const wrapper = e.target.closest('.canvas-block-wrapper');
     if (wrapper) {
         wrapper.classList.add('selected');
+        agregarNodosRedimension(wrapper);
         e.stopPropagation();
     }
+}
+
+/* === MOTOR DE REDIMENSIÓN POR NODOS (ESQUINAS) === */
+function iniciarRedimension(e, handleType, targetWrapper) {
+    e.stopPropagation();
+    e.preventDefault();
+    const wrapper = (targetWrapper && targetWrapper.nodeType === Node.ELEMENT_NODE) ? targetWrapper : e.target.closest('.canvas-block-wrapper');
+    if (!wrapper) return;
+
+    const scale = getCanvasScale();
+    const startWidth_mm = parseFloat(wrapper.dataset.width_mm) || (wrapper.offsetWidth / scale);
+    const startHeight_mm = parseFloat(wrapper.dataset.height_mm) || (wrapper.offsetHeight / scale);
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startLeft_mm = parseFloat(wrapper.dataset.left_mm) || 0;
+    const startTop_mm = parseFloat(wrapper.dataset.top_mm) || 0;
+
+    const wysiwygNodes = Array.from(wrapper.querySelectorAll('.block-content-wysiwyg, .block-content-wysiwyg *')).filter(n => !n.classList?.contains('bloque-backend-html'));
+    wysiwygNodes.forEach(node => {
+        if (!node.dataset.baseFontSize) {
+            node.dataset.baseFontSize = parseFloat(window.getComputedStyle(node).fontSize) || 14;
+        }
+    });
+
+    const canvas = document.getElementById('canvas-builder');
+
+    function redimensionar(moveEvent) {
+        const dx_mm = (moveEvent.clientX - startX) / scale;
+        const dy_mm = (moveEvent.clientY - startY) / scale;
+
+        const margenes = getMargensInMilimeters();
+        
+        // Si es el logotipo, ajustar solo ancho
+        if (wrapper.dataset.bloque === 'logo') {
+            let newWidth_mm = startWidth_mm;
+            if (handleType === 'br' || handleType === 'tr') {
+                const limitWidth_mm = UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.derecho - startLeft_mm;
+                newWidth_mm = Math.min(limitWidth_mm, startWidth_mm + dx_mm);
+            } else if (handleType === 'bl' || handleType === 'tl') {
+                const targetLeft_mm = startLeft_mm + dx_mm;
+                const newLeft_mm = Math.max(margenes.izquierdo, targetLeft_mm);
+                const appliedDx_mm = newLeft_mm - startLeft_mm;
+                newWidth_mm = startWidth_mm - appliedDx_mm;
+                
+                wrapper.style.left = newLeft_mm.toFixed(2) + 'mm';
+                wrapper.dataset.left_mm = newLeft_mm.toFixed(2);
+            }
+            newWidth_mm = Math.max(10, newWidth_mm);
+            wrapper.style.width = newWidth_mm.toFixed(2) + 'mm';
+            wrapper.style.height = 'auto';
+            wrapper.dataset.width_mm = newWidth_mm.toFixed(2);
+            wrapper.dataset.height_mm = '';
+            
+            const img = wrapper.querySelector('.ares-logo-cabecera');
+            if (img) {
+                img.setAttribute('width', Math.max(30, newWidth_mm * 3.78 - 20));
+            }
+            return;
+        }
+        
+        // Para todos los demás bloques
+        let newWidth_mm = startWidth_mm;
+        if (handleType === 'br' || handleType === 'tr') {
+            const limitWidth_mm = UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.derecho - startLeft_mm;
+            newWidth_mm = Math.min(limitWidth_mm, startWidth_mm + dx_mm);
+        } else if (handleType === 'bl' || handleType === 'tl') {
+            const targetLeft_mm = startLeft_mm + dx_mm;
+            const newLeft_mm = Math.max(margenes.izquierdo, targetLeft_mm);
+            const appliedDx_mm = newLeft_mm - startLeft_mm;
+            newWidth_mm = startWidth_mm - appliedDx_mm;
+            
+            wrapper.style.left = newLeft_mm.toFixed(2) + 'mm';
+            wrapper.dataset.left_mm = newLeft_mm.toFixed(2);
+        }
+        newWidth_mm = Math.max(15, newWidth_mm);
+        
+        const scaleRatio = newWidth_mm / startWidth_mm;
+        wysiwygNodes.forEach(node => {
+            const baseSize = parseFloat(node.dataset.baseFontSize);
+            const newSize = Math.max(4, baseSize * scaleRatio);
+            node.style.fontSize = newSize + 'px';
+        });
+
+        wrapper.style.width = newWidth_mm.toFixed(2) + 'mm';
+        wrapper.style.height = 'auto';
+        wrapper.dataset.width_mm = newWidth_mm.toFixed(2);
+        
+        ajustarAlturaLienzo();
+    }
+    
+    function detenerRedimension() {
+        document.removeEventListener('mousemove', redimensionar);
+        document.removeEventListener('mouseup', detenerRedimension);
+    }
+    
+    document.addEventListener('mousemove', redimensionar);
+    document.addEventListener('mouseup', detenerRedimension);
+}
+
+function agregarNodosRedimension(wrapper) {
+    wrapper.querySelectorAll('.resize-handle').forEach(h => h.remove());
+    const handles = ['tl', 'tr', 'bl', 'br'];
+    handles.forEach(type => {
+        const handle = document.createElement('div');
+        handle.className = `resize-handle resize-handle-${type}`;
+        handle.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            iniciarRedimension(e, type, wrapper);
+        });
+        wrapper.appendChild(handle);
+    });
 }
 
 document.addEventListener('click', function(e) {
@@ -57,8 +196,8 @@ document.addEventListener('click', function(e) {
     }
 });
 
-function dragStart(e, tipo, codigo, label) {
-    const data = JSON.stringify({ tipo, codigo, label });
+function dragStart(e, tipo, code, label) {
+    const data = JSON.stringify({ tipo, codigo: code, label });
     e.dataTransfer.setData('text/plain', data);
     e.dataTransfer.effectAllowed = 'copy';
 }
@@ -95,29 +234,12 @@ function canvasDrop(e) {
     insertarBloqueEnCanvas(data.tipo, data.label, x, y);
 }
 
-function determinarZona(y) {
-    const headerEndMM = UNIT_CONFIG.HEADER_LIMIT_MM;
-    const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
-    const scale = getCanvasScale();
-
-    const headerEndPx = headerEndMM * scale;
-    const footerStartPx = footerStartMM * scale;
-
-    if (y < headerEndPx) return 'header';
-    if (y > footerStartPx) return 'footer';
-    return 'body';
-}
-
-function getCanvasScale() {
-    const canvas = document.getElementById('canvas-builder');
-    if (!canvas) return 1;
-    return canvas.offsetWidth / UNIT_CONFIG.CANVAS_WIDTH_MM;
-}
-
+/* === SECCIÓN 3: GESTIÓN DE BLOQUES === */
 function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = false) {
     const canvas = document.getElementById('canvas-builder');
     const idUnico = generarIdUnicoBloque();
     const scale = getCanvasScale();
+    const schoolLogo = document.getElementById('formatos-container')?.dataset.schoolLogo || '/sistema_escolar/perseus.png';
 
     const wrapper = document.createElement('div');
     wrapper.className = 'canvas-block-wrapper animate__animated animate__fadeIn';
@@ -152,7 +274,6 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
 
     let estH_mm = codigo === 'foto_estudiante' ? 37 : (codigo === 'linea' ? 0.5 : 24);
 
-    // Convertir posición de px a mm
     let left_mm = (xPx / scale);
     let top_mm = (yPx / scale);
 
@@ -180,12 +301,10 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
         }
     }
 
-    // Guardar en MM directamente
     wrapper.dataset.left_mm = left_mm.toFixed(2);
     wrapper.dataset.top_mm = top_mm.toFixed(2);
     wrapper.dataset.width_mm = estW_mm.toFixed(2);
 
-    // Aplicar SOLO en MM al CSS (no px)
     wrapper.style.left = left_mm + 'mm';
     wrapper.style.top = top_mm + 'mm';
     wrapper.style.width = estW_mm + 'mm';
@@ -207,7 +326,7 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
     `;
 
     const headerHTML = {
-        'logo': '<img class="ares-logo-cabecera" src="/sistema_escolar/perseus.png" width="120" alt="Logo" />',
+        'logo': `<img class="ares-logo-cabecera" src="${schoolLogo}" alt="Logo" />`,
         'titulo_colegio': '<h3 class="ares-titulo-cabecera">Nombre del Colegio</h3>',
         'lema_colegio': '<p class="ares-lema-cabecera">Lema Institucional</p>',
         'metadatos': '<h4>Año Lectivo 2024-2025</h4>'
@@ -215,8 +334,8 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
 
     const contentHTML = {
         'texto': '<div class="block-content-texto" contenteditable="true">Texto libre aquí</div>',
-        'qr_estudiante': '<div class="qr-placeholder" style="width: 100%; height: 100%; background: #f0f0f0; border: 1px dashed #ccc;"></div>',
-        'foto_estudiante': '<div class="foto-placeholder" style="width: 100%; height: 100%; background: #e8e8e8; border: 1px solid #999;"></div>',
+        'qr_estudiante': '<div class="qr-placeholder" style="width: 100%; height: 100%; background: var(--el-bg-light); border: 1px dashed var(--el-border-color);"></div>',
+        'foto_estudiante': '<div class="foto-placeholder" style="width: 100%; height: 100%; background: var(--el-bg-light); border: 1px solid var(--el-border-color);"></div>',
         'linea': '<div class="ares-linea-grafica" style="width: 100%; height: 100%; background-color: var(--el-primary);"></div>',
         'ficha': '<div class="block-content-wysiwyg" contenteditable="true"><p>Contenido de ficha</p></div>',
         'calificaciones': '<div class="block-content-wysiwyg" contenteditable="false"><table><tr><td>Materia</td><td>Calificación</td></tr></table></div>',
@@ -242,7 +361,7 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
             firmaDiv.className = 'firma-item-canvas';
             firmaDiv.innerHTML = `
                 <div class="ares-firma-cargo" contenteditable="true">Cargo</div>
-                <div style="height: 40px; border-top: 1px solid #000;"></div>
+                <div style="height: 40px; border-top: 1px solid var(--el-border-color);"></div>
                 <div class="ares-firma-nombre" contenteditable="true">Nombre</div>
             `;
             container.appendChild(firmaDiv);
@@ -253,34 +372,33 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
     canvas.appendChild(wrapper);
     chequearEmptyState();
     updateZonesUI();
+    return wrapper;
 }
 
 function insertarBloqueDesdeJSON(jsonBlock) {
     const canvas = document.getElementById('canvas-builder');
     document.getElementById('canvas-empty-state')?.remove();
 
-    const left_mm = parseFloat(jsonBlock.left_mm) || parseFloat(jsonBlock.left) || 10;
-    const top_mm = parseFloat(jsonBlock.top_mm) || parseFloat(jsonBlock.top) || 10;
+    const left_val = parseFloat(jsonBlock.left_mm !== undefined ? jsonBlock.left_mm : jsonBlock.left);
+    const left_mm = isNaN(left_val) ? 10.0 : left_val;
+    const top_val = parseFloat(jsonBlock.top_mm !== undefined ? jsonBlock.top_mm : jsonBlock.top);
+    const top_mm = isNaN(top_val) ? 10.0 : top_val;
     const width_mm = parseFloat(jsonBlock.width_mm) || parseFloat(jsonBlock.width) || null;
     const height_mm = parseFloat(jsonBlock.height_mm) || parseFloat(jsonBlock.height) || null;
     const zone = jsonBlock.zone || 'body';
 
-    const scale = getCanvasScale();
-    const left_px = left_mm * scale;
-    const top_px = top_mm * scale;
-
     const previousActiveZone = activeZone;
     activeZone = jsonBlock.zone || 'body';
 
-    insertarBloqueEnCanvas(jsonBlock.type, null, left_px, top_px, true);
+    const insertedNode = insertarBloqueEnCanvas(jsonBlock.type, null, undefined, undefined, true);
 
     activeZone = previousActiveZone;
-
-    const insertedNode = canvas.lastElementChild;
 
     insertedNode.dataset.zone = zone;
     insertedNode.dataset.left_mm = left_mm.toFixed(2);
     insertedNode.dataset.top_mm = top_mm.toFixed(2);
+    insertedNode.style.left = left_mm + 'mm';
+    insertedNode.style.top = top_mm + 'mm';
 
     if (width_mm) {
         insertedNode.dataset.width_mm = width_mm.toFixed(2);
@@ -389,6 +507,344 @@ function chequearEmptyState() {
     }
 }
 
+function cambiarTamanoLienzoBuilder(tamano) {
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas) return;
+
+    canvas.classList.remove('ares-paper-sheet--carta', 'ares-paper-sheet--media_carta', 'ares-paper-sheet--carne_v', 'ares-paper-sheet--carne_h');
+    const claseTamano = 'ares-paper-sheet--' + tamano;
+    canvas.classList.add(claseTamano);
+}
+
+/* === SECCIÓN 4: MOTOR DRAG & DROP === */
+function iniciarArrastreBloque(e) {
+    if (e.target.closest('.block-controls')) return;
+
+    bloqueArrastrando = e.target.closest('.canvas-block-wrapper');
+    if (!bloqueArrastrando) return;
+
+    const rect = bloqueArrastrando.getBoundingClientRect();
+
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    document.addEventListener('mousemove', arrastrarBloque);
+    document.addEventListener('mouseup', terminarArrastreBloque);
+    e.preventDefault();
+}
+
+function arrastrarBloque(e) {
+    if (!bloqueArrastrando) return;
+
+    const canvas = document.getElementById('canvas-builder');
+    const canvasRect = canvas.getBoundingClientRect();
+    const scale = getCanvasScale();
+
+    // Convertir coordenadas del cursor directamente a milímetros
+    let left_mm = (e.clientX - canvasRect.left - offsetX) / scale;
+    let top_mm = (e.clientY - canvasRect.top - offsetY) / scale;
+
+    const blockW_mm = parseFloat(bloqueArrastrando.dataset.width_mm) || (bloqueArrastrando.offsetWidth / scale);
+    const margenes = getMargensInMilimeters();
+
+    // Restricciones en milímetros (Ancho de papel carta: 215.9 mm)
+    const minLeft = margenes.izquierdo;
+    const maxLeft = UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.derecho - blockW_mm;
+
+    left_mm = Math.max(minLeft, Math.min(left_mm, maxLeft));
+    top_mm = Math.max(0, top_mm);
+
+    bloqueArrastrando.style.left = left_mm.toFixed(2) + 'mm';
+    bloqueArrastrando.style.top = top_mm.toFixed(2) + 'mm';
+    bloqueArrastrando.dataset.left_mm = left_mm.toFixed(2);
+    bloqueArrastrando.dataset.top_mm = top_mm.toFixed(2);
+}
+
+function terminarArrastreBloque() {
+    document.removeEventListener('mousemove', arrastrarBloque);
+    document.removeEventListener('mouseup', terminarArrastreBloque);
+    bloqueArrastrando = null;
+}
+
+function ajustarAlturaLienzo() {
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas) return;
+
+    const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
+    let maxBottom = UNIT_CONFIG.CANVAS_HEIGHT_MM;
+
+    bloques.forEach(bloque => {
+        const top_mm = parseFloat(bloque.dataset.top_mm) || 0;
+        const height_mm = parseFloat(bloque.dataset.height_mm) || 30;
+        const bottom = top_mm + height_mm;
+        if (bottom > maxBottom) {
+            maxBottom = bottom;
+        }
+    });
+
+    const minHeight = UNIT_CONFIG.CANVAS_HEIGHT_MM;
+    const finalHeight = Math.max(minHeight, maxBottom + 10);
+    canvas.style.minHeight = finalHeight + 'mm';
+}
+
+/* === SECCIÓN 5: GESTIÓN DE ZONAS === */
+function toggleZoneEditMode(zone) {
+    if (activeZone === zone) {
+        activeZone = 'body';
+    } else {
+        activeZone = zone;
+    }
+    updateZonesUI();
+}
+
+function updateZonesUI() {
+    const canvas = document.getElementById('canvas-builder');
+    const headerEndMM = UNIT_CONFIG.HEADER_LIMIT_MM;
+    const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
+
+    Object.values(zoneOverlays).forEach(ol => ol?.remove());
+    zoneOverlays = { header: null, body: null, footer: null };
+
+    canvas.style.position = 'relative';
+
+    const createOverlay = (zone, topMM, heightMM, bgColor, label) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'zone-overlay';
+        overlay.dataset.zone = zone;
+        overlay.style.cssText = `
+            position: absolute;
+            top: ${topMM}mm;
+            left: 0;
+            width: 100%;
+            height: ${heightMM}mm;
+            background: ${bgColor};
+            z-index: 500;
+            border: 2px dashed var(--el-border-color);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        const label_el = document.createElement('span');
+        label_el.style.cssText = 'color: var(--el-text-muted); font-size: 12px; font-weight: bold;';
+        label_el.textContent = label;
+        overlay.appendChild(label_el);
+
+        return overlay;
+    };
+
+    if (activeZone === 'header') {
+        const headerOverlay = createOverlay('header', 0, headerEndMM, 'rgba(231, 76, 60, 0.15)', 'CABECERA ACTIVA');
+        canvas.appendChild(headerOverlay);
+        zoneOverlays.header = headerOverlay;
+    }
+
+    if (activeZone === 'body') {
+        const bodyHeight = footerStartMM - headerEndMM;
+        const bodyOverlay = createOverlay('body', headerEndMM, bodyHeight, 'rgba(255, 255, 255, 0)', '');
+        if (bodyOverlay) {
+            canvas.appendChild(bodyOverlay);
+            zoneOverlays.body = bodyOverlay;
+        }
+    }
+
+    if (activeZone === 'footer') {
+        const footerOverlay = createOverlay('footer', footerStartMM, UNIT_CONFIG.CANVAS_HEIGHT_MM - footerStartMM, 'rgba(52, 152, 219, 0.15)', 'PIE DE PÁGINA ACTIVO');
+        canvas.appendChild(footerOverlay);
+        zoneOverlays.footer = footerOverlay;
+    }
+
+    document.querySelectorAll('.canvas-block-wrapper').forEach(bloque => {
+        const bloqueZone = bloque.dataset.zone || 'body';
+        const isActive = (activeZone === 'body' && bloqueZone === 'body') ||
+                         (activeZone === 'header' && bloqueZone === 'header') ||
+                         (activeZone === 'footer' && bloqueZone === 'footer');
+
+        bloque.classList.remove('header-locked', 'body-locked');
+
+        if (isActive) {
+            bloque.style.opacity = '';
+            bloque.style.pointerEvents = 'auto';
+        } else {
+            bloque.classList.add('header-locked');
+            bloque.style.pointerEvents = 'none';
+        }
+    });
+}
+
+function canvasDobleClick(e) {
+    const clickY = e.clientY - document.getElementById('canvas-builder').getBoundingClientRect().top;
+    toggleZoneEditMode(determinarZona(clickY));
+}
+
+/* === SECCIÓN 6: CATÁLOGO DE VARIABLES === */
+function abrirCatalogoVariables() {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+        activeRangeBeforeModal = selection.getRangeAt(0).cloneRange();
+        const node = activeRangeBeforeModal.startContainer;
+        const parentElem = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+        activeEditableBeforeModal = parentElem ? parentElem.closest('.block-content-texto') : null;
+    } else {
+        activeRangeBeforeModal = null;
+        activeEditableBeforeModal = null;
+    }
+
+    const modalEl = document.getElementById('modalCatalogoVariables');
+    if (modalEl) {
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    }
+}
+
+function seleccionarVariableCatalogo(codigo, label, esBloque = false) {
+    const modalEl = document.getElementById('modalCatalogoVariables');
+    if (modalEl) {
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        if (modal) modal.hide();
+    }
+
+    if (esBloque) {
+        insertarBloqueEnCanvas(codigo, label);
+        return;
+    }
+
+    let targetEditable = activeEditableBeforeModal;
+
+    const currentSelection = window.getSelection();
+    if (!targetEditable && currentSelection.rangeCount > 0) {
+        const node = currentSelection.getRangeAt(0).startContainer;
+        const parentElem = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+        targetEditable = parentElem ? parentElem.closest('.block-content-texto') : null;
+    }
+
+    if (targetEditable) {
+        targetEditable.focus();
+        if (activeRangeBeforeModal) {
+            currentSelection.removeAllRanges();
+            currentSelection.addRange(activeRangeBeforeModal);
+        }
+        const badgeHtml = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
+        document.execCommand('insertHTML', false, badgeHtml);
+    } else {
+        insertarBloqueEnCanvas('texto', 'Párrafo de Texto');
+        const canvas = document.getElementById('canvas-builder');
+        const ultimoBloque = canvas.querySelector('.canvas-block-wrapper:last-child');
+        if (ultimoBloque) {
+            const nuevoEditable = ultimoBloque.querySelector('.block-content-texto');
+            if (nuevoEditable) {
+                nuevoEditable.focus();
+                nuevoEditable.innerHTML = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
+            }
+        }
+    }
+}
+
+function insertarVariable(codigo, label) {
+    if (!lastSavedRange) return;
+
+    const html = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(lastSavedRange);
+
+    document.execCommand('insertHTML', false, html);
+    lastSavedRange = selection.getRangeAt(0).cloneRange();
+}
+
+/* === SECCIÓN 7: COMPONENTES ESPECÍFICOS (FIRMAS) === */
+function actualizarBloqueFirmasCanvas(bloque, numColumnas, dataHeredada) {
+    if (!bloque) return;
+    const container = bloque.querySelector('.dynamic-firmas-container');
+    if (!container) return;
+
+    const firmasViejas = [];
+    container.querySelectorAll('.firma-item-canvas').forEach(div => {
+        firmasViejas.push({
+            cargo: div.querySelector('.ares-firma-cargo')?.textContent.trim() || '',
+            nombre: div.querySelector('.ares-firma-nombre')?.textContent.trim() || ''
+        });
+    });
+
+    const defaultFirmas = [
+        { cargo: 'Firma del Estudiante', nombre: '[Nombre Estudiante]' },
+        { cargo: 'Firma del Acudiente', nombre: '[Nombre Acudiente]' },
+        { cargo: 'Rector Institucional', nombre: window.SCHOOL_INFO?.name ? 'RIGOBERTO ANDRÉS NUBIA' : '[Nombre Rector]' },
+        { cargo: 'Secretaría Académica', nombre: '[Nombre Secretaria]' }
+    ];
+
+    const firmasFinales = [];
+    for (let idx = 0; idx < 4; idx++) {
+        let cargo = '';
+        let nombre = '';
+
+        if (dataHeredada && dataHeredada[idx]) {
+            cargo = dataHeredada[idx].cargo;
+            nombre = dataHeredada[idx].nombre;
+        } else if (firmasViejas[idx] && firmasViejas[idx].cargo !== '') {
+            cargo = firmasViejas[idx].cargo;
+            nombre = firmasViejas[idx].nombre;
+        } else {
+            cargo = defaultFirmas[idx].cargo;
+            nombre = defaultFirmas[idx].nombre;
+        }
+
+        firmasFinales.push({ cargo: cargo, nombre: nombre });
+    }
+
+    container.innerHTML = '';
+
+    if (numColumnas === 2) {
+        const col1 = document.createElement('div');
+        col1.style.flex = '1';
+        col1.innerHTML = `
+            <div class="firma-item-canvas">
+                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[0].cargo}</div>
+                <div style="height: 40px; border-top: 1px solid var(--el-border-color);"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[0].nombre}</div>
+            </div>
+            <div class="firma-item-canvas">
+                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[1].cargo}</div>
+                <div style="height: 40px; border-top: 1px solid var(--el-border-color);"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[1].nombre}</div>
+            </div>
+        `;
+        container.appendChild(col1);
+
+        const col2 = document.createElement('div');
+        col2.style.flex = '1';
+        col2.innerHTML = `
+            <div class="firma-item-canvas">
+                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[2].cargo}</div>
+                <div style="height: 40px; border-top: 1px solid var(--el-border-color);"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[2].nombre}</div>
+            </div>
+            <div class="firma-item-canvas">
+                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[3].cargo}</div>
+                <div style="height: 40px; border-top: 1px solid var(--el-border-color);"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[3].nombre}</div>
+            </div>
+        `;
+        container.appendChild(col2);
+    } else {
+        for (let f of firmasFinales) {
+            const firmaDiv = document.createElement('div');
+            firmaDiv.className = 'firma-item-canvas';
+            firmaDiv.innerHTML = `
+                <div class="ares-firma-cargo" contenteditable="true">${f.cargo}</div>
+                <div style="height: 40px; border-top: 1px solid var(--el-border-color);"></div>
+                <div class="ares-firma-nombre" contenteditable="true">${f.nombre}</div>
+            `;
+            container.appendChild(firmaDiv);
+        }
+    }
+
+    bloque.dataset.columnas = numColumnas;
+}
+
+/* === SECCIÓN 8: PERSISTENCIA Y GUARDADO === */
 async function guardarFormato(e) {
     e.preventDefault();
 
@@ -413,8 +869,10 @@ async function guardarFormato(e) {
     const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
     bloques.forEach(bloque => {
         const tipoBloque = bloque.dataset.bloque;
-        const left_mm = parseFloat(bloque.dataset.left_mm) || 10;
-        const top_mm = parseFloat(bloque.dataset.top_mm) || 10;
+        const left_val = parseFloat(bloque.dataset.left_mm);
+        const left_mm = isNaN(left_val) ? 10.0 : left_val;
+        const top_val = parseFloat(bloque.dataset.top_mm);
+        const top_mm = isNaN(top_val) ? 10.0 : top_val;
         const width_mm = bloque.dataset.width_mm ? parseFloat(bloque.dataset.width_mm) : null;
         const height_mm = bloque.dataset.height_mm ? parseFloat(bloque.dataset.height_mm) : null;
 
@@ -551,358 +1009,4 @@ async function guardarFormato(e) {
     } catch (err) {
         Swal.fire('Error', 'No se pudo guardar el formato.', 'error');
     }
-}
-
-let bloqueArrastrando = null;
-let offsetX = 0;
-let offsetY = 0;
-let lastSavedRange = null;
-
-function iniciarArrastreBloque(e) {
-    if (e.target.closest('.block-controls')) return;
-
-    bloqueArrastrando = e.target.closest('.canvas-block-wrapper');
-    if (!bloqueArrastrando) return;
-
-    const rect = bloqueArrastrando.getBoundingClientRect();
-
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-
-    document.addEventListener('mousemove', arrastrarBloque);
-    document.addEventListener('mouseup', terminarArrastreBloque);
-    e.preventDefault();
-}
-
-function arrastrarBloque(e) {
-    if (!bloqueArrastrando) return;
-
-    const canvas = document.getElementById('canvas-builder');
-    const canvasRect = canvas.getBoundingClientRect();
-    const scale = getCanvasScale();
-
-    let xPx = e.clientX - canvasRect.left - offsetX;
-    let yPx = e.clientY - canvasRect.top - offsetY;
-
-    xPx = Math.max(0, Math.min(xPx, canvasRect.width));
-    yPx = Math.max(0, Math.min(yPx, canvasRect.height));
-
-    const blockW = bloqueArrastrando.offsetWidth;
-
-    const margenes = getMargensInMilimeters();
-
-    const margenesPx = {
-        izquierdo: margenes.izquierdo * scale,
-        derecho: margenes.derecho * scale
-    };
-
-    const maxLeft = Math.max(margenesPx.izquierdo, canvasRect.width - margenesPx.derecho - blockW);
-    xPx = Math.max(margenesPx.izquierdo, Math.min(xPx, maxLeft));
-
-    // Convertir a MM
-    let left_mm = xPx / scale;
-    let top_mm = yPx / scale;
-
-    bloqueArrastrando.style.left = left_mm + 'mm';
-    bloqueArrastrando.style.top = top_mm + 'mm';
-    bloqueArrastrando.dataset.left_mm = left_mm.toFixed(2);
-    bloqueArrastrando.dataset.top_mm = top_mm.toFixed(2);
-}
-
-function terminarArrastreBloque() {
-    document.removeEventListener('mousemove', arrastrarBloque);
-    document.removeEventListener('mouseup', terminarArrastreBloque);
-    bloqueArrastrando = null;
-}
-
-function ajustarAlturaLienzo() {
-    const canvas = document.getElementById('canvas-builder');
-    if (!canvas) return;
-
-    const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
-    let maxBottom = UNIT_CONFIG.CANVAS_HEIGHT_MM;
-
-    bloques.forEach(bloque => {
-        const top_mm = parseFloat(bloque.dataset.top_mm) || 0;
-        const height_mm = parseFloat(bloque.dataset.height_mm) || 30;
-        const bottom = top_mm + height_mm;
-        if (bottom > maxBottom) {
-            maxBottom = bottom;
-        }
-    });
-
-    const minHeight = UNIT_CONFIG.CANVAS_HEIGHT_MM;
-    const finalHeight = Math.max(minHeight, maxBottom + 10);
-    canvas.style.minHeight = finalHeight + 'mm';
-}
-
-function insertarVariable(codigo, label) {
-    if (!lastSavedRange) return;
-
-    const html = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
-
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(lastSavedRange);
-
-    document.execCommand('insertHTML', false, html);
-    lastSavedRange = selection.getRangeAt(0).cloneRange();
-}
-
-let activeZone = 'body';
-let zoneOverlays = { header: null, body: null, footer: null };
-
-function toggleZoneEditMode(zone) {
-    if (activeZone === zone) {
-        activeZone = 'body';
-    } else {
-        activeZone = zone;
-    }
-    updateZonesUI();
-}
-
-function updateZonesUI() {
-    const canvas = document.getElementById('canvas-builder');
-    const headerEndMM = UNIT_CONFIG.HEADER_LIMIT_MM;
-    const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
-
-    Object.values(zoneOverlays).forEach(ol => ol?.remove());
-    zoneOverlays = { header: null, body: null, footer: null };
-
-    canvas.style.position = 'relative';
-
-    const createOverlay = (zone, topMM, heightMM, bgColor, label) => {
-        const overlay = document.createElement('div');
-        overlay.className = 'zone-overlay';
-        overlay.dataset.zone = zone;
-        overlay.style.cssText = `
-            position: absolute;
-            top: ${topMM}mm;
-            left: 0;
-            width: 100%;
-            height: ${heightMM}mm;
-            background: ${bgColor};
-            z-index: 500;
-            border: 2px dashed var(--el-border-color, #ccc);
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        `;
-
-        const label_el = document.createElement('span');
-        label_el.style.cssText = 'color: var(--el-text-muted); font-size: 12px; font-weight: bold;';
-        label_el.textContent = label;
-        overlay.appendChild(label_el);
-
-        return overlay;
-    };
-
-    if (activeZone === 'header') {
-        const headerOverlay = createOverlay('header', 0, headerEndMM, 'rgba(231, 76, 60, 0.15)', 'CABECERA ACTIVA');
-        canvas.appendChild(headerOverlay);
-        zoneOverlays.header = headerOverlay;
-    }
-
-    if (activeZone === 'body' || activeZone === 'body') {
-        const bodyHeight = footerStartMM - headerEndMM;
-        const bodyOverlay = activeZone === 'body'
-            ? createOverlay('body', headerEndMM, bodyHeight, 'rgba(255, 255, 255, 0)', '')
-            : null;
-        if (bodyOverlay) {
-            canvas.appendChild(bodyOverlay);
-            zoneOverlays.body = bodyOverlay;
-        }
-    }
-
-    if (activeZone === 'footer') {
-        const footerOverlay = createOverlay('footer', footerStartMM, UNIT_CONFIG.CANVAS_HEIGHT_MM - footerStartMM, 'rgba(52, 152, 219, 0.15)', 'PIE DE PÁGINA ACTIVO');
-        canvas.appendChild(footerOverlay);
-        zoneOverlays.footer = footerOverlay;
-    }
-
-    document.querySelectorAll('.canvas-block-wrapper').forEach(bloque => {
-        const bloqueZone = bloque.dataset.zone || 'body';
-        const isActive = (activeZone === 'body' && bloqueZone === 'body') ||
-                         (activeZone === 'header' && bloqueZone === 'header') ||
-                         (activeZone === 'footer' && bloqueZone === 'footer');
-
-        bloque.classList.remove('header-locked', 'body-locked');
-
-        if (isActive) {
-            bloque.style.opacity = '';
-            bloque.style.pointerEvents = 'auto';
-        } else {
-            bloque.classList.add('header-locked');
-            bloque.style.pointerEvents = 'none';
-        }
-    });
-}
-
-let activeRangeBeforeModal = null;
-let activeEditableBeforeModal = null;
-
-function canvasDobleClick(e) {
-    const clickY = e.clientY - document.getElementById('canvas-builder').getBoundingClientRect().top;
-    toggleZoneEditMode(determinarZona(clickY));
-}
-
-function abrirCatalogoVariables() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-        activeRangeBeforeModal = selection.getRangeAt(0).cloneRange();
-        const node = activeRangeBeforeModal.startContainer;
-        const parentElem = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
-        activeEditableBeforeModal = parentElem ? parentElem.closest('.block-content-texto') : null;
-    } else {
-        activeRangeBeforeModal = null;
-        activeEditableBeforeModal = null;
-    }
-
-    const modalEl = document.getElementById('modalCatalogoVariables');
-    if (modalEl) {
-        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-        modal.show();
-    }
-}
-
-function seleccionarVariableCatalogo(codigo, label, esBloque = false) {
-    const modalEl = document.getElementById('modalCatalogoVariables');
-    if (modalEl) {
-        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-        if (modal) modal.hide();
-    }
-
-    if (esBloque) {
-        insertarBloqueEnCanvas(codigo, label);
-        return;
-    }
-
-    let targetEditable = activeEditableBeforeModal;
-
-    const currentSelection = window.getSelection();
-    if (!targetEditable && currentSelection.rangeCount > 0) {
-        const node = currentSelection.getRangeAt(0).startContainer;
-        const parentElem = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
-        targetEditable = parentElem ? parentElem.closest('.block-content-texto') : null;
-    }
-
-    if (targetEditable) {
-        targetEditable.focus();
-        if (activeRangeBeforeModal) {
-            currentSelection.removeAllRanges();
-            currentSelection.addRange(activeRangeBeforeModal);
-        }
-        const badgeHtml = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
-        document.execCommand('insertHTML', false, badgeHtml);
-    } else {
-        insertarBloqueEnCanvas('texto', 'Párrafo de Texto');
-        const canvas = document.getElementById('canvas-builder');
-        const ultimoBloque = canvas.querySelector('.canvas-block-wrapper:last-child');
-        if (ultimoBloque) {
-            const nuevoEditable = ultimoBloque.querySelector('.block-content-texto');
-            if (nuevoEditable) {
-                nuevoEditable.focus();
-                nuevoEditable.innerHTML = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
-            }
-        }
-    }
-}
-
-function cambiarTamanoLienzoBuilder(tamano) {
-    const canvas = document.getElementById('canvas-builder');
-    if (!canvas) return;
-
-    canvas.classList.remove('ares-paper-sheet--carta', 'ares-paper-sheet--media_carta', 'ares-paper-sheet--carne_v', 'ares-paper-sheet--carne_h');
-    const claseTamano = 'ares-paper-sheet--' + tamano;
-    canvas.classList.add(claseTamano);
-}
-
-function actualizarBloqueFirmasCanvas(bloque, numColumnas, dataHeredada) {
-    if (!bloque) return;
-    const container = bloque.querySelector('.dynamic-firmas-container');
-    if (!container) return;
-
-    const firmasViejas = [];
-    container.querySelectorAll('.firma-item-canvas').forEach(div => {
-        firmasViejas.push({
-            cargo: div.querySelector('.ares-firma-cargo')?.textContent.trim() || '',
-            nombre: div.querySelector('.ares-firma-nombre')?.textContent.trim() || ''
-        });
-    });
-
-    const defaultFirmas = [
-        { cargo: 'Firma del Estudiante', nombre: '[Nombre Estudiante]' },
-        { cargo: 'Firma del Acudiente', nombre: '[Nombre Acudiente]' },
-        { cargo: 'Rector Institucional', nombre: window.SCHOOL_INFO?.name ? 'RIGOBERTO ANDRÉS NUBIA' : '[Nombre Rector]' },
-        { cargo: 'Secretaría Académica', nombre: '[Nombre Secretaria]' }
-    ];
-
-    const firmasFinales = [];
-    for (let idx = 0; idx < 4; idx++) {
-        let cargo = '';
-        let nombre = '';
-
-        if (dataHeredada && dataHeredada[idx]) {
-            cargo = dataHeredada[idx].cargo;
-            nombre = dataHeredada[idx].nombre;
-        } else if (firmasViejas[idx] && firmasViejas[idx].cargo !== '') {
-            cargo = firmasViejas[idx].cargo;
-            nombre = firmasViejas[idx].nombre;
-        } else {
-            cargo = defaultFirmas[idx].cargo;
-            nombre = defaultFirmas[idx].nombre;
-        }
-
-        firmasFinales.push({ cargo: cargo, nombre: nombre });
-    }
-
-    container.innerHTML = '';
-
-    if (numColumnas === 2) {
-        const col1 = document.createElement('div');
-        col1.style.flex = '1';
-        col1.innerHTML = `
-            <div class="firma-item-canvas">
-                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[0].cargo}</div>
-                <div style="height: 40px; border-top: 1px solid #000;"></div>
-                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[0].nombre}</div>
-            </div>
-            <div class="firma-item-canvas">
-                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[1].cargo}</div>
-                <div style="height: 40px; border-top: 1px solid #000;"></div>
-                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[1].nombre}</div>
-            </div>
-        `;
-        container.appendChild(col1);
-
-        const col2 = document.createElement('div');
-        col2.style.flex = '1';
-        col2.innerHTML = `
-            <div class="firma-item-canvas">
-                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[2].cargo}</div>
-                <div style="height: 40px; border-top: 1px solid #000;"></div>
-                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[2].nombre}</div>
-            </div>
-            <div class="firma-item-canvas">
-                <div class="ares-firma-cargo" contenteditable="true">${firmasFinales[3].cargo}</div>
-                <div style="height: 40px; border-top: 1px solid #000;"></div>
-                <div class="ares-firma-nombre" contenteditable="true">${firmasFinales[3].nombre}</div>
-            </div>
-        `;
-        container.appendChild(col2);
-    } else {
-        for (let f of firmasFinales) {
-            const firmaDiv = document.createElement('div');
-            firmaDiv.className = 'firma-item-canvas';
-            firmaDiv.innerHTML = `
-                <div class="ares-firma-cargo" contenteditable="true">${f.cargo}</div>
-                <div style="height: 40px; border-top: 1px solid #000;"></div>
-                <div class="ares-firma-nombre" contenteditable="true">${f.nombre}</div>
-            `;
-            container.appendChild(firmaDiv);
-        }
-    }
-
-    bloque.dataset.columnas = numColumnas;
 }

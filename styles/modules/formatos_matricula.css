@@ -1,4 +1,4 @@
-﻿@layer components {
+@layer components {
     /* ESTILOS DE FORMATOS DE MATRÃCULA - HEPHESTO FORMATOS STYLE v1.0 */
 
     .formatos-container {
@@ -413,6 +413,7 @@
 
 /* Estilos WYSIWYG Mockup */
 .ares-logo-cabecera {
+    width: 100%;
     height: auto;
 }
 

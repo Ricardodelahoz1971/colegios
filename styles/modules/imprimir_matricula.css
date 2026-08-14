@@ -4,8 +4,8 @@
         --margen-inf: 20mm;
         --margen-izq: 20mm;
         --margen-der: 20mm;
-        --print-header-bg: #f9f9f9;
-        --print-zone-border: #ccc;
+        --print-header-bg: var(--el-bg-light);
+        --print-zone-border: var(--el-border-color);
     }
 
     /* Paged.js eliminado, se usarÃ¡ impresiÃ³n nativa. */
@@ -79,7 +79,7 @@
     .btn-fab-pdf {
         bottom: 2rem;
         right: 5.5rem;
-        background-color: var(--el-danger, #e74c3c);
+        background-color: var(--el-danger);
     }
 
     .btn-fab-print:hover,
@@ -123,13 +123,14 @@
         }
     }
 
-    /* Bloques del constructor visual â€” flujo vertical por defecto */
+    /* Bloques del constructor visual — flujo vertical por defecto */
     .bloque-avanzado, .bloque-texto {
         position: relative;
         display: block;
         box-sizing: border-box;
         page-break-inside: avoid;
         break-inside: avoid;
+        overflow: hidden; /* Control estricto de desbordamiento general */
     }
 
     /* Logo institucional â€” respetar ancho del bloque diseÃ±ado */
@@ -550,7 +551,7 @@
         width: 100%;
         max-width: 210mm;
         margin: 0 auto;
-        padding: var(--margen-sup) var(--margen-der) var(--margen-inf) var(--margen-izq);
+        padding: var(--margen-sup) 0 var(--margen-inf) 0;
         box-sizing: border-box;
     }
 
