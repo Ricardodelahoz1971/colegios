@@ -549,10 +549,15 @@
     /* Contenedor principal con ancho mÃ¡ximo A4 y centrado */
     .print-document {
         width: 100%;
-        max-width: 210mm;
         margin: 0 auto;
         padding: var(--margen-sup) 0 var(--margen-inf) 0;
         box-sizing: border-box;
+    }
+    .print-document--carta {
+        max-width: 215.9mm;
+    }
+    .print-document--a4 {
+        max-width: 210mm;
     }
 
     /* Fila superior flexible con logo e informaciÃ³n */
@@ -708,13 +713,19 @@
 
     /* Estilos para vista previa en pantalla del documento completo */
     .print-document {
-        width: 215.9mm;
-        height: 279.4mm;
         border: 0.75pt solid black;
         box-shadow: 0 4px 16px rgba(var(--el-primary-rgb), 0.08);
         margin: 20px auto;
         background-color: white;
         position: relative;
         box-sizing: border-box;
+    }
+    .print-document--carta {
+        width: 215.9mm;
+        height: 279.4mm;
+    }
+    .print-document--a4 {
+        width: 210mm;
+        height: 297mm;
     }
 }

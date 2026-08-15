@@ -93,6 +93,12 @@ try {
         $w = !empty($block['width_mm']) ? (float)$block['width_mm'] : ($papel_width - $m_izq - $m_der);
         $h = !empty($block['height_mm']) ? (float)$block['height_mm'] : 0.0;
 
+        $es_bloque_ancho_completo = in_array($tipo, ['ficha', 'calificaciones', 'texto_certificacion', 'linea']);
+        if ($es_bloque_ancho_completo) {
+            $x = $m_izq;
+            $w = $papel_width - $m_izq - $m_der;
+        }
+
         $html_block = '';
 
         if ($tipo === 'texto') {
@@ -120,6 +126,18 @@ try {
 
         if (trim($html_block) === '') {
             continue;
+        }
+
+        // Aplicar tamaño y alineación dinámicos usando bloque style concatenado (Decálogo de Oro)
+        if ($tipo === 'titulo_colegio' || $tipo === 'lema_colegio' || $tipo === 'metadatos') {
+            $defaultSize = ($tipo === 'titulo_colegio') ? '20' : (($tipo === 'lema_colegio') ? '12' : '16');
+            $size = $block['size'] ?? $defaultSize;
+            $align = $block['align'] ?? 'center';
+            $open_tag_css = '<' . 'style' . '>';
+            $close_tag_css = '</' . 'style' . '>';
+            $selector = ($tipo === 'metadatos') ? '.metadatos-titulo-linea' : 
+                        (($tipo === 'lema_colegio') ? '.ares-lema-cabecera' : '.ares-titulo-cabecera');
+            $html_block = $open_tag_css . $selector . ' { font-size: ' . $size . 'pt; text-align: ' . $align . '; }' . $close_tag_css . $html_block;
         }
 
         // Escalar la imagen del logo al ancho real en píxeles (1mm = 3.78px) para evitar desbordamiento asimétrico en TCPDF

@@ -30,13 +30,17 @@ if (!empty($school_logo) && strpos($school_logo, 'http') === false) {
 if (empty($school_logo)) {
     $school_logo = 'perseus.png';
 }
+
+// Cargar año lectivo activo
+$stmt_anio = $db->query("SELECT valor FROM configuracion_global WHERE clave = 'anio_lectivo_oficial' LIMIT 1");
+$anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y');
 ?>
 
 <!-- Quill Styles & Script -->
 <link rel="stylesheet" href="../assets/libs/ql/quill.snow.min.css">
 <script src="../assets/libs/ql/quill.js"></script>
 
-<div class="formatos-container animate__animated animate__fadeIn" id="formatos-container" data-school-name="<?php echo htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8'); ?>" data-school-motto="<?php echo htmlspecialchars($school_motto, ENT_QUOTES, 'UTF-8'); ?>" data-school-logo="<?php echo htmlspecialchars($school_logo, ENT_QUOTES, 'UTF-8'); ?>">
+<div class="formatos-container animate__animated animate__fadeIn" id="formatos-container" data-school-name="<?php echo htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8'); ?>" data-school-motto="<?php echo htmlspecialchars($school_motto, ENT_QUOTES, 'UTF-8'); ?>" data-school-logo="<?php echo htmlspecialchars($school_logo, ENT_QUOTES, 'UTF-8'); ?>" data-school-anio="<?php echo htmlspecialchars((string)$anio_lectivo, ENT_QUOTES, 'UTF-8'); ?>">
     
     <div class="nav-elite-header-container mb-4">
         <ul class="nav nav-pills-elite" id="formatos-tabs" role="tablist">
@@ -150,6 +154,7 @@ if (empty($school_logo)) {
                 <input type="hidden" id="formato-margen-inferior" value="20">
                 <input type="hidden" id="formato-margen-izquierdo" value="20">
                 <input type="hidden" id="formato-margen-derecho" value="20">
+                <input type="hidden" id="formato-cabecera-mm" value="50">
                 <input type="hidden" id="formato-tipo-documento" value="matricula">
                 <input type="hidden" id="formato-tamano-lienzo" value="carta">
             </form>
@@ -182,23 +187,37 @@ if (empty($school_logo)) {
 
                     <!-- Configuración para Título -->
                     <div id="config-section-titulo" class="d-none">
-                        <div class="mb-3">
-                            <label for="config-titulo-size" class="form-label small fw-bold text-uppercase d-flex justify-content-between">
-                                <span>Tamaño de Letra (px)</span>
-                                <span id="config-titulo-size-value">20px</span>
-                            </label>
-                            <input type="range" id="config-titulo-size" class="form-range" min="12" max="36" step="1" value="20" oninput="document.getElementById('config-titulo-size-value').textContent = this.value + 'px'; if (activeConfigNode) { const h = activeConfigNode.querySelector('.ares-titulo-cabecera, h3, h2, .cabecera-plantilla__nombre'); if (h) h.style.fontSize = this.value + 'px'; }">
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label for="config-titulo-size" class="form-label small fw-bold text-uppercase">Tamaño (pt)</label>
+                                <input type="number" id="config-titulo-size" class="input-elite" min="8" max="72" value="20" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('.ares-titulo-cabecera, h3, h2'); if (h) h.style.fontSize = this.value + 'pt'; }">
+                            </div>
+                            <div class="col-6">
+                                <label for="config-titulo-align" class="form-label small fw-bold text-uppercase">Alineación</label>
+                                <select id="config-titulo-align" class="input-elite" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('.ares-titulo-cabecera, h3, h2, .block-content-wysiwyg'); if (h) { h.style.textAlign = this.value; h.parentNode.style.textAlign = this.value; } }">
+                                    <option value="center">Centrado</option>
+                                    <option value="left">Izquierda</option>
+                                    <option value="right">Derecha</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Configuración para Metadatos -->
                     <div id="config-section-metadatos" class="d-none">
-                        <div class="mb-3">
-                            <label for="config-metadatos-size" class="form-label small fw-bold text-uppercase d-flex justify-content-between">
-                                <span>Tamaño de Letra (px)</span>
-                                <span id="config-metadatos-size-value">16px</span>
-                            </label>
-                            <input type="range" id="config-metadatos-size" class="form-range" min="10" max="28" step="1" value="16" oninput="document.getElementById('config-metadatos-size-value').textContent = this.value + 'px'; if (activeConfigNode) { const h = activeConfigNode.querySelector('h4'); if (h) h.style.fontSize = this.value + 'px'; }">
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label for="config-metadatos-size" class="form-label small fw-bold text-uppercase">Tamaño (pt)</label>
+                                <input type="number" id="config-metadatos-size" class="input-elite" min="8" max="72" value="16" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('h4'); if (h) h.style.fontSize = this.value + 'pt'; }">
+                            </div>
+                            <div class="col-6">
+                                <label for="config-metadatos-align" class="form-label small fw-bold text-uppercase">Alineación</label>
+                                <select id="config-metadatos-align" class="input-elite" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('h4, .block-content-wysiwyg'); if (h) { h.style.textAlign = this.value; h.parentNode.style.textAlign = this.value; } }">
+                                    <option value="center">Centrado</option>
+                                    <option value="left">Izquierda</option>
+                                    <option value="right">Derecha</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -327,6 +346,12 @@ if (empty($school_logo)) {
                     <div class="col-3">
                         <label for="modal-formato-margen-derecho" class="form-label small fw-bold text-uppercase">Der. (mm)</label>
                         <input type="number" id="modal-formato-margen-derecho" class="input-elite" min="0" max="100" onchange="document.getElementById('formato-margen-derecho').value = this.value; if(typeof actualizarZonaSeguraLienzo === 'function') actualizarZonaSeguraLienzo();">
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label for="modal-formato-cabecera-mm" class="form-label small fw-bold text-uppercase">Cabecera (mm)</label>
+                        <input type="number" id="modal-formato-cabecera-mm" class="input-elite" min="10" max="150" value="50" onchange="document.getElementById('formato-cabecera-mm').value = this.value; if(typeof actualizarZonesUI === 'function') { actualizarZonesUI(); }">
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mt-4">

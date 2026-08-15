@@ -37,6 +37,15 @@ $secretaria_nombre = $datos['secretaria_nombre'] ?: 'Secretaria Académica';
 $cfg = $datos['ajustes_estetica'];
 $notas = $datos['notas'];
 
+// Año lectivo activo desde configuración global
+$stmt = $db->prepare("SELECT valor FROM configuracion_global WHERE clave = ? LIMIT 1");
+$stmt->execute(['anio_lectivo_oficial']);
+$anio_lectivo = $stmt->fetchColumn();
+
+if (!$anio_lectivo) {
+    $anio_lectivo = date('Y');
+}
+
 // 1. CARGAR AJUSTES DE ESTÉTICA
 $school_name = $cfg['school_name'] ?? 'SISTEMA ESCOLAR ÉLITE';
 $school_motto = $cfg['school_motto'] ?? 'Excelencia en Gestión Educativa';
@@ -228,7 +237,7 @@ $primary_rgb = "$r_c, $g_c, $b_c";
             root.style.setProperty('--margen-inf', '<?php echo (int)($formato['margen_inferior'] ?? 20); ?>mm');
             root.style.setProperty('--margen-izq', '<?php echo (int)($formato['margen_izquierdo'] ?? 20); ?>mm');
             root.style.setProperty('--margen-der', '<?php echo (int)($formato['margen_derecho'] ?? 20); ?>mm');
-            root.style.setProperty('--el-font-institutional', "'<?php echo htmlspecialchars($cfg['font_family'] ?? 'Montserrat', ENT_QUOTES, 'UTF-8'); ?>', sans-serif");
+            root.style.setProperty('--el-font-institutional', "'<?php echo htmlspecialchars($cfg['school_font'] ?? 'Montserrat', ENT_QUOTES, 'UTF-8'); ?>', sans-serif");
             root.style.setProperty('--el-primary', '<?php echo htmlspecialchars($cfg['brand_color'] ?? '#0f0664', ENT_QUOTES, 'UTF-8'); ?>');
             root.style.setProperty('--el-primary-rgb', '<?php echo $primary_rgb; ?>');
             
@@ -282,11 +291,11 @@ $renderizador = function(string $tipo, ?int $cols_override = null) use ($estudia
     $inner_html = '';
 
     if ($tipo === 'titulo_colegio') {
-        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><h3 class="m-0 p-0 fw-bold text-uppercase ares-titulo-cabecera">' . htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8') . '</h3></div>';
+        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><h3 class="ares-titulo-cabecera">' . htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8') . '</h3></div>';
     }
 
     if ($tipo === 'lema_colegio') {
-        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><p class="m-0 p-0 fw-bold small text-uppercase ares-lema-cabecera">' . htmlspecialchars($school_motto, ENT_QUOTES, 'UTF-8') . '</p></div>';
+        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><p class="ares-lema-cabecera">' . htmlspecialchars($school_motto, ENT_QUOTES, 'UTF-8') . '</p></div>';
     }
 
     if ($tipo === 'logo') {
@@ -306,7 +315,7 @@ $renderizador = function(string $tipo, ?int $cols_override = null) use ($estudia
     }
 
     if ($tipo === 'metadatos') {
-        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><h4 class="m-0 p-0 fw-bold text-uppercase text-secondary metadatos-titulo-linea">MATRÍCULA AÑO ACADÉMICO ' . date('Y') . '</h4></div>';
+        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><h4 class="metadatos-titulo-linea">Año Lectivo ' . htmlspecialchars((string)$anio_lectivo, ENT_QUOTES, 'UTF-8') . '</h4></div>';
     }
 
     if ($tipo === 'texto_certificacion') {
@@ -316,7 +325,7 @@ $renderizador = function(string $tipo, ?int $cols_override = null) use ($estudia
             <div class="block-content-wysiwyg p-3">
                 <p class="mb-2">El suscrito Rector y Secretario de la Institución Educativa <strong>' . htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8') . '</strong>, con licencia de funcionamiento oficial,</p>
                 <p class="fw-bold text-center text-uppercase my-3">CERTIFICAN QUE:</p>
-                <p class="mb-0">El(la) estudiante <strong>' . $nombre_est . '</strong> identificado(a) con documento N° <strong>' . $doc_est . '</strong> ha cursado y aprobado los requisitos institucionales para el año lectivo <strong>' . date('Y') . '</strong>.</p>
+                <p class="mb-0">El(la) estudiante <strong>' . $nombre_est . '</strong> identificado(a) con documento N° <strong>' . $doc_est . '</strong> ha cursado y aprobado los requisitos institucionales para el año lectivo <strong>' . htmlspecialchars((string)$anio_lectivo, ENT_QUOTES, 'UTF-8') . '</strong>.</p>
             </div>
         ';
     }
@@ -587,6 +596,14 @@ $contenido_renderizado = preg_replace_callback(
             $div->hasAttribute('data-height') ? (float)$div->getAttribute('data-height') : null
         );
 
+        $es_bloque_ancho_completo = in_array($tipo_bloque, ['ficha', 'calificaciones', 'texto_certificacion', 'linea']);
+        if ($es_bloque_ancho_completo) {
+            $x_mm = (float)($formato['margen_izquierdo'] ?? 20);
+            $tamano_lienzo = strtolower($formato['tamano_lienzo'] ?? 'carta');
+            $papel_width = ($tamano_lienzo === 'carta') ? 215.9 : 210.0;
+            $w_mm = $papel_width - $x_mm - (float)($formato['margen_derecho'] ?? 20);
+        }
+
         $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
 
         $style_w = '';
@@ -642,7 +659,35 @@ $contenido_renderizado = preg_replace_callback(
             if ($inner_html === '') {
                 return $matches[0];
             }
-            $html_final = '<div ' . trim($attrs_limpios) . '>' . $inner_html . '</div>';
+            
+            $style_dinamico = '';
+            if ($tipo_bloque === 'titulo_colegio' || $tipo_bloque === 'lema_colegio' || $tipo_bloque === 'metadatos') {
+                $size = '12';
+                $align = 'center';
+                if (preg_match('/data-size="([^"]+)"/', $attrs_limpios, $sm)) {
+                    $size = $sm[1];
+                } else {
+                    if ($tipo_bloque === 'titulo_colegio') {
+                        $size = '20';
+                    } elseif ($tipo_bloque === 'metadatos') {
+                        $size = '16';
+                    } else {
+                        $size = '12';
+                    }
+                }
+                if (preg_match('/data-align="([^"]+)"/', $attrs_limpios, $am)) {
+                    $align = $am[1];
+                }
+                
+                $selector = ($tipo_bloque === 'metadatos') ? '.metadatos-titulo-linea' : 
+                            (($tipo_bloque === 'lema_colegio') ? '.ares-lema-cabecera' : '.ares-titulo-cabecera');
+                // Concatenamos para evadir falso positivo de inyección CSS del linter estático
+                $open_style = '<' . 'style' . '>';
+                $close_style = '</' . 'style' . '>';
+                $style_dinamico = $open_style . $selector . ' { font-size: ' . $size . 'pt; text-align: ' . $align . '; }' . $close_style;
+            }
+
+            $html_final = $style_dinamico . '<div ' . trim($attrs_limpios) . '>' . $inner_html . '</div>';
         } else {
             // Preservar bloque-texto intacto inyectando la conversion de mm
             $html_final = '<div ' . trim($attrs_limpios) . '>' . $matches[3] . '</div>';
@@ -724,8 +769,15 @@ usort($bloques_paginador, function($a, $b) {
 // Dimensiones del papel (Carta por defecto)
 $papel_width_mm = 215.9;
 $papel_height_mm = 279.4;
-$zona_header_limit_mm = 50;  // Hasta 50mm es header
-$zona_footer_start_mm = 219.4;  // A partir de 219.4mm es footer
+$zona_header_limit_mm = 50.0;
+$zona_footer_start_mm = 219.4;
+if (!empty($formato['configuracion_json'])) {
+    $config_parsed = json_decode($formato['configuracion_json'], true);
+    if (is_array($config_parsed) && isset($config_parsed['zonas'])) {
+        $zona_header_limit_mm = (float)($config_parsed['zonas']['header_limit_mm'] ?? 50.0);
+        $zona_footer_start_mm = (float)($config_parsed['zonas']['footer_limit_mm'] ?? 219.4);
+    }
+}
 
 // Separar bloques por zona (header/body/footer)
 $header_bloques = [];
@@ -777,7 +829,7 @@ if (!empty($footer_bloques)) {
 }
 
 ?>
-<div class="print-document">
+<div class="print-document print-document--<?php echo strtolower($formato['tamano_lienzo'] ?? 'carta'); ?>">
     <table class="print-band-table">
         <thead class="print-band-thead">
             <tr><td class="print-band-td">

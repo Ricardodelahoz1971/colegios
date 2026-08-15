@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.SCHOOL_INFO = {
             name: container.getAttribute('data-school-name') || '',
             motto: container.getAttribute('data-school-motto') || '',
-            logo: container.getAttribute('data-school-logo') || ''
+            logo: container.getAttribute('data-school-logo') || '',
+            anio: container.getAttribute('data-school-anio') || new Date().getFullYear()
         };
     }
     
@@ -56,9 +57,21 @@ function abrirConfiguracionBloque(idUnico) {
     document.getElementById('config-section-firmas').classList.add('d-none');
     document.getElementById('config-section-linea').classList.add('d-none');
     
-    if (tipo === 'logo' || tipo === 'titulo_colegio' || tipo === 'metadatos') {
-        // Engranaje inoperativo a solicitud del usuario
+    if (tipo === 'logo') {
+        Swal.fire({ icon: 'info', title: 'Componente básico', text: 'El logo se ajusta redimensionándolo directamente desde sus esquinas.', timer: 2500, showConfirmButton: false });
         return;
+    } else if (tipo === 'titulo_colegio') {
+        document.getElementById('config-section-titulo').classList.remove('d-none');
+        const size = activeConfigNode.dataset.size || '20';
+        document.getElementById('config-titulo-size').value = size;
+        const align = activeConfigNode.dataset.align || 'center';
+        document.getElementById('config-titulo-align').value = align;
+    } else if (tipo === 'metadatos') {
+        document.getElementById('config-section-metadatos').classList.remove('d-none');
+        const size = activeConfigNode.dataset.size || '16';
+        document.getElementById('config-metadatos-size').value = size;
+        const align = activeConfigNode.dataset.align || 'center';
+        document.getElementById('config-metadatos-align').value = align;
     } else if (tipo === 'linea') {
         document.getElementById('config-section-linea').classList.remove('d-none');
         const grosor = activeConfigNode.dataset.height || '1.5pt';
@@ -103,25 +116,29 @@ function guardarAjustesBloque(e) {
     const tipo = activeConfigNode.dataset.bloque;
     
     if (tipo === 'logo') {
-        const width = document.getElementById('config-logo-width').value;
-        activeConfigNode.dataset.width = width;
-        const img = activeConfigNode.querySelector('.ares-logo-cabecera');
-        if (img) {
-            img.setAttribute('width', width);
-        }
+        // Obsoleto, logo usa redimensionado
+        return;
     } else if (tipo === 'titulo_colegio') {
         const size = document.getElementById('config-titulo-size').value;
+        const align = document.getElementById('config-titulo-align').value;
         activeConfigNode.dataset.size = size;
-        const header = activeConfigNode.querySelector('.ares-titulo-cabecera, h3, h2, .cabecera-plantilla__nombre');
+        activeConfigNode.dataset.align = align;
+        const header = activeConfigNode.querySelector('.ares-titulo-cabecera, h3, h2');
         if (header) {
-            header.style.fontSize = size + 'px';
+            header.style.fontSize = size + 'pt';
+            header.style.textAlign = align;
+            header.parentNode.style.textAlign = align;
         }
     } else if (tipo === 'metadatos') {
         const size = document.getElementById('config-metadatos-size').value;
+        const align = document.getElementById('config-metadatos-align').value;
         activeConfigNode.dataset.size = size;
+        activeConfigNode.dataset.align = align;
         const header = activeConfigNode.querySelector('h4');
         if (header) {
-            header.style.fontSize = size + 'px';
+            header.style.fontSize = size + 'pt';
+            header.style.textAlign = align;
+            header.parentNode.style.textAlign = align;
         }
     } else if (tipo === 'calificaciones') {
         const diseno = document.getElementById('config-diseno').value;
@@ -164,6 +181,9 @@ function prepararNuevoFormato() {
     document.getElementById('formato-descripcion').value = '';
     document.getElementById('formato-margen-superior').value = '20';
     document.getElementById('formato-margen-inferior').value = '20';
+    document.getElementById('formato-cabecera-mm').value = '50';
+    const modalCab = document.getElementById('modal-formato-cabecera-mm');
+    if (modalCab) modalCab.value = '50';
     document.getElementById('formato-tipo-documento').value = 'matricula';
     document.getElementById('formato-tamano-lienzo').value = 'carta';
     if (typeof cambiarTamanoLienzoBuilder === 'function') cambiarTamanoLienzoBuilder('carta');
@@ -213,6 +233,9 @@ function editarFormato(id) {
                 document.getElementById('formato-margen-inferior').value = res.data.margen_inferior;
                 document.getElementById('formato-margen-izquierdo').value = res.data.margen_izquierdo || 20;
                 document.getElementById('formato-margen-derecho').value = res.data.margen_derecho || 20;
+                document.getElementById('formato-cabecera-mm').value = 50;
+                const modalCabInput = document.getElementById('modal-formato-cabecera-mm');
+                if (modalCabInput) modalCabInput.value = 50;
                 document.getElementById('formato-tipo-documento').value = res.data.tipo_documento || 'matricula';
                 document.getElementById('formato-tamano-lienzo').value = res.data.tamano_lienzo || 'carta';
 
@@ -241,7 +264,11 @@ function editarFormato(id) {
                         // Cargar zonas si existen
                         if (res.data.zonas_config) {
                             const zonas = typeof res.data.zonas_config === 'string' ? JSON.parse(res.data.zonas_config) : res.data.zonas_config;
-                            canvas.dataset.zoneHeaderMm = zonas.header_limit_mm || 50;
+                            const headerLimit = zonas.header_limit_mm || 50;
+                            document.getElementById('formato-cabecera-mm').value = headerLimit;
+                            const modalCabeceraInput = document.getElementById('modal-formato-cabecera-mm');
+                            if (modalCabeceraInput) modalCabeceraInput.value = headerLimit;
+                            canvas.dataset.zoneHeaderMm = headerLimit;
                             canvas.dataset.zoneFooterMm = zonas.footer_limit_mm || 219.4;
                         }
 

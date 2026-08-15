@@ -9,6 +9,10 @@ if (typeof window.UNIT_CONFIG === 'undefined') {
 }
 const UNIT_CONFIG = window.UNIT_CONFIG;
 
+function getHeaderLimit() {
+    return parseFloat(document.getElementById('formato-cabecera-mm')?.value || 50);
+}
+
 function getMargensInMilimeters() {
     return {
         superior: parseFloat(document.getElementById('formato-margen-superior')?.value || 20),
@@ -25,7 +29,7 @@ function getCanvasScale() {
 }
 
 function determinarZona(y) {
-    const headerEndMM = UNIT_CONFIG.HEADER_LIMIT_MM;
+    const headerEndMM = getHeaderLimit();
     const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
     const scale = getCanvasScale();
 
@@ -108,7 +112,7 @@ function iniciarRedimension(e, handleType, targetWrapper) {
 
         const margenes = getMargensInMilimeters();
         
-        // Si es el logotipo, ajustar solo ancho
+        // Si es el logotipo, ajustar solo ancho con contención vertical
         if (wrapper.dataset.bloque === 'logo') {
             let newWidth_mm = startWidth_mm;
             if (handleType === 'br' || handleType === 'tr') {
@@ -124,6 +128,27 @@ function iniciarRedimension(e, handleType, targetWrapper) {
                 wrapper.dataset.left_mm = newLeft_mm.toFixed(2);
             }
             newWidth_mm = Math.max(10, newWidth_mm);
+
+            // Validar si la altura resultante desborda la zona vertical
+            const blockZone = wrapper.dataset.zone || 'body';
+            const headerEndMM = getHeaderLimit();
+            const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
+            let maxZoneY = UNIT_CONFIG.CANVAS_HEIGHT_MM - margenes.inferior;
+            if (blockZone === 'header') {
+                maxZoneY = headerEndMM;
+            } else if (blockZone === 'body') {
+                maxZoneY = footerStartMM;
+            }
+
+            wrapper.style.width = newWidth_mm.toFixed(2) + 'mm';
+            const currentHeight_mm = wrapper.offsetHeight / scale;
+            if (startTop_mm + currentHeight_mm > maxZoneY) {
+                const allowedHeight_mm = maxZoneY - startTop_mm;
+                const aspect = startWidth_mm / (startHeight_mm || startWidth_mm || 1);
+                newWidth_mm = Math.min(newWidth_mm, allowedHeight_mm * aspect);
+                newWidth_mm = Math.max(10, newWidth_mm);
+            }
+
             wrapper.style.width = newWidth_mm.toFixed(2) + 'mm';
             wrapper.style.height = 'auto';
             wrapper.dataset.width_mm = newWidth_mm.toFixed(2);
@@ -152,14 +177,45 @@ function iniciarRedimension(e, handleType, targetWrapper) {
         }
         newWidth_mm = Math.max(15, newWidth_mm);
         
+        const blockZone = wrapper.dataset.zone || 'body';
+        const headerEndMM = getHeaderLimit();
+        const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
+        
+        let maxZoneY = UNIT_CONFIG.CANVAS_HEIGHT_MM - margenes.inferior;
+        if (blockZone === 'header') {
+            maxZoneY = headerEndMM;
+        } else if (blockZone === 'body') {
+            maxZoneY = footerStartMM;
+        }
+
+        // Aplicar temporalmente para medir la altura resultante en el DOM
+        wrapper.style.width = newWidth_mm.toFixed(2) + 'mm';
         const scaleRatio = newWidth_mm / startWidth_mm;
         wysiwygNodes.forEach(node => {
             const baseSize = parseFloat(node.dataset.baseFontSize);
             const newSize = Math.max(4, baseSize * scaleRatio);
-            node.style.fontSize = newSize + 'px';
+            node.style.fontSize = (newSize * 0.75) + 'pt';
         });
 
-        wrapper.style.width = newWidth_mm.toFixed(2) + 'mm';
+        // Validar si la altura resultante desborda la zona vertical
+        const currentHeight_mm = wrapper.offsetHeight / scale;
+        if (startTop_mm + currentHeight_mm > maxZoneY) {
+            const allowedHeight_mm = maxZoneY - startTop_mm;
+            const aspect = startWidth_mm / startHeight_mm;
+            let estWidth_mm = allowedHeight_mm * aspect;
+            
+            newWidth_mm = Math.min(newWidth_mm, estWidth_mm);
+            newWidth_mm = Math.max(15, newWidth_mm);
+            
+            wrapper.style.width = newWidth_mm.toFixed(2) + 'mm';
+            const finalScaleRatio = newWidth_mm / startWidth_mm;
+            wysiwygNodes.forEach(node => {
+                const baseSize = parseFloat(node.dataset.baseFontSize);
+                const newSize = Math.max(4, baseSize * finalScaleRatio);
+                node.style.fontSize = (newSize * 0.75) + 'pt';
+            });
+        }
+        
         wrapper.style.height = 'auto';
         wrapper.dataset.width_mm = newWidth_mm.toFixed(2);
         
@@ -254,25 +310,24 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
     const headerEndMM = UNIT_CONFIG.HEADER_LIMIT_MM;
     const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
 
+    const maxAnchoSeguro = UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.izquierdo - margenes.derecho;
     let estW_mm = 50;
     if (codigo === 'logo' || codigo === 'qr_estudiante') estW_mm = 30;
     if (codigo === 'foto_estudiante') estW_mm = 32;
-    if (codigo === 'titulo_colegio') estW_mm = 105;
-    if (codigo === 'lema_colegio') estW_mm = 95;
-    if (codigo === 'metadatos') estW_mm = 132;
-    if (codigo === 'ficha' || codigo === 'calificaciones' || codigo === 'texto_certificacion' || codigo === 'linea') {
-        estW_mm = UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.izquierdo - margenes.derecho;
+
+    const esBloqueAnchoCompleto = ['ficha', 'calificaciones', 'texto_certificacion', 'linea'].includes(codigo);
+    if (esBloqueAnchoCompleto) {
+        estW_mm = maxAnchoSeguro;
     }
     if (codigo === 'firmas') {
-        estW_mm = UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.izquierdo - margenes.derecho - 26;
+        estW_mm = maxAnchoSeguro - 26;
     }
 
-    const maxAnchoSeguro = UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.izquierdo - margenes.derecho;
     if (estW_mm > maxAnchoSeguro) {
         estW_mm = maxAnchoSeguro;
     }
 
-    let estH_mm = codigo === 'foto_estudiante' ? 37 : (codigo === 'linea' ? 0.5 : 24);
+    let estH_mm = codigo === 'foto_estudiante' ? 37 : (codigo === 'linea' ? 0.5 : 12);
 
     let left_mm = (xPx / scale);
     let top_mm = (yPx / scale);
@@ -290,6 +345,10 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
 
     const maxLeft = Math.max(margenes.izquierdo, UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.derecho - estW_mm);
     left_mm = Math.max(margenes.izquierdo, Math.min(left_mm, maxLeft));
+
+    if (esBloqueAnchoCompleto) {
+        left_mm = margenes.izquierdo;
+    }
 
     if (!skipZoneRestrictions) {
         if (activeZone === 'header') {
@@ -325,11 +384,12 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
         </div>
     `;
 
+    const _si = (typeof window.SCHOOL_INFO !== 'undefined') ? window.SCHOOL_INFO : {};
     const headerHTML = {
         'logo': `<img class="ares-logo-cabecera" src="${schoolLogo}" alt="Logo" />`,
-        'titulo_colegio': '<h3 class="ares-titulo-cabecera">Nombre del Colegio</h3>',
-        'lema_colegio': '<p class="ares-lema-cabecera">Lema Institucional</p>',
-        'metadatos': '<h4>Año Lectivo 2024-2025</h4>'
+        'titulo_colegio': `<h3 class="ares-titulo-cabecera">${_si.name || 'Nombre del Colegio'}</h3>`,
+        'lema_colegio': `<p class="ares-lema-cabecera">${_si.motto || 'Lema Institucional'}</p>`,
+        'metadatos': `<h4>Año Lectivo ${_si.anio || new Date().getFullYear()}</h4>`
     };
 
     const contentHTML = {
@@ -370,6 +430,13 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
     }
 
     canvas.appendChild(wrapper);
+    
+    // Medir y guardar la altura real del contenido en mm
+    if (codigo !== 'linea') {
+        const realHeight_mm = wrapper.offsetHeight / scale;
+        wrapper.dataset.height_mm = realHeight_mm.toFixed(2);
+    }
+
     chequearEmptyState();
     updateZonesUI();
     return wrapper;
@@ -406,7 +473,10 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     }
     if (height_mm) {
         insertedNode.dataset.height_mm = height_mm.toFixed(2);
-        insertedNode.style.height = height_mm + 'mm';
+        const esBloqueTextoDinamico = ['titulo_colegio', 'lema_colegio', 'metadatos', 'texto', 'texto_certificacion'].includes(jsonBlock.type);
+        if (!esBloqueTextoDinamico) {
+            insertedNode.style.height = height_mm + 'mm';
+        }
     }
 
     if (jsonBlock.type === 'texto' && jsonBlock.content) {
@@ -419,8 +489,16 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     if (jsonBlock.scale) insertedNode.dataset.scale = jsonBlock.scale;
     if (jsonBlock.size) {
         insertedNode.dataset.size = jsonBlock.size;
-        const header = insertedNode.querySelector('.ares-titulo-cabecera, h3, h2, h4, .cabecera-plantilla__nombre');
-        if (header) header.style.fontSize = jsonBlock.size + 'px';
+        const header = insertedNode.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, h3, h2, h4');
+        if (header) header.style.fontSize = jsonBlock.size + 'pt';
+    }
+    if (jsonBlock.align) {
+        insertedNode.dataset.align = jsonBlock.align;
+        const header = insertedNode.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, h3, h2, h4');
+        if (header) {
+            header.style.textAlign = jsonBlock.align;
+            header.parentNode.style.textAlign = jsonBlock.align;
+        }
     }
 
     if (jsonBlock.type === 'logo' && jsonBlock.width_mm) {
@@ -449,20 +527,7 @@ function insertarBloqueDesdeJSON(jsonBlock) {
         }
     }
 
-    const tiposSingleLine = ['titulo_colegio', 'lema_colegio', 'metadatos'];
-    if (tiposSingleLine.indexOf(jsonBlock.type) > -1) {
-        function ajustarAnchoJSON(el) {
-            const s = getCanvasScale();
-            el.style.width = 'max-content';
-            let anchoRealMm = el.offsetWidth / s;
-            if (anchoRealMm > 0) {
-                el.style.width = anchoRealMm + 'mm';
-                el.dataset.width_mm = anchoRealMm.toFixed(2);
-            }
-        }
-        ajustarAnchoJSON(insertedNode);
-        document.fonts.ready.then(() => ajustarAnchoJSON(insertedNode));
-    }
+
 }
 
 function eliminarBloque(id) {
@@ -551,8 +616,27 @@ function arrastrarBloque(e) {
     const minLeft = margenes.izquierdo;
     const maxLeft = UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.derecho - blockW_mm;
 
+    const blockH_mm = parseFloat(bloqueArrastrando.dataset.height_mm) || (bloqueArrastrando.offsetHeight / scale);
+    const headerEndMM = getHeaderLimit();
+    const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
+    const blockZone = bloqueArrastrando.dataset.zone || 'body';
+
+    let minTop = 0;
+    let maxTop = UNIT_CONFIG.CANVAS_HEIGHT_MM - blockH_mm;
+
+    if (blockZone === 'header') {
+        minTop = margenes.superior;
+        maxTop = headerEndMM - blockH_mm;
+    } else if (blockZone === 'body') {
+        minTop = headerEndMM;
+        maxTop = footerStartMM - blockH_mm;
+    } else if (blockZone === 'footer') {
+        minTop = footerStartMM;
+        maxTop = UNIT_CONFIG.CANVAS_HEIGHT_MM - margenes.inferior - blockH_mm;
+    }
+
     left_mm = Math.max(minLeft, Math.min(left_mm, maxLeft));
-    top_mm = Math.max(0, top_mm);
+    top_mm = Math.max(minTop, Math.min(top_mm, maxTop));
 
     bloqueArrastrando.style.left = left_mm.toFixed(2) + 'mm';
     bloqueArrastrando.style.top = top_mm.toFixed(2) + 'mm';
@@ -563,6 +647,14 @@ function arrastrarBloque(e) {
 function terminarArrastreBloque() {
     document.removeEventListener('mousemove', arrastrarBloque);
     document.removeEventListener('mouseup', terminarArrastreBloque);
+    
+    if (bloqueArrastrando && bloqueArrastrando.dataset.bloque !== 'linea') {
+        const scale = getCanvasScale();
+        const realHeight_mm = bloqueArrastrando.offsetHeight / scale;
+        bloqueArrastrando.dataset.height_mm = realHeight_mm.toFixed(2);
+    }
+    
+    ajustarAlturaLienzo();
     bloqueArrastrando = null;
 }
 
@@ -599,7 +691,7 @@ function toggleZoneEditMode(zone) {
 
 function updateZonesUI() {
     const canvas = document.getElementById('canvas-builder');
-    const headerEndMM = UNIT_CONFIG.HEADER_LIMIT_MM;
+    const headerEndMM = getHeaderLimit();
     const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
 
     Object.values(zoneOverlays).forEach(ol => ol?.remove());
@@ -607,7 +699,7 @@ function updateZonesUI() {
 
     canvas.style.position = 'relative';
 
-    const createOverlay = (zone, topMM, heightMM, bgColor, label) => {
+    const createOverlay = (zone, topMM, heightMM) => {
         const overlay = document.createElement('div');
         overlay.className = 'zone-overlay';
         overlay.dataset.zone = zone;
@@ -617,7 +709,7 @@ function updateZonesUI() {
             left: 0;
             width: 100%;
             height: ${heightMM}mm;
-            background: ${bgColor};
+            background: rgba(var(--el-accent-rgb), 0.20);
             z-index: 500;
             border: 2px dashed var(--el-border-color);
             pointer-events: none;
@@ -626,31 +718,24 @@ function updateZonesUI() {
             justify-content: center;
         `;
 
-        const label_el = document.createElement('span');
-        label_el.style.cssText = 'color: var(--el-text-muted); font-size: 12px; font-weight: bold;';
-        label_el.textContent = label;
-        overlay.appendChild(label_el);
-
         return overlay;
     };
 
     if (activeZone === 'header') {
-        const headerOverlay = createOverlay('header', 0, headerEndMM, 'rgba(231, 76, 60, 0.15)', 'CABECERA ACTIVA');
+        const headerOverlay = createOverlay('header', 0, headerEndMM);
         canvas.appendChild(headerOverlay);
         zoneOverlays.header = headerOverlay;
     }
 
     if (activeZone === 'body') {
         const bodyHeight = footerStartMM - headerEndMM;
-        const bodyOverlay = createOverlay('body', headerEndMM, bodyHeight, 'rgba(255, 255, 255, 0)', '');
-        if (bodyOverlay) {
-            canvas.appendChild(bodyOverlay);
-            zoneOverlays.body = bodyOverlay;
-        }
+        const bodyOverlay = createOverlay('body', headerEndMM, bodyHeight);
+        canvas.appendChild(bodyOverlay);
+        zoneOverlays.body = bodyOverlay;
     }
 
     if (activeZone === 'footer') {
-        const footerOverlay = createOverlay('footer', footerStartMM, UNIT_CONFIG.CANVAS_HEIGHT_MM - footerStartMM, 'rgba(52, 152, 219, 0.15)', 'PIE DE PÁGINA ACTIVO');
+        const footerOverlay = createOverlay('footer', footerStartMM, UNIT_CONFIG.CANVAS_HEIGHT_MM - footerStartMM);
         canvas.appendChild(footerOverlay);
         zoneOverlays.footer = footerOverlay;
     }
@@ -674,6 +759,10 @@ function updateZonesUI() {
 }
 
 function canvasDobleClick(e) {
+    e.preventDefault();
+    if (window.getSelection) {
+        window.getSelection().removeAllRanges();
+    }
     const clickY = e.clientY - document.getElementById('canvas-builder').getBoundingClientRect().top;
     toggleZoneEditMode(determinarZona(clickY));
 }
@@ -866,7 +955,17 @@ async function guardarFormato(e) {
     let htmlCompilado = '';
     const configJson = [];
 
+    const scale = getCanvasScale();
     const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
+    
+    // Recalcular alturas reales en mm antes de persistir
+    bloques.forEach(bloque => {
+        if (bloque.dataset.bloque !== 'linea') {
+            const realHeight_mm = bloque.offsetHeight / scale;
+            bloque.dataset.height_mm = realHeight_mm.toFixed(2);
+        }
+    });
+
     bloques.forEach(bloque => {
         const tipoBloque = bloque.dataset.bloque;
         const left_val = parseFloat(bloque.dataset.left_mm);
@@ -928,12 +1027,13 @@ async function guardarFormato(e) {
                     content: bloque.querySelector('.block-content-wysiwyg') ? bloque.querySelector('.block-content-wysiwyg').innerHTML : null
                 };
 
-                if (tipo === 'titulo_colegio') {
-                    const size = bloque.dataset.size || '20';
-                    extraAttrs += ` data-size="${size}"`;
-                } else if (tipo === 'metadatos') {
-                    const size = bloque.dataset.size || '16';
-                    extraAttrs += ` data-size="${size}"`;
+                if (tipo === 'titulo_colegio' || tipo === 'lema_colegio' || tipo === 'metadatos') {
+                    const defaultSize = (tipo === 'titulo_colegio') ? '20' : ((tipo === 'lema_colegio') ? '12' : '16');
+                    const size = bloque.dataset.size || defaultSize;
+                    const align = bloque.dataset.align || 'center';
+                    extraAttrs += ` data-size="${size}" data-align="${align}"`;
+                    jsonBlock.size = size;
+                    jsonBlock.align = align;
                 }
 
                 if (tipo === 'calificaciones') {
@@ -971,7 +1071,7 @@ async function guardarFormato(e) {
     const margenes = getMargensInMilimeters();
 
     const zonesData = {
-        header_limit_mm: UNIT_CONFIG.HEADER_LIMIT_MM,
+        header_limit_mm: getHeaderLimit(),
         footer_limit_mm: UNIT_CONFIG.FOOTER_START_MM
     };
 
