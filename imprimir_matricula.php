@@ -224,11 +224,13 @@ $primary_rgb = "$r_c, $g_c, $b_c";
     <title>Impresión de Matrícula - <?php echo htmlspecialchars(($estudiante['nombre'] ?? '') . ' ' . ($estudiante['apellido'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Inter:wght@400;500;600&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&family=Inter:wght@400;500;600;800&family=Roboto:wght@300;400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/elite_themes.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/ui_kit.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/modules/imprimir_matricula.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="styles/modules/actas.css?v=<?php echo time(); ?>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -272,22 +274,193 @@ $primary_rgb = "$r_c, $g_c, $b_c";
 </button>
 
 <script>
-function descargarFormatoPDF() {
-    const estudianteId = <?php echo json_encode($estudiante_id); ?>;
-    const formatoId = <?php echo json_encode($formato_id); ?>;
-
-    if (!estudianteId || !formatoId) {
-        console.error('Error: Parámetros faltantes');
-        return;
+async function descargarFormatoPDF() {
+    const printDocument = document.querySelector('.print-document');
+    const paperWidth = parseFloat(printDocument.dataset.paperWidthMm) || 215.9;
+    const paperHeight = parseFloat(printDocument.dataset.paperHeightMm) || 279.4;
+    const headerLimit = parseFloat(printDocument.dataset.headerLimitMm) || 50.0;
+    const footerStart = parseFloat(printDocument.dataset.footerStartMm) || 219.4;
+    
+    const cuerpoHeight = footerStart - headerLimit;
+    const bloques = Array.from(printDocument.querySelectorAll('.bloque-avanzado, .bloque-texto'));
+    
+    const headers = [];
+    const footers = [];
+    const cuerpoBlocks = [];
+    
+    bloques.forEach(bloque => {
+        const left = parseFloat(bloque.dataset.left_mm) || parseFloat(bloque.style.left) || 0;
+        const top = parseFloat(bloque.dataset.top_mm) || parseFloat(bloque.style.top) || 0;
+        
+        if (top < headerLimit) {
+            headers.push({ element: bloque, top: top, left: left });
+        } else if (top > footerStart) {
+            footers.push({ element: bloque, top: top, left: left });
+        } else {
+            cuerpoBlocks.push({ element: bloque, top: top, left: left });
+        }
+    });
+    
+    cuerpoBlocks.sort((a, b) => a.top - b.top);
+    
+    let currentPageIndex = 0;
+    const pageAssignments = [];
+    
+    cuerpoBlocks.forEach(bloque => {
+        if (bloque.element.classList.contains('ares-salto-pagina-render')) {
+            currentPageIndex++;
+        } else {
+            const pageIndex = Math.floor((bloque.top - headerLimit) / cuerpoHeight);
+            if (pageIndex > currentPageIndex) {
+                currentPageIndex = pageIndex;
+            }
+            pageAssignments.push({ bloque: bloque, pageIndex: currentPageIndex });
+        }
+    });
+    
+    const totalPages = Math.max(currentPageIndex + 1, ...pageAssignments.map(item => item.pageIndex + 1), 1);
+    
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    tempContainer.style.top = '0';
+    document.body.appendChild(tempContainer);
+    
+    const createdCanvases = [];
+    const createdVirtualPages = [];
+    
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: [paperWidth, paperHeight]
+        });
+        
+        for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+            const virtualPage = document.createElement('div');
+            virtualPage.className = 'virtual-page';
+            virtualPage.style.cssText = `position: relative; width: ${paperWidth}mm; height: ${paperHeight}mm; background: white; overflow: hidden; page-break-after: always;`;
+            
+            headers.forEach(header => {
+                const clone = header.element.cloneNode(true);
+                clone.style.position = 'absolute';
+                clone.style.left = header.left + 'mm';
+                clone.style.top = header.top + 'mm';
+                virtualPage.appendChild(clone);
+            });
+            
+            footers.forEach(footer => {
+                const clone = footer.element.cloneNode(true);
+                clone.style.position = 'absolute';
+                clone.style.left = footer.left + 'mm';
+                clone.style.top = footer.top + 'mm';
+                virtualPage.appendChild(clone);
+            });
+            
+            pageAssignments
+                .filter(item => item.pageIndex === pageIndex)
+                .forEach(item => {
+                    const originalTop = item.bloque.top;
+                    const originalLeft = item.bloque.left;
+                    const newTop = headerLimit + ((originalTop - headerLimit) % cuerpoHeight);
+                    
+                    const clone = item.bloque.element.cloneNode(true);
+                    clone.style.position = 'absolute';
+                    clone.style.left = originalLeft + 'mm';
+                    clone.style.top = newTop + 'mm';
+                    virtualPage.appendChild(clone);
+                });
+            
+            tempContainer.appendChild(virtualPage);
+            createdVirtualPages.push(virtualPage);
+            
+            const canvas = await html2canvas(virtualPage, {
+                scale: 3,
+                useCORS: true,
+                logging: false
+            });
+            
+            createdCanvases.push(canvas);
+            
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            
+            if (pageIndex === 0) {
+                doc.addImage(imgData, 'JPEG', 0, 0, paperWidth, paperHeight);
+            } else {
+                doc.addPage();
+                doc.addImage(imgData, 'JPEG', 0, 0, paperWidth, paperHeight);
+            }
+            
+            // Liberar memoria del canvas inmediatamente después de usarlo
+            canvas.width = 0;
+            canvas.height = 0;
+            createdCanvases.splice(createdCanvases.indexOf(canvas), 1);
+            
+            // Eliminar el virtualPage del DOM y de la memoria
+            if (virtualPage.parentNode) {
+                virtualPage.remove();
+            }
+            createdVirtualPages.splice(createdVirtualPages.indexOf(virtualPage), 1);
+            
+            // Forzar garbage collection del navegador
+            if (window.gc) {
+                window.gc();
+            }
+        }
+        
+        const studentFolio = printDocument?.getAttribute('data-student-folio')?.trim();
+        const filename = (studentFolio && studentFolio !== '') ? `matricula_${studentFolio}.pdf` : 'matricula.pdf';
+        doc.save(filename);
+    } catch (error) {
+        // Manejo silencioso de errores
+        console.error('Error en descargarFormatoPDF:', error);
+    } finally {
+        // Limpieza exhaustiva de memoria
+        
+        // 1. Limpiar todos los canvases que no hayan sido limpiados
+        while (createdCanvases.length > 0) {
+            const canvas = createdCanvases.pop();
+            canvas.width = 0;
+            canvas.height = 0;
+            try {
+                canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            } catch (e) {}
+        }
+        
+        // 2. Limpiar todas las páginas virtuales que no hayan sido eliminadas
+        while (createdVirtualPages.length > 0) {
+            const virtualPage = createdVirtualPages.pop();
+            if (virtualPage.parentNode) {
+                virtualPage.remove();
+            }
+            while (virtualPage.firstChild) {
+                virtualPage.removeChild(virtualPage.firstChild);
+            }
+        }
+        
+        // 3. Eliminar el contenedor temporal del DOM
+        if (tempContainer && tempContainer.parentNode) {
+            while (tempContainer.firstChild) {
+                tempContainer.removeChild(tempContainer.firstChild);
+            }
+            tempContainer.parentNode.removeChild(tempContainer);
+        }
+        
+        // 4. Forzar garbage collection final
+        if (window.gc) {
+            window.gc();
+        }
+        
+        // 5. Limpiar referencias
+        createdCanvases.length = 0;
+        createdVirtualPages.length = 0;
     }
-
-    // Redirigir a generador de PDF
-    window.location.href = `/sistema_escolar/php/logica/generarFormatoPDF.php?estudiante_id=${estudianteId}&formato_id=${formatoId}`;
 }
 </script>
 <?php
 
-$renderizador = function(string $tipo, ?int $cols_override = null) use ($estudiante, $notas, $school_name, $school_motto, $school_logo, $rector_nombre, $secretaria_nombre, $var_map, $alias_extra): string {
+$renderizador = function(string $tipo, ?int $cols_override = null) use ($estudiante, $notas, $school_name, $school_motto, $school_logo, $rector_nombre, $secretaria_nombre, $var_map, $alias_extra, $anio_lectivo, $formato): string {
     $inner_html = '';
 
     if ($tipo === 'titulo_colegio') {
@@ -315,7 +488,39 @@ $renderizador = function(string $tipo, ?int $cols_override = null) use ($estudia
     }
 
     if ($tipo === 'metadatos') {
-        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><h4 class="metadatos-titulo-linea">Año Lectivo ' . htmlspecialchars((string)$anio_lectivo, ENT_QUOTES, 'UTF-8') . '</h4></div>';
+        $nombre_formato = is_array($formato) && isset($formato['nombre']) ? trim((string)$formato['nombre']) : '';
+        $nombre_formato_lower = mb_strtolower($nombre_formato, 'UTF-8');
+        
+        // Determinar tipo de documento
+        $tipo_documento = '';
+        if (preg_match('/carne/i', $nombre_formato_lower)) {
+            $tipo_documento = 'CARNÉ ESCOLAR';
+        } elseif (preg_match('/certificado/i', $nombre_formato_lower)) {
+            $tipo_documento = 'CERTIFICADO DE ESTUDIOS';
+        } elseif (preg_match('/constancia|paz/i', $nombre_formato_lower)) {
+            $tipo_documento = 'CONSTANCIA / PAZ Y SALVO';
+        } elseif (preg_match('/matricula|matrícula/i', $nombre_formato_lower)) {
+            $tipo_documento = 'MATRÍCULA';
+        }
+        
+        // Limpiar el nombre del formato si no se identificó un tipo específico
+        if ($tipo_documento === '' && $nombre_formato !== '') {
+            $nombre_limpio = preg_replace('/\s+\d+\s*$/', '', $nombre_formato);
+            $nombre_limpio = preg_replace('/[_-]+/', ' ', $nombre_limpio);
+            $tipo_documento = mb_strtoupper(trim($nombre_limpio), 'UTF-8');
+        }
+        
+        // Construir texto de metadatos según tipo de documento
+        if ($tipo_documento === 'MATRÍCULA') {
+            $folio_estudiante = isset($estudiante['folio_matricula']) ? str_pad((string)$estudiante['folio_matricula'], 4, '0', STR_PAD_LEFT) : '';
+            $texto_metadatos = $tipo_documento . ' N° ' . $folio_estudiante . ' - AÑO LECTIVO ' . (string)$anio_lectivo;
+        } elseif ($tipo_documento !== '') {
+            $texto_metadatos = $tipo_documento . ' - AÑO LECTIVO ' . (string)$anio_lectivo;
+        } else {
+            $texto_metadatos = 'AÑO LECTIVO ' . (string)$anio_lectivo;
+        }
+        
+        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><h4 class="metadatos-titulo-linea">' . htmlspecialchars($texto_metadatos, ENT_QUOTES, 'UTF-8') . '</h4></div>';
     }
 
     if ($tipo === 'texto_certificacion') {
@@ -460,8 +665,41 @@ $renderizador = function(string $tipo, ?int $cols_override = null) use ($estudia
     if ($tipo === 'firmas') {
         // Decodificar JSON de bloques usando la columna correcta (configuracion_json)
         $bloques_json = $formato['configuracion_json'] ?? '[]';
-        $bloques_data = json_decode($bloques_json, true);
-        if (!is_array($bloques_data)) $bloques_data = [];
+        $bloques_data = [];
+        
+        if (!empty($bloques_json) && is_string($bloques_json)) {
+            try {
+                // Intentar decodificación con control de errores
+                $bloques_data = json_decode($bloques_json, true, 512, JSON_THROW_ON_ERROR);
+                
+                // Validación adicional: asegurar que sea un array
+                if (!is_array($bloques_data)) {
+                    $bloques_data = [];
+                }
+            } catch (JsonException $e) {
+                // Fallback: intentar decodificación sin lanzar excepciones
+                $bloques_data = json_decode($bloques_json, true);
+                
+                // Verificar errores de la decodificación fallback
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    // Último recurso: intentar limpiar el JSON
+                    $cleaned_json = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $bloques_json);
+                    $bloques_data = json_decode($cleaned_json, true);
+                    
+                    if (!is_array($bloques_data)) {
+                        $bloques_data = [];
+                    }
+                } elseif (!is_array($bloques_data)) {
+                    $bloques_data = [];
+                }
+            }
+        } else {
+            // Si el JSON está vacío o no es string, usar array vacío
+            $bloques_data = [];
+        }
+        
+        // Asegurar que siempre tengamos un array válido
+        $bloques_data = is_array($bloques_data) ? $bloques_data : [];
         
         $block_firmas = null;
         foreach ($bloques_data as $b) {
@@ -612,7 +850,10 @@ $contenido_renderizado = preg_replace_callback(
         }
 
         $style_h = "height: auto;";
-        if ($h_mm !== null && !$es_dinamico) {
+        if ($tipo_bloque === 'linea') {
+            $grosor = $div->hasAttribute('data-height') ? $div->getAttribute('data-height') : '1.5pt';
+            $style_h = "height: {$grosor};";
+        } else if ($h_mm !== null && !$es_dinamico) {
             $style_h = "height: {$h_mm}mm;";
         }
 
@@ -655,36 +896,56 @@ $contenido_renderizado = preg_replace_callback(
         // Renderizar el contenido interno del bloque
         $html_final = '';
         if ($tipo_bloque !== '') {
-            $inner_html = $renderizador($tipo_bloque);
+            if ($tipo_bloque === 'texto') {
+                $inner_html = $matches[3];
+            } else {
+                $inner_html = $renderizador($tipo_bloque);
+            }
             if ($inner_html === '') {
                 return $matches[0];
             }
             
             $style_dinamico = '';
-            if ($tipo_bloque === 'titulo_colegio' || $tipo_bloque === 'lema_colegio' || $tipo_bloque === 'metadatos') {
+            if ($tipo_bloque === 'titulo_colegio' || $tipo_bloque === 'lema_colegio' || $tipo_bloque === 'metadatos' || $tipo_bloque === 'texto') {
                 $size = '12';
-                $align = 'center';
+                $align = 'left';
                 if (preg_match('/data-size="([^"]+)"/', $attrs_limpios, $sm)) {
                     $size = $sm[1];
                 } else {
                     if ($tipo_bloque === 'titulo_colegio') {
                         $size = '20';
+                        $align = 'center';
                     } elseif ($tipo_bloque === 'metadatos') {
                         $size = '16';
-                    } else {
+                        $align = 'center';
+                    } elseif ($tipo_bloque === 'lema_colegio') {
                         $size = '12';
+                        $align = 'center';
                     }
                 }
                 if (preg_match('/data-align="([^"]+)"/', $attrs_limpios, $am)) {
                     $align = $am[1];
                 }
                 
-                $selector = ($tipo_bloque === 'metadatos') ? '.metadatos-titulo-linea' : 
-                            (($tipo_bloque === 'lema_colegio') ? '.ares-lema-cabecera' : '.ares-titulo-cabecera');
+                $id_bloque = $div->getAttribute('id');
+                if (!$id_bloque) {
+                    $id_bloque = 'bloque-rand-' . mt_rand(1000, 9999);
+                    $attrs_limpios .= ' id="' . $id_bloque . '"';
+                }
+
+                if ($tipo_bloque === 'metadatos') {
+                    $selector = '#' . $id_bloque . ' .metadatos-titulo-linea';
+                } elseif ($tipo_bloque === 'lema_colegio') {
+                    $selector = '#' . $id_bloque . ' .ares-lema-cabecera';
+                } elseif ($tipo_bloque === 'titulo_colegio') {
+                    $selector = '#' . $id_bloque . ' .ares-titulo-cabecera';
+                } else {
+                    $selector = '#' . $id_bloque . ' .block-content-texto, #' . $id_bloque;
+                }
                 // Concatenamos para evadir falso positivo de inyección CSS del linter estático
                 $open_style = '<' . 'style' . '>';
                 $close_style = '</' . 'style' . '>';
-                $style_dinamico = $open_style . $selector . ' { font-size: ' . $size . 'pt; text-align: ' . $align . '; }' . $close_style;
+                $style_dinamico = $open_style . $selector . ' { font-size: ' . $size . 'pt !important; text-align: ' . $align . '; }' . $close_style;
             }
 
             $html_final = $style_dinamico . '<div ' . trim($attrs_limpios) . '>' . $inner_html . '</div>';
@@ -766,83 +1027,93 @@ usort($bloques_paginador, function($a, $b) {
     return $a['y_mm'] <=> $b['y_mm'];
 });
 
-// Dimensiones del papel (Carta por defecto)
+// Dimensiones del papel según formato
 $papel_width_mm = 215.9;
 $papel_height_mm = 279.4;
+if (!empty($formato['tamano_lienzo'])) {
+    switch (strtolower($formato['tamano_lienzo'])) {
+        case 'media_carta':
+            $papel_width_mm = 215.9;
+            $papel_height_mm = 139.7;
+            break;
+        case 'carne_v':
+            $papel_width_mm = 54.0;
+            $papel_height_mm = 86.0;
+            break;
+        case 'carne_h':
+            $papel_width_mm = 86.0;
+            $papel_height_mm = 54.0;
+            break;
+        case 'carta':
+        default:
+            $papel_width_mm = 215.9;
+            $papel_height_mm = 279.4;
+            break;
+    }
+}
+
 $zona_header_limit_mm = 50.0;
 $zona_footer_start_mm = 219.4;
-if (!empty($formato['configuracion_json'])) {
-    $config_parsed = json_decode($formato['configuracion_json'], true);
-    if (is_array($config_parsed) && isset($config_parsed['zonas'])) {
-        $zona_header_limit_mm = (float)($config_parsed['zonas']['header_limit_mm'] ?? 50.0);
-        $zona_footer_start_mm = (float)($config_parsed['zonas']['footer_limit_mm'] ?? 219.4);
+
+if (!empty($formato['configuracion_json']) && is_string($formato['configuracion_json'])) {
+    $config_parsed = null;
+    
+    try {
+        // Intento principal con JSON_THROW_ON_ERROR
+        $config_parsed = json_decode($formato['configuracion_json'], true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException $e) {
+        // Fallback: decodificación estándar
+        $config_parsed = json_decode($formato['configuracion_json'], true);
+        
+        // Verificar si hay error en la decodificación fallback
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            // Limpiar caracteres problemáticos y reintentar
+            $cleaned_json = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $formato['configuracion_json']);
+            $config_parsed = json_decode($cleaned_json, true);
+            
+            if (!is_array($config_parsed)) {
+                $config_parsed = [];
+            }
+        }
+    }
+    
+    // Validar que sea array y contenga la clave 'zonas'
+    if (is_array($config_parsed) && isset($config_parsed['zonas']) && is_array($config_parsed['zonas'])) {
+        // Extraer y validar límite de header
+        if (isset($config_parsed['zonas']['header_limit_mm'])) {
+            $header_value = filter_var($config_parsed['zonas']['header_limit_mm'], FILTER_VALIDATE_FLOAT);
+            if ($header_value !== false && $header_value > 0) {
+                $zona_header_limit_mm = $header_value;
+            }
+        }
+        
+        // Extraer y validar límite de footer
+        if (isset($config_parsed['zonas']['footer_limit_mm'])) {
+            $footer_value = filter_var($config_parsed['zonas']['footer_limit_mm'], FILTER_VALIDATE_FLOAT);
+            if ($footer_value !== false && $footer_value > 0) {
+                $zona_footer_start_mm = $footer_value;
+            }
+        }
     }
 }
 
-// Separar bloques por zona (header/body/footer)
-$header_bloques = [];
-$body_bloques = [];
-$footer_bloques = [];
-
-foreach ($bloques_paginador as $bloque) {
-    $tipo = $bloque['tipo'];
-    $y_mm = $bloque['y_mm'];
-
-    // Determinar zona según Y
-    if ($y_mm < $zona_header_limit_mm) {
-        $header_bloques[] = $bloque;
-    } elseif ($y_mm > $zona_footer_start_mm) {
-        $footer_bloques[] = $bloque;
-    } else {
-        $body_bloques[] = $bloque;
-    }
+// Validación final: asegurar que los valores sean coherentes
+if ($zona_header_limit_mm <= 0) {
+    $zona_header_limit_mm = 50.0;
 }
-
-// Construir HTML de cada zona manteniendo posiciones absolutas
-$header_html = '';
-if (!empty($header_bloques)) {
-    $header_html .= '<div class="print-header-zone" data-height-mm="' . htmlspecialchars((string)$zona_header_limit_mm, ENT_QUOTES, 'UTF-8') . '">';
-    foreach ($header_bloques as $bloque) {
-        $header_html .= $bloque['html'];
-    }
-    $header_html .= '</div>';
+if ($zona_footer_start_mm <= $zona_header_limit_mm) {
+    $zona_footer_start_mm = $zona_header_limit_mm + 50.0; // Al menos 50mm de separación
 }
-
-$cuerpo_html = '';
-if (!empty($body_bloques)) {
-    $cuerpo_height_mm = $zona_footer_start_mm - $zona_header_limit_mm;
-    $cuerpo_html .= '<div class="print-body-zone" data-height-mm="' . htmlspecialchars((string)$cuerpo_height_mm, ENT_QUOTES, 'UTF-8') . '">';
-    foreach ($body_bloques as $bloque) {
-        $cuerpo_html .= $bloque['html'];
-    }
-    $cuerpo_html .= '</div>';
-}
-
-$firmas_html = '';
-if (!empty($footer_bloques)) {
-    $footer_height_mm = $papel_height_mm - $zona_footer_start_mm;
-    $firmas_html .= '<div class="print-footer-zone" data-height-mm="' . htmlspecialchars((string)$footer_height_mm, ENT_QUOTES, 'UTF-8') . '">';
-    foreach ($footer_bloques as $bloque) {
-        $firmas_html .= $bloque['html'];
-    }
-    $firmas_html .= '</div>';
-}
-
 ?>
-<div class="print-document print-document--<?php echo strtolower($formato['tamano_lienzo'] ?? 'carta'); ?>">
-    <table class="print-band-table">
-        <thead class="print-band-thead">
-            <tr><td class="print-band-td">
-                <?php echo $header_html; ?>
-            </td></tr>
-        </thead>
-        <tbody>
-            <tr><td class="print-band-td">
-                <?php echo $cuerpo_html; ?>
-                <?php echo $firmas_html; ?>
-            </td></tr>
-        </tbody>
-    </table>
+<div class="print-document print-document--<?php echo strtolower($formato['tamano_lienzo'] ?? 'carta'); ?>"
+     data-student-folio="<?php echo htmlspecialchars((string)($estudiante['folio_matricula'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
+     data-header-limit-mm="<?php echo htmlspecialchars((string)$zona_header_limit_mm, ENT_QUOTES, 'UTF-8'); ?>"
+     data-footer-start-mm="<?php echo htmlspecialchars((string)$zona_footer_start_mm, ENT_QUOTES, 'UTF-8'); ?>"
+     data-paper-width-mm="<?php echo htmlspecialchars((string)$papel_width_mm, ENT_QUOTES, 'UTF-8'); ?>"
+     data-paper-height-mm="<?php echo htmlspecialchars((string)$papel_height_mm, ENT_QUOTES, 'UTF-8'); ?>">
+    <?php foreach ($bloques_paginador as $bloque): ?>
+        <?php echo $bloque['html']; ?>
+    <?php endforeach; ?>
 </div>
 </body>
 </html>

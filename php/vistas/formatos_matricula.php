@@ -40,7 +40,7 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
 <link rel="stylesheet" href="../assets/libs/ql/quill.snow.min.css">
 <script src="../assets/libs/ql/quill.js"></script>
 
-<div class="formatos-container animate__animated animate__fadeIn" id="formatos-container" data-school-name="<?php echo htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8'); ?>" data-school-motto="<?php echo htmlspecialchars($school_motto, ENT_QUOTES, 'UTF-8'); ?>" data-school-logo="<?php echo htmlspecialchars($school_logo, ENT_QUOTES, 'UTF-8'); ?>" data-school-anio="<?php echo htmlspecialchars((string)$anio_lectivo, ENT_QUOTES, 'UTF-8'); ?>">
+<div class="formatos-container animate__animated animate__fadeIn" id="formatos-container" data-school-name="<?php echo htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8'); ?>" data-school-motto="<?php echo htmlspecialchars($school_motto, ENT_QUOTES, 'UTF-8'); ?>" data-school-logo="<?php echo htmlspecialchars($school_logo, ENT_QUOTES, 'UTF-8'); ?>" data-school-anio="<?php echo htmlspecialchars((string)$anio_lectivo, ENT_QUOTES, 'UTF-8'); ?>" data-colegio-nit="<?php echo htmlspecialchars($cfg['colegio_nit'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" data-colegio-resolucion="<?php echo htmlspecialchars($cfg['colegio_resolucion'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
     
     <div class="nav-elite-header-container mb-4">
         <ul class="nav nav-pills-elite" id="formatos-tabs" role="tablist">
@@ -124,9 +124,23 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                                 <i class="bi bi-journal-code"></i>
                             </button>
                             <button type="button" class="btn-elite btn-elite--outline" onclick="cancelarEdicion()">Cancelar</button>
-                            <button type="submit" class="btn-elite btn-elite--primary shadow-sm">
-                                <i class="bi bi-floppy me-2"></i> Guardar Plantilla
-                            </button>
+                            <div class="btn-group">
+                                <button type="button" class="btn-elite btn-elite--primary btn-elite--icon-only shadow-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Guardar Plantilla">
+                                    <i class="bi bi-floppy"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li>
+                                        <button type="button" class="dropdown-item py-2" onclick="guardarFormato(event, true)">
+                                            <i class="bi bi-box-arrow-right me-2 text-success"></i> Guardar y Salir
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item py-2" onclick="guardarFormato(event, false)">
+                                            <i class="bi bi-save me-2 text-primary"></i> Guardar
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
@@ -188,14 +202,14 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                     <!-- Configuración para Título -->
                     <div id="config-section-titulo" class="d-none">
                         <div class="row g-3 mb-3">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <label for="config-titulo-size" class="form-label small fw-bold text-uppercase">Tamaño (pt)</label>
-                                <input type="number" id="config-titulo-size" class="input-elite" min="8" max="72" value="20" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('.ares-titulo-cabecera, h3, h2'); if (h) h.style.fontSize = this.value + 'pt'; }">
+                                <input type="number" id="config-titulo-size" class="input-elite" min="8" max="72" value="20" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('.ares-titulo-cabecera, h3, h2, .ares-lema-cabecera, p, .block-content-texto'); if (h) h.style.fontSize = this.value + 'pt'; if (typeof autoAjustarAnchoBloqueTexto === 'function') autoAjustarAnchoBloqueTexto(activeConfigNode); }">
                             </div>
-                            <div class="col-6">
+                            <div class="col-6 d-none">
                                 <label for="config-titulo-align" class="form-label small fw-bold text-uppercase">Alineación</label>
-                                <select id="config-titulo-align" class="input-elite" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('.ares-titulo-cabecera, h3, h2, .block-content-wysiwyg'); if (h) { h.style.textAlign = this.value; h.parentNode.style.textAlign = this.value; } }">
-                                    <option value="center">Centrado</option>
+                                <select id="config-titulo-align" class="input-elite">
+                                    <option value="center" selected>Centrado</option>
                                     <option value="left">Izquierda</option>
                                     <option value="right">Derecha</option>
                                 </select>
@@ -206,14 +220,14 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                     <!-- Configuración para Metadatos -->
                     <div id="config-section-metadatos" class="d-none">
                         <div class="row g-3 mb-3">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <label for="config-metadatos-size" class="form-label small fw-bold text-uppercase">Tamaño (pt)</label>
-                                <input type="number" id="config-metadatos-size" class="input-elite" min="8" max="72" value="16" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('h4'); if (h) h.style.fontSize = this.value + 'pt'; }">
+                                <input type="number" id="config-metadatos-size" class="input-elite" min="8" max="72" value="16" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('h4'); if (h) h.style.fontSize = this.value + 'pt'; if (typeof autoAjustarAnchoBloqueTexto === 'function') autoAjustarAnchoBloqueTexto(activeConfigNode); }">
                             </div>
-                            <div class="col-6">
+                            <div class="col-6 d-none">
                                 <label for="config-metadatos-align" class="form-label small fw-bold text-uppercase">Alineación</label>
-                                <select id="config-metadatos-align" class="input-elite" onchange="if (activeConfigNode) { const h = activeConfigNode.querySelector('h4, .block-content-wysiwyg'); if (h) { h.style.textAlign = this.value; h.parentNode.style.textAlign = this.value; } }">
-                                    <option value="center">Centrado</option>
+                                <select id="config-metadatos-align" class="input-elite">
+                                    <option value="center" selected>Centrado</option>
                                     <option value="left">Izquierda</option>
                                     <option value="right">Derecha</option>
                                 </select>
@@ -279,7 +293,7 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                                 <span>Grosor de la Línea (pt)</span>
                                 <span id="config-linea-grosor-value">1.5 pt</span>
                             </label>
-                            <input type="range" id="config-linea-grosor" class="form-range" min="0.5" max="12" step="0.5" value="1.5" oninput="document.getElementById('config-linea-grosor-value').textContent = this.value + ' pt'; if (activeConfigNode) { activeConfigNode.dataset.height = this.value + 'pt'; activeConfigNode.style.height = this.value + 'pt'; }">
+                            <input type="number" id="config-linea-grosor" class="form-control input-elite" min="0.5" max="12" step="0.5" value="1.5" oninput="document.getElementById('config-linea-grosor-value').textContent = this.value + ' pt'; if (activeConfigNode) { activeConfigNode.dataset.height = this.value + 'pt'; const lineaGrafica = activeConfigNode.querySelector('.ares-linea-grafica'); if (lineaGrafica) { lineaGrafica.style['height'] = this.value + 'pt'; } }">
                         </div>
                     </div>
 
@@ -361,7 +375,7 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
         </div>
     </div>
 </div>
-<!-- Modal Catálogo de Campos (Opción 2 - 3 Columnas Élite) -->
+<!-- Modal Catálogo de Campos (Pestañas Élite) -->
 <div class="modal fade" id="modalCatalogoVariables" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content rounded-4 border-0 shadow-lg">
@@ -378,13 +392,32 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <div class="row g-4">
-                    <!-- COLUMNA 1: ESTUDIANTE -->
-                    <div class="col-lg-3 col-md-6 border-end">
-                        <h6 class="fw-bold text-uppercase fs-nano text-primary mb-3">
-                            <i class="bi bi-person-badge me-2"></i> Expediente del Alumno
-                        </h6>
-                        <div class="d-flex flex-column gap-2">
+                <ul class="nav nav-pills-elite mb-4" id="catalogoTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link-elite active" id="tab-expediente" data-bs-toggle="pill" data-bs-target="#panel-expediente" type="button" role="tab" aria-controls="panel-expediente" aria-selected="true">
+                            <i class="bi bi-person-badge me-2"></i>Expediente del Alumno
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link-elite" id="tab-padres" data-bs-toggle="pill" data-bs-target="#panel-padres" type="button" role="tab" aria-controls="panel-padres" aria-selected="false">
+                            <i class="bi bi-people-fill me-2"></i>Padres / Acudientes
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link-elite" id="tab-institucion" data-bs-toggle="pill" data-bs-target="#panel-institucion" type="button" role="tab" aria-controls="panel-institucion" aria-selected="false">
+                            <i class="bi bi-building me-2"></i>Institución y Folio
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link-elite" id="tab-bloques" data-bs-toggle="pill" data-bs-target="#panel-bloques" type="button" role="tab" aria-controls="panel-bloques" aria-selected="false">
+                            <i class="bi bi-box me-2"></i>Bloques y Estructuras
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="catalogoTabsContent">
+                    <!-- TAB 1: EXPEDIENTE DEL ALUMNO -->
+                    <div class="tab-pane fade show active" id="panel-expediente" role="tabpanel" aria-labelledby="tab-expediente">
+                        <div class="ares-catalogo-grid">
                             <div class="ares-var-card" onclick="seleccionarVariableCatalogo('estudiante_nombre', 'Nombre Estudiante')">
                                 <i class="bi bi-person-fill text-primary"></i>
                                 <div><strong>Nombre Completo</strong><span>Nombre y Apellido del alumno</span></div>
@@ -448,13 +481,9 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                         </div>
                     </div>
 
-                    <!-- COLUMNA 2: PADRES Y ACUDIENTES -->
-                    <div class="col-lg-3 col-md-6 border-end">
-                        <h6 class="fw-bold text-uppercase fs-nano text-success mb-3">
-                            <i class="bi bi-people-fill me-2"></i> Datos Padres / Acudientes
-                        </h6>
-                        <div class="d-flex flex-column gap-2">
-                            <!-- PADRE -->
+                    <!-- TAB 2: PADRES Y ACUDIENTES -->
+                    <div class="tab-pane fade" id="panel-padres" role="tabpanel" aria-labelledby="tab-padres">
+                        <div class="ares-catalogo-grid">
                             <div class="ares-var-card" onclick="seleccionarVariableCatalogo('padre_nombre', 'Nombre Padre')">
                                 <i class="bi bi-person-badge text-primary"></i>
                                 <div><strong>Nombre del Padre</strong><span>Nombre completo padre</span></div>
@@ -479,10 +508,6 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                                 <i class="bi bi-envelope text-warning"></i>
                                 <div><strong>Correo Padre</strong><span>Email de contacto padre</span></div>
                             </div>
-
-                            <hr class="my-2 opacity-10">
-
-                            <!-- MADRE -->
                             <div class="ares-var-card" onclick="seleccionarVariableCatalogo('madre_nombre', 'Nombre Madre')">
                                 <i class="bi bi-person-badge-fill text-danger"></i>
                                 <div><strong>Nombre de la Madre</strong><span>Nombre completo madre</span></div>
@@ -510,12 +535,9 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                         </div>
                     </div>
 
-                    <!-- COLUMNA 3: INSTITUCIÓN Y FECHA -->
-                    <div class="col-lg-3 col-md-6 border-end">
-                        <h6 class="fw-bold text-uppercase fs-nano text-info mb-3">
-                            <i class="bi bi-building me-2"></i> Institución y Folio
-                        </h6>
-                        <div class="d-flex flex-column gap-2">
+                    <!-- TAB 3: INSTITUCIÓN Y FOLIO -->
+                    <div class="tab-pane fade" id="panel-institucion" role="tabpanel" aria-labelledby="tab-institucion">
+                        <div class="ares-catalogo-grid">
                             <div class="ares-var-card" onclick="seleccionarVariableCatalogo('curso_asignado', 'Curso Asignado')">
                                 <i class="bi bi-book text-info"></i>
                                 <div><strong>Curso / Grado</strong><span>Grado de matriculación</span></div>
@@ -559,12 +581,9 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                         </div>
                     </div>
 
-                    <!-- COLUMNA 4: COMPONENTES Y ESTRUCTURAS -->
-                    <div class="col-lg-3 col-md-6">
-                        <h6 class="fw-bold text-uppercase fs-nano text-warning mb-3">
-                            <i class="bi bi-box me-2"></i> Bloques y Estructuras
-                        </h6>
-                        <div class="d-flex flex-column gap-2">
+                    <!-- TAB 4: BLOQUES Y ESTRUCTURAS -->
+                    <div class="tab-pane fade" id="panel-bloques" role="tabpanel" aria-labelledby="tab-bloques">
+                        <div class="ares-catalogo-grid">
                             <div class="ares-var-card" onclick="seleccionarVariableCatalogo('texto', 'Párrafo de Texto', true)">
                                 <i class="bi bi-textarea-t text-primary"></i>
                                 <div><strong>Párrafo de Texto</strong><span>Cuadro de texto libre</span></div>
@@ -613,7 +632,6 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                                 <i class="bi bi-dash-lg text-primary"></i>
                                 <div><strong>Línea Divisoria</strong><span>Línea gráfica decorativa</span></div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -725,10 +743,13 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
 
 
 <script>
+    document.documentElement.style.setProperty('--el-font-institutional', "'<?php echo htmlspecialchars($cfg['school_font'] ?? 'Montserrat', ENT_QUOTES, 'UTF-8'); ?>', sans-serif");
     window.SCHOOL_INFO = {
         name: <?php echo json_encode($school_name); ?>,
         motto: <?php echo json_encode($school_motto); ?>,
-        logo: <?php echo json_encode($school_logo); ?>
+        logo: <?php echo json_encode($school_logo); ?>,
+        nit: <?php echo json_encode($cfg['colegio_nit'] ?? ''); ?>,
+        resolucion: <?php echo json_encode($cfg['colegio_resolucion'] ?? ''); ?>
     };
 </script>
 <script src="../js/modules/formatos_matricula_builder.js?v=<?php echo time(); ?>"></script>

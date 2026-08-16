@@ -28,6 +28,38 @@ function getCanvasScale() {
     return canvas.offsetWidth / UNIT_CONFIG.CANVAS_WIDTH_MM;
 }
 
+function autoAjustarAnchoBloqueTexto(bloque) {
+    if (!bloque) return;
+    const tipo = bloque.dataset.bloque;
+    if (!['titulo_colegio', 'lema_colegio', 'metadatos', 'texto'].includes(tipo)) return;
+
+    const textEl = bloque.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, .metadatos-titulo-linea, h4, .block-content-texto');
+    if (!textEl) return;
+
+    const originalWidth = bloque.style.width;
+    bloque.style.width = 'auto';
+    
+    const textWidthPx = textEl.scrollWidth;
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas) {
+        bloque.style.width = originalWidth;
+        return;
+    }
+    
+    const scale = canvas.offsetWidth / UNIT_CONFIG.CANVAS_WIDTH_MM;
+    if (scale <= 0) {
+        bloque.style.width = originalWidth;
+        return;
+    }
+    
+    const textWidthMm = textWidthPx / scale;
+    const finalWidthMm = textWidthMm + 2; // 2mm de holgura ("gabela")
+    
+    bloque.style.width = finalWidthMm.toFixed(2) + 'mm';
+    bloque.dataset.width_mm = finalWidthMm.toFixed(2);
+}
+window.autoAjustarAnchoBloqueTexto = autoAjustarAnchoBloqueTexto;
+
 function determinarZona(y) {
     const headerEndMM = getHeaderLimit();
     const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
@@ -154,10 +186,7 @@ function iniciarRedimension(e, handleType, targetWrapper) {
             wrapper.dataset.width_mm = newWidth_mm.toFixed(2);
             wrapper.dataset.height_mm = '';
             
-            const img = wrapper.querySelector('.ares-logo-cabecera');
-            if (img) {
-                img.setAttribute('width', Math.max(30, newWidth_mm * 3.78 - 20));
-            }
+            // El logo hereda el ancho del bloque contenedor vía CSS (width: 100%)
             return;
         }
         
@@ -194,7 +223,7 @@ function iniciarRedimension(e, handleType, targetWrapper) {
         wysiwygNodes.forEach(node => {
             const baseSize = parseFloat(node.dataset.baseFontSize);
             const newSize = Math.max(4, baseSize * scaleRatio);
-            node.style.fontSize = (newSize * 0.75) + 'pt';
+            node.style.fontSize = newSize + 'pt';
         });
 
         // Validar si la altura resultante desborda la zona vertical
@@ -212,7 +241,7 @@ function iniciarRedimension(e, handleType, targetWrapper) {
             wysiwygNodes.forEach(node => {
                 const baseSize = parseFloat(node.dataset.baseFontSize);
                 const newSize = Math.max(4, baseSize * finalScaleRatio);
-                node.style.fontSize = (newSize * 0.75) + 'pt';
+                node.style.fontSize = newSize + 'pt';
             });
         }
         
@@ -233,6 +262,12 @@ function iniciarRedimension(e, handleType, targetWrapper) {
 
 function agregarNodosRedimension(wrapper) {
     wrapper.querySelectorAll('.resize-handle').forEach(h => h.remove());
+    
+    const tipo = wrapper.dataset.bloque;
+    if (['titulo_colegio', 'lema_colegio', 'metadatos'].includes(tipo)) {
+        return;
+    }
+
     const handles = ['tl', 'tr', 'bl', 'br'];
     handles.forEach(type => {
         const handle = document.createElement('div');
@@ -389,7 +424,7 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
         'logo': `<img class="ares-logo-cabecera" src="${schoolLogo}" alt="Logo" />`,
         'titulo_colegio': `<h3 class="ares-titulo-cabecera">${_si.name || 'Nombre del Colegio'}</h3>`,
         'lema_colegio': `<p class="ares-lema-cabecera">${_si.motto || 'Lema Institucional'}</p>`,
-        'metadatos': `<h4>Año Lectivo ${_si.anio || new Date().getFullYear()}</h4>`
+        'metadatos': `<h4>[TIPO DOCUMENTO] N° [FOLIO] - AÑO LECTIVO [AÑO]</h4>`
     };
 
     const contentHTML = {
@@ -436,6 +471,9 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
         const realHeight_mm = wrapper.offsetHeight / scale;
         wrapper.dataset.height_mm = realHeight_mm.toFixed(2);
     }
+
+    // Auto-ajustar el ancho si es un bloque de texto dinámico o cabecera
+    autoAjustarAnchoBloqueTexto(wrapper);
 
     chequearEmptyState();
     updateZonesUI();
@@ -489,12 +527,12 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     if (jsonBlock.scale) insertedNode.dataset.scale = jsonBlock.scale;
     if (jsonBlock.size) {
         insertedNode.dataset.size = jsonBlock.size;
-        const header = insertedNode.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, h3, h2, h4');
+        const header = insertedNode.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, h3, h2, h4, .block-content-texto');
         if (header) header.style.fontSize = jsonBlock.size + 'pt';
     }
     if (jsonBlock.align) {
         insertedNode.dataset.align = jsonBlock.align;
-        const header = insertedNode.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, h3, h2, h4');
+        const header = insertedNode.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, h3, h2, h4, .block-content-texto');
         if (header) {
             header.style.textAlign = jsonBlock.align;
             header.parentNode.style.textAlign = jsonBlock.align;
@@ -502,8 +540,7 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     }
 
     if (jsonBlock.type === 'logo' && jsonBlock.width_mm) {
-        const img = insertedNode.querySelector('.ares-logo-cabecera');
-        if (img) img.setAttribute('width', Math.max(30, jsonBlock.width_mm * 3.78 - 20));
+        // El logo hereda el ancho del bloque contenedor vía CSS (width: 100%)
     }
 
     if (jsonBlock.type === 'calificaciones') {
@@ -527,7 +564,8 @@ function insertarBloqueDesdeJSON(jsonBlock) {
         }
     }
 
-
+    // Auto-ajustar el ancho si es un bloque de texto de cabecera
+    autoAjustarAnchoBloqueTexto(insertedNode);
 }
 
 function eliminarBloque(id) {
@@ -814,7 +852,14 @@ function seleccionarVariableCatalogo(codigo, label, esBloque = false) {
             currentSelection.removeAllRanges();
             currentSelection.addRange(activeRangeBeforeModal);
         }
-        const badgeHtml = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
+        const valorRealMap = {
+            'colegio_nit': window.SCHOOL_INFO?.nit || '',
+            'colegio_resolucion': window.SCHOOL_INFO?.resolucion || '',
+            'school_name': window.SCHOOL_INFO?.name || '',
+            'school_motto': window.SCHOOL_INFO?.motto || ''
+        };
+        const textoBadge = valorRealMap[codigo] || `[ ${label} ]`;
+        const badgeHtml = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">${textoBadge}</span>&nbsp;`;
         document.execCommand('insertHTML', false, badgeHtml);
     } else {
         insertarBloqueEnCanvas('texto', 'Párrafo de Texto');
@@ -823,8 +868,24 @@ function seleccionarVariableCatalogo(codigo, label, esBloque = false) {
         if (ultimoBloque) {
             const nuevoEditable = ultimoBloque.querySelector('.block-content-texto');
             if (nuevoEditable) {
+                const valorRealMap = {
+                    'colegio_nit': window.SCHOOL_INFO?.nit || '',
+                    'colegio_resolucion': window.SCHOOL_INFO?.resolucion || '',
+                    'school_name': window.SCHOOL_INFO?.name || '',
+                    'school_motto': window.SCHOOL_INFO?.motto || ''
+                };
+                const textoBadge = valorRealMap[codigo] || `[ ${label} ]`;
+                nuevoEditable.innerHTML = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">${textoBadge}</span>&nbsp;`;
+                
+                // Forzar el auto-ajuste de la caja contenedora con el contenido del badge real inyectado
+                if (typeof autoAjustarAnchoBloqueTexto === 'function') {
+                    autoAjustarAnchoBloqueTexto(ultimoBloque);
+                }
+                
+                if (typeof window.sincronizarValoresRealesBadges === 'function') {
+                    window.sincronizarValoresRealesBadges();
+                }
                 nuevoEditable.focus();
-                nuevoEditable.innerHTML = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">[ ${label} ]</span>&nbsp;`;
             }
         }
     }
@@ -934,7 +995,7 @@ function actualizarBloqueFirmasCanvas(bloque, numColumnas, dataHeredada) {
 }
 
 /* === SECCIÓN 8: PERSISTENCIA Y GUARDADO === */
-async function guardarFormato(e) {
+async function guardarFormato(e, salir = true) {
     e.preventDefault();
 
     const id = document.getElementById('formato-id').value;
@@ -960,6 +1021,8 @@ async function guardarFormato(e) {
     
     // Recalcular alturas reales en mm antes de persistir
     bloques.forEach(bloque => {
+        autoAjustarAnchoBloqueTexto(bloque);
+        
         if (bloque.dataset.bloque !== 'linea') {
             const realHeight_mm = bloque.offsetHeight / scale;
             bloque.dataset.height_mm = realHeight_mm.toFixed(2);
@@ -989,10 +1052,12 @@ async function guardarFormato(e) {
                 chip.textContent = labelText;
             });
 
+            const size = bloque.dataset.size || '12';
+            const align = bloque.dataset.align || 'left';
             const widthAttr = width_mm !== null ? ` data-width_mm="${width_mm}"` : '';
             const heightAttr = height_mm !== null ? ` data-height_mm="${height_mm}"` : '';
             const stylePos = `position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${height_mm !== null ? `height:${height_mm}mm;` : ''}`;
-            htmlCompilado += `<div class="bloque-texto" data-left_mm="${left_mm}" data-top_mm="${top_mm}"${widthAttr}${heightAttr} style="${stylePos}">${contenidoCaja.innerHTML}</div><br>`;
+            htmlCompilado += `<div class="bloque-texto" data-tipo="texto" data-left_mm="${left_mm}" data-top_mm="${top_mm}" data-size="${size}" data-align="${align}"${widthAttr}${heightAttr} style="${stylePos}">${contenidoCaja.innerHTML}</div><br>`;
 
             configJson.push({
                 type: 'texto',
@@ -1001,6 +1066,8 @@ async function guardarFormato(e) {
                 top_mm: top_mm,
                 width_mm: width_mm,
                 height_mm: height_mm,
+                size: size,
+                align: align,
                 content: contenidoCaja.innerHTML
             });
 
@@ -1099,10 +1166,22 @@ async function guardarFormato(e) {
         const data = await res.json();
 
         if (data.status === 'success') {
-            Swal.fire('Éxito', 'Formato guardado correctamente.', 'success');
-            setTimeout(() => {
-                navegarModulo('formatos_matricula', true);
-            }, 1000);
+            if (typeof window.lanzarToastElite === 'function') {
+                window.lanzarToastElite('success', 'Formato guardado correctamente');
+            } else {
+                Swal.fire('Éxito', 'Formato guardado correctamente.', 'success');
+            }
+            
+            if (salir) {
+                if (typeof cancelarEdicion === 'function') {
+                    cancelarEdicion();
+                }
+                if (typeof navegarModulo === 'function') {
+                    navegarModulo('formatos_matricula');
+                } else {
+                    window.location.reload();
+                }
+            }
         } else {
             Swal.fire('Error', data.message, 'error');
         }
@@ -1110,3 +1189,22 @@ async function guardarFormato(e) {
         Swal.fire('Error', 'No se pudo guardar el formato.', 'error');
     }
 }
+
+window.sincronizarValoresRealesBadges = function() {
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas || !window.SCHOOL_INFO) return;
+
+    const badgeMap = {
+        'colegio_nit': window.SCHOOL_INFO.nit || '',
+        'colegio_resolucion': window.SCHOOL_INFO.resolucion || '',
+        'school_name': window.SCHOOL_INFO.name || '',
+        'school_motto': window.SCHOOL_INFO.motto || ''
+    };
+
+    canvas.querySelectorAll('.ares-variable-badge').forEach(badge => {
+        const varCode = badge.getAttribute('data-var');
+        if (badgeMap.hasOwnProperty(varCode)) {
+            badge.textContent = badgeMap[varCode] || `[ ${varCode} ]`;
+        }
+    });
+};

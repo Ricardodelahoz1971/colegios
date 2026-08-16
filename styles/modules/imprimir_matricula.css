@@ -79,7 +79,7 @@
     .btn-fab-pdf {
         bottom: 2rem;
         right: 5.5rem;
-        background-color: var(--el-danger);
+        background-color: var(--el-primary);
     }
 
     .btn-fab-print:hover,
@@ -133,7 +133,19 @@
         overflow: hidden; /* Control estricto de desbordamiento general */
     }
 
-    /* Logo institucional â€” respetar ancho del bloque diseÃ±ado */
+    /* Reset tipográfico para alineación milimétrica exacta */
+    .print-document h1,
+    .print-document h2,
+    .print-document h3,
+    .print-document h4,
+    .print-document h5,
+    .print-document h6,
+    .print-document p {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Logo institucional — respetar ancho del bloque diseñado */
     .ares-logo-cabecera {
         width: 100%;
         height: auto;
@@ -142,23 +154,25 @@
         display: block;
     }
 
-    /* TÃ­tulo y lema de cabecera */
+    /* Título y lema de cabecera */
     .ares-titulo-cabecera {
         margin: 0;
-        font-size: 20px;
+        font-size: 20pt;
         font-weight: 700;
         color: var(--el-primary);
         text-transform: uppercase;
         white-space: nowrap;
         line-height: 1.2;
+        text-align: center;
     }
     .ares-lema-cabecera {
         margin: 0;
-        font-size: 12px;
+        font-size: 12pt;
         line-height: 1.2;
         white-space: nowrap;
         text-transform: uppercase;
         font-weight: bold;
+        text-align: center;
     }
 
     /* Contenedor de flujo vertical para todos los bloques */
@@ -172,8 +186,8 @@
         text-align: justify;
         white-space: normal;
         word-break: break-word;
-        font-size: 11px;
-        line-height: 15px;
+        font-size: 11pt;
+        line-height: 1.4;
     }
     .block-content-texto[data-text-align="left"] { text-align: left; }
     .block-content-texto[data-text-align="center"] { text-align: center; }
@@ -200,7 +214,7 @@
     body .print-container .block-content-texto div {
         margin: 0;
         padding: 0;
-        line-height: 15px;
+        line-height: 1.4;
     }
 
     /* =========================================================
@@ -274,7 +288,7 @@
     .ficha-plantilla td, .ficha-plantilla th {
         border: 1px solid rgba(var(--el-primary-rgb), 0.15);
         padding: 6px 10px;
-        font-size: 12px;
+        font-size: 9pt;
     }
     .ficha-plantilla td.label {
         font-weight: bold;
@@ -330,7 +344,7 @@
     .tabla-calificaciones-render td {
         border: 1px solid rgba(var(--el-primary-rgb), 0.2);
         padding: 8px 12px;
-        font-size: 12px;
+        font-size: 9pt;
         text-align: left;
     }
     .tabla-calificaciones-render th {
@@ -385,16 +399,16 @@
 
     /* Estilos de FotografÃ­a Estudiantil Oficial 3x4 */
     .ares-foto-estudiante {
-        width: 110px;
-        height: 140px;
+        width: 29mm;
+        height: 37mm;
         object-fit: cover;
         border: 2px solid var(--el-primary);
         border-radius: var(--el-radius-sub);
         box-shadow: 0 2px 8px rgba(var(--el-primary-rgb), 0.15);
     }
     .ares-foto-estudiante-placeholder {
-        width: 110px;
-        height: 140px;
+        width: 29mm;
+        height: 37mm;
         background-color: rgba(var(--el-primary-rgb), 0.05);
         border: 2px dashed rgba(var(--el-primary-rgb), 0.3);
         border-radius: var(--el-radius-sub);
@@ -403,7 +417,7 @@
         align-items: center;
         justify-content: center;
         color: var(--el-primary);
-        font-size: 11px;
+        font-size: 8pt;
         font-weight: bold;
     }
 
@@ -486,8 +500,8 @@
         font-weight: 600;
     }
     .ficha-foto-marco {
-        width: 85px;
-        height: 105px;
+        width: 22mm;
+        height: 28mm;
         overflow: hidden;
         margin: 0 auto;
         border: 1px dashed var(--el-primary);
@@ -528,6 +542,7 @@
     .ares-linea-render {
         width: 100%;
         height: 100%;
+        min-height: 1.5pt;
         background-color: var(--el-primary);
         margin: 0;
         border-radius: var(--el-radius-sub);
@@ -543,10 +558,10 @@
     }
 
     /* =========================================================
-       ARQUITECTURA DE FLUJO PURO (Pantalla + ImpresiÃ³n)
+       ARQUITECTURA DE FLUJO PURO (Pantalla + Impresión)
        ========================================================= */
 
-    /* Contenedor principal con ancho mÃ¡ximo A4 y centrado */
+    /* Contenedor principal con ancho máximo A4 y centrado */
     .print-document {
         width: 100%;
         margin: 0 auto;
@@ -560,60 +575,8 @@
         max-width: 210mm;
     }
 
-    /* Fila superior flexible con logo e informaciÃ³n */
-    .print-header-row {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 1mm;
-        margin-bottom: 1mm;
-        gap: 3mm;
-    }
-
-    /* Bloques de cabecera alineados al inicio verticalmente y compactos */
-    .print-header-info {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        min-width: 0;
-        align-items: flex-start;
-        justify-content: flex-start;
-    }
-
-    /* Contenedor del logo/escudo */
-    .print-header-logo {
-        flex-shrink: 0;
-        max-width: 25mm;
-        height: auto;
-    }
-
-    /* Cuerpo del documento en flujo normal */
-    .print-body-flow {
-        display: block;
-        width: 100%;
-    }
-
-    /* Bloque de firmas al final del documento */
-    .print-firmas-flow {
-        margin-top: 5mm;
-    }
-
-    /* Tabla invisible para soporte de thead en impresiÃ³n */
-    .print-band-table {
-        width: 100%;
-        border: none;
-        border-spacing: 0;
-    }
-
-    .print-band-td {
-        border: none;
-        padding: 0;
-    }
-
     /* =========================================================
-       REGLAS EXCLUSIVAS DE IMPRESIÃ“N (@MEDIA PRINT)
+       REGLAS EXCLUSIVAS DE IMPRESIÓN (@MEDIA PRINT)
        ========================================================= */
 
     @media print {
@@ -622,31 +585,11 @@
             max-width: none;
             padding: 0;
             margin: 0;
-        }
-
-        /* Tabla de bandas para repetir cabecera en cada hoja */
-        .print-band-table {
-            width: 100%;
             border: none;
-            border-spacing: 0;
+            box-shadow: none;
         }
 
-        .print-band-thead {
-            display: table-header-group;
-        }
-
-        .print-band-td {
-            border: none;
-            padding: 0;
-        }
-
-        /* Firmas no se cortan entre pÃ¡ginas */
-        .print-firmas-flow {
-            page-break-inside: avoid;
-            break-inside: avoid;
-        }
-
-        /* Ocultar botones flotantes en impresiÃ³n */
+        /* Ocultar botones flotantes en impresión */
         .btn-fab-print {
             display: none;
         }
@@ -668,7 +611,7 @@
             break-inside: avoid;
         }
 
-        /* Control de lÃ­neas huÃ©rfanas/viudas en textos */
+        /* Control de líneas huérfanas/viudas en textos */
         .bloque-texto,
         .block-content-texto,
         .observaciones,
@@ -690,16 +633,23 @@
             break-before: page;
         }
 
-        /* Forzar reproducciÃ³n exacta de colores */
+        /* Forzar reproducción exacta de colores */
         * {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
-        /* MÃ¡rgenes fÃ­sicos del documento */
-        body {
-            margin: var(--margen-sup) var(--margen-der) var(--margen-inf) var(--margen-izq);
+        /* Márgenes físicos del documento eliminados para evitar duplicación con posicionamiento absoluto */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
         }
+    }
+
+    /* Eliminar margen por defecto de la página al imprimir */
+    @page {
+        margin: 0;
     }
 }
 

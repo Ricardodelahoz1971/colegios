@@ -168,14 +168,15 @@
         text-align: justify;
     }
 
-    /* Forzar lÃ­nea Ãºnica en bloques de cabecera â€” evita wrapping antes de medir */
+    /* Forzar línea única en bloques de cabecera — evita wrapping antes de medir */
     .canvas-block-wrapper[data-bloque="titulo_colegio"] .block-content-wysiwyg,
     .canvas-block-wrapper[data-bloque="titulo_colegio"] h3,
     .canvas-block-wrapper[data-bloque="titulo_colegio"] h2,
     .canvas-block-wrapper[data-bloque="lema_colegio"] .block-content-wysiwyg,
     .canvas-block-wrapper[data-bloque="lema_colegio"] p,
     .canvas-block-wrapper[data-bloque="metadatos"] .block-content-wysiwyg,
-    .canvas-block-wrapper[data-bloque="metadatos"] h4 {
+    .canvas-block-wrapper[data-bloque="metadatos"] h4,
+    .canvas-block-wrapper[data-bloque="texto"] .block-content-texto {
         white-space: nowrap;
     }
 
@@ -195,30 +196,30 @@
     .ares-paper-sheet {
         position: relative;
         background-color: var(--el-white);
-        width: 816px; /* Carta por defecto */
-        min-height: 1056px;
+        width: 215.9mm; /* Carta nativo en mm */
+        min-height: 279.4mm;
         border: 1px solid var(--el-dark);
         box-shadow: 0 25px 70px rgba(var(--el-dark-rgb), 0.25), 0 5px 20px rgba(var(--el-dark-rgb), 0.15);
         margin: 0 auto 2rem auto;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .ares-paper-sheet--carta {
-        width: 816px;
-        min-height: 1056px;
+        width: 215.9mm;
+        min-height: 279.4mm;
     }
     .ares-paper-sheet--media_carta {
-        width: 816px;
-        min-height: 528px;
+        width: 215.9mm;
+        min-height: 139.7mm;
     }
     .ares-paper-sheet--carne_v {
-        width: 324px;
-        min-height: 512px;
+        width: 54mm;
+        min-height: 86mm;
         border-radius: var(--el-radius-sub);
         border: 1px solid rgba(var(--el-primary-rgb), 0.15);
     }
     .ares-paper-sheet--carne_h {
-        width: 512px;
-        min-height: 324px;
+        width: 86mm;
+        min-height: 54mm;
         border-radius: var(--el-radius-sub);
         border: 1px solid rgba(var(--el-primary-rgb), 0.15);
     }
@@ -411,14 +412,37 @@
     }
 }
 
-/* Estilos WYSIWYG Mockup */
+/* Estilos WYSIWYG Mockup — Paridad con imprimir_matricula.css */
 .ares-logo-cabecera {
     width: 100%;
     height: auto;
 }
 
 .ares-titulo-cabecera {
+    margin: 0;
+    font-size: 20pt;
+    font-weight: 700;
+    color: var(--el-primary);
+    text-transform: uppercase;
+    white-space: nowrap;
+    line-height: 1.2;
     letter-spacing: 1px;
+    text-align: center;
+}
+
+.ares-lema-cabecera {
+    margin: 0;
+    font-size: 12pt;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-align: center;
+}
+
+.block-content-texto {
+    font-size: 11pt;
+    line-height: 1.4;
 }
 
 /* Nodos Tiradores de RedimensiÃ³n en Esquinas */
@@ -458,14 +482,148 @@
 }
 
 .resize-handle-br {
-    bottom: -5px;
+        bottom: -5px;
     right: -5px;
     cursor: nwse-resize;
 }
 
-/* ==========================================
-   ðŸš€ CATÃLOGO DE CAMPOS EN MODAL (OPCIÃ“N 2)
-   ========================================== */
+/* ==========================================================================
+   VITRINA 06 ELITE — GRID CATÁLOGO + TABS PREMIUM (MÓDULO: formatos_matricula.css)
+   ========================================================================== */
+
+.ares-catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 6px 10px 10px 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--el-primary) var(--el-bg-card-muted);
+}
+
+/* Scrollbar WebKit (Chrome, Edge, Safari) */
+.ares-catalogo-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ares-catalogo-grid::-webkit-scrollbar-track {
+  background: var(--el-bg-card-muted);
+  border-radius: var(--el-radius-main);
+}
+
+.ares-catalogo-grid::-webkit-scrollbar-thumb {
+  background: var(--el-primary);
+  border-radius: var(--el-radius-main);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.1);
+}
+
+.ares-catalogo-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--el-primary-hover, var(--el-primary));
+}
+
+/* ============================================
+   PESTAÑAS PREMIUM — .nav-link-elite (modal)
+   ============================================ */
+.nav-pills-elite .nav-link-elite {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  font-family: var(--el-font-institutional), sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--el-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--el-radius-main) var(--el-radius-main) 0 0;
+  cursor: pointer;
+  transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.25s ease;
+  isolation: isolate;
+  height: 44px; /* Altura obligatoria de 44px para todo control interactivo */
+}
+
+.nav-pills-elite .nav-link-elite::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--el-primary), var(--el-accent, var(--el-primary)), var(--el-primary), transparent);
+  border-radius: var(--el-radius-sub);
+  transform: translateX(-50%);
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+}
+
+.nav-pills-elite .nav-link-elite::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 120%, rgba(var(--el-primary-rgb), 0.12) 0%, transparent 65%);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.nav-pills-elite .nav-link-elite:hover {
+  color: var(--el-dark);
+  transform: translateY(-1px);
+  text-shadow: 0 1px 12px rgba(var(--el-primary-rgb), 0.3);
+}
+
+.nav-pills-elite .nav-link-elite:hover::before {
+  opacity: 1;
+}
+
+.nav-pills-elite .nav-link-elite:hover::after {
+  width: 72%;
+}
+
+.nav-pills-elite .nav-link-elite:active {
+  transform: translateY(0);
+  transition-duration: 0.12s;
+}
+
+.nav-pills-elite .nav-link-elite.active {
+  color: var(--el-primary);
+  background: var(--el-bg-card);
+  box-shadow: 
+    0 -2px 10px rgba(var(--el-primary-rgb), 0.08),
+    0 6px 18px rgba(var(--el-primary-rgb), 0.1),
+    inset 0 1px 0 rgba(var(--color-white-rgb), 0.9);
+  transform: translateY(0);
+  border-bottom: 2px solid var(--el-primary);
+}
+
+.nav-pills-elite .nav-link-elite.active::after {
+  width: 85%;
+  height: 2.5px;
+  background: linear-gradient(90deg, transparent, var(--el-primary), var(--el-accent, var(--el-primary)), var(--el-primary), transparent);
+  box-shadow: 0 0 10px rgba(var(--el-primary-rgb), 0.4);
+}
+
+.nav-pills-elite .nav-link-elite.active::before {
+  opacity: 1;
+  background: radial-gradient(circle at 50% -15%, rgba(var(--el-primary-rgb), 0.15) 0%, transparent 60%);
+}
+
+.nav-pills-elite .nav-link-elite:focus-visible {
+  outline: 2px solid var(--el-primary);
+  outline-offset: 3px;
+  border-radius: var(--el-radius-main);
+}
+
+/* ==========================================================
+   🚀 CATÁLOGO DE CAMPOS EN MODAL (OPCIÓN PESTAÑAS)
+   ========================================================== */
 
 .ares-var-card {
     display: flex;
@@ -770,5 +928,6 @@
 strong.ares-campo-valor {
     font-weight: 800;
 }
+
 
 

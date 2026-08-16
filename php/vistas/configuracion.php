@@ -621,7 +621,7 @@ if (isset($_GET['success']) && (strpos($_GET['success'], 'adn') !== false || str
                 </div>
                 
                 <div class="col-md-5">
-                    <div class="config-main-card-elite config-main-card-elite--padded mb-4" style="border-inline-start: 0.25rem solid var(--el-primary);">
+                    <div class="config-main-card-elite config-main-card-elite--padded config-main-card-elite--accented mb-4">
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-shield-check text-primary fs-3 me-3"></i>
                             <div>
@@ -640,7 +640,7 @@ if (isset($_GET['success']) && (strpos($_GET['success'], 'adn') !== false || str
                         </ul>
                     </div>
 
-                    <div class="config-main-card-elite config-main-card-elite--padded" style="border-inline-start: 0.25rem solid var(--el-primary);">
+                    <div class="config-main-card-elite config-main-card-elite--padded config-main-card-elite--accented">
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-calculator-fill text-primary fs-3 me-3"></i>
                             <div>

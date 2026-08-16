@@ -1,4 +1,4 @@
-﻿@layer modules {
+@layer modules {
 /* 
    ==========================================================================
    DASHBOARD Ã‰LITE - CENTRO DE MANDO INSTITUCIONAL v1.0
@@ -187,6 +187,10 @@
 
 .config-main-card-elite--padded {
     padding: 2rem;
+}
+
+.config-main-card-elite--accented {
+    border-inline-start: 0.25rem solid var(--el-primary);
 }
 
 .config-info-card-elite__icon {

@@ -5,7 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
             name: container.getAttribute('data-school-name') || '',
             motto: container.getAttribute('data-school-motto') || '',
             logo: container.getAttribute('data-school-logo') || '',
-            anio: container.getAttribute('data-school-anio') || new Date().getFullYear()
+            anio: container.getAttribute('data-school-anio') || new Date().getFullYear(),
+            nit: container.getAttribute('data-colegio-nit') || '',
+            resolucion: container.getAttribute('data-colegio-resolucion') || ''
         };
     }
     
@@ -60,18 +62,14 @@ function abrirConfiguracionBloque(idUnico) {
     if (tipo === 'logo') {
         Swal.fire({ icon: 'info', title: 'Componente básico', text: 'El logo se ajusta redimensionándolo directamente desde sus esquinas.', timer: 2500, showConfirmButton: false });
         return;
-    } else if (tipo === 'titulo_colegio') {
+    } else if (tipo === 'titulo_colegio' || tipo === 'lema_colegio' || tipo === 'texto') {
         document.getElementById('config-section-titulo').classList.remove('d-none');
-        const size = activeConfigNode.dataset.size || '20';
+        const size = activeConfigNode.dataset.size || (tipo === 'titulo_colegio' ? '20' : '12');
         document.getElementById('config-titulo-size').value = size;
-        const align = activeConfigNode.dataset.align || 'center';
-        document.getElementById('config-titulo-align').value = align;
     } else if (tipo === 'metadatos') {
         document.getElementById('config-section-metadatos').classList.remove('d-none');
         const size = activeConfigNode.dataset.size || '16';
         document.getElementById('config-metadatos-size').value = size;
-        const align = activeConfigNode.dataset.align || 'center';
-        document.getElementById('config-metadatos-align').value = align;
     } else if (tipo === 'linea') {
         document.getElementById('config-section-linea').classList.remove('d-none');
         const grosor = activeConfigNode.dataset.height || '1.5pt';
@@ -118,27 +116,27 @@ function guardarAjustesBloque(e) {
     if (tipo === 'logo') {
         // Obsoleto, logo usa redimensionado
         return;
-    } else if (tipo === 'titulo_colegio') {
+    } else if (tipo === 'titulo_colegio' || tipo === 'lema_colegio' || tipo === 'texto') {
         const size = document.getElementById('config-titulo-size').value;
-        const align = document.getElementById('config-titulo-align').value;
         activeConfigNode.dataset.size = size;
-        activeConfigNode.dataset.align = align;
-        const header = activeConfigNode.querySelector('.ares-titulo-cabecera, h3, h2');
+        const selector = tipo === 'titulo_colegio' ? '.ares-titulo-cabecera, h3, h2' : 
+                        (tipo === 'lema_colegio' ? '.ares-lema-cabecera, p' : '.block-content-texto');
+        const header = activeConfigNode.querySelector(selector);
         if (header) {
             header.style.fontSize = size + 'pt';
-            header.style.textAlign = align;
-            header.parentNode.style.textAlign = align;
+        }
+        if (typeof autoAjustarAnchoBloqueTexto === 'function') {
+            autoAjustarAnchoBloqueTexto(activeConfigNode);
         }
     } else if (tipo === 'metadatos') {
         const size = document.getElementById('config-metadatos-size').value;
-        const align = document.getElementById('config-metadatos-align').value;
         activeConfigNode.dataset.size = size;
-        activeConfigNode.dataset.align = align;
         const header = activeConfigNode.querySelector('h4');
         if (header) {
             header.style.fontSize = size + 'pt';
-            header.style.textAlign = align;
-            header.parentNode.style.textAlign = align;
+        }
+        if (typeof autoAjustarAnchoBloqueTexto === 'function') {
+            autoAjustarAnchoBloqueTexto(activeConfigNode);
         }
     } else if (tipo === 'calificaciones') {
         const diseno = document.getElementById('config-diseno').value;
@@ -167,7 +165,11 @@ function guardarAjustesBloque(e) {
     } else if (tipo === 'linea') {
         const grosor = document.getElementById('config-linea-grosor').value;
         activeConfigNode.dataset.height = grosor + 'pt';
-        activeConfigNode.setAttribute('style', 'height: ' + grosor + 'pt');
+        const lineaGrafica = activeConfigNode.querySelector('.ares-linea-grafica');
+        if (lineaGrafica) {
+            lineaGrafica.style['height'] = grosor + 'pt';
+        }
+        activeConfigNode.style['height'] = '15px';
     }
 
     bootstrap.Modal.getInstance(document.getElementById('modalConfigBloque')).hide();
@@ -259,6 +261,9 @@ function editarFormato(id) {
                         blocks.forEach(block => {
                             insertarBloqueDesdeJSON(block);
                         });
+                        if (typeof window.sincronizarValoresRealesBadges === 'function') {
+                            window.sincronizarValoresRealesBadges();
+                        }
                         if (typeof ajustarAlturaLienzo === 'function') ajustarAlturaLienzo();
 
                         // Cargar zonas si existen
@@ -282,6 +287,9 @@ function editarFormato(id) {
                     canvas.querySelectorAll('.canvas-block-wrapper').forEach(wrapper => {
                         wrapper.addEventListener('mousedown', iniciarArrastreBloque);
                     });
+                    if (typeof window.sincronizarValoresRealesBadges === 'function') {
+                        window.sincronizarValoresRealesBadges();
+                    }
                     if (typeof ajustarAlturaLienzo === 'function') ajustarAlturaLienzo();
                 } else {
                     canvas.innerHTML = `
