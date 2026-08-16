@@ -31,7 +31,7 @@ function getCanvasScale() {
 function autoAjustarAnchoBloqueTexto(bloque) {
     if (!bloque) return;
     const tipo = bloque.dataset.bloque;
-    if (!['titulo_colegio', 'lema_colegio', 'metadatos', 'texto'].includes(tipo)) return;
+    if (!['titulo_colegio', 'lema_colegio', 'metadatos', 'texto'].includes(tipo) && !bloque.dataset.varCodigo) return;
 
     const textEl = bloque.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, .metadatos-titulo-linea, h4, .block-content-texto');
     if (!textEl) return;
@@ -53,7 +53,7 @@ function autoAjustarAnchoBloqueTexto(bloque) {
     }
     
     const textWidthMm = textWidthPx / scale;
-    const finalWidthMm = textWidthMm + 2; // 2mm de holgura ("gabela")
+    const finalWidthMm = textWidthMm + 6; // 3mm a cada lado = 6mm de gabela
     
     bloque.style.width = finalWidthMm.toFixed(2) + 'mm';
     bloque.dataset.width_mm = finalWidthMm.toFixed(2);
@@ -264,7 +264,7 @@ function agregarNodosRedimension(wrapper) {
     wrapper.querySelectorAll('.resize-handle').forEach(h => h.remove());
     
     const tipo = wrapper.dataset.bloque;
-    if (['titulo_colegio', 'lema_colegio', 'metadatos'].includes(tipo)) {
+    if (['titulo_colegio', 'lema_colegio', 'metadatos', 'texto'].includes(tipo) || wrapper.dataset.varCodigo) {
         return;
     }
 
@@ -520,7 +520,29 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     if (jsonBlock.type === 'texto' && jsonBlock.content) {
         const cajaTexto = insertedNode.querySelector('.block-content-texto');
         if (cajaTexto) {
-            cajaTexto.innerHTML = jsonBlock.content;
+            // Verificar si el contenido tiene un badge de variable
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = jsonBlock.content;
+            const badge = tempDiv.querySelector('.ares-variable-badge');
+            if (badge) {
+                const varCodigo = badge.getAttribute('data-var');
+                insertedNode.dataset.varCodigo = varCodigo;
+                
+                const previewData = window.PREVIEW_DATA || {};
+                const textoReal = previewData[varCodigo] !== undefined && previewData[varCodigo] !== null && previewData[varCodigo] !== ''
+                    ? previewData[varCodigo]
+                    : badge.textContent;
+                
+                cajaTexto.textContent = textoReal;
+                cajaTexto.style.textAlign = 'center';
+                cajaTexto.style.paddingInline = '3mm';
+                cajaTexto.style.width = 'auto';
+                
+                // Asegurar que no tenga handles de redimensión
+                insertedNode.querySelectorAll('.resize-handle').forEach(h => h.remove());
+            } else {
+                cajaTexto.innerHTML = jsonBlock.content;
+            }
         }
     }
 
@@ -833,62 +855,48 @@ function seleccionarVariableCatalogo(codigo, label, esBloque = false) {
     }
 
     if (esBloque) {
-        insertarBloqueEnCanvas(codigo, label);
-        return;
+        return insertarBloqueEnCanvas(codigo, label);
     }
 
-    let targetEditable = activeEditableBeforeModal;
+    // Obtener el valor real del preview si existe
+    const previewData = window.PREVIEW_DATA || {};
+    const textoReal = previewData[codigo] !== undefined && previewData[codigo] !== null && previewData[codigo] !== ''
+        ? previewData[codigo]
+        : `[${label}]`;
 
-    const currentSelection = window.getSelection();
-    if (!targetEditable && currentSelection.rangeCount > 0) {
-        const node = currentSelection.getRangeAt(0).startContainer;
-        const parentElem = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
-        targetEditable = parentElem ? parentElem.closest('.block-content-texto') : null;
-    }
-
-    if (targetEditable) {
-        targetEditable.focus();
-        if (activeRangeBeforeModal) {
-            currentSelection.removeAllRanges();
-            currentSelection.addRange(activeRangeBeforeModal);
+    // Crear bloque de texto con la variable
+    const wrapper = insertarBloqueEnCanvas('texto', label);
+    if (wrapper) {
+        wrapper.dataset.varCodigo = codigo;
+        
+        const editable = wrapper.querySelector('.block-content-texto');
+        if (editable) {
+            editable.textContent = textoReal;
+            editable.style.textAlign = 'center';
+            editable.style.paddingInline = '3mm';
+            editable.style.width = 'auto';
         }
-        const valorRealMap = {
-            'colegio_nit': window.SCHOOL_INFO?.nit || '',
-            'colegio_resolucion': window.SCHOOL_INFO?.resolucion || '',
-            'school_name': window.SCHOOL_INFO?.name || '',
-            'school_motto': window.SCHOOL_INFO?.motto || ''
-        };
-        const textoBadge = valorRealMap[codigo] || `[ ${label} ]`;
-        const badgeHtml = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">${textoBadge}</span>&nbsp;`;
-        document.execCommand('insertHTML', false, badgeHtml);
-    } else {
-        insertarBloqueEnCanvas('texto', 'Párrafo de Texto');
-        const canvas = document.getElementById('canvas-builder');
-        const ultimoBloque = canvas.querySelector('.canvas-block-wrapper:last-child');
-        if (ultimoBloque) {
-            const nuevoEditable = ultimoBloque.querySelector('.block-content-texto');
-            if (nuevoEditable) {
-                const valorRealMap = {
-                    'colegio_nit': window.SCHOOL_INFO?.nit || '',
-                    'colegio_resolucion': window.SCHOOL_INFO?.resolucion || '',
-                    'school_name': window.SCHOOL_INFO?.name || '',
-                    'school_motto': window.SCHOOL_INFO?.motto || ''
-                };
-                const textoBadge = valorRealMap[codigo] || `[ ${label} ]`;
-                nuevoEditable.innerHTML = `<span class="ares-variable-badge" contenteditable="false" data-var="${codigo}">${textoBadge}</span>&nbsp;`;
-                
-                // Forzar el auto-ajuste de la caja contenedora con el contenido del badge real inyectado
-                if (typeof autoAjustarAnchoBloqueTexto === 'function') {
-                    autoAjustarAnchoBloqueTexto(ultimoBloque);
-                }
-                
-                if (typeof window.sincronizarValoresRealesBadges === 'function') {
-                    window.sincronizarValoresRealesBadges();
-                }
-                nuevoEditable.focus();
-            }
+
+        // Forzar el auto-ajuste de la caja contenedora
+        autoAjustarAnchoBloqueTexto(wrapper);
+
+        // Medir altura después de insertar al DOM y fuentes cargadas
+        const scale = getCanvasScale();
+        document.fonts.ready.then(() => {
+            const realHeight_mm = wrapper.offsetHeight / scale;
+            wrapper.dataset.height_mm = realHeight_mm.toFixed(2);
+        });
+
+        // Asegurar que no tenga handles de redimensión (control numérico puro)
+        wrapper.querySelectorAll('.resize-handle').forEach(h => h.remove());
+
+        if (editable) {
+            editable.focus();
         }
+
+        return wrapper;
     }
+    return null;
 }
 
 function insertarVariable(codigo, label) {
@@ -1041,16 +1049,23 @@ async function guardarFormato(e, salir = true) {
         if (tipoBloque === 'texto') {
             const contenidoCaja = bloque.querySelector('.block-content-texto').cloneNode(true);
 
-            const chips = contenidoCaja.querySelectorAll('.ares-variable-badge');
-            chips.forEach(chip => {
-                const varName = chip.dataset.var || '';
-                const labelText = chip.textContent.trim();
-                chip.removeAttribute('style');
-                chip.removeAttribute('contenteditable');
-                chip.className = 'ares-variable-badge';
-                chip.setAttribute('data-var', varName);
-                chip.textContent = labelText;
-            });
+            // Si es un bloque con varCodigo (campo dinámico del catálogo), empaquetar el badge
+            if (bloque.dataset.varCodigo) {
+                const varCodigo = bloque.dataset.varCodigo;
+                // El badge se almacena en la base de datos para paridad con imprimir_matricula.php
+                contenidoCaja.innerHTML = `<span class="ares-variable-badge" contenteditable="false" data-var="${varCodigo}">[ ${varCodigo} ]</span>`;
+            } else {
+                const chips = contenidoCaja.querySelectorAll('.ares-variable-badge');
+                chips.forEach(chip => {
+                    const varName = chip.dataset.var || '';
+                    const labelText = chip.textContent.trim();
+                    chip.removeAttribute('style');
+                    chip.removeAttribute('contenteditable');
+                    chip.className = 'ares-variable-badge';
+                    chip.setAttribute('data-var', varName);
+                    chip.textContent = labelText;
+                });
+            }
 
             const size = bloque.dataset.size || '12';
             const align = bloque.dataset.align || 'left';

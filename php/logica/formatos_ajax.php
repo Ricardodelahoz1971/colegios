@@ -25,6 +25,150 @@ try {
         exit();
     }
 
+    if ($action === 'obtener_datos_preview') {
+        // Obtener el primer estudiante con matrícula activa
+        $sqlEstudiante = "SELECT e.*, c.nombre_curso, da.*, m.estado AS matricula_estado, m.id AS matricula_id
+                          FROM estudiantes e
+                          INNER JOIN matriculas m ON m.estudiante_id = e.id
+                          LEFT JOIN cursos c ON e.curso_id = c.id
+                          LEFT JOIN estudiantes_datos_adicionales da ON e.id = da.estudiante_id
+                          WHERE m.estado = 'activa'
+                          ORDER BY e.id ASC
+                          LIMIT 1";
+        $stmtEstudiante = $db->prepare($sqlEstudiante);
+        $stmtEstudiante->execute();
+        $estudiante = $stmtEstudiante->fetch(PDO::FETCH_ASSOC);
+
+        if (!$estudiante) {
+            // Fallback en caso de que no haya matrícula activa: obtener primer estudiante disponible
+            $sqlEstudiante = "SELECT e.*, c.nombre_curso, da.*
+                              FROM estudiantes e
+                              LEFT JOIN cursos c ON e.curso_id = c.id
+                              LEFT JOIN estudiantes_datos_adicionales da ON e.id = da.estudiante_id
+                              ORDER BY e.id ASC
+                              LIMIT 1";
+            $stmtEstudiante = $db->prepare($sqlEstudiante);
+            $stmtEstudiante->execute();
+            $estudiante = $stmtEstudiante->fetch(PDO::FETCH_ASSOC);
+        }
+
+        if (!$estudiante) {
+            throw new Exception("No hay estudiantes registrados en la base de datos.");
+        }
+
+        // Obtener configuración global del colegio
+        $sqlConfig = "SELECT clave, valor FROM configuracion_global WHERE clave IN 
+                      ('school_name', 'school_motto', 'colegio_nit', 'colegio_resolucion', 'rector_nombre', 'secretaria_nombre', 'anio_lectivo_oficial')";
+        $stmtConfig = $db->prepare($sqlConfig);
+        $stmtConfig->execute();
+        $configRows = $stmtConfig->fetchAll(PDO::FETCH_ASSOC);
+        $config = [];
+        foreach ($configRows as $row) {
+            $config[$row['clave']] = $row['valor'];
+        }
+
+        // Obtener ajustes estéticos
+        $stmtAjustes = $db->prepare('SELECT clave, valor FROM ajustes_estetica');
+        $stmtAjustes->execute();
+        $ajustesEstetica = $stmtAjustes->fetchAll(PDO::FETCH_KEY_PAIR);
+
+        $school_name = $ajustesEstetica['school_name'] ?? $config['school_name'] ?? 'SISTEMA ESCOLAR ÉLITE';
+        $school_motto = $ajustesEstetica['school_motto'] ?? $config['school_motto'] ?? 'Excelencia en Gestión Educativa';
+        $colegio_nit = $ajustesEstetica['colegio_nit'] ?? $config['colegio_nit'] ?? '';
+        $colegio_resolucion = $ajustesEstetica['colegio_resolucion'] ?? $config['colegio_resolucion'] ?? '';
+
+        $rector_nombre = '';
+        $stmtRector = $db->prepare('SELECT nombre FROM usuarios WHERE rol_id = 3 LIMIT 1');
+        $stmtRector->execute();
+        $rector_nombre = $stmtRector->fetchColumn() ?: 'Rector Institucional';
+
+        $secretaria_nombre = '';
+        $stmtSecretaria = $db->prepare('SELECT nombre FROM usuarios WHERE rol_id = 4 LIMIT 1');
+        $stmtSecretaria->execute();
+        $secretaria_nombre = $stmtSecretaria->fetchColumn() ?: 'Secretaria Académica';
+
+        // Calcular edad del estudiante
+        $fechaNacimiento = $estudiante['fecha_nacimiento'] ?? '';
+        $edad = '';
+        if (!empty($fechaNacimiento)) {
+            $fechaNac = new DateTime($fechaNacimiento);
+            $hoy = new DateTime();
+            $diferencia = $hoy->diff($fechaNac);
+            $edad = $diferencia->y . ' años';
+        }
+
+        // Formatear documento del estudiante
+        $tipoDocEstudiante = $estudiante['tipo_documento'] ?? 'T.I.';
+        $identificacionEstudiante = $estudiante['identificacion'] ?? '';
+        $documentoCompleto = trim($tipoDocEstudiante . ' ' . $identificacionEstudiante);
+
+        // Formatear documento del padre
+        $tipoDocPadre = $estudiante['padre_tipo_documento'] ?? 'C.C.';
+        $documentoPadre = $estudiante['padre_documento'] ?? '';
+        $documentoPadreCompleto = trim($tipoDocPadre . ' ' . $documentoPadre);
+
+        // Formatear documento de la madre
+        $tipoDocMadre = $estudiante['madre_tipo_documento'] ?? 'C.C.';
+        $documentoMadre = $estudiante['madre_documento'] ?? '';
+        $documentoMadreCompleto = trim($tipoDocMadre . ' ' . $documentoMadre);
+
+        // Fechas actuales
+        $fechaActual = !empty($estudiante['fecha_registro']) ? date('d/m/Y', strtotime($estudiante['fecha_registro'])) : date('d/m/Y');
+        $anioLectivo = $config['anio_lectivo_oficial'] ?? date('Y');
+
+        // Construir el mapa de variables exactamente como en imprimir_matricula.php
+        $data = [
+            'estudiante_nombre' => trim(($estudiante['nombre'] ?? '') . ' ' . ($estudiante['apellido'] ?? '')),
+            'estudiante_documento' => $documentoCompleto,
+            'estudiante_tipo_documento' => $tipoDocEstudiante,
+            'estudiante_rh' => $estudiante['rh'] ?? '',
+            'estudiante_genero' => $estudiante['genero'] ?? '',
+            'estudiante_celular' => $estudiante['celular'] ?? '',
+            'estudiante_email' => $estudiante['email'] ?? '',
+            'estudiante_fecha_nacimiento' => $estudiante['fecha_nacimiento'] ?? '',
+            'estudiante_edad' => $edad,
+            'estudiante_lugar_nacimiento' => $estudiante['lugar_nacimiento'] ?? '',
+            'estudiante_nacionalidad' => $estudiante['nacionalidad'] ?? 'COLOMBIANA',
+            'estudiante_colegio_anterior' => $estudiante['colegio_anterior'] ?? 'Ninguno',
+            'estudiante_direccion' => $estudiante['direccion_estudiante'] ?? '',
+            'estudiante_folio' => $estudiante['folio_matricula'] ?? '',
+            'padre_nombre' => $estudiante['padre_nombre'] ?? '',
+            'padre_documento' => $documentoPadreCompleto,
+            'padre_documento_expedicion' => $estudiante['padre_documento_expedicion'] ?? '',
+            'padre_celular' => $estudiante['padre_celular'] ?? '',
+            'padre_telefono' => $estudiante['padre_telefono'] ?? '',
+            'padre_direccion' => $estudiante['padre_direccion'] ?? '',
+            'padre_profesion' => $estudiante['padre_profesion'] ?? '',
+            'padre_email' => $estudiante['padre_email'] ?? '',
+            'madre_nombre' => $estudiante['madre_nombre'] ?? '',
+            'madre_documento' => $documentoMadreCompleto,
+            'madre_documento_expedicion' => $estudiante['madre_documento_expedicion'] ?? '',
+            'madre_celular' => $estudiante['madre_celular'] ?? '',
+            'madre_telefono' => $estudiante['madre_telefono'] ?? '',
+            'madre_direccion' => $estudiante['madre_direccion'] ?? '',
+            'madre_profesion' => $estudiante['madre_profesion'] ?? '',
+            'madre_email' => $estudiante['madre_email'] ?? '',
+            'colegio_nombre' => $school_name,
+            'colegio_lema' => $school_motto,
+            'colegio_nit' => $colegio_nit,
+            'colegio_resolucion' => $colegio_resolucion,
+            'rector_nombre' => $rector_nombre,
+            'secretaria_nombre' => $secretaria_nombre,
+            'curso_asignado' => $estudiante['nombre_curso'] ?? 'Sin Curso',
+            'jornada_escolar' => $estudiante['jornada'] ?? '',
+            'fecha_registro' => $fechaActual,
+            'fecha_impresion' => date('d/m/Y'),
+            'anio_lectivo' => $anioLectivo
+        ];
+
+        echo json_encode([
+            'status' => 'success',
+            'data' => $data
+        ]);
+        exit();
+    }
+
+
     if ($action === 'obtener') {
         $id = (int)($_REQUEST['id'] ?? 0);
         if ($id <= 0) {

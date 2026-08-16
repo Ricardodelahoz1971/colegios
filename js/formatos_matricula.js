@@ -11,6 +11,34 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     
+    // Inicializar PREVIEW_DATA como objeto vacío por defecto
+    window.PREVIEW_DATA = {};
+
+    // Obtener datos de preview desde el endpoint AJAX
+    fetch('php/logica/formatos_ajax.php?action=obtener_datos_preview', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+    })
+    .then(result => {
+        if (result.status === 'success' && result.data) {
+            window.PREVIEW_DATA = result.data;
+        } else {
+            window.PREVIEW_DATA = {};
+        }
+    })
+    .catch(error => {
+        console.warn('No se pudieron cargar los datos de preview:', error);
+        window.PREVIEW_DATA = {};
+    });
+    
     // Inicializar el canvas engine al cargar este script (AJAX compatible)
     if (typeof initFormatosBuilder === 'function') {
         initFormatosBuilder();
