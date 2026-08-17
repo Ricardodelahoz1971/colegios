@@ -14,12 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar PREVIEW_DATA como objeto vacío por defecto
     window.PREVIEW_DATA = {};
 
-    // Obtener datos de preview desde el endpoint AJAX
-    fetch('php/logica/formatos_ajax.php?action=obtener_datos_preview', {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
+    // Obtener datos de preview desde el endpoint AJAX (POST para pasar la protección CSRF)
+    const formData = new FormData();
+    formData.append('action', 'obtener_datos_preview');
+    formData.append('csrf_token', window.CSRF_TOKEN || '');
+
+    fetch('/sistema_escolar/php/logica/formatos_ajax.php', {
+        method: 'POST',
+        body: formData
     })
     .then(response => {
         if (!response.ok) {

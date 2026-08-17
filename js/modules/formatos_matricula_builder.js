@@ -540,6 +540,9 @@ function insertarBloqueDesdeJSON(jsonBlock) {
                 
                 // Asegurar que no tenga handles de redimensión
                 insertedNode.querySelectorAll('.resize-handle').forEach(h => h.remove());
+
+                // Auto-ajustar el ancho del bloque al valor real del preview
+                autoAjustarAnchoBloqueTexto(insertedNode);
             } else {
                 cajaTexto.innerHTML = jsonBlock.content;
             }
