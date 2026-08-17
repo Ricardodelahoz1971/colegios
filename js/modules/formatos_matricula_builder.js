@@ -53,7 +53,7 @@ function autoAjustarAnchoBloqueTexto(bloque) {
     }
     
     const textWidthMm = textWidthPx / scale;
-    const finalWidthMm = textWidthMm + 6; // 3mm a cada lado = 6mm de gabela
+    const finalWidthMm = textWidthMm + 2; // 1mm a cada lado = 2mm de gabela
     
     bloque.style.width = finalWidthMm.toFixed(2) + 'mm';
     bloque.dataset.width_mm = finalWidthMm.toFixed(2);
@@ -535,7 +535,7 @@ function insertarBloqueDesdeJSON(jsonBlock) {
                 
                 cajaTexto.textContent = textoReal;
                 cajaTexto.style.textAlign = 'center';
-                cajaTexto.style.paddingInline = '3mm';
+                cajaTexto.style.paddingInline = '1mm';
                 cajaTexto.style.width = 'auto';
                 
                 // Asegurar que no tenga handles de redimensión
@@ -876,7 +876,7 @@ function seleccionarVariableCatalogo(codigo, label, esBloque = false) {
         if (editable) {
             editable.textContent = textoReal;
             editable.style.textAlign = 'center';
-            editable.style.paddingInline = '3mm';
+            editable.style.paddingInline = '1mm';
             editable.style.width = 'auto';
         }
 
