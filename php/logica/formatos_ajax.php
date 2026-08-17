@@ -26,31 +26,16 @@ try {
     }
 
     if ($action === 'obtener_datos_preview') {
-        // Obtener el primer estudiante con matrícula activa
-        $sqlEstudiante = "SELECT e.*, c.nombre_curso, da.*, m.estado AS matricula_estado, m.id AS matricula_id
+        // Obtener el primer estudiante registrado
+        $sqlEstudiante = "SELECT e.*, c.nombre_curso, da.*
                           FROM estudiantes e
-                          INNER JOIN matriculas m ON m.estudiante_id = e.id
                           LEFT JOIN cursos c ON e.curso_id = c.id
                           LEFT JOIN estudiantes_datos_adicionales da ON e.id = da.estudiante_id
-                          WHERE m.estado = 'activa'
                           ORDER BY e.id ASC
                           LIMIT 1";
         $stmtEstudiante = $db->prepare($sqlEstudiante);
         $stmtEstudiante->execute();
         $estudiante = $stmtEstudiante->fetch(PDO::FETCH_ASSOC);
-
-        if (!$estudiante) {
-            // Fallback en caso de que no haya matrícula activa: obtener primer estudiante disponible
-            $sqlEstudiante = "SELECT e.*, c.nombre_curso, da.*
-                              FROM estudiantes e
-                              LEFT JOIN cursos c ON e.curso_id = c.id
-                              LEFT JOIN estudiantes_datos_adicionales da ON e.id = da.estudiante_id
-                              ORDER BY e.id ASC
-                              LIMIT 1";
-            $stmtEstudiante = $db->prepare($sqlEstudiante);
-            $stmtEstudiante->execute();
-            $estudiante = $stmtEstudiante->fetch(PDO::FETCH_ASSOC);
-        }
 
         if (!$estudiante) {
             throw new Exception("No hay estudiantes registrados en la base de datos.");
