@@ -480,7 +480,7 @@ $renderizador = function(string $tipo, ?int $cols_override = null) use ($estudia
         $color = $config['color'] ?? '#204192';
         $paddingMm = $config['padding_mm'] ?? 1;
 
-        $inner_html = '<div class="block-content-wysiwyg p-0 m-0" style="padding: ' . $paddingMm . 'mm; text-align: ' . $textAlign . ';"><h3 class="ares-titulo-cabecera" style="font-size: ' . $fontSize . ' !important; font-family: ' . $fontFamily . ' !important; font-weight: ' . $fontWeight . ' !important; text-transform: ' . $textTransform . ' !important; text-align: ' . $textAlign . ' !important; color: ' . $color . ' !important;">' . htmlspecialchars(mb_strtoupper($school_name, 'UTF-8'), ENT_QUOTES, 'UTF-8') . '</h3></div>';
+        $inner_html = '<div class="block-content-wysiwyg p-0 m-0" style="padding: ' . $paddingMm . 'mm; text-align: ' . $textAlign . ';"><h3 class="ares-titulo-cabecera" style="font-family: ' . $fontFamily . '; font-weight: ' . $fontWeight . '; text-transform: ' . $textTransform . '; text-align: ' . $textAlign . '; color: ' . $color . ';">' . htmlspecialchars(mb_strtoupper($school_name, 'UTF-8'), ENT_QUOTES, 'UTF-8') . '</h3></div>';
     }
 
     if ($tipo === 'lema_colegio') {
