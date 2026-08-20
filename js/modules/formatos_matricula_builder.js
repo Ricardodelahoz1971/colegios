@@ -118,7 +118,7 @@ window.BLOCK_SCHEMA = BLOCK_SCHEMA;
  * php/logica/formatos_bloques_config.php (misma ficha que usa imprimir_matricula.php).
  * No definir estilos aquí — si un bloque falta, se agrega en el archivo PHP.
  */
-const BLOCK_STYLE_CONFIG = Object.fromEntries(
+var BLOCK_STYLE_CONFIG = Object.fromEntries(
     Object.entries(window.BLOCK_CONFIG || {}).map(([tipo, cfg]) => [tipo, cfg.estilo])
 );
 window.BLOCK_STYLE_CONFIG = BLOCK_STYLE_CONFIG;
@@ -219,14 +219,14 @@ function determinarZona(y) {
 }
 
 /* === SECCIÓN 2: INICIALIZACIÓN Y EVENTOS DEL LIENZO === */
-let activeZone = 'body';
+var activeZone = 'body';
 var zoneOverlays = { header: null, body: null, footer: null };
-let bloqueArrastrando = null;
-let offsetX = 0;
-let offsetY = 0;
-let lastSavedRange = null;
-let activeRangeBeforeModal = null;
-let activeEditableBeforeModal = null;
+var bloqueArrastrando = null;
+var offsetX = 0;
+var offsetY = 0;
+var lastSavedRange = null;
+var activeRangeBeforeModal = null;
+var activeEditableBeforeModal = null;
 
 function initFormatosBuilder() {
     const canvas = document.getElementById('canvas-builder');
