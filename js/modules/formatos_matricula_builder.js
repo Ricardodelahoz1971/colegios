@@ -1330,6 +1330,107 @@ async function guardarFormato(e, salir = true) {
     }
 }
 
+function actualizarFiltroCatalogoContextual(tipoDocumento) {
+    // Resaltar u ocultar cards de variables según el contexto del documento
+    const modalCatalogo = document.getElementById('modalCatalogoVariables');
+    if (!modalCatalogo) return;
+    
+    // Todos visibles por defecto
+    modalCatalogo.querySelectorAll('.ares-var-card').forEach(card => card.classList.remove('d-none'));
+}
+
+function ajustarAlturaLienzo() {
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas) return;
+    
+    // La hoja física en el editor mantiene su altura Carta estándar (1056px) para una maquetación fidedigna
+    canvas.style.height = '1056px';
+    actualizarZonaSeguraLienzo();
+}
+
+function actualizarZonaSeguraLienzo() {
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas) return;
+
+    // Remover guía anterior
+    canvas.querySelector('.ares-safe-zone-guide')?.remove();
+
+    const factorMmPx = 3.78;
+    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
+    const margenInf = Math.round((parseFloat(document.getElementById('formato-margen-inferior').value) || 20) * factorMmPx);
+    const margenIzq = Math.round((parseFloat(document.getElementById('formato-margen-izquierdo').value) || 20) * factorMmPx);
+    const margenDer = Math.round((parseFloat(document.getElementById('formato-margen-derecho').value) || 20) * factorMmPx);
+
+    // Altura base física de una hoja Carta (1056px)
+    const alturaPapelCarta = 1056;
+
+    const guide = document.createElement('div');
+    guide.className = 'ares-safe-zone-guide';
+    guide.style.position = 'absolute';
+    guide.style.top = margenSup + 'px';
+    guide.style.left = margenIzq + 'px';
+    guide.style.width = (canvas.offsetWidth - margenIzq - margenDer) + 'px';
+    // La altura segura visual queda confinada a la hoja Carta real de forma estricta
+    guide.style.height = (alturaPapelCarta - margenSup - margenInf) + 'px';
+    guide.style.border = '1px dashed rgba(var(--el-primary-rgb), 0.35)';
+    guide.style.pointerEvents = 'none';
+    guide.style.zIndex = '1';
+    
+    canvas.appendChild(guide);
+
+    // Dibujar la línea de advertencia física de corte de página (Page Cut Line) estilo Office
+    canvas.querySelector('.ares-page-cut-line')?.remove();
+    const cutLine = document.createElement('div');
+    cutLine.className = 'ares-page-cut-line';
+    cutLine.style.position = 'absolute';
+    cutLine.style.top = (alturaPapelCarta - margenInf) + 'px';
+    cutLine.style.left = '0';
+    cutLine.style.width = '100%';
+    cutLine.style.height = '0';
+    cutLine.style.borderTop = '2px dashed rgba(220, 53, 69, 0.45)'; // Rojo tenue de advertencia
+    cutLine.style.pointerEvents = 'none';
+    cutLine.style.zIndex = '2';
+    
+    // Etiqueta flotante indicativa de Fin de Página
+    const labelCut = document.createElement('span');
+    labelCut.textContent = 'FIN DE PÁGINA 1 (LÍMITE DE IMPRESIÓN)';
+    labelCut.style.position = 'absolute';
+    labelCut.style.right = '15px';
+    labelCut.style.top = '-16px';
+    labelCut.style.fontSize = '9px';
+    labelCut.style.fontWeight = 'bold';
+    labelCut.style.color = 'rgba(220, 53, 69, 0.6)';
+    labelCut.style.fontFamily = 'var(--el-font-institutional)';
+    cutLine.appendChild(labelCut);
+
+    canvas.appendChild(cutLine);
+}
+
+function alternarBloqueoCabecera(abierto) {
+    const canvas = document.getElementById('canvas-builder');
+    if (!canvas) return;
+
+    const factorMmPx = 3.78;
+    // El membrete va desde 1 cm (38px) hasta el inicio del Margen Superior
+    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
+
+    const label = document.getElementById('switch-cabecera-label');
+    if (label) {
+        label.className = abierto ? 'small fw-bold text-uppercase text-primary m-0 cursor-pointer' : 'small fw-bold text-uppercase text-secondary m-0 cursor-pointer';
+    }
+
+    const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
+    bloques.forEach(bloque => {
+        const topVal = parseFloat(bloque.style.top) || 0;
+        
+        // Bloqueo Cruzado exacto
+        if (topVal < margenSup) {
+            // Zona de Cabecera / Membrete
+            if (abierto) {
+                bloque.classList.remove('header-locked');
+            } else {
+                bloque.classList.add('header-locked');
+
 window.sincronizarValoresRealesBadges = function() {
     const canvas = document.getElementById('canvas-builder');
     if (!canvas || !window.SCHOOL_INFO) return;
@@ -1348,3 +1449,4 @@ window.sincronizarValoresRealesBadges = function() {
         }
     });
 };
+
