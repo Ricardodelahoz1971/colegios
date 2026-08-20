@@ -1172,7 +1172,7 @@ async function guardarFormato(e, salir = true) {
     const canvas = document.getElementById('canvas-builder');
 
     if (canvas.querySelectorAll('.canvas-block-wrapper').length === 0) {
-        Swal.fire('Aviso', 'El lienzo de construccin no puede estar vaco.', 'warning');
+        Swal.fire('Aviso', 'El lienzo de construcción no puede estar vacío.', 'warning');
         return;
     }
 
@@ -1308,7 +1308,7 @@ async function guardarFormato(e, salir = true) {
             if (typeof window.lanzarToastElite === 'function') {
                 window.lanzarToastElite('success', 'Formato guardado correctamente');
             } else {
-                Swal.fire('xito', 'Formato guardado correctamente.', 'success');
+                Swal.fire('Éxito', 'Formato guardado correctamente.', 'success');
             }
             
             if (salir) {
