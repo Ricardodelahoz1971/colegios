@@ -1430,6 +1430,136 @@ function alternarBloqueoCabecera(abierto) {
                 bloque.classList.remove('header-locked');
             } else {
                 bloque.classList.add('header-locked');
+                bloque.classList.remove('selected');
+            }
+        } else {
+            // Zona del Cuerpo del Documento
+            if (abierto) {
+                bloque.classList.add('body-locked');
+                bloque.classList.remove('selected');
+            } else {
+                bloque.classList.remove('body-locked');
+            }
+        }
+    });
+}
+
+function actualizarBloqueFirmasCanvas(bloque, numColumnas, dataHeredada) {
+    if (!bloque) return;
+    const container = bloque.querySelector('.dynamic-firmas-container');
+    if (!container) return;
+
+    // Si no viene data heredada, leer textos actuales plano (máximo 4 firmas) para no perderlos
+    const firmasViejas = [];
+    container.querySelectorAll('.firma-item-canvas').forEach(div => {
+        firmasViejas.push({
+            cargo: div.querySelector('.ares-firma-cargo')?.textContent.trim() || '',
+            nombre: div.querySelector('.ares-firma-nombre')?.textContent.trim() || ''
+        });
+    });
+
+    // Definición por defecto (plana, se agrupa después)
+    const defaultFirmas = [
+        { cargo: 'Firma del Estudiante', nombre: '[Nombre Estudiante]' },
+        { cargo: 'Firma del Acudiente', nombre: '[Nombre Acudiente]' },
+        { cargo: 'Rector Institucional', nombre: window.SCHOOL_INFO.name ? 'RIGOBERTO ANDRÉS NUBIA' : '[Nombre Rector]' },
+        { cargo: 'Secretaría Académica', nombre: '[Nombre Secretaria]' }
+    ];
+
+    // Obtener los datos finales combinando dataHeredada, firmasViejas y defaults
+    const firmasFinales = [];
+    for (let idx = 0; idx < 4; idx++) {
+        let cargo = '';
+        let nombre = '';
+
+        if (dataHeredada && dataHeredada[idx]) {
+            cargo = dataHeredada[idx].cargo;
+            nombre = dataHeredada[idx].nombre;
+        } else if (firmasViejas[idx] && firmasViejas[idx].cargo !== '') {
+            cargo = firmasViejas[idx].cargo;
+            nombre = firmasViejas[idx].nombre;
+        } else {
+            cargo = defaultFirmas[idx].cargo;
+            nombre = defaultFirmas[idx].nombre;
+        }
+
+        firmasFinales.push({ cargo: cargo, nombre: nombre });
+    }
+
+    let html = '';
+
+    // CONSTRUCCIÓN DEL LAYOUT AGRUPADO VERTICAL EN 2 COLUMNAS PRINCIPALES
+    if (numColumnas === 3) {
+        // 3 Firmas: 
+        // Columna 1: Estudiante + Acudiente (vertical)
+        // Columna 2: Rector (único)
+        html += `
+            <div class="firma-grupo-col">
+                <div class="text-center firma-item-canvas">
+                    <div class="firma-divisor-canvas mx-auto"></div>
+                    <div class="mb-0 fw-bold ares-firma-cargo fs-nano text-uppercase text-secondary" contenteditable="true" placeholder="Cargo">${firmasFinales[0].cargo}</div>
+                    <div class="mb-0 small text-muted ares-firma-nombre fs-nano" contenteditable="true" placeholder="Nombre (Opcional)">${firmasFinales[0].nombre}</div>
+                </div>
+                <div class="text-center firma-item-canvas">
+                    <div class="firma-divisor-canvas mx-auto"></div>
+                    <div class="mb-0 fw-bold ares-firma-cargo fs-nano text-uppercase text-secondary" contenteditable="true" placeholder="Cargo">${firmasFinales[1].cargo}</div>
+                    <div class="mb-0 small text-muted ares-firma-nombre fs-nano" contenteditable="true" placeholder="Nombre (Opcional)">${firmasFinales[1].nombre}</div>
+                </div>
+            </div>
+            <div class="firma-grupo-col">
+                <div class="text-center firma-item-canvas">
+                    <div class="firma-divisor-canvas mx-auto"></div>
+                    <div class="mb-0 fw-bold ares-firma-cargo fs-nano text-uppercase text-secondary" contenteditable="true" placeholder="Cargo">${firmasFinales[2].cargo}</div>
+                    <div class="mb-0 small text-muted ares-firma-nombre fs-nano" contenteditable="true" placeholder="Nombre (Opcional)">${firmasFinales[2].nombre}</div>
+                </div>
+            </div>
+        `;
+    } else if (numColumnas === 4) {
+        // 4 Firmas:
+        // Columna 1: Estudiante + Acudiente (vertical)
+        // Columna 2: Rector + Secretaria (vertical)
+        html += `
+            <div class="firma-grupo-col">
+                <div class="text-center firma-item-canvas">
+                    <div class="firma-divisor-canvas mx-auto"></div>
+                    <div class="mb-0 fw-bold ares-firma-cargo fs-nano text-uppercase text-secondary" contenteditable="true" placeholder="Cargo">${firmasFinales[0].cargo}</div>
+                    <div class="mb-0 small text-muted ares-firma-nombre fs-nano" contenteditable="true" placeholder="Nombre (Opcional)">${firmasFinales[0].nombre}</div>
+                </div>
+                <div class="text-center firma-item-canvas">
+                    <div class="firma-divisor-canvas mx-auto"></div>
+                    <div class="mb-0 fw-bold ares-firma-cargo fs-nano text-uppercase text-secondary" contenteditable="true" placeholder="Cargo">${firmasFinales[1].cargo}</div>
+                    <div class="mb-0 small text-muted ares-firma-nombre fs-nano" contenteditable="true" placeholder="Nombre (Opcional)">${firmasFinales[1].nombre}</div>
+                </div>
+            </div>
+            <div class="firma-grupo-col">
+                <div class="text-center firma-item-canvas">
+                    <div class="firma-divisor-canvas mx-auto"></div>
+                    <div class="mb-0 fw-bold ares-firma-cargo fs-nano text-uppercase text-secondary" contenteditable="true" placeholder="Cargo">${firmasFinales[2].cargo}</div>
+                    <div class="mb-0 small text-muted ares-firma-nombre fs-nano" contenteditable="true" placeholder="Nombre (Opcional)">${firmasFinales[2].nombre}</div>
+                </div>
+                <div class="text-center firma-item-canvas">
+                    <div class="firma-divisor-canvas mx-auto"></div>
+                    <div class="mb-0 fw-bold ares-firma-cargo fs-nano text-uppercase text-secondary" contenteditable="true" placeholder="Cargo">${firmasFinales[3].cargo}</div>
+                    <div class="mb-0 small text-muted ares-firma-nombre fs-nano" contenteditable="true" placeholder="Nombre (Opcional)">${firmasFinales[3].nombre}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+}
+
+// 🛡️ LIMPIEZA DE PEGADO (PASTE) EN EDITABLES DE TEXTO PARA PREVENIR FORMATOS ILÍCITOS
+document.addEventListener('paste', function(e) {
+    const target = e.target.closest('.block-content-texto, [contenteditable="true"]');
+    if (target) {
+        e.preventDefault();
+        const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+        document.execCommand('insertText', false, text);
+    }
+});
+
+
 
 window.sincronizarValoresRealesBadges = function() {
     const canvas = document.getElementById('canvas-builder');
