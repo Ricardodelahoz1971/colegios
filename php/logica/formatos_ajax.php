@@ -225,8 +225,8 @@ try {
         if (empty($nombre)) {
             throw new Exception("El nombre del formato es obligatorio.");
         }
-        if (empty($contenido_html)) {
-            throw new Exception("El contenido de la plantilla no puede estar vacío.");
+        if (empty($configuracion_json)) {
+            throw new Exception("El esquema JSON no puede estar vacío.");
         }
 
         if ($id > 0) {

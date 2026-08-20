@@ -1172,13 +1172,11 @@ async function guardarFormato(e, salir = true) {
     const canvas = document.getElementById('canvas-builder');
 
     if (canvas.querySelectorAll('.canvas-block-wrapper').length === 0) {
-        Swal.fire('Aviso', 'El lienzo de construcción no puede estar vacío.', 'warning');
+        Swal.fire('Aviso', 'El lienzo de construccin no puede estar vaco.', 'warning');
         return;
     }
 
-    let htmlCompilado = '';
     const configJson = [];
-
     const scale = getCanvasScale();
     const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
     
@@ -1204,10 +1202,9 @@ async function guardarFormato(e, salir = true) {
         if (tipoBloque === 'texto') {
             const contenidoCaja = bloque.querySelector('.block-content-texto').cloneNode(true);
 
-            // Si es un bloque con varCodigo (campo dinámico del catálogo), empaquetar el badge
+            // Empaquetar el badge (igual que antes)
             if (bloque.dataset.varCodigo) {
                 const varCodigo = bloque.dataset.varCodigo;
-                // El badge se almacena en la base de datos para paridad con imprimir_matricula.php
                 contenidoCaja.innerHTML = `<span class="ares-variable-badge" contenteditable="false" data-var="${varCodigo}">[ ${varCodigo} ]</span>`;
             } else {
                 const chips = contenidoCaja.querySelectorAll('.ares-variable-badge');
@@ -1224,18 +1221,14 @@ async function guardarFormato(e, salir = true) {
 
             const size = bloque.dataset.size || '12';
             const align = bloque.dataset.align || 'left';
-            const widthAttr = width_mm !== null ? ` data-width_mm="${width_mm}"` : '';
-            const heightAttr = height_mm !== null ? ` data-height_mm="${height_mm}"` : '';
-            const stylePos = `position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${height_mm !== null ? `height:${height_mm}mm;` : ''}`;
-            htmlCompilado += `<div class="bloque-texto" data-tipo="texto" data-left_mm="${left_mm}" data-top_mm="${top_mm}" data-size="${size}" data-align="${align}"${widthAttr}${heightAttr} style="${stylePos}">${contenidoCaja.innerHTML}</div><br>`;
 
             configJson.push({
-                type: 'texto',
-                zone: bloque.dataset.zone || 'body',
-                left_mm: left_mm,
-                top_mm: top_mm,
-                width_mm: width_mm,
-                height_mm: height_mm,
+                tipo: 'texto',
+                zona: bloque.dataset.zone || 'body',
+                x_mm: left_mm,
+                y_mm: top_mm,
+                w_mm: width_mm,
+                h_mm: height_mm,
                 size: size,
                 align: align,
                 content: contenidoCaja.innerHTML
@@ -1247,63 +1240,32 @@ async function guardarFormato(e, salir = true) {
                 const tipo = htmlBackend.dataset.type;
                 const innerTag = htmlBackend.innerHTML;
 
-                let extraAttrs = ` data-left_mm="${left_mm}" data-top_mm="${top_mm}"`;
-                if (width_mm !== null) extraAttrs += ` data-width_mm="${width_mm}"`;
-                if (height_mm !== null) extraAttrs += ` data-height_mm="${height_mm}"`;
-
-                const stylePos = `position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${height_mm !== null ? `height:${height_mm}mm;` : ''}`;
-
-                const elWysiwyg = bloque.querySelector('.block-content-wysiwyg');
-                const elCabecera = bloque.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, .metadatos-titulo-linea, h4');
-                const jsonBlock = {
-                    type: tipo,
-                    zone: bloque.dataset.zone || 'body',
-                    left_mm: left_mm,
-                    top_mm: top_mm,
-                    width_mm: width_mm,
-                    height_mm: height_mm,
-                    size: bloque.dataset.size || null,
-                    content: elWysiwyg ? elWysiwyg.innerHTML : (elCabecera ? elCabecera.innerHTML : null)
+                let jsonBlock = {
+                    tipo: tipo,
+                    zona: bloque.dataset.zone || 'body',
+                    x_mm: left_mm,
+                    y_mm: top_mm,
+                    w_mm: width_mm,
+                    h_mm: height_mm,
+                    content: innerTag
                 };
 
-                if (tipo === 'titulo_colegio' || tipo === 'lema_colegio' || tipo === 'metadatos') {
-                    const defaultSize = (tipo === 'titulo_colegio') ? '20' : ((tipo === 'lema_colegio') ? '12' : '16');
-                    const size = bloque.dataset.size || defaultSize;
-                    const align = bloque.dataset.align || 'center';
-                    extraAttrs += ` data-size="${size}" data-align="${align}"`;
-                    jsonBlock.size = size;
-                    jsonBlock.align = align;
+                if (bloque.dataset.size) jsonBlock.size = bloque.dataset.size;
+                if (bloque.dataset.align) jsonBlock.align = bloque.dataset.align;
+                if (bloque.dataset.style_color) jsonBlock.color = bloque.dataset.style_color;
 
-                    // Guardar color personalizado (el tamaño ya viaja en jsonBlock.size / data-size)
-                    if (bloque.dataset.style_color) {
-                        jsonBlock.color = bloque.dataset.style_color;
-                    }
-                }
-
-                if (tipo === 'calificaciones') {
-                    const diseno = bloque.dataset.diseno || 'elite';
-                    const filtro = bloque.dataset.filtro || 'todas';
-                    const columnas = bloque.dataset.columnas || 'materia,docente,definitiva,estado';
-                    extraAttrs += ` data-diseno="${diseno}" data-filtro="${filtro}" data-columnas="${columnas}"`;
-                    jsonBlock.diseno = diseno;
-                    jsonBlock.filtro = filtro;
-                    jsonBlock.columnas = columnas;
-                } else if (tipo === 'firmas') {
-                    const columnas = bloque.getAttribute('data-columnas') || bloque.dataset.columnas || '3';
-                    extraAttrs += ` data-columnas="${columnas}"`;
-                    jsonBlock.columnas = columnas;
-
+                if (tipo === 'firmas') {
+                    const selectores = htmlBackend.querySelectorAll('select.signature-role-select');
                     const fData = [];
-                    bloque.querySelectorAll('.dynamic-firmas-container .firma-item-canvas').forEach(div => {
+                    selectores.forEach(sel => {
                         fData.push({
-                            cargo: div.querySelector('.ares-firma-cargo')?.textContent.trim() || 'Firma',
-                            nombre: div.querySelector('.ares-firma-nombre')?.textContent.trim() || ''
+                            role: sel.value,
+                            label: sel.options[sel.selectedIndex]?.text || sel.value
                         });
                     });
                     jsonBlock.firmas_data = fData;
                 }
 
-                htmlCompilado += `<div class="bloque-avanzado" data-tipo="${tipo}"${extraAttrs} style="${stylePos}">${innerTag}</div><br>`;
                 configJson.push(jsonBlock);
             }
         }
@@ -1330,7 +1292,7 @@ async function guardarFormato(e, salir = true) {
     formData.append('margen_derecho', margenes.derecho);
     formData.append('tipo_documento', tipoDocumento);
     formData.append('tamano_lienzo', tamanoLienzo);
-    formData.append('contenido_html', htmlCompilado);
+    formData.append('contenido_html', ''); // ARQUITECTURA V2: HTML MUERTO, SOLO JSON
     formData.append('configuracion_json', JSON.stringify(configJson));
     formData.append('zonas_config', JSON.stringify(zonesData));
     formData.append('csrf_token', window.CSRF_TOKEN || '');
@@ -1346,7 +1308,7 @@ async function guardarFormato(e, salir = true) {
             if (typeof window.lanzarToastElite === 'function') {
                 window.lanzarToastElite('success', 'Formato guardado correctamente');
             } else {
-                Swal.fire('Éxito', 'Formato guardado correctamente.', 'success');
+                Swal.fire('xito', 'Formato guardado correctamente.', 'success');
             }
             
             if (salir) {
