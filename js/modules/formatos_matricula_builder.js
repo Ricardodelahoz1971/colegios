@@ -277,7 +277,7 @@ function iniciarRedimension(e, handleType, targetWrapper) {
     const wysiwygNodes = Array.from(wrapper.querySelectorAll('.block-content-wysiwyg, .block-content-wysiwyg *')).filter(n => !n.classList?.contains('bloque-backend-html'));
     wysiwygNodes.forEach(node => {
         if (!node.dataset.baseFontSize) {
-            node.dataset.baseFontSize = parseFloat(window.getComputedStyle(node).fontSize) || 14;
+            node.dataset.baseFontSize = (parseFloat(window.getComputedStyle(node).fontSize) || 14) * 0.75;
         }
     });
 
