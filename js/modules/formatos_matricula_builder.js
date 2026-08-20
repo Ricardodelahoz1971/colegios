@@ -7,13 +7,13 @@ if (typeof window.UNIT_CONFIG === 'undefined') {
         FOOTER_START_MM: 219.4
     };
 }
-const UNIT_CONFIG = window.UNIT_CONFIG;
+var UNIT_CONFIG = window.UNIT_CONFIG;
 
 /* === BLOCK_SCHEMA: Propiedades base de cada tipo de bloque ===
  * Solo se usa al CREAR un bloque nuevo. Al recargar desde JSON guardado
  * se respetan las personalizaciones del usuario (dataset.* + JSON BD).
  */
-const BLOCK_SCHEMA = {
+var BLOCK_SCHEMA = {
     logo: {
         ancho_mm: 30,
         alto_mm: 12,
@@ -220,7 +220,7 @@ function determinarZona(y) {
 
 /* === SECCIÓN 2: INICIALIZACIÓN Y EVENTOS DEL LIENZO === */
 let activeZone = 'body';
-let zoneOverlays = { header: null, body: null, footer: null };
+var zoneOverlays = { header: null, body: null, footer: null };
 let bloqueArrastrando = null;
 let offsetX = 0;
 let offsetY = 0;
@@ -636,13 +636,13 @@ function insertarBloqueDesdeJSON(jsonBlock) {
     }
     if (height_mm) {
         insertedNode.dataset.height_mm = height_mm.toFixed(2);
-        const esBloqueTextoDinamico = ['titulo_colegio', 'lema_colegio', 'metadatos', 'texto', 'texto_certificacion'].includes(jsonBlock.type);
+        const esBloqueTextoDinamico = ['titulo_colegio', 'lema_colegio', 'metadatos', 'texto', 'texto_certificacion'].includes(tipoReal);
         if (!esBloqueTextoDinamico) {
             insertedNode.style.height = height_mm + 'mm';
         }
     }
 
-    if (jsonBlock.type === 'texto' && jsonBlock.content) {
+    if (tipoReal === 'texto' && jsonBlock.content) {
         const cajaTexto = insertedNode.querySelector('.block-content-texto');
         if (cajaTexto) {
             // Verificar si el contenido tiene un badge de variable
@@ -719,7 +719,7 @@ function insertarBloqueDesdeJSON(jsonBlock) {
         if (jsonBlock.columnas) insertedNode.dataset.columnas = jsonBlock.columnas;
     }
 
-    if (jsonBlock.type === 'firmas') {
+    if (tipoReal === 'firmas') {
         const cols = jsonBlock.columnas || '3';
         insertedNode.dataset.columnas = cols;
         if (typeof actualizarBloqueFirmasCanvas === 'function') {
