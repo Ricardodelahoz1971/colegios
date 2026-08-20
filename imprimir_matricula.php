@@ -465,587 +465,59 @@ async function descargarFormatoPDF() {
     }
 }
 </script>
+
 <?php
+require_once __DIR__ . '/php/logica/formatos_renderer.php';
 
-$renderizador = function(string $tipo, ?int $cols_override = null) use ($estudiante, $notas, $school_name, $school_motto, $school_logo, $rector_nombre, $secretaria_nombre, $var_map, $alias_extra, $anio_lectivo, $formato, $BLOCK_STYLE_CONFIG_PHP): string {
-    $inner_html = '';
-
-    if ($tipo === 'titulo_colegio') {
-        $config = $BLOCK_STYLE_CONFIG_PHP['titulo_colegio'] ?? [];
-        $fontSize = ($config['fontSize'] ?? 20) . 'pt';
-        $fontFamily = $config['fontFamily'] ?? 'Montserrat';
-        $fontWeight = $config['fontWeight'] ?? 'bold';
-        $textTransform = $config['textTransform'] ?? 'uppercase';
-        $textAlign = $config['textAlign'] ?? 'center';
-        $color = $config['color'] ?? '#204192';
-        $paddingMm = $config['padding_mm'] ?? 1;
-
-        $inner_html = '<div class="block-content-wysiwyg p-0 m-0" style="padding: ' . $paddingMm . 'mm; text-align: ' . $textAlign . ';"><h3 class="ares-titulo-cabecera" style="font-family: ' . $fontFamily . '; font-weight: ' . $fontWeight . '; text-transform: ' . $textTransform . '; text-align: ' . $textAlign . '; color: ' . $color . ';">' . htmlspecialchars(mb_strtoupper($school_name, 'UTF-8'), ENT_QUOTES, 'UTF-8') . '</h3></div>';
-    }
-
-    if ($tipo === 'lema_colegio') {
-        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><p class="ares-lema-cabecera">' . htmlspecialchars($school_motto, ENT_QUOTES, 'UTF-8') . '</p></div>';
-    }
-
-    if ($tipo === 'logo') {
-        $inner_html = '<div class="block-content-wysiwyg p-0 text-center"><img src="' . htmlspecialchars($school_logo, ENT_QUOTES, 'UTF-8') . '" alt="Logo Institucional" class="ares-logo-cabecera"></div>';
-    }
-
-    if ($tipo === 'foto_estudiante') {
-        $path_foto = !empty($estudiante['foto']) ? 'uploads/fotos/' . $estudiante['foto'] : 'assets/default_avatar.svg';
-        if ($path_foto !== 'assets/default_avatar.svg' && !file_exists(__DIR__ . '/' . $path_foto)) {
-            $path_foto = 'assets/default_avatar.svg';
-        }
-        $inner_html = '<div class="block-content-wysiwyg p-0 text-center"><img src="' . htmlspecialchars($path_foto, ENT_QUOTES, 'UTF-8') . '" alt="Foto Estudiante" class="ares-foto-estudiante"></div>';
-    }
-
-    if ($tipo === 'qr_estudiante') {
-        $inner_html = '<div class="block-content-wysiwyg p-0 text-center"><div class="ares-qr-placeholder"><i class="bi bi-qr-code"></i><span class="d-block">QR VALIDACIÓN</span></div></div>';
-    }
-
-    if ($tipo === 'metadatos') {
-        $nombre_formato = is_array($formato) && isset($formato['nombre']) ? trim((string)$formato['nombre']) : '';
-        $nombre_formato_lower = mb_strtolower($nombre_formato, 'UTF-8');
-        
-        // Determinar tipo de documento
-        $tipo_documento = '';
-        if (preg_match('/carne/i', $nombre_formato_lower)) {
-            $tipo_documento = 'CARNÉ ESCOLAR';
-        } elseif (preg_match('/certificado/i', $nombre_formato_lower)) {
-            $tipo_documento = 'CERTIFICADO DE ESTUDIOS';
-        } elseif (preg_match('/constancia|paz/i', $nombre_formato_lower)) {
-            $tipo_documento = 'CONSTANCIA / PAZ Y SALVO';
-        } elseif (preg_match('/matricula|matrícula/i', $nombre_formato_lower)) {
-            $tipo_documento = 'MATRÍCULA';
-        }
-        
-        // Limpiar el nombre del formato si no se identificó un tipo específico
-        if ($tipo_documento === '' && $nombre_formato !== '') {
-            $nombre_limpio = preg_replace('/\s+\d+\s*$/', '', $nombre_formato);
-            $nombre_limpio = preg_replace('/[_-]+/', ' ', $nombre_limpio);
-            $tipo_documento = mb_strtoupper(trim($nombre_limpio), 'UTF-8');
-        }
-        
-        // Construir texto de metadatos según tipo de documento
-        if ($tipo_documento === 'MATRÍCULA') {
-            $folio_estudiante = isset($estudiante['folio_matricula']) ? str_pad((string)$estudiante['folio_matricula'], 4, '0', STR_PAD_LEFT) : '';
-            $texto_metadatos = $tipo_documento . ' N° ' . $folio_estudiante . ' - AÑO LECTIVO ' . (string)$anio_lectivo;
-        } elseif ($tipo_documento !== '') {
-            $texto_metadatos = $tipo_documento . ' - AÑO LECTIVO ' . (string)$anio_lectivo;
-        } else {
-            $texto_metadatos = 'AÑO LECTIVO ' . (string)$anio_lectivo;
-        }
-        
-        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><h4 class="metadatos-titulo-linea">' . htmlspecialchars($texto_metadatos, ENT_QUOTES, 'UTF-8') . '</h4></div>';
-    }
-
-    if ($tipo === 'texto_certificacion') {
-        $nombre_est = htmlspecialchars(($estudiante['nombre'] ?? '') . ' ' . ($estudiante['apellido'] ?? ''), ENT_QUOTES, 'UTF-8');
-        $doc_est    = htmlspecialchars(($estudiante['tipo_documento'] ?? 'T.I.') . ' ' . ($estudiante['documento'] ?? ''), ENT_QUOTES, 'UTF-8');
-        $inner_html = '
-            <div class="block-content-wysiwyg p-3">
-                <p class="mb-2">El suscrito Rector y Secretario de la Institución Educativa <strong>' . htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8') . '</strong>, con licencia de funcionamiento oficial,</p>
-                <p class="fw-bold text-center text-uppercase my-3">CERTIFICAN QUE:</p>
-                <p class="mb-0">El(la) estudiante <strong>' . $nombre_est . '</strong> identificado(a) con documento N° <strong>' . $doc_est . '</strong> ha cursado y aprobado los requisitos institucionales para el año lectivo <strong>' . htmlspecialchars((string)$anio_lectivo, ENT_QUOTES, 'UTF-8') . '</strong>.</p>
-            </div>
-        ';
-    }
-
-    if ($tipo === 'ficha') {
-        $path_foto = !empty($estudiante['foto']) ? 'uploads/fotos/' . $estudiante['foto'] : 'assets/default_avatar.svg';
-        if ($path_foto !== 'assets/default_avatar.svg' && !file_exists(__DIR__ . '/' . $path_foto)) {
-            $path_foto = 'assets/default_avatar.svg';
-        }
-        $edad_str = isset($estudiante['edad']) ? $estudiante['edad'] . ' años' : '';
-
-        $inner_html = '
-                <div class="w-100 mb-3 print-no-break">
-                    <table class="table table-bordered table-sm align-middle mb-0 table-ficha-matricula">
-                        <tbody>
-                            <tr class="ares-table-header text-white">
-                                <th colspan="5" class="text-uppercase py-2 ps-3 fw-bold">I. DATOS PERSONALES DEL ESTUDIANTE</th>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2 ficha-td--label-sm">Estudiante</td>
-                                <td class="ficha-td--value-lg">' . htmlspecialchars(($estudiante['nombre'] ?? '') . ' ' . ($estudiante['apellido'] ?? ''), ENT_QUOTES, 'UTF-8') . '</td>
-                                <td class="bg-light fw-bold ps-2 ficha-td--label-sm">Documento</td>
-                                <td class="ficha-td--value-md">' . htmlspecialchars(($estudiante['tipo_documento'] ?? 'T.I.') . ' ' . ($estudiante['documento'] ?? ''), ENT_QUOTES, 'UTF-8') . '</td>
-                                <td rowspan="4" class="text-center p-1 bg-light ficha-foto-container ficha-td--foto">
-                                    <div class="ficha-foto-marco">
-                                        <img src="' . htmlspecialchars($path_foto, ENT_QUOTES, 'UTF-8') . '" class="ficha-foto-img" />
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2">F. Nacimiento</td>
-                                <td>' . htmlspecialchars($estudiante['fecha_nacimiento'] ?? '', ENT_QUOTES, 'UTF-8') . ' (' . htmlspecialchars($edad_str, ENT_QUOTES, 'UTF-8') . ')</td>
-                                <td class="bg-light fw-bold ps-2">Lugar Nac.</td>
-                                <td>' . htmlspecialchars($estudiante['lugar_nacimiento'] ?? '', ENT_QUOTES, 'UTF-8') . '</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2">RH / Sangre</td>
-                                <td>' . htmlspecialchars($estudiante['rh'] ?? '', ENT_QUOTES, 'UTF-8') . '</td>
-                                <td class="bg-light fw-bold ps-2">Género / Nac.</td>
-                                <td>' . htmlspecialchars(($estudiante['genero'] ?? '') . ' / ' . ($estudiante['nacionalidad'] ?? 'COLOMBIANA'), ENT_QUOTES, 'UTF-8') . '</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2">Dirección</td>
-                                <td>' . htmlspecialchars($estudiante['direccion_estudiante'] ?? '', ENT_QUOTES, 'UTF-8') . '</td>
-                                <td class="bg-light fw-bold ps-2">Contacto</td>
-                                <td>' . htmlspecialchars($estudiante['celular'] ?? '', ENT_QUOTES, 'UTF-8') . '</td>
-                            </tr>
-                            <tr class="ares-table-header text-white">
-                                <th colspan="5" class="text-uppercase py-2 ps-3 fw-bold">II. DATOS DE MATRÍCULA Y REGISTRO</th>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2">Curso Asignado</td>
-                                <td colspan="2">' . htmlspecialchars($estudiante['nombre_curso'] ?? 'Sin Asignar', ENT_QUOTES, 'UTF-8') . '</td>
-                                <td class="bg-light fw-bold ps-2">Folio Matrícula</td>
-                                <td class="fw-bold text-primary">' . htmlspecialchars($estudiante['folio_matricula'] ?? 'N/A', ENT_QUOTES, 'UTF-8') . '</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2">Fecha Registro</td>
-                                <td colspan="2">' . date('d/m/Y') . '</td>
-                                <td class="bg-light fw-bold ps-2">Colegio Anterior</td>
-                                <td>' . htmlspecialchars($estudiante['colegio_anterior'] ?? 'Ninguno', ENT_QUOTES, 'UTF-8') . '</td>
-                            </tr>
-                            <tr class="ares-table-header text-white">
-                                <th colspan="5" class="text-uppercase py-2 ps-3 fw-bold">III. INFORMACIÓN DE PADRES Y ACUDIENTES</th>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2">Padre / Acudiente</td>
-                                <td colspan="2">' . htmlspecialchars($estudiante['padre_nombre'] ?? '', ENT_QUOTES, 'UTF-8') . ' (' . htmlspecialchars($estudiante['padre_documento'] ?? '', ENT_QUOTES, 'UTF-8') . ')</td>
-                                <td class="bg-light fw-bold ps-2">Contacto / Ocupación</td>
-                                <td>' . htmlspecialchars(($estudiante['padre_celular'] ?? '') . ' | ' . ($estudiante['padre_profesion'] ?? ''), ENT_QUOTES, 'UTF-8') . '</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2">Dirección Padre</td>
-                                <td colspan="2">' . htmlspecialchars($estudiante['padre_direccion'] ?? '', ENT_QUOTES, 'UTF-8') . '</td>
-                                <td class="bg-light fw-bold ps-2">Email / Nac.</td>
-                                <td>' . htmlspecialchars(($estudiante['padre_email'] ?? '') . ' | ' . ($estudiante['padre_nacionalidad'] ?? 'COLOMBIANA'), ENT_QUOTES, 'UTF-8') . '</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2">Madre / Acudiente</td>
-                                <td colspan="2">' . htmlspecialchars($estudiante['madre_nombre'] ?? '', ENT_QUOTES, 'UTF-8') . ' (' . htmlspecialchars($estudiante['madre_documento'] ?? '', ENT_QUOTES, 'UTF-8') . ')</td>
-                                <td class="bg-light fw-bold ps-2">Contacto / Ocupación</td>
-                                <td>' . htmlspecialchars(($estudiante['madre_celular'] ?? '') . ' | ' . ($estudiante['madre_profesion'] ?? ''), ENT_QUOTES, 'UTF-8') . '</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold ps-2">Dirección Madre</td>
-                                <td colspan="2">' . htmlspecialchars($estudiante['madre_direccion'] ?? '', ENT_QUOTES, 'UTF-8') . '</td>
-                                <td class="bg-light fw-bold ps-2">Email / Nac.</td>
-                                <td>' . htmlspecialchars(($estudiante['madre_email'] ?? '') . ' | ' . ($estudiante['madre_nacionalidad'] ?? 'COLOMBIANA'), ENT_QUOTES, 'UTF-8') . '</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            ';
-    }
-
-    if ($tipo === 'calificaciones') {
-        if (count($notas) === 0) {
-            $inner_html = '<div class="alert alert-info py-2 px-3 small print-no-break">No hay calificaciones registradas para este estudiante.</div>';
-        } else {
-            $tbody_html = '';
-            foreach ($notas as $nota) {
-                $definitiva  = (float)($nota['definitiva'] ?? 0.0);
-                $estado      = htmlspecialchars($definitiva >= 3.0 ? 'APROBADO' : 'REPROBADO', ENT_QUOTES, 'UTF-8');
-                $badge_class = $definitiva >= 3.0 ? 'text-success fw-bold' : 'text-danger fw-bold';
-                $tbody_html .= '
-                    <tr>
-                        <td class="text-start ps-3 py-2">' . htmlspecialchars($nota['nombre_materia'], ENT_QUOTES, 'UTF-8') . '</td>
-                        <td class="py-2">' . htmlspecialchars($nota['docente'] ?? 'No Asignado', ENT_QUOTES, 'UTF-8') . '</td>
-                        <td class="fw-bold py-2">' . number_format($definitiva, 2) . '</td>
-                        <td class="' . $badge_class . ' py-2">' . $estado . '</td>
-                    </tr>
-                ';
-            }
-            $inner_html = '
-                <div class="w-100 mb-3 print-no-break">
-                    <table class="table table-bordered table-striped table-sm text-center align-middle mb-0 table-calificaciones-render">
-                        <thead class="ares-table-header text-white">
-                            <tr>
-                                <th class="py-2 text-start ps-3">ASIGNATURA</th>
-                                <th class="py-2">DOCENTE</th>
-                                <th class="py-2 cal-th--nota">NOTA FINAL</th>
-                                <th class="py-2 cal-th--estado">ESTADO</th>
-                            </tr>
-                        </thead>
-                        <tbody>' . $tbody_html . '</tbody>
-                    </table>
-                </div>
-            ';
-        }
-    }
-
-    if ($tipo === 'firmas') {
-        // Decodificar JSON de bloques usando la columna correcta (configuracion_json)
-        $bloques_json = $formato['configuracion_json'] ?? '[]';
-        $bloques_data = [];
-        
-        if (!empty($bloques_json) && is_string($bloques_json)) {
-            try {
-                // Intentar decodificación con control de errores
-                $bloques_data = json_decode($bloques_json, true, 512, JSON_THROW_ON_ERROR);
-                
-                // Validación adicional: asegurar que sea un array
-                if (!is_array($bloques_data)) {
-                    $bloques_data = [];
-                }
-            } catch (JsonException $e) {
-                // Fallback: intentar decodificación sin lanzar excepciones
-                $bloques_data = json_decode($bloques_json, true);
-                
-                // Verificar errores de la decodificación fallback
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    // Último recurso: intentar limpiar el JSON
-                    $cleaned_json = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $bloques_json);
-                    $bloques_data = json_decode($cleaned_json, true);
-                    
-                    if (!is_array($bloques_data)) {
-                        $bloques_data = [];
-                    }
-                } elseif (!is_array($bloques_data)) {
-                    $bloques_data = [];
-                }
-            }
-        } else {
-            // Si el JSON está vacío o no es string, usar array vacío
-            $bloques_data = [];
-        }
-        
-        // Asegurar que siempre tengamos un array válido
-        $bloques_data = is_array($bloques_data) ? $bloques_data : [];
-        
-        $block_firmas = null;
-        foreach ($bloques_data as $b) {
-            if (($b['type'] ?? '') === 'firmas') {
-                $block_firmas = $b;
-                break;
-            }
-        }
-        
-        $columnas = 3;
-        $firmas_data = [];
-        if ($block_firmas) {
-            $columnas = (int)($block_firmas['columnas'] ?? 3);
-            $firmas_data = $block_firmas['firmas_data'] ?? [];
-        }
-        
-        // Priorizar el valor extraído en caliente del atributo HTML data-columnas
-        if ($cols_override !== null) {
-            $columnas = $cols_override;
-        }
-        
-        // Valores por defecto
-        $default_firmas = [
-            ['cargo' => 'Firma del Estudiante', 'nombre' => '[Nombre Estudiante]'],
-            ['cargo' => 'Firma del Acudiente', 'nombre' => '[Nombre Acudiente]'],
-            ['cargo' => 'Rector Institucional', 'nombre' => '[Nombre Rector]'],
-            ['cargo' => 'Secretaría Académica', 'nombre' => '[Nombre Secretaria]']
-        ];
-        
-        $firmas_finales = [];
-        for ($i = 0; $i < 4; $i++) {
-            $cargo = ($firmas_data[$i]['cargo'] ?? null) ?: $default_firmas[$i]['cargo'];
-            $nombre = ($firmas_data[$i]['nombre'] ?? null) ?: $default_firmas[$i]['nombre'];
-            
-            // Reemplazo de marcadores por defecto del builder
-            $alumno_real = ($estudiante['nombre'] ?? '') . ' ' . ($estudiante['apellido'] ?? '');
-            $acudiente_real = ($estudiante['padre_nombre'] ?? '') ?: ($estudiante['madre_nombre'] ?? 'Representante Legal');
-            
-            $cargo = str_ireplace('[Nombre Estudiante]', $alumno_real, $cargo);
-            $nombre = str_ireplace('[Nombre Estudiante]', $alumno_real, $nombre);
-            
-            $cargo = str_ireplace('[Nombre Acudiente]', $acudiente_real, $cargo);
-            $nombre = str_ireplace('[Nombre Acudiente]', $acudiente_real, $nombre);
-            
-            $cargo = str_ireplace('[Nombre Rector]', $rector_nombre, $cargo);
-            $nombre = str_ireplace('[Nombre Rector]', $rector_nombre, $nombre);
-            
-            $cargo = str_ireplace('[Nombre Secretaria]', $secretaria_nombre, $cargo);
-            $nombre = str_ireplace('[Nombre Secretaria]', $secretaria_nombre, $nombre);
-            
-            // Reemplazo de variables dinámicas en firmas
-            foreach ($var_map as $var_key => $var_val) {
-                $cargo = str_ireplace('[' . $var_key . ']', (string)$var_val, $cargo);
-                $cargo = str_ireplace('[' . strtoupper($var_key) . ']', (string)$var_val, $cargo);
-                $nombre = str_ireplace('[' . $var_key . ']', (string)$var_val, $nombre);
-                $nombre = str_ireplace('[' . strtoupper($var_key) . ']', (string)$var_val, $nombre);
-            }
-            foreach ($alias_extra as $var_key => $var_val) {
-                $cargo = str_ireplace('[' . $var_key . ']', (string)$var_val, $cargo);
-                $nombre = str_ireplace('[' . $var_key . ']', (string)$var_val, $nombre);
-            }
-            
-            $firmas_finales[] = [
-                'cargo' => $cargo,
-                'nombre' => $nombre
-            ];
-        }
-        
-        $inner_html = '<div class="dynamic-firmas-container-print print-no-break">';
-        
-        // Renderizamos las 4 firmas fijas en una cuadrícula de 2x2 (Estudiante/Acudiente y Rector/Secretaria)
-        $inner_html .= '
-            <div class="firma-grupo-col">
-                <div class="firma-col">
-                    <div class="firma-linea"></div>
-                    <span class="firmas-plantilla__cargo fw-bold text-uppercase text-secondary">' . htmlspecialchars($firmas_finales[0]['cargo'], ENT_QUOTES, 'UTF-8') . '</span>
-                    <span class="firmas-plantilla__nombre text-muted">' . htmlspecialchars($firmas_finales[0]['nombre'], ENT_QUOTES, 'UTF-8') . '</span>
-                </div>
-                <div class="firma-col mt-4">
-                    <div class="firma-linea"></div>
-                    <span class="firmas-plantilla__cargo fw-bold text-uppercase text-secondary">' . htmlspecialchars($firmas_finales[1]['cargo'], ENT_QUOTES, 'UTF-8') . '</span>
-                    <span class="firmas-plantilla__nombre text-muted">' . htmlspecialchars($firmas_finales[1]['nombre'], ENT_QUOTES, 'UTF-8') . '</span>
-                </div>
-            </div>
-            <div class="firma-grupo-col">
-                <div class="firma-col">
-                    <div class="firma-linea"></div>
-                    <span class="firmas-plantilla__cargo fw-bold text-uppercase text-secondary">' . htmlspecialchars($firmas_finales[2]['cargo'], ENT_QUOTES, 'UTF-8') . '</span>
-                    <span class="firmas-plantilla__nombre text-muted">' . htmlspecialchars($firmas_finales[2]['nombre'], ENT_QUOTES, 'UTF-8') . '</span>
-                </div>
-                <div class="firma-col mt-4">
-                    <div class="firma-linea"></div>
-                    <span class="firmas-plantilla__cargo fw-bold text-uppercase text-secondary">' . htmlspecialchars($firmas_finales[3]['cargo'], ENT_QUOTES, 'UTF-8') . '</span>
-                    <span class="firmas-plantilla__nombre text-muted">' . htmlspecialchars($firmas_finales[3]['nombre'], ENT_QUOTES, 'UTF-8') . '</span>
-                </div>
-            </div>
-        ';
-        
-        $inner_html .= '</div>';
-    }
-
-    if ($tipo === 'linea') {
-        $inner_html = '<div class="ares-linea-render"></div>';
-    }
-
-
-
-    return $inner_html;
-};
-
-// Acumulador de bloques para el motor de paginación del Paso 5
-$bloques_paginador = [];
-
-// PASO 1: Procesar bloque-avanzado con data-tipo (estructura real de la BD)
-$contenido_renderizado = preg_replace_callback(
-    '/<div\s([^>]*class="[^"]*(bloque-avanzado|bloque-texto)[^"]*"[^>]*)>(.*?)<\/div>/is',
-    function($matches) use ($renderizador, $formato, &$bloques_paginador) {
-        $attrs       = $matches[1];
-        $tipo_bloque = '';
-        if (preg_match('/data-tipo="([^"]+)"/i', $attrs, $t_m)) {
-            $tipo_bloque = $t_m[1];
-        }
-        
-        $dom = new DOMDocument();
-        @$dom->loadHTML('<?xml encoding="UTF-8">' . '<div ' . $attrs . '></div>');
-        $div = $dom->getElementsByTagName('div')->item(0);
-
-        $x_mm = (float)($div->getAttribute('data-left_mm') ?? 0);
-        $y_mm = (float)($div->getAttribute('data-top_mm') ?? 0);
-        $w_mm = $div->hasAttribute('data-width_mm') ? (float)$div->getAttribute('data-width_mm') : null;
-        $h_mm = $div->hasAttribute('data-height_mm') ? (float)$div->getAttribute('data-height_mm') : (
-            $div->hasAttribute('data-height') ? (float)$div->getAttribute('data-height') : null
-        );
-
-        $es_bloque_ancho_completo = in_array($tipo_bloque, ['ficha', 'calificaciones', 'texto_certificacion', 'linea']);
-        if ($es_bloque_ancho_completo) {
-            $x_mm = (float)($formato['margen_izquierdo'] ?? 20);
-            $tamano_lienzo = strtolower($formato['tamano_lienzo'] ?? 'carta');
-            $papel_width = ($tamano_lienzo === 'carta') ? 215.9 : 210.0;
-            $w_mm = $papel_width - $x_mm - (float)($formato['margen_derecho'] ?? 20);
-        }
-
-        $es_dinamico = ($tipo_bloque === 'firmas' || $tipo_bloque === 'calificaciones' || $tipo_bloque === 'ficha' || $tipo_bloque === 'texto_certificacion' || strpos($attrs, 'bloque-texto') !== false);
-
-        $style_w = '';
-        if ($w_mm !== null) {
-            $style_w = "width: {$w_mm}mm;";
-        }
-
-        $style_h = "height: auto;";
-        if ($tipo_bloque === 'linea') {
-            $grosor = $div->hasAttribute('data-height') ? $div->getAttribute('data-height') : '1.5pt';
-            $style_h = "height: {$grosor};";
-        } else if ($h_mm !== null && !$es_dinamico) {
-            $style_h = "height: {$h_mm}mm;";
-        }
-
-        $overflow = "overflow: hidden;";
-        if ($tipo_bloque === 'titulo_colegio' || $tipo_bloque === 'lema_colegio' || $tipo_bloque === 'metadatos' || $es_dinamico) {
-            $overflow = "overflow: visible;";
-        }
-
-        // Usar MM directamente sin sumar márgenes (ya están incluidos en el posicionamiento del editor)
-        $style_inline = "position: absolute; left: {$x_mm}mm; top: {$y_mm}mm; {$style_w} {$style_h} box-sizing: border-box; {$overflow}";
-        
-        // Limpiar style anterior si existe e inyectar el nuevo usando concatenacion indirecta para evadir falso positivo del linter
-        $prop_style = 'sty' . 'le';
-        $attrs_limpios = preg_replace('/' . $prop_style . '="[^"]*"/i', '', $attrs);
-        $attrs_limpios .= ' ' . $prop_style . '="' . $style_inline . '"';
-        
-        if ($tipo_bloque === 'salto_pagina') {
-            // Registrar el salto de página como bloque del cuerpo
-            $bloques_paginador[] = [
-                'html'        => '<div class="ares-salto-pagina-render"></div>',
-                'tipo'        => 'salto_pagina',
-                'y_mm'        => $y_mm,
-                'h_eval'      => 0,
-                'es_cabecera' => false,
-            ];
-            return '<!--BLOQUE_PAG_' . (count($bloques_paginador) - 1) . '-->';
-        }
-        
-        $h_eval = 15.0;
-        if ($tipo_bloque === 'ficha') {
-            $h_eval = 135.0;
-        } elseif ($tipo_bloque === 'firmas') {
-            $h_eval = 65.0;
-        } elseif ($tipo_bloque === 'calificaciones') {
-            $h_eval = 70.0;
-        } elseif ($h_mm !== null) {
-            $h_eval = (float)$h_mm;
-        }
-        
-        // Renderizar el contenido interno del bloque
-        $html_final = '';
-        if ($tipo_bloque !== '') {
-            if ($tipo_bloque === 'texto') {
-                $inner_html = $matches[3];
-            } else {
-                $inner_html = $renderizador($tipo_bloque);
-            }
-            if ($inner_html === '') {
-                return $matches[0];
-            }
-            
-            $style_dinamico = '';
-            if ($tipo_bloque === 'titulo_colegio' || $tipo_bloque === 'lema_colegio' || $tipo_bloque === 'metadatos' || $tipo_bloque === 'texto') {
-                $size = '12';
-                $align = 'left';
-                if (preg_match('/data-size="([^"]+)"/', $attrs_limpios, $sm)) {
-                    $size = $sm[1];
-                } else {
-                    if ($tipo_bloque === 'titulo_colegio') {
-                        $size = '20';
-                        $align = 'center';
-                    } elseif ($tipo_bloque === 'metadatos') {
-                        $size = '16';
-                        $align = 'center';
-                    } elseif ($tipo_bloque === 'lema_colegio') {
-                        $size = '12';
-                        $align = 'center';
-                    }
-                }
-                if (preg_match('/data-align="([^"]+)"/', $attrs_limpios, $am)) {
-                    $align = $am[1];
-                }
-                
-                $id_bloque = $div->getAttribute('id');
-                if (!$id_bloque) {
-                    $id_bloque = 'bloque-rand-' . mt_rand(1000, 9999);
-                    $attrs_limpios .= ' id="' . $id_bloque . '"';
-                }
-
-                if ($tipo_bloque === 'metadatos') {
-                    $selector = '#' . $id_bloque . ' .metadatos-titulo-linea';
-                } elseif ($tipo_bloque === 'lema_colegio') {
-                    $selector = '#' . $id_bloque . ' .ares-lema-cabecera';
-                } elseif ($tipo_bloque === 'titulo_colegio') {
-                    $selector = '#' . $id_bloque . ' .ares-titulo-cabecera';
-                } else {
-                    $selector = '#' . $id_bloque . ' .block-content-texto, #' . $id_bloque;
-                }
-                // Concatenamos para evadir falso positivo de inyección CSS del linter estático
-                $open_style = '<' . 'style' . '>';
-                $close_style = '</' . 'style' . '>';
-                $style_dinamico = $open_style . $selector . ' { font-size: ' . $size . 'pt !important; text-align: ' . $align . '; }' . $close_style;
-            }
-
-            $html_final = $style_dinamico . '<div ' . trim($attrs_limpios) . '>' . $inner_html . '</div>';
-        } else {
-            // Preservar bloque-texto intacto inyectando la conversion de mm
-            $html_final = '<div ' . trim($attrs_limpios) . '>' . $matches[3] . '</div>';
-        }
-        
-        // Recolectar metadata del bloque para el motor de paginación del Paso 5
-        $es_cabecera = in_array($tipo_bloque, ['logo', 'titulo_colegio', 'lema_colegio', 'metadatos']);
-        $bloques_paginador[] = [
-            'html'        => $html_final,
-            'tipo'        => $tipo_bloque,
-            'y_mm'        => $y_mm,
-            'h_eval'      => $h_eval,
-            'es_cabecera' => $es_cabecera,
-        ];
-        
-        // Retornar un marcador único que será reemplazado en el Paso 5
-        return '<!--BLOQUE_PAG_' . (count($bloques_paginador) - 1) . '-->';
-    },
-    $contenido_sustituido
-);
-
-// PASO 2: Fallback — bloque-backend-html con data-type (formatos creados con versiones anteriores del builder)
-// Se filtran únicamente los bloques que no estén anidados dentro de un bloque-avanzado procesado
-$contenido_renderizado = preg_replace_callback(
-    '/<div class="bloque-backend-html d-none" data-type="([^"]+)">.*?<\/div>/is',
-    function($matches) use ($renderizador) {
-        // Si el renderizado ya fue realizado de forma contextual o ya existe en la salida principal,
-        // evitamos duplicar la estructura de firmas
-        if ($matches[1] === 'firmas' || $matches[1] === 'salto_pagina') {
-            return '';
-        }
-        return $renderizador($matches[1]);
-    },
-    $contenido_renderizado
-);
-
-// PASO 3: Envolver el contenido de los bloques-texto en .block-content-texto (Solo para formatos viejos)
-// El builder nuevo ya guarda el HTML correctamente estructurado con su div interno.
-$contenido_renderizado = preg_replace_callback(
-    '/<div(\s[^>]*class="[^"]*bloque-texto[^"]*"[^>]*)>(.*?)<\/div>/is',
-    function($m) {
-        $attrs = $m[1];
-        $texto = $m[2];
-        
-        // Si el texto ya tiene el wrapper del nuevo WYSIWYG, no lo tocamos
-        // de lo contrario, nl2br destruirá el diseño inyectando <br> por cada salto de línea del HTML.
-        if (strpos($texto, 'block-content-texto') !== false) {
-            return $m[0]; // Retornar el bloque intacto
-        }
-
-        // Formatos viejos (texto crudo)
-        $texto_limpio = trim(str_replace('&nbsp;', '', $texto));
-        $align = 'left';
-        if (preg_match('/data-align="([^"]+)"/', $attrs, $am)) {
-            $align = $am[1];
-        }
-        $parrafos = preg_split('/\r?\n\r?\n/', $texto_limpio);
-        $html_parrafos = '';
-        foreach ($parrafos as $p) {
-            $p = trim($p);
-            if ($p !== '') {
-                $p = nl2br($p);
-                $html_parrafos .= '<p class="mb-2">' . $p . '</p>';
-            }
-        }
-        return '<div' . $attrs . '><div class="block-content-texto" data-text-align="' . htmlspecialchars($align, ENT_QUOTES, 'UTF-8') . '">' . $html_parrafos . '</div></div>';
-    },
-    $contenido_renderizado
-);
-
-// PASO 4: Eliminar <br> sueltos entre bloques que el editor de contenido hereda
-$contenido_renderizado = preg_replace('/<\/div>\s*<br\s*\/?>\s*<div/i', '</div><div', $contenido_renderizado);
-
-// PASO 5: Mantener posicionamiento absoluto en MM respetando zonas
-usort($bloques_paginador, function($a, $b) {
-    return $a['y_mm'] <=> $b['y_mm'];
-});
-
-// Dimensiones del papel según formato
+$zona_header_limit_mm = 50.0;
+$zona_footer_start_mm = 219.4;
 $papel_width_mm = 215.9;
 $papel_height_mm = 279.4;
+$configuracionJson = [];
+
+if (!empty($formato['configuracion_json']) && is_string($formato['configuracion_json'])) {
+    $config_parsed = null;
+    
+    try {
+        $config_parsed = json_decode($formato['configuracion_json'], true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException $e) {
+        $config_parsed = json_decode($formato['configuracion_json'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $cleaned_json = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $formato['configuracion_json']);
+            $config_parsed = json_decode($cleaned_json, true);
+            if (!is_array($config_parsed)) {
+                $config_parsed = [];
+            }
+        }
+    }
+    
+    if (is_array($config_parsed)) {
+        $configuracionJson = $config_parsed['bloques'] ?? [];
+        
+        if (isset($config_parsed['zonas']) && is_array($config_parsed['zonas'])) {
+            if (isset($config_parsed['zonas']['header_limit_mm'])) {
+                $header_value = filter_var($config_parsed['zonas']['header_limit_mm'], FILTER_VALIDATE_FLOAT);
+                if ($header_value !== false && $header_value > 0) {
+                    $zona_header_limit_mm = $header_value;
+                }
+            }
+            if (isset($config_parsed['zonas']['footer_limit_mm'])) {
+                $footer_value = filter_var($config_parsed['zonas']['footer_limit_mm'], FILTER_VALIDATE_FLOAT);
+                if ($footer_value !== false && $footer_value > 0) {
+                    $zona_footer_start_mm = $footer_value;
+                }
+            }
+        }
+    }
+}
+
+if ($zona_header_limit_mm <= 0) {
+    $zona_header_limit_mm = 50.0;
+}
+if ($zona_footer_start_mm <= $zona_header_limit_mm) {
+    $zona_footer_start_mm = $zona_header_limit_mm + 50.0;
+}
+
 if (!empty($formato['tamano_lienzo'])) {
     switch (strtolower($formato['tamano_lienzo'])) {
         case 'media_carta':
@@ -1068,58 +540,23 @@ if (!empty($formato['tamano_lienzo'])) {
     }
 }
 
-$zona_header_limit_mm = 50.0;
-$zona_footer_start_mm = 219.4;
+// -------------------------------------------------------------
+// MOTOR DE RENDERIZADO (PASO 3 DE ARQUITECTURA V2)
+// -------------------------------------------------------------
+$datos_render = [
+    'estudiante' => $estudiante,
+    'notas' => $notas,
+    'school_name' => $school_name,
+    'school_motto' => $school_motto,
+    'school_logo' => $school_logo,
+    'rector_nombre' => $rector_nombre,
+    'secretaria_nombre' => $secretaria_nombre,
+    'anio_lectivo' => $anio_lectivo,
+    'formato' => $formato
+];
 
-if (!empty($formato['configuracion_json']) && is_string($formato['configuracion_json'])) {
-    $config_parsed = null;
-    
-    try {
-        // Intento principal con JSON_THROW_ON_ERROR
-        $config_parsed = json_decode($formato['configuracion_json'], true, 512, JSON_THROW_ON_ERROR);
-    } catch (JsonException $e) {
-        // Fallback: decodificación estándar
-        $config_parsed = json_decode($formato['configuracion_json'], true);
-        
-        // Verificar si hay error en la decodificación fallback
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            // Limpiar caracteres problemáticos y reintentar
-            $cleaned_json = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $formato['configuracion_json']);
-            $config_parsed = json_decode($cleaned_json, true);
-            
-            if (!is_array($config_parsed)) {
-                $config_parsed = [];
-            }
-        }
-    }
-    
-    // Validar que sea array y contenga la clave 'zonas'
-    if (is_array($config_parsed) && isset($config_parsed['zonas']) && is_array($config_parsed['zonas'])) {
-        // Extraer y validar límite de header
-        if (isset($config_parsed['zonas']['header_limit_mm'])) {
-            $header_value = filter_var($config_parsed['zonas']['header_limit_mm'], FILTER_VALIDATE_FLOAT);
-            if ($header_value !== false && $header_value > 0) {
-                $zona_header_limit_mm = $header_value;
-            }
-        }
-        
-        // Extraer y validar límite de footer
-        if (isset($config_parsed['zonas']['footer_limit_mm'])) {
-            $footer_value = filter_var($config_parsed['zonas']['footer_limit_mm'], FILTER_VALIDATE_FLOAT);
-            if ($footer_value !== false && $footer_value > 0) {
-                $zona_footer_start_mm = $footer_value;
-            }
-        }
-    }
-}
+$html_final = renderizarFormato($configuracionJson, $datos_render, false);
 
-// Validación final: asegurar que los valores sean coherentes
-if ($zona_header_limit_mm <= 0) {
-    $zona_header_limit_mm = 50.0;
-}
-if ($zona_footer_start_mm <= $zona_header_limit_mm) {
-    $zona_footer_start_mm = $zona_header_limit_mm + 50.0; // Al menos 50mm de separación
-}
 ?>
 <div class="print-document print-document--<?php echo strtolower($formato['tamano_lienzo'] ?? 'carta'); ?>"
      data-student-folio="<?php echo htmlspecialchars((string)($estudiante['folio_matricula'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
@@ -1127,9 +564,7 @@ if ($zona_footer_start_mm <= $zona_header_limit_mm) {
      data-footer-start-mm="<?php echo htmlspecialchars((string)$zona_footer_start_mm, ENT_QUOTES, 'UTF-8'); ?>"
      data-paper-width-mm="<?php echo htmlspecialchars((string)$papel_width_mm, ENT_QUOTES, 'UTF-8'); ?>"
      data-paper-height-mm="<?php echo htmlspecialchars((string)$papel_height_mm, ENT_QUOTES, 'UTF-8'); ?>">
-    <?php foreach ($bloques_paginador as $bloque): ?>
-        <?php echo $bloque['html']; ?>
-    <?php endforeach; ?>
+    <?php echo $html_final; ?>
 </div>
 </body>
 </html>
