@@ -40,7 +40,7 @@ $stmt_e->execute();
             <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-md-end align-items-center">
                 <div class="search-wrapper-elite flex-grow-1">
                     <span class="search-icon-elite-fixed"><i class="bi bi-search"></i></span>
-                    <input type="text" class="search-elite buscador-dinamico" placeholder="Filtrar materias...">
+                    <input type="text" class="search-elite--wrapped buscador-dinamico" placeholder="Filtrar materias...">
                 </div>
                 <button onclick='nuevaEspecialidad(<?php echo $areas_json; ?>)' class="btn-elite btn-elite--sm">
                     <i class="bi bi-plus-lg me-2"></i>

@@ -49,7 +49,7 @@ $stmt_u->execute();
             <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-end">
                 <div class="search-wrapper-elite w-100 u-max-w-300">
                     <span class="search-icon-elite"><i class="bi bi-search"></i></span>
-                    <input type="text" id="buscar-personal" class="search-elite ares-h-44 buscador-dinamico" placeholder="Filtrar por nombre o cargo...">
+                    <input type="text" id="buscar-personal" class="search-elite--wrapped ares-h-44 buscador-dinamico" placeholder="Filtrar por nombre o cargo...">
                 </div>
                 <?php if (tiene_permiso('roles')): ?>
                     <button onclick="navegarModulo('roles')" class="btn-elite btn-elite--outline btn-elite--sm">

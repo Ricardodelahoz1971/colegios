@@ -65,7 +65,7 @@ if (tienen_rol(['Administrador', 'Coordinador'])) {
                     
                     <div class="search-wrapper-elite">
                         <span class="search-icon-elite-fixed"><i class="bi bi-search"></i></span>
-                        <input type="text" id="buscar-pregunta" class="search-elite ares-h-44" placeholder="Filtrar reactivos..." onkeyup="filtrarBanco()">
+                        <input type="text" id="buscar-pregunta" class="search-elite--wrapped ares-h-44" placeholder="Filtrar reactivos..." onkeyup="filtrarBanco()">
                     </div>
                 </div>
                 <div class="card-body p-0">

@@ -76,7 +76,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                             <div class="p-3 bg-light border-bottom">
                                 <div class="search-wrapper-elite bg-white border">
                                     <span class="search-icon-elite-fixed"><i class="bi bi-person-search"></i></span>
-                                    <input type="text" id="busqueda-pozo" class="search-elite border-0 h-38" placeholder="Buscar docente..." onkeyup="filtrarPozo()" onclick="event.stopPropagation()">
+                                    <input type="text" id="busqueda-pozo" class="search-elite--wrapped border-0 h-38" placeholder="Buscar docente..." onkeyup="filtrarPozo()" onclick="event.stopPropagation()">
                                 </div>
                             </div>
                             <div class="zulu-scroll-sm p-1" id="pozo-docentes">
@@ -135,7 +135,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                 <!-- BUSCADOR INTEGRADO (EXTREMO DERECHO) -->
                 <div class="search-wrapper-elite flex-grow-1 max-w-300">
                     <span class="search-icon-elite-fixed"><i class="bi bi-search"></i></span>
-                    <input type="text" id="buscador-cursos-zulu" class="search-elite" placeholder="Filtrar grado o curso..." onkeyup="filtrarCursosZulu()">
+                    <input type="text" id="buscador-cursos-zulu" class="search-elite--wrapped" placeholder="Filtrar grado o curso..." onkeyup="filtrarCursosZulu()">
                 </div>
             </div>
         </div>

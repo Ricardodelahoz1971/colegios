@@ -136,7 +136,7 @@ if (tienen_rol(['Administrador', 'Coordinador'])) {
                 <div class="card-body p-3">
                     <div class="search-wrapper-elite mb-3">
                         <span class="search-icon-elite-fixed"><i class="bi bi-search"></i></span>
-                        <input type="text" id="buscar-banco-construct" class="search-elite" placeholder="Buscar reactivo..." onkeyup="filtrarBancoConstruct()">
+                        <input type="text" id="buscar-banco-construct" class="search-elite--wrapped" placeholder="Buscar reactivo..." onkeyup="filtrarBancoConstruct()">
                     </div>
                     <div id="banco-disponible" class="list-group list-group-flush">
                         <!-- Carga dinámica -->

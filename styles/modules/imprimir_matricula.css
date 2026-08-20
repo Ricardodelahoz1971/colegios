@@ -197,7 +197,7 @@
         font-weight: 800;
     }
     
-    /* Forzar peso tipogrÃ¡fico de variables para neutralizar estilos inline heredados */
+    /* Forzar peso tipográfico de variables para neutralizar estilos inline heredados */
     .print-container .bloque-texto .ares-campo-valor,
     .print-container .block-content-texto .ares-campo-valor,
     .bloque-texto strong.ares-campo-valor,
@@ -206,6 +206,7 @@
     strong.ares-campo-valor,
     span.ares-variable-badge {
         font-weight: 800;
+        white-space: nowrap;
     }
 
     body .print-container .bloque-texto p,

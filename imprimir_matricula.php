@@ -12,6 +12,7 @@ if (!tiene_permiso('estudiantes')) {
 
 require_once __DIR__ . '/php/db.php';
 require_once __DIR__ . '/php/logica/formatos_controller.php';
+require_once __DIR__ . '/php/logica/formatos_bloques_config.php';
 
 $estudiante_id = isset($_GET['estudiante_id']) ? (int)$_GET['estudiante_id'] : 0;
 $formato_id = isset($_GET['formato_id']) ? (int)$_GET['formato_id'] : 0;
@@ -215,6 +216,12 @@ if (strlen($hex_color) == 3) {
     $b_c = hexdec(substr($hex_color,4,2));
 }
 $primary_rgb = "$r_c, $g_c, $b_c";
+
+// BLOCK_STYLE_CONFIG (PHP) — Estilos base para cada tipo de bloque
+$BLOCK_STYLE_CONFIG_PHP = array_map(
+    static fn(array $bloque): array => $bloque['estilo'],
+    obtenerConfiguracionBloques($cfg)
+);
 
 ?>
 <!DOCTYPE html>
@@ -460,11 +467,20 @@ async function descargarFormatoPDF() {
 </script>
 <?php
 
-$renderizador = function(string $tipo, ?int $cols_override = null) use ($estudiante, $notas, $school_name, $school_motto, $school_logo, $rector_nombre, $secretaria_nombre, $var_map, $alias_extra, $anio_lectivo, $formato): string {
+$renderizador = function(string $tipo, ?int $cols_override = null) use ($estudiante, $notas, $school_name, $school_motto, $school_logo, $rector_nombre, $secretaria_nombre, $var_map, $alias_extra, $anio_lectivo, $formato, $BLOCK_STYLE_CONFIG_PHP): string {
     $inner_html = '';
 
     if ($tipo === 'titulo_colegio') {
-        $inner_html = '<div class="block-content-wysiwyg p-0 m-0 text-center"><h3 class="ares-titulo-cabecera">' . htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8') . '</h3></div>';
+        $config = $BLOCK_STYLE_CONFIG_PHP['titulo_colegio'] ?? [];
+        $fontSize = ($config['fontSize'] ?? 20) . 'pt';
+        $fontFamily = $config['fontFamily'] ?? 'Montserrat';
+        $fontWeight = $config['fontWeight'] ?? 'bold';
+        $textTransform = $config['textTransform'] ?? 'uppercase';
+        $textAlign = $config['textAlign'] ?? 'center';
+        $color = $config['color'] ?? '#204192';
+        $paddingMm = $config['padding_mm'] ?? 1;
+
+        $inner_html = '<div class="block-content-wysiwyg p-0 m-0" style="padding: ' . $paddingMm . 'mm; text-align: ' . $textAlign . ';"><h3 class="ares-titulo-cabecera" style="font-size: ' . $fontSize . ' !important; font-family: ' . $fontFamily . ' !important; font-weight: ' . $fontWeight . ' !important; text-transform: ' . $textTransform . ' !important; text-align: ' . $textAlign . ' !important; color: ' . $color . ' !important;">' . htmlspecialchars(mb_strtoupper($school_name, 'UTF-8'), ENT_QUOTES, 'UTF-8') . '</h3></div>';
     }
 
     if ($tipo === 'lema_colegio') {

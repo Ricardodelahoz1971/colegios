@@ -364,13 +364,13 @@ function eliminarFormato(id) {
             .then(res => res.json())
             .then(async (res) => {
                 if (res.status === 'success') {
-                    // Remover fila de la tabla sin recarga
-                    const fila = document.querySelector(`tr[data-id="${id}"]`);
-                    if (fila) {
-                        fila.remove();
+                    // Remover tarjeta sin recarga
+                    const tarjeta = document.querySelector(`.format-card[data-id="${id}"]`);
+                    if (tarjeta) {
+                        tarjeta.remove();
                         Swal.fire('Eliminado', 'Plantilla removida correctamente', 'success');
                     } else {
-                        // Si no encuentra la fila, navegar al módulo para refrescar
+                        // Si no encuentra la tarjeta, navegar al módulo para refrescar
                         await Swal.fire('Eliminado', 'Plantilla removida correctamente', 'success');
                         navegarModulo('formatos_matricula', true);
                     }

@@ -930,4 +930,22 @@ strong.ares-campo-valor {
 }
 
 
+/* === Clases de bloques del BLOCK_SCHEMA (sin style inline) === */
+.qr-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--el-bg-light);
+    border: 1px dashed var(--el-border-color);
+}
 
+.foto-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--el-bg-light);
+    border: 1px solid var(--el-border-color);
+}
+
+.ares-firma-linea {
+    height: 40px;
+    border-block-start: 1px solid var(--el-border-color);
+}

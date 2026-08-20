@@ -71,7 +71,7 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                     $tipo_label = htmlspecialchars((string)($f['tipo'] === 'predisenado' ? 'Prediseñado' : 'Personalizado'), ENT_QUOTES, 'UTF-8');
                     $f_id = (int)$f['id'];
                 ?>
-                    <div class="format-card d-flex flex-column justify-content-between">
+                    <div class="format-card d-flex flex-column justify-content-between" data-id="<?php echo $f_id; ?>">
                         <div class="format-card__header">
                             <span class="format-card__badge format-card__badge--<?php echo htmlspecialchars($tipo_class, ENT_QUOTES, 'UTF-8'); ?>">
                                 <?php echo htmlspecialchars($tipo_label, ENT_QUOTES, 'UTF-8'); ?>
@@ -538,6 +538,40 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                     <!-- TAB 3: INSTITUCIÓN Y FOLIO -->
                     <div class="tab-pane fade" id="panel-institucion" role="tabpanel" aria-labelledby="tab-institucion">
                         <div class="ares-catalogo-grid">
+                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('rector_nombre', 'Rector')">
+                                <i class="bi bi-award-fill text-primary"></i>
+                                <div><strong>Nombre del Rector(a)</strong><span>Representante legal</span></div>
+                            </div>
+                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('colegio_nit', 'NIT Colegio')">
+                                <i class="bi bi-file-earmark-ruled text-danger"></i>
+                                <div><strong>NIT del Colegio</strong><span>Registro Tributario</span></div>
+                            </div>
+                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('colegio_resolucion', 'Resolución Colegio')">
+                                <i class="bi bi-patch-check text-success"></i>
+                                <div><strong>Resolución Oficial</strong><span>Licencia de funcionamiento</span></div>
+                            </div>
+                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('logo', 'Logo Colegio', true)">
+                                <i class="bi bi-file-image text-info"></i>
+                                <div><strong>Logo Institución</strong><span>Insignia o escudo escolar</span></div>
+                            </div>
+                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('titulo_colegio', 'Nombre del Colegio', true)">
+                                <i class="bi bi-building text-success"></i>
+                                <div><strong>Nombre del Colegio</strong><span>Encabezado institucional con formato</span></div>
+                            </div>
+                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('lema_colegio', 'Lema Institucional', true)">
+                                <i class="bi bi-quote text-warning"></i>
+                                <div><strong>Lema Institucional</strong><span>Slogan del plantel, con formato</span></div>
+                            </div>
+                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('qr_estudiante', 'Código QR Validación', true)">
+                                <i class="bi bi-qr-code-scan text-dark"></i>
+                                <div><strong>Código QR Institucional</strong><span>Validación de carné / expediente</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: BLOQUES Y ESTRUCTURAS -->
+                    <div class="tab-pane fade" id="panel-bloques" role="tabpanel" aria-labelledby="tab-bloques">
+                        <div class="ares-catalogo-grid">
                             <div class="ares-var-card" onclick="seleccionarVariableCatalogo('curso_asignado', 'Curso Asignado')">
                                 <i class="bi bi-book text-info"></i>
                                 <div><strong>Curso / Grado</strong><span>Grado de matriculación</span></div>
@@ -558,32 +592,6 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                                 <i class="bi bi-calendar3 text-warning"></i>
                                 <div><strong>Año Lectivo</strong><span>Solo año de la matrícula</span></div>
                             </div>
-                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('rector_nombre', 'Rector')">
-                                <i class="bi bi-award-fill text-primary"></i>
-                                <div><strong>Nombre del Rector(a)</strong><span>Representante legal</span></div>
-                            </div>
-                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('colegio_nombre', 'Colegio')">
-                                <i class="bi bi-building text-info"></i>
-                                <div><strong>Nombre del Colegio</strong><span>Institución Educativa</span></div>
-                            </div>
-                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('colegio_lema', 'Lema Colegio')">
-                                <i class="bi bi-quote text-warning"></i>
-                                <div><strong>Lema Institucional</strong><span>Slogan del plantel</span></div>
-                            </div>
-                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('colegio_nit', 'NIT Colegio')">
-                                <i class="bi bi-file-earmark-ruled text-danger"></i>
-                                <div><strong>NIT del Colegio</strong><span>Registro Tributario</span></div>
-                            </div>
-                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('colegio_resolucion', 'Resolución Colegio')">
-                                <i class="bi bi-patch-check text-success"></i>
-                                <div><strong>Resolución Oficial</strong><span>Licencia de funcionamiento</span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TAB 4: BLOQUES Y ESTRUCTURAS -->
-                    <div class="tab-pane fade" id="panel-bloques" role="tabpanel" aria-labelledby="tab-bloques">
-                        <div class="ares-catalogo-grid">
                             <div class="ares-var-card" onclick="seleccionarVariableCatalogo('texto', 'Párrafo de Texto', true)">
                                 <i class="bi bi-textarea-t text-primary"></i>
                                 <div><strong>Párrafo de Texto</strong><span>Cuadro de texto libre</span></div>
@@ -592,25 +600,9 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                                 <i class="bi bi-person-square text-primary"></i>
                                 <div><strong>Foto del Estudiante</strong><span>Bloque de foto 3x4 oficial</span></div>
                             </div>
-                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('qr_estudiante', 'Código QR Validación', true)">
-                                <i class="bi bi-qr-code-scan text-dark"></i>
-                                <div><strong>Código QR Institucional</strong><span>Validación de carné / expediente</span></div>
-                            </div>
                             <div class="ares-var-card" onclick="seleccionarVariableCatalogo('texto_certificacion', 'Texto Certificación', true)">
                                 <i class="bi bi-file-earmark-check text-info"></i>
                                 <div><strong>Bloque Certificación</strong><span>Redacción oficial de certificado</span></div>
-                            </div>
-                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('logo', 'Logo Colegio', true)">
-                                <i class="bi bi-file-image text-info"></i>
-                                <div><strong>Logo Institución</strong><span>Insignia o escudo escolar</span></div>
-                            </div>
-                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('titulo_colegio', 'Título Colegio', true)">
-                                <i class="bi bi-building text-success"></i>
-                                <div><strong>Título Institución</strong><span>Encabezado institucional</span></div>
-                            </div>
-                            <div class="ares-var-card" onclick="seleccionarVariableCatalogo('lema_colegio', 'Lema Colegio', true)">
-                                <i class="bi bi-quote text-warning"></i>
-                                <div><strong>Lema Institución</strong><span>Slogan o lema escolar</span></div>
                             </div>
                             <div class="ares-var-card" onclick="seleccionarVariableCatalogo('metadatos', 'Metadatos Formato', true)">
                                 <i class="bi bi-card-text text-secondary"></i>
@@ -751,6 +743,10 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
         nit: <?php echo json_encode($cfg['colegio_nit'] ?? ''); ?>,
         resolucion: <?php echo json_encode($cfg['colegio_resolucion'] ?? ''); ?>
     };
+    window.BLOCK_CONFIG = <?php
+        require_once __DIR__ . '/../logica/formatos_bloques_config.php';
+        echo json_encode(obtenerConfiguracionBloques($cfg));
+    ?>;
 </script>
 <script src="../js/modules/formatos_matricula_builder.js?v=<?php echo time(); ?>"></script>
 <script src="../js/formatos_matricula.js?v=<?php echo time(); ?>" defer></script>

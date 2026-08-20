@@ -9,6 +9,120 @@ if (typeof window.UNIT_CONFIG === 'undefined') {
 }
 const UNIT_CONFIG = window.UNIT_CONFIG;
 
+/* === BLOCK_SCHEMA: Propiedades base de cada tipo de bloque ===
+ * Solo se usa al CREAR un bloque nuevo. Al recargar desde JSON guardado
+ * se respetan las personalizaciones del usuario (dataset.* + JSON BD).
+ */
+const BLOCK_SCHEMA = {
+    logo: {
+        ancho_mm: 30,
+        alto_mm: 12,
+        anchoCompleto: false,
+        editable: false,
+        html: (si, logo) => `<img class="ares-logo-cabecera" src="${logo}" alt="Logo" />`,
+        extraData: {}
+    },
+    titulo_colegio: {
+        ancho_mm: 50,
+        alto_mm: 12,
+        anchoCompleto: false,
+        editable: false,
+        html: (si) => `<h3 class="ares-titulo-cabecera">${(si.name || 'Nombre del Colegio').toUpperCase()}</h3>`,
+        extraData: {}
+    },
+    lema_colegio: {
+        ancho_mm: 50,
+        alto_mm: 12,
+        anchoCompleto: false,
+        editable: false,
+        html: (si) => `<p class="ares-lema-cabecera">${si.motto || 'Lema Institucional'}</p>`,
+        extraData: {}
+    },
+    metadatos: {
+        ancho_mm: 50,
+        alto_mm: 12,
+        anchoCompleto: false,
+        editable: false,
+        html: () => `<h4>[TIPO DOCUMENTO] N° [FOLIO] - AÑO LECTIVO [AÑO]</h4>`,
+        extraData: {}
+    },
+    texto: {
+        ancho_mm: 50,
+        alto_mm: 12,
+        anchoCompleto: false,
+        editable: true,
+        html: () => '<div class="block-content-texto" contenteditable="true">Texto libre aquí</div>',
+        extraData: {}
+    },
+    qr_estudiante: {
+        ancho_mm: 30,
+        alto_mm: 12,
+        anchoCompleto: false,
+        editable: false,
+        html: () => '<div class="qr-placeholder"></div>',
+        extraData: {}
+    },
+    foto_estudiante: {
+        ancho_mm: 32,
+        alto_mm: 37,
+        anchoCompleto: false,
+        editable: false,
+        html: () => '<div class="foto-placeholder"></div>',
+        extraData: {}
+    },
+    linea: {
+        ancho_mm: 0,
+        alto_mm: 0.5,
+        anchoCompleto: true,
+        editable: false,
+        html: () => '<div class="ares-linea-grafica"></div>',
+        extraData: {}
+    },
+    ficha: {
+        ancho_mm: 0,
+        alto_mm: 12,
+        anchoCompleto: true,
+        editable: true,
+        html: () => '<div class="block-content-wysiwyg" contenteditable="true"><p>Contenido de ficha</p></div>',
+        extraData: {}
+    },
+    calificaciones: {
+        ancho_mm: 0,
+        alto_mm: 12,
+        anchoCompleto: true,
+        editable: false,
+        html: () => '<div class="block-content-wysiwyg" contenteditable="false"><table><tr><td>Materia</td><td>Calificación</td></tr></table></div>',
+        extraData: {}
+    },
+    firmas: {
+        ancho_mm: 0,
+        alto_mm: 12,
+        anchoCompleto: true,
+        editable: false,
+        html: () => '<div class="dynamic-firmas-container"></div>',
+        extraData: { columnas: 3 }
+    },
+    texto_certificacion: {
+        ancho_mm: 0,
+        alto_mm: 12,
+        anchoCompleto: true,
+        editable: true,
+        html: () => '<div class="block-content-wysiwyg" contenteditable="true"><p>Texto certificación</p></div>',
+        extraData: {}
+    }
+};
+window.BLOCK_SCHEMA = BLOCK_SCHEMA;
+
+/* === BLOCK_STYLE_CONFIG: Estilos base de cada tipo de bloque ===
+ * Fuente única: window.BLOCK_CONFIG, inyectado por PHP desde
+ * php/logica/formatos_bloques_config.php (misma ficha que usa imprimir_matricula.php).
+ * No definir estilos aquí — si un bloque falta, se agrega en el archivo PHP.
+ */
+const BLOCK_STYLE_CONFIG = Object.fromEntries(
+    Object.entries(window.BLOCK_CONFIG || {}).map(([tipo, cfg]) => [tipo, cfg.estilo])
+);
+window.BLOCK_STYLE_CONFIG = BLOCK_STYLE_CONFIG;
+
 function getHeaderLimit() {
     return parseFloat(document.getElementById('formato-cabecera-mm')?.value || 50);
 }
@@ -28,6 +142,35 @@ function getCanvasScale() {
     return canvas.offsetWidth / UNIT_CONFIG.CANVAS_WIDTH_MM;
 }
 
+function aplicarEstilosBase(bloque, tipo) {
+    if (!bloque || !BLOCK_STYLE_CONFIG[tipo]) return;
+
+    const config = BLOCK_STYLE_CONFIG[tipo];
+    const textEl = bloque.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, .metadatos-titulo-linea, h4, .block-content-texto');
+
+    if (!textEl) return;
+
+    // Aplicar estilos CSS base
+    textEl.style.fontSize = config.fontSize + 'pt';
+    textEl.style.fontFamily = config.fontFamily;
+    textEl.style.fontWeight = config.fontWeight;
+    textEl.style.textTransform = config.textTransform;
+    textEl.style.textAlign = config.textAlign;
+    textEl.style.color = config.color;
+    textEl.style.lineHeight = config.lineHeight;
+
+    // NO aplicar padding aquí — CSS se encarga via .ares-titulo-cabecera
+
+    // Guardar en dataset para referencia
+    bloque.dataset.styleConfig = tipo;
+    Object.entries(config).forEach(([key, value]) => {
+        if (key !== 'locked' && key !== 'editable' && key !== 'constraints') {
+            bloque.dataset['style_' + key] = value;
+        }
+    });
+}
+window.aplicarEstilosBase = aplicarEstilosBase;
+
 function autoAjustarAnchoBloqueTexto(bloque) {
     if (!bloque) return;
     const tipo = bloque.dataset.bloque;
@@ -38,23 +181,25 @@ function autoAjustarAnchoBloqueTexto(bloque) {
 
     const originalWidth = bloque.style.width;
     bloque.style.width = 'auto';
-    
+
     const textWidthPx = textEl.scrollWidth;
     const canvas = document.getElementById('canvas-builder');
     if (!canvas) {
         bloque.style.width = originalWidth;
         return;
     }
-    
+
     const scale = canvas.offsetWidth / UNIT_CONFIG.CANVAS_WIDTH_MM;
     if (scale <= 0) {
         bloque.style.width = originalWidth;
         return;
     }
-    
+
     const textWidthMm = textWidthPx / scale;
-    const finalWidthMm = textWidthMm + 2; // 1mm a cada lado = 2mm de gabela
-    
+    // 1mm padding a cada lado = 2mm total de gabela
+    const gabelaMm = BLOCK_STYLE_CONFIG[tipo]?.padding_mm ? (BLOCK_STYLE_CONFIG[tipo].padding_mm * 2) : 2;
+    const finalWidthMm = textWidthMm + gabelaMm;
+
     bloque.style.width = finalWidthMm.toFixed(2) + 'mm';
     bloque.dataset.width_mm = finalWidthMm.toFixed(2);
 }
@@ -332,6 +477,9 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
     const scale = getCanvasScale();
     const schoolLogo = document.getElementById('formatos-container')?.dataset.schoolLogo || '/sistema_escolar/perseus.png';
 
+    // Leer propiedades base del schema — solo aplica en creación inicial
+    const schema = BLOCK_SCHEMA[codigo] || BLOCK_SCHEMA['texto'];
+
     const wrapper = document.createElement('div');
     wrapper.className = 'canvas-block-wrapper animate__animated animate__fadeIn';
     wrapper.id = idUnico;
@@ -344,25 +492,13 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
     const margenes = getMargensInMilimeters();
     const headerEndMM = UNIT_CONFIG.HEADER_LIMIT_MM;
     const footerStartMM = UNIT_CONFIG.FOOTER_START_MM;
-
     const maxAnchoSeguro = UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.izquierdo - margenes.derecho;
-    let estW_mm = 50;
-    if (codigo === 'logo' || codigo === 'qr_estudiante') estW_mm = 30;
-    if (codigo === 'foto_estudiante') estW_mm = 32;
 
-    const esBloqueAnchoCompleto = ['ficha', 'calificaciones', 'texto_certificacion', 'linea'].includes(codigo);
-    if (esBloqueAnchoCompleto) {
-        estW_mm = maxAnchoSeguro;
-    }
-    if (codigo === 'firmas') {
-        estW_mm = maxAnchoSeguro - 26;
-    }
-
-    if (estW_mm > maxAnchoSeguro) {
-        estW_mm = maxAnchoSeguro;
-    }
-
-    let estH_mm = codigo === 'foto_estudiante' ? 37 : (codigo === 'linea' ? 0.5 : 12);
+    // Dimensiones desde el schema
+    let estW_mm = schema.anchoCompleto ? maxAnchoSeguro : schema.ancho_mm;
+    if (codigo === 'firmas') estW_mm = maxAnchoSeguro - 26;
+    if (estW_mm > maxAnchoSeguro) estW_mm = maxAnchoSeguro;
+    let estH_mm = schema.alto_mm;
 
     let left_mm = (xPx / scale);
     let top_mm = (yPx / scale);
@@ -381,9 +517,7 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
     const maxLeft = Math.max(margenes.izquierdo, UNIT_CONFIG.CANVAS_WIDTH_MM - margenes.derecho - estW_mm);
     left_mm = Math.max(margenes.izquierdo, Math.min(left_mm, maxLeft));
 
-    if (esBloqueAnchoCompleto) {
-        left_mm = margenes.izquierdo;
-    }
+    if (schema.anchoCompleto) left_mm = margenes.izquierdo;
 
     if (!skipZoneRestrictions) {
         if (activeZone === 'header') {
@@ -419,26 +553,11 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
         </div>
     `;
 
+    // HTML del bloque desde el schema
     const _si = (typeof window.SCHOOL_INFO !== 'undefined') ? window.SCHOOL_INFO : {};
-    const headerHTML = {
-        'logo': `<img class="ares-logo-cabecera" src="${schoolLogo}" alt="Logo" />`,
-        'titulo_colegio': `<h3 class="ares-titulo-cabecera">${_si.name || 'Nombre del Colegio'}</h3>`,
-        'lema_colegio': `<p class="ares-lema-cabecera">${_si.motto || 'Lema Institucional'}</p>`,
-        'metadatos': `<h4>[TIPO DOCUMENTO] N° [FOLIO] - AÑO LECTIVO [AÑO]</h4>`
-    };
-
-    const contentHTML = {
-        'texto': '<div class="block-content-texto" contenteditable="true">Texto libre aquí</div>',
-        'qr_estudiante': '<div class="qr-placeholder" style="width: 100%; height: 100%; background: var(--el-bg-light); border: 1px dashed var(--el-border-color);"></div>',
-        'foto_estudiante': '<div class="foto-placeholder" style="width: 100%; height: 100%; background: var(--el-bg-light); border: 1px solid var(--el-border-color);"></div>',
-        'linea': '<div class="ares-linea-grafica" style="width: 100%; height: 100%; background-color: var(--el-primary);"></div>',
-        'ficha': '<div class="block-content-wysiwyg" contenteditable="true"><p>Contenido de ficha</p></div>',
-        'calificaciones': '<div class="block-content-wysiwyg" contenteditable="false"><table><tr><td>Materia</td><td>Calificación</td></tr></table></div>',
-        'firmas': '<div class="dynamic-firmas-container"></div>',
-        'texto_certificacion': '<div class="block-content-wysiwyg" contenteditable="true"><p>Texto certificación</p></div>'
-    };
-
-    const html = headerHTML[codigo] || contentHTML[codigo] || '<div class="block-placeholder">Bloque</div>';
+    const html = typeof schema.html === 'function'
+        ? schema.html(_si, schoolLogo)
+        : `<div class="block-placeholder">Bloque</div>`;
 
     wrapper.innerHTML = `
         <div class="block-inner">
@@ -448,15 +567,16 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
         </div>
     `;
 
+    // Bloques con configuración extra del schema
     if (codigo === 'firmas') {
-        const cols = 3;
+        const cols = schema.extraData.columnas || 3;
         const container = wrapper.querySelector('.dynamic-firmas-container');
         for (let i = 0; i < cols; i++) {
             const firmaDiv = document.createElement('div');
             firmaDiv.className = 'firma-item-canvas';
             firmaDiv.innerHTML = `
                 <div class="ares-firma-cargo" contenteditable="true">Cargo</div>
-                <div style="height: 40px; border-top: 1px solid var(--el-border-color);"></div>
+                <div class="ares-firma-linea"></div>
                 <div class="ares-firma-nombre" contenteditable="true">Nombre</div>
             `;
             container.appendChild(firmaDiv);
@@ -465,11 +585,16 @@ function insertarBloqueEnCanvas(codigo, label, xPx, yPx, skipZoneRestrictions = 
     }
 
     canvas.appendChild(wrapper);
-    
+
     // Medir y guardar la altura real del contenido en mm
     if (codigo !== 'linea') {
         const realHeight_mm = wrapper.offsetHeight / scale;
         wrapper.dataset.height_mm = realHeight_mm.toFixed(2);
+    }
+
+    // Aplicar estilos base del BLOCK_STYLE_CONFIG (si existen)
+    if (BLOCK_STYLE_CONFIG[codigo]) {
+        aplicarEstilosBase(wrapper, codigo);
     }
 
     // Auto-ajustar el ancho si es un bloque de texto dinámico o cabecera
@@ -549,6 +674,26 @@ function insertarBloqueDesdeJSON(jsonBlock) {
         }
     }
 
+    // Restaurar estilos: base de BLOCK_STYLE_CONFIG + overrides personalizados guardados por el usuario.
+    // Única aplicación de estilos para este bloque — no se vuelve a tocar más abajo.
+    if (BLOCK_STYLE_CONFIG[jsonBlock.type]) {
+        aplicarEstilosBase(insertedNode, jsonBlock.type);
+
+        const textEl = insertedNode.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, .metadatos-titulo-linea, h4, .block-content-texto');
+        if (textEl) {
+            const fontSizeOverride = jsonBlock.size;
+            const colorOverride = jsonBlock.color;
+
+            if (fontSizeOverride) {
+                textEl.style.fontSize = fontSizeOverride + 'pt';
+            }
+            if (colorOverride) {
+                textEl.style.color = colorOverride;
+                insertedNode.dataset.style_color = colorOverride;
+            }
+        }
+    }
+
     if (jsonBlock.scale) insertedNode.dataset.scale = jsonBlock.scale;
     if (jsonBlock.size) {
         insertedNode.dataset.size = jsonBlock.size;
@@ -584,8 +729,11 @@ function insertarBloqueDesdeJSON(jsonBlock) {
 
     if (jsonBlock.content && jsonBlock.type !== 'texto' && jsonBlock.type !== 'ficha') {
         const wysiwyg = insertedNode.querySelector('.block-content-wysiwyg');
+        const cabecera = insertedNode.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, .metadatos-titulo-linea, h4');
         if (wysiwyg) {
             wysiwyg.innerHTML = jsonBlock.content;
+        } else if (cabecera) {
+            cabecera.innerHTML = jsonBlock.content;
         }
     }
 
@@ -875,7 +1023,11 @@ function seleccionarVariableCatalogo(codigo, label, esBloque = false) {
         const editable = wrapper.querySelector('.block-content-texto');
         if (editable) {
             editable.textContent = textoReal;
-            editable.style.textAlign = 'center';
+            if (codigo === 'colegio_nombre') {
+                editable.classList.add('ares-titulo-cabecera');
+            } else {
+                editable.style.textAlign = 'center';
+            }
             editable.style.paddingInline = '1mm';
             editable.style.width = 'auto';
         }
@@ -1101,6 +1253,8 @@ async function guardarFormato(e, salir = true) {
 
                 const stylePos = `position:absolute;left:${left_mm}mm;top:${top_mm}mm;${width_mm !== null ? `width:${width_mm}mm;` : ''}${height_mm !== null ? `height:${height_mm}mm;` : ''}`;
 
+                const elWysiwyg = bloque.querySelector('.block-content-wysiwyg');
+                const elCabecera = bloque.querySelector('.ares-titulo-cabecera, .ares-lema-cabecera, .metadatos-titulo-linea, h4');
                 const jsonBlock = {
                     type: tipo,
                     zone: bloque.dataset.zone || 'body',
@@ -1109,7 +1263,7 @@ async function guardarFormato(e, salir = true) {
                     width_mm: width_mm,
                     height_mm: height_mm,
                     size: bloque.dataset.size || null,
-                    content: bloque.querySelector('.block-content-wysiwyg') ? bloque.querySelector('.block-content-wysiwyg').innerHTML : null
+                    content: elWysiwyg ? elWysiwyg.innerHTML : (elCabecera ? elCabecera.innerHTML : null)
                 };
 
                 if (tipo === 'titulo_colegio' || tipo === 'lema_colegio' || tipo === 'metadatos') {
@@ -1119,6 +1273,11 @@ async function guardarFormato(e, salir = true) {
                     extraAttrs += ` data-size="${size}" data-align="${align}"`;
                     jsonBlock.size = size;
                     jsonBlock.align = align;
+
+                    // Guardar color personalizado (el tamaño ya viaja en jsonBlock.size / data-size)
+                    if (bloque.dataset.style_color) {
+                        jsonBlock.color = bloque.dataset.style_color;
+                    }
                 }
 
                 if (tipo === 'calificaciones') {
@@ -1195,7 +1354,8 @@ async function guardarFormato(e, salir = true) {
                     cancelarEdicion();
                 }
                 if (typeof navegarModulo === 'function') {
-                    navegarModulo('formatos_matricula');
+                    window.forceRefreshElite = true;
+                    navegarModulo('formatos_matricula', true);
                 } else {
                     window.location.reload();
                 }

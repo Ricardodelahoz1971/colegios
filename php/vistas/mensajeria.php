@@ -296,7 +296,7 @@ if ($chat_con_id > 0 && $chat_type === 'group') {
 
             <div class="search-wrapper-elite">
                 <span class="search-icon-elite-fixed"><i class="bi bi-search"></i></span>
-                <input type="text" class="search-elite ares-h-44" placeholder="Buscar contacto..." id="buscar-contacto" autocomplete="off">
+                <input type="text" class="search-elite--wrapped ares-h-44" placeholder="Buscar contacto..." id="buscar-contacto" autocomplete="off">
             </div>
             
             <div class="hermes-filters-container mt-3">

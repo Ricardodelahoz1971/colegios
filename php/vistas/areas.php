@@ -32,7 +32,7 @@ $stmt->execute();
                 <div class="search-wrapper-elite flex-grow-1">
                     <span class="search-icon-elite-fixed"><i class="bi bi-search"></i></span>
                     <label for="buscador-areas" class="visually-hidden">Filtrar áreas de conocimiento</label>
-                    <input type="text" id="buscador-areas" class="search-elite buscador-dinamico" placeholder="Filtrar áreas...">
+                    <input type="text" id="buscador-areas" class="search-elite--wrapped buscador-dinamico" placeholder="Filtrar áreas...">
                 </div>
                 <button onclick="nuevaArea()" class="btn-elite btn-elite--sm">
                     <i class="bi bi-plus-lg me-2"></i>

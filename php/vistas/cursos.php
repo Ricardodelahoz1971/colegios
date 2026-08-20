@@ -69,7 +69,7 @@ if ($puede_gestionar) {
             <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-md-end align-items-center">
                 <div class="search-wrapper-elite flex-grow-1">
                     <span class="search-icon-elite"><i class="bi bi-search"></i></span>
-                    <input type="text" class="search-elite buscador-dinamico" placeholder="Filtrar cursos...">
+                    <input type="text" class="search-elite--wrapped buscador-dinamico" placeholder="Filtrar cursos...">
                 </div>
                 <?php if ($puede_gestionar): ?>
                     <button onclick='nuevoCurso(<?php echo $docentes_json; ?>)' class="btn-elite btn-elite--sm">

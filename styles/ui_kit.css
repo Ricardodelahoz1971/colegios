@@ -1,4 +1,4 @@
-﻿@layer components {
+@layer components {
 /* 
    ==========================================================================
    MÃ“DULO: UI KIT - COMPONENTES DE VITRINA v9.2
@@ -105,7 +105,7 @@ h4, h5, h6, .welcome-title-elite, .text-titulo-elite {
 /* EL INPUT: ESPACIO SAGRADO PARA EL ICONO */
 /* ðŸ”˜ UTILIDADES CROMÃTICAS ELITE (ANTI-NEGRO) */
 .text-dark { color: var(--el-dark); }
-.text-secondary, .text-muted { color: var(--el-text-muted, #64748b); }
+.text-secondary, .text-muted { color: var(--el-text-muted); }
 
 /* ðŸ”˜ FIN DE UTILIDADES CROMÃTICAS */
 
@@ -1202,10 +1202,6 @@ body.dark-theme-mode .metric-label-elite {
     background: rgba(var(--el-primary-rgb), 0.12); /* Consistencia Aero */
 }
 
-.btn-elite-icon--danger:hover {
-    background: rgba(var(--el-primary-rgb), 0.1);
-}
-
 /* AJUSTE BLADE: CONTRASTE DE ICONOS */
 .mode-blade-elite .btn-elite-icon {
     background: rgba(var(--el-primary-rgb), 0.15);
@@ -1429,7 +1425,7 @@ body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
     box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.1);
 }
 
-.search-elite {
+.search-elite--wrapped {
     width: 100%;
     border: none;
     background: transparent;
@@ -2259,7 +2255,7 @@ input:checked + .switch-slider:before { transform: translateX(1.25rem); }
 }
 
 .swal2-deny {
-    background-color: var(--el-primary-faded, #e2eafc);
+    background-color: var(--el-primary-faded);
     color: var(--el-primary);
     border: 0.0625rem solid var(--el-primary);
 }

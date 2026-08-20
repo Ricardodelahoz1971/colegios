@@ -74,7 +74,7 @@ $total_estudiantes = (int)(function($db) { $s = $db->prepare("SELECT COUNT(*) FR
                 <!-- BUSCADOR INTEGRADO -->
                 <div class="search-wrapper-elite flex-grow-1 max-w-400 position-relative">
                     <span class="search-icon-elite"><i class="bi bi-search"></i></span>
-                    <input type="text" class="search-elite buscador-dinamico" placeholder="Buscar por nombre, apellido o DNI...">
+                    <input type="text" class="search-elite--wrapped buscador-dinamico" placeholder="Buscar por nombre, apellido o DNI...">
                     <button class="btn-clear-search btn-close-elite d-none" title="Limpiar búsqueda">
                         <i class="bi bi-x"></i>
                     </button>

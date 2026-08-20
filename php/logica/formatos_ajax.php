@@ -2,7 +2,6 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-session_write_close();
 
 header('Content-Type: application/json');
 require_once __DIR__ . '/../db.php';
@@ -11,9 +10,11 @@ require_once __DIR__ . '/../auth.php';
 try {
     proteccion_extrema();
 
-    if (!tiene_permiso('configuracion')) { 
-        throw new Exception("Acceso denegado: Permisos de configuración requeridos."); 
+    if (!tiene_permiso('configuracion')) {
+        throw new Exception("Acceso denegado: Privilegios insuficientes.");
     }
+
+    session_write_close();
 
     $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
@@ -207,9 +208,9 @@ try {
             $configuracion_json = json_encode($config_final, JSON_UNESCAPED_UNICODE);
         }
 
-        // DEBUG: Log del JSON guardado
-        error_log("📝 GUARDANDO FORMATO '$nombre' - JSON recibido del frontend:");
-        error_log($configuracion_json);
+        // DEBUG: Log del JSON guardado (Desactivado para mejorar el rendimiento)
+        // error_log("📝 GUARDANDO FORMATO '$nombre' - JSON recibido del frontend:");
+        // error_log($configuracion_json);
 
         $tipos_permitidos = ['matricula', 'carne', 'certificado', 'constancia'];
         if (!in_array($tipo_documento, $tipos_permitidos, true)) {

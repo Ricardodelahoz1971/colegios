@@ -45,9 +45,6 @@ function procesarImagenesCanvasMetadata(string $metadataJson): string {
                         $destFile = $uploadDir . $filename . '.webp';
                         if (@imagewebp($im, $destFile, 80)) {
                             $saved = true;
-                            imagedestroy($im);
-                        } else {
-                            @imagedestroy($im);
                         }
                     }
                 }
