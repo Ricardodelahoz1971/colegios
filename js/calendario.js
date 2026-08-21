@@ -1,7 +1,7 @@
 ﻿(function() {
-    var currentDate = new Date();
-    var eventsData = [];
-    var esAdminCron = false;
+    let currentDate = new Date();
+    let eventsData = [];
+    let esAdminCron = false;
 
     // Inicializar propiedades desde el DOM
     function initProps() {

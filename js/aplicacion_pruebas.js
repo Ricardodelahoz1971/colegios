@@ -1,4 +1,4 @@
-﻿var pruebaIdProcesado = false;
+﻿let pruebaIdProcesado = false;
 
 function procesarPruebaIdUrl(asignaciones) {
     const urlParams = new URLSearchParams(window.location.search);

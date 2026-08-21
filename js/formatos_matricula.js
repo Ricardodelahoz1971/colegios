@@ -72,7 +72,7 @@ function abrirReferenciaCatalogo() {
 }
 
 if (typeof activeConfigNode === 'undefined') {
-    var activeConfigNode = null;
+    let activeConfigNode = null;
 }
 
 function abrirConfiguracionBloque(idUnico) {
