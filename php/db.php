@@ -33,7 +33,7 @@ try {
 
 // --- MOTOR DE INTEGRIDAD Y EVOLUCIÓN ÉLITE ---
 try {
-    $stmt_v = $db->query("SELECT valor FROM configuracion_global WHERE clave = 'schema_version'");
+    $stmt_v = $db->prepare("SELECT valor FROM configuracion_global WHERE clave = 'schema_version'"); $stmt_v->execute();
     $schema_version = $stmt_v ? (int)$stmt_v->fetchColumn() : 0;
 } catch (Exception $e) {
     $schema_version = 0;
@@ -46,7 +46,7 @@ if ($schema_version < 99) {
 
 // Auto-despliegue de la tabla de periodos académicos si no existe
 try {
-    $db->query("SELECT 1 FROM eval_periodos_academicos LIMIT 1");
+    $stmt = $db->prepare("SELECT 1 FROM eval_periodos_academicos LIMIT 1"); $stmt->execute();
 } catch (Exception $e) {
     $sql_migracion = @file_get_contents(__DIR__ . '/../database/crear_periodos.sql');
     if ($sql_migracion !== false) {
@@ -56,7 +56,7 @@ try {
 
 // Auto-despliegue de la tabla de recesos escolares si no existe
 try {
-    $db->query("SELECT 1 FROM recesos_escolares LIMIT 1");
+    $stmt = $db->prepare("SELECT 1 FROM recesos_escolares LIMIT 1"); $stmt->execute();
 } catch (Exception $e) {
     $sql_recesos = @file_get_contents(__DIR__ . '/../database/crear_recesos.sql');
     if ($sql_recesos !== false) {

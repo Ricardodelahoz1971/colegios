@@ -1,0 +1,801 @@
+﻿# ðŸŽ¨ STYLE_MANIFESTO.md: ESTÃNDAR VITRINA 06 (ELITE)
+
+Este documento rige la identidad visual absoluta del sistema. Cualquier desviaciÃ³n es considerada una infracciÃ³n de auditorÃ­a.
+
+## 1. ðŸ“ MÃ‰TRICAS Y GEOMETRÃA FLUIDA
+- **Interactividad**: Todo control (input, botÃ³n, select) debe tener una altura mÃ­nima de **44px**.
+- **Radios de Prestigio**: 
+    - Controles e inputs: **12px**.
+    - Paneles, tarjetas y contenedores maestros: **24px**.
+- **Escalabilidad**: Prohibido el uso de pÃ­xeles (`px`) fijos para fuentes o layouts. Uso obligatorio de `rem`, `%` y la funciÃ³n `clamp()` para adaptabilidad soberana.
+- **Rendimiento Visual**: Toda imagen debe declarar explÃ­citamente `width` y `height` para evitar saltos de layout (CLS).
+
+## 2. ðŸŽ¨ PALETA Y LÃ“GICA DE COLOR (CERO HEX)
+- Queda prohibido el uso de valores HEX (#). Uso exclusivo de variables CSS.
+- **Primario**: `var(--el-primary)` (OrangeRed Institucional).
+- **Glassmorphism 2.0**: Uso de `rgba(var(--el-bg-rgb), 0.7)` con `backdrop-filter: blur(12px)`. Se debe incluir un **Edge Glow** (borde superior de 1px) y opcionalmente `backdrop-noise`.
+- **FÃ­sica de Sombras**: Las sombras deben tener un matiz del color primario: `box-shadow: 0 8px 30px rgba(var(--el-primary-rgb), 0.12)`.
+
+## 3. âŒ¨ï¸ CSS Y ARQUITECTURA SOBERANA
+- **MetodologÃ­a**: BEM-Elite obligatorio (`.component`, `.component__element`, `.component--modifier`).
+- **Cascada Controlada**: Uso mandatorio de `@layer` para organizar el CSS en: `reset`, `base`, `components`, `utilities`.
+- **Propiedades LÃ³gicas**: Prohibido `left`, `right`, `margin-left`. Uso de `inset-inline-start`, `margin-inline-start`, etc.
+- **TipografÃ­a**: Uso exclusivo de `var(--el-font-institutional)`.
+- **Transiciones**: Efecto "Seda" con `cubic-bezier(0.4, 0, 0.2, 1)`.
+
+## 4. ðŸš« VETOS CRÃTICOS
+- **Cero Estilos Inline**: El atributo `style` en HTML es motivo de purga.
+- **Cero !important (Regla de Oro)**: Queda terminantemente prohibido el uso de `!important` en cualquier cÃ³digo nuevo. Los archivos legacy se mantendrÃ¡n por estabilidad, pero la purga debe ser natural. Solo permitido en clases utilitarias de estado debidamente justificadas.
+- **Blindaje de Terceros**: LibrerÃ­as externas deben ser intervenidas para adoptar este ADN.
+- **Cero Hardcoding**: Prohibido cualquier valor fijo que no estÃ© tokenizado.
+
+---
+**CERTIFICACIÃ“N**: Documento integrado con Skills de AuditorÃ­a y Rendimiento. Pipod.
+# âš¡ FRONTEND_MANIFESTO.md: INTERACTIVIDAD Y DINÃMICA ARES
+
+Reglas de ejecuciÃ³n para la lÃ³gica de cliente y experiencia de usuario.
+
+## 1. ðŸ—ï¸ ESTRUCTURA Y SOBERANÃA JS
+- **EstÃ¡ndar ES6+**: Uso mandatorio de `const`, `let`, `arrow functions`, `destructuring` y `template literals`. **Veto absoluto al uso de `var`**.
+- **Flujo AsÃ­ncrono Maestro**: Uso exclusivo de `Fetch API` y **`async/await`**. Prohibido el encadenamiento de `.then()`.
+- **Modularidad Soberana**: OrganizaciÃ³n mediante `import/export`. Prohibido el cÃ³digo monolÃ­tico y las variables globales desprotegidas.
+- **Cero Globales**: Encapsulamiento de lÃ³gica en objetos o mÃ³dulos para evitar colisiones.
+
+## 2. ðŸŒ€ EXPERIENCIA Y REACTIVIDAD (UX)
+- **SincronizaciÃ³n Silenciosa**: Se prohÃ­be el uso de `window.location.reload()`. La persistencia y actualizaciÃ³n del DOM deben ser vÃ­a AJAX (Hefesto Engine).
+- **Feedback y Micro-animaciones**: Toda acciÃ³n debe tener respuesta visual inmediata. Uso de transiciones de seda para suavizar elementos.
+- **ValidaciÃ³n Preventiva**: PredicciÃ³n de colisiones y feedback instantÃ¡neo en interfaces interactivas (D&D).
+
+## 3. ðŸ›¡ï¸ SEGURIDAD Y RENDIMIENTO CRÃTICO
+- **Higiene de EjecuciÃ³n**: ProhibiciÃ³n de `eval()` e inyecciÃ³n de HTML crudo sin saneamiento.
+- **Rendimiento de Carga**: ImplementaciÃ³n de **Lazy Loading** para imÃ¡genes y mÃ³dulos JS no crÃ­ticos.
+- **OptimizaciÃ³n de Activos**: Prohibido cargar librerÃ­as pesadas completas para funcionalidades mÃ­nimas.
+- **Hilo Principal**: Prohibidos los procesos sÃ­ncronos pesados que bloqueen la interfaz.
+
+---
+**CERTIFICACIÃ“N**: Documento integrado con Skills de Interactividad y Rendimiento. Pipod.
+# ðŸ›¡ï¸ BACKEND_MANIFESTO.md: ARQUITECTURA Y SEGURIDAD NÃšCLEO
+
+Reglas de servidor para la integridad de datos y procesos.
+
+## 1. ðŸ˜ PHP Y ESTÃNDARES SOBERANOS
+- **EstÃ¡ndares PSR**: Cumplimiento mandatorio de **PSR-12** para consistencia y legibilidad.
+- **Tipado Estricto**: DeclaraciÃ³n obligatoria de `declare(strict_types=1);` en cada archivo.
+- **Acceso a Datos (PDO Supremacy)**: Uso exclusivo de `prepare()` / `execute()`. Prohibido concatenar variables o usar `query()` con datos dinÃ¡micos.
+- **LÃ³gica Temporal**: Uso obligatorio de la clase `DateTime` para manipulaciÃ³n de tiempos.
+
+## 2. ðŸ§± ARQUITECTURA E INTEGRIDAD (AI-READY)
+- **Higiene de Respuesta**: Endpoints deben devolver JSON estructurado (`status`, `data`, `message`).
+- **Metadatos SemÃ¡nticos**: DocumentaciÃ³n de esquemas SQL vÃ­a `COMMENT` para facilitar el entendimiento por parte de la IA (RAG).
+- **Manejo de Errores**: SupresiÃ³n de errores tÃ©cnicos descriptivos en UI; solo logs genÃ©ricos. Uso de `try/catch` globales.
+- **Higiene de Sesin**: InvocaciÃ³n de `session_write_close()` en procesos asÃ­ncronos para evitar bloqueos SPA.
+
+## 3. ðŸ” SEGURIDAD SUPREMA (BLINDAJE OWASP)
+- **ProtecciÃ³n CSRF**: Uso obligatorio de tokens de integridad en cada peticiÃ³n de escritura (`POST/PUT/DELETE`).
+- **Blindaje de Cookies**: ConfiguraciÃ³n de `HttpOnly`, `Secure` y `SameSite` para todas las sesiones.
+- **AutenticaciÃ³n**: ValidaciÃ³n de permisos por mÃ³dulo en cada endpoint. ContraseÃ±as siempre con `password_hash`.
+- **Higiene de Entrada/Salida**: Saneamiento de toda variable renderizada (XSS) y filtrado de superglobales.
+
+---
+**CERTIFICACIÃ“N**: Documento integrado con Skills de Seguridad e Integridad de Datos. Pipod.
+
+## 4. ðŸ¤– ORQUESTACIÃ“N HÃBRIDA DE IA (DEEPSEEK CLOUD)
+- **Procesamiento en la Nube**: Para cualquier generaciÃ³n masiva, refactorizaciÃ³n compleja o procesamiento pesado de cÃ³digo en el backend, el asistente delegarÃ¡ directamente al ejecutor en la nube **DeepSeek** (modelo `deepseek-v4-pro` vÃ­a la API oficial `https://deepseek.com`) para liberar por completo los recursos locales (CPU/RAM).
+
+
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+---
+
+## ðŸ“‹ PROYECTO: SISTEMA ESCOLAR Ã‰LITE v9.2
+
+**Stack:** PHP vanilla (PDO) + JavaScript ES6+ + CSS puro + MariaDB  
+**MetodologÃ­a:** Arquitectura modular con manifiestos de gobernanza  
+**UbicaciÃ³n:** `c:\xampp\htdocs\sistema_escolar`
+
+---
+
+## ðŸ—ï¸ ARQUITECTURA GENERAL
+
+### Estructura de carpetas
+
+```
+sistema_escolar/
+â”œâ”€â”€ index.php                 # Entry point (login + UI dinÃ¡mica)
+â”œâ”€â”€ php/
+â”‚   â”œâ”€â”€ db.php               # ConexiÃ³n MariaDB + integridad de BD
+â”‚   â”œâ”€â”€ security.php         # CSRF, XSS, autenticaciÃ³n
+â”‚   â”œâ”€â”€ login.php            # Procesamiento de login
+â”‚   â”œâ”€â”€ logica/              # Controladores (200+ archivos)
+â”‚   â”‚   â”œâ”€â”€ api_*.php        # Endpoints de API
+â”‚   â”‚   â”œâ”€â”€ *Controller.php  # LÃ³gica de negocio
+â”‚   â”‚   â””â”€â”€ db_integridad.php # Migraciones automÃ¡ticas de schema
+â”‚   â””â”€â”€ vistas/              # Templates (30+ archivos)
+â”œâ”€â”€ js/
+â”‚   â””â”€â”€ modules/             # 12 mÃ³dulos ES6+ encapsulados
+â”‚       â”œâ”€â”€ ares_*.js        # Editor visual (ARES system)
+â”‚       â”œâ”€â”€ perseus_*.js     # Sistema evaluaciÃ³n (PERSEUS)
+â”‚       â”œâ”€â”€ academic_*.js    # LÃ³gica acadÃ©mica
+â”‚       â””â”€â”€ security_core.js # Validaciones cliente
+â”œâ”€â”€ styles/                  # CSS modular (46 archivos)
+â”‚   â”œâ”€â”€ elite_*.css          # Base + temas
+â”‚   â”œâ”€â”€ ui_kit.css           # Componentes vitales
+â”‚   â”œâ”€â”€ utilities.css        # Clases auxiliares
+â”‚   â””â”€â”€ modules/             # (31 archivos) Estilos especÃ­ficos por funcionalidad
+â”œâ”€â”€ assets/
+â”‚   â””â”€â”€ libs/                # Bootstrap, jQuery, DataTables, Quill, MathLive, etc.
+â”œâ”€â”€ database/
+â”‚   â”œâ”€â”€ crear_periodos.sql
+â”‚   â””â”€â”€ crear_recesos.sql
+â”œâ”€â”€ lineamientos/            # EstÃ¡ndares educativos MEN Colombia
+â”œâ”€â”€ documentacion/           # GuÃ­as y anÃ¡lisis
+â””â”€â”€ claude_docs/             # DocumentaciÃ³n para Claude (auditorÃ­a CSS, planes)
+```
+
+### Flujo de datos
+
+```
+index.php (login)
+    â†“
+php/db.php (conexiÃ³n PDO + integridad automÃ¡tica)
+    â†“
+php/security.php (validaciÃ³n CSRF/XSS/autenticaciÃ³n)
+    â†“
+php/vistas/*.php (templates dinÃ¡micas con datos)
+    â†“
+js/modules/*.js (lÃ³gica interactiva ES6+)
+    â†“
+Fetch API â†’ php/logica/api_*.php (endpoints JSON)
+    â†“
+MariaDB (schema_version driven)
+```
+
+---
+
+## ðŸ”‘ PRINCIPIOS NUCLEARES
+
+### 1. Backend (BACKEND_MANIFESTO.md)
+
+- **PDO mandatory:** `prepare()` / `execute()` obligatorio. Prohibido concatenar variables o `query()` con datos dinÃ¡micos.
+- **Tipado estricto:** `declare(strict_types=1);` en cada archivo PHP.
+- **JSON responses:** Estructura `{ status, data, message }` en todos los endpoints.
+- **CSRF tokens:** Requerido en cada `POST/PUT/DELETE`.
+- **Seguridad de sesiÃ³n:** `session_write_close()` en procesos asÃ­ncronos para evitar bloqueos SPA.
+
+### 2. Frontend (FRONTEND_MANIFESTO.md)
+
+- **ES6+ mandatory:** `const/let`, arrow functions, destructuring, template literals. **Veto a `var`.**
+- **Async/await:** Fetch API con `async/await`. Prohibido `.then()` chaining.
+- **Modular:** `import/export`. Sin variables globales desprotegidas.
+- **No reload:** Prohibido `window.location.reload()`. Actualizar DOM vÃ­a AJAX (Hefesto Engine).
+- **Lazy loading:** ImÃ¡genes y mÃ³dulos no crÃ­ticos.
+
+### 3. Estilos (STYLE_MANIFESTO.md)
+
+- **Variables CSS obligatorias:** Prohibido HEX hardcodeado. Usar `var(--el-primary)`, etc.
+- **Sin !important:** Regla de oro (legacy puede existir, pero purga natural).
+- **MÃ©trica 44px:** Altura mÃ­nima para controles (input, botÃ³n, select).
+- **Radios:** 12px (controles) / 24px (paneles).
+- **Sin inline styles:** Atributo `style` es motivo de purga.
+- **BEM-Elite:** `.component`, `.component__element`, `.component--modifier`.
+- **@layer structure:** `reset` â†’ `base` â†’ `components` â†’ `utilities`.
+
+---
+
+## ðŸ“‚ PUNTOS DE ENTRADA CLAVE
+
+### ConexiÃ³n a BD
+
+```php
+// En php/db.php:
+// - Auto-creaciÃ³n de BD si no existe
+// - Auto-migraciÃ³n de schema (schema_version driven)
+// - PDO con strict types y error handling
+
+$db = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass);
+$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false); // Critical
+```
+
+### Seguridad
+
+```php
+// En php/security.php:
+// - CSRF token validation
+// - XSS sanitization
+// - AutenticaciÃ³n y permisos por mÃ³dulo
+// - Cookies con HttpOnly, Secure, SameSite=Strict
+```
+
+### API endpoints
+
+**PatrÃ³n:** `/php/logica/api_*.php`  
+**MÃ©todo:** POST/GET con JSON request/response  
+**ValidaciÃ³n:** CSRF token + User role check  
+
+Ejemplos:
+- `api_preguntas.php` - GestiÃ³n de reactivos
+- `api_pruebas.php` - GestiÃ³n de evaluaciones
+- `api_sabana.php` - Calificaciones
+- `api_aula.php` - Aula virtual
+
+### Vistas
+
+**UbicaciÃ³n:** `/php/vistas/*.php`  
+**Estructura:** PHP puro + HTML semÃ¡ntico + Clases Bootstrap/Elite  
+**Templates dinamicos:** PDO queries directas (datos desde BD)
+
+---
+
+## ðŸ› ï¸ DESARROLLO COMÃšN
+
+### Agregar un nuevo endpoint API
+
+```php
+// php/logica/api_nuevo.php
+<?php
+declare(strict_types=1);
+require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../security.php';
+
+// Validar CSRF y autenticaciÃ³n
+verificarCSRF($_POST['_csrf_token'] ?? '');
+verificarAutenticacion();
+
+// Query con prepared statements
+$stmt = $db->prepare("SELECT * FROM tabla WHERE id = :id");
+$stmt->execute([':id' => $_POST['id'] ?? 0]);
+$data = $stmt->fetch();
+
+// Respuesta estructurada
+echo json_encode([
+    'status' => 'success',
+    'data' => $data,
+    'message' => 'OperaciÃ³n completada'
+]);
+```
+
+### Agregar un nuevo mÃ³dulo JS
+
+```javascript
+// js/modules/nuevo_modulo.js
+export const nuevoModulo = {
+    init() {
+        console.log('MÃ³dulo inicializado');
+        this.bindEvents();
+    },
+    
+    async fetchData() {
+        const response = await fetch('/php/logica/api_nuevo.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ _csrf_token: window.csrfToken })
+        });
+        return await response.json();
+    },
+    
+    bindEvents() {
+        // Usar Fetch API + async/await, nunca .then()
+    }
+};
+
+// En la vista que lo use:
+import { nuevoModulo } from '/js/modules/nuevo_modulo.js';
+document.addEventListener('DOMContentLoaded', () => nuevoModulo.init());
+```
+
+### Agregar estilos
+
+```css
+/* styles/modules/nuevo_modulo.css */
+@layer modules {
+
+.nuevo-componente {
+    padding: 1.5rem;
+    border-radius: var(--el-radius-main);
+    background: var(--el-white);
+    border: 1px solid var(--el-border);
+    transition: var(--el-transition-premium);
+}
+
+.nuevo-componente:hover {
+    border-color: var(--el-primary);
+    box-shadow: 0 0.5rem 1rem rgba(var(--el-primary-rgb), 0.1);
+}
+
+}
+
+/* En html: <link rel="stylesheet" href="/styles/modules/nuevo_modulo.css"> */
+```
+
+---
+
+## ðŸŽ¯ FLUJO DE DESARROLLO TÃPICO
+
+### 1. Nueva feature educativa
+
+**Paso 1:** Crear estructura en BD  
+```php
+// database/criar_tabla.sql (si aplica)
+// O en php/logica/db_integridad.php (migraciÃ³n automÃ¡tica)
+```
+
+**Paso 2:** API endpoint  
+```php
+// php/logica/api_feature.php
+// POST/GET con PDO + CSRF validation
+```
+
+**Paso 3:** Vista (template)  
+```php
+// php/vistas/feature.php
+// Con datos desde $db->query() directo
+```
+
+**Paso 4:** MÃ³dulo JS  
+```javascript
+// js/modules/feature_engine.js
+// Fetch â†’ API endpoint + DOM updates vÃ­a AJAX
+```
+
+**Paso 5:** Estilos  
+```css
+/* styles/modules/feature.css */
+/* @layer modules con variables CSS */
+```
+
+---
+
+## ðŸ§ª TESTING
+
+**No hay test suite configurado.** Testing es manual:
+
+- **Backend:** Verificar endpoints con POST/GET en navegador
+- **Frontend:** Abre DevTools â†’ Network/Console
+- **Visual:** Prueba responsivo en 3+ tamaÃ±os (480px, 768px, 1024px)
+
+### VerificaciÃ³n de seguridad
+
+```bash
+# Buscar PDO violations
+grep -r "->query(" php/logica/ --include="*.php"
+grep -r "\$_POST\[" php/ --include="*.php" | grep -v "prepare"
+
+# Buscar !important
+grep -r "!important" styles/ --include="*.css"
+
+# Buscar var/ (JS)
+grep -r "\bvar\s" js/modules/ --include="*.js"
+```
+
+---
+
+## ðŸ“š DOCUMENTACIÃ“N DE REFERENCIA
+
+**Estos 3 documentos son la ley:**
+1. [BACKEND_MANIFESTO.md](BACKEND_MANIFESTO.md) - Reglas PHP/BD
+2. [FRONTEND_MANIFESTO.md](FRONTEND_MANIFESTO.md) - Reglas JS
+3. [STYLE_MANIFESTO.md](STYLE_MANIFESTO.md) - Reglas CSS
+
+**DocumentaciÃ³n especÃ­fica:**
+- [AGENTS.md](AGENTS.md) - Instrucciones para agentes automÃ¡ticos
+- [GUIA_PRUEBAS_MANUALES.md](GUIA_PRUEBAS_MANUALES.md) - Testing manual
+- [claude_docs/AUDITORIA_CSS.md](claude_docs/AUDITORIA_CSS.md) - AuditorÃ­a CSS detallada
+- [claude_docs/PLAN_HIBRIDIZACION_CSS.md](claude_docs/PLAN_HIBRIDIZACION_CSS.md) - Plan de refactorizaciÃ³n CSS
+
+---
+
+## âš ï¸ RESTRICCIONES CRÃTICAS
+
+### âŒ PROHIBIDO
+
+- Frameworks (React, Vue, Tailwind, Laravel)
+- `var` en JavaScript
+- `!important` en CSS nuevo
+- HEX hardcodeado en estilos
+- `.then()` en lugar de `async/await`
+- ConcatenaciÃ³n en SQL (usar PDO prepared statements)
+- Inline styles (`style="..."`)
+- `window.location.reload()`
+- Consultas sin CSRF token
+
+### âœ… OBLIGATORIO
+
+- PDO con prepared statements
+- CSRF tokens en POST/PUT/DELETE
+- `declare(strict_types=1);` en cada PHP
+- Variables CSS para todos los valores dinÃ¡micos
+- MÃ©trica 44px para controles
+- @layer para CSS
+- async/await para llamadas HTTP
+- Respuestas JSON estructuradas: `{ status, data, message }`
+
+---
+
+## ðŸš€ COMANDOS COMUNES
+
+### Ver logs de PHP/BD
+
+```bash
+# Ver Ãºltimas lÃ­neas de error de PHP (si estÃ¡ configurado)
+# En Windows/XAMPP: C:\xampp\apache\logs\error.log
+
+# Ver estado de la conexiÃ³n BD
+# Accede a: http://localhost/sistema_escolar/index.php
+# Si hay error, revisa php/db.php y configuraciÃ³n de MariaDB
+```
+
+### Limpiar cache de navegador
+
+```javascript
+// En la consola del navegador
+localStorage.clear();
+sessionStorage.clear();
+location.reload();
+```
+
+### Verificar integridad de BD
+
+```php
+// En scratch/check_db_info.php (archivo de debug)
+// O agregar en php/logica/ un endpoint de health check
+```
+
+---
+
+## ðŸ”„ REFACTORIZACIÃ“N CSS COMPLETADA âœ…
+
+**Estado:** PHASE 1-3 COMPLETADAS | PHASE 4 ENFORCEMENT ACTIVA
+
+**Lo que se logrÃ³:**
+- âœ… Eliminadas 656 instancias de `!important` (excepto 194 permitidas)
+- âœ… Eliminadas variables de estado (success, danger, info, warning)
+- âœ… Reemplazadas 153+ ocurrencias por `--el-primary`
+- âœ… Creado blindaje Bootstrap override
+- âœ… Unificado espesor de lÃ­nea lateral a 0.25rem
+- âœ… **Todos los elementos responden dinÃ¡micamente a cambios de paleta**
+
+**DocumentaciÃ³n:**
+- [claude_docs/AUDITORIA_CSS.md](claude_docs/AUDITORIA_CSS.md) - Problemas identificados (antes)
+- [claude_docs/PLAN_HIBRIDIZACION_CSS.md](claude_docs/PLAN_HIBRIDIZACION_CSS.md) - Plan de ejecuciÃ³n
+- [claude_docs/CONTENCIONES_CSS_FINAL.md](claude_docs/CONTENCIONES_CSS_FINAL.md) - **RESTRICCIONES OBLIGATORIAS**
+- [claude_docs/CSS_WORKFLOW.md](claude_docs/CSS_WORKFLOW.md) - Workflow para agregar CSS
+- [claude_docs/CSS_COMPONENTS.md](claude_docs/CSS_COMPONENTS.md) - Referencia de componentes
+
+---
+
+## ðŸ›¡ï¸ VALIDACIÃ“N AUTOMÃTICA DE CSS (PHASE 4)
+
+**âš ï¸ CRÃTICO: El agente DEBE leer y validar contra esto SIEMPRE**
+
+Antes de escribir cualquier CSS:
+1. **LEE:** `claude_docs/CONTENCIONES_CSS_FINAL.md`
+2. **VALIDA:** Tu cÃ³digo contra el checklist
+3. **RECHAZA:** CÃ³digo que viole las reglas
+4. **CORRIGE:** AutomÃ¡ticamente si es necesario
+
+**Ejemplo de auto-validaciÃ³n:**
+```
+Usuario: "Agrega un botÃ³n rojo"
+Agente Lee: CONTENCIONES_CSS_FINAL.md
+Agente intenta: .btn { color: #ff0000; }
+Agente detecta: âŒ Hardcode #ff0000
+Agente corrige: .btn { color: var(--el-primary); }
+Agente reporta: âœ… BotÃ³n creado con var(--el-primary)
+```
+
+**Restricciones Clave:**
+- âŒ Colores hardcodeados (`#`, `hsl()`, `rgb()`)
+- âŒ TamaÃ±os hardcodeados (excepto valores estÃ¡ndar)
+- âŒ `!important` excepto en 3 archivos permitidos
+- âŒ Variables de estado (success, danger, info, warning) - NO EXISTEN
+- âœ… SIEMPRE usar variables CSS
+- âœ… SIEMPRE `border-inline-start: 0.25rem solid var(--el-primary)` en componentes principales
+
+---
+
+## ðŸ’¡ NOTAS ESPECIALES
+
+### Sistema multi-tenant educativo
+
+Este proyecto soporta **mÃºltiples colegios/instituciones** con:
+- Schema dinÃ¡mico (periodos acadÃ©micos, recesos, estÃ¡ndares MEN)
+- Roles variados (admin, docente, estudiante, coordinador, tutor)
+- Evaluaciones adaptativas (ARES canvas editor)
+- Seguimiento en tiempo real (PERSEUS analytics)
+
+### Auto-migraciÃ³n de schema
+
+En `php/db.php` hay lÃ³gica de versionado (`schema_version`):
+```php
+if ($schema_version < 99) {
+    include_once __DIR__ . '/logica/db_integridad.php';
+}
+```
+
+Si agregas tablas nuevas, incrementa el version number y agrega lÃ³gica en `db_integridad.php`.
+
+### Seguridad en producciÃ³n
+
+Los valores en `index.php`:
+```php
+$host = 'localhost';
+$user = 'root';
+$pass = '';
+```
+
+EstÃ¡n hardcodeados para desarrollo local. **En producciÃ³n:** usar `.env` y variables de entorno.
+
+---
+
+## ðŸ¤ CONVENCIONES DE NOMBRES
+
+| Tipo | ConvenciÃ³n | Ejemplo |
+|------|-----------|---------|
+| PHP files | snake_case | `api_preguntas.php`, `calculadora_notas.php` |
+| PHP classes | PascalCase | `SistemaSalud`, `AuthController` |
+| PHP methods | camelCase | `obtenerDiagnostico()`, `verificarCSRF()` |
+| JS modules | snake_case | `ares_editor.js`, `perseus_engine.js` |
+| JS objects | camelCase | `aresEditor`, `perseusEngine` |
+| CSS classes | kebab-case + BEM | `.ares-editor`, `.ares-editor__item`, `.ares-editor--active` |
+| CSS variables | --el-descriptive | `--el-primary`, `--el-height-elite` |
+| DB tables | snake_case | `estudiantes`, `carga_academica`, `eval_periodos_academicos` |
+
+---
+
+## ðŸ“ž SOPORTE INTERNO
+
+**DocumentaciÃ³n de agentes:**
+- Ver [AGENTS.md](AGENTS.md)
+
+**Reglas de respuesta:**
+- Idioma: **EspaÃ±ol** siempre
+- Tono: TÃ©cnico, directo, sin fluff
+- Comentarios en cÃ³digo: EspaÃ±ol
+- Respuestas: Concisas (sin repetir lo obvio)
+
+---
+
+**Ãšltima actualizaciÃ³n:** Hoy  
+**VersiÃ³n:** 1.0  
+**Mantenedor:** Sistema integrado con manifiestos de gobernanza
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Move-Item -Path \"c:\\\\xampp\\\\htdocs\\\\sistema_escolar\\\\InconsistenciasCSS.md\" -Destination \"c:\\\\xampp\\\\htdocs\\\\sistema_escolar\\\\claude_docs\\\\AUDITORIA_CSS.md\" -Force)"
+    ]
+  }
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspector de Formatos - Claude Herramientas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4ec9b0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4ec9b0;
+            padding-bottom: 10px;
+        }
+        .section {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            color: #9cdcfe;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .loader {
+            text-align: center;
+            padding: 20px;
+            color: #ce9178;
+        }
+        .error {
+            background: #5c2e2e;
+            border: 1px solid #c45555;
+            color: #f48771;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #2e5c3e;
+            border: 1px solid #55c455;
+            color: #71f487;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        pre {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        .key { color: #9cdcfe; }
+        .value { color: #ce9178; }
+        .string { color: #ce9178; }
+        .number { color: #b5cea8; }
+        .bool { color: #569cd6; }
+        .null { color: #569cd6; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #3e3e42;
+        }
+        th {
+            background: #2d2d30;
+            color: #9cdcfe;
+        }
+        tr:hover {
+            background: #2d2d30;
+        }
+        .highlight-ok { color: #71f487; }
+        .highlight-warn { color: #ce9178; }
+        .highlight-error { color: #f48771; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ðŸ” Inspector de Formatos de MatrÃ­cula</h1>
+
+        <div id="content">
+            <div class="loader">Cargando datos...</div>
+        </div>
+    </div>
+
+    <script>
+        async function cargarDatos() {
+            try {
+                const resp = await fetch('/sistema_escolar/claude_herramientas/debug_formatos.php');
+                const data = await resp.json();
+
+                if (data.error) {
+                    mostrarError(data.error);
+                    return;
+                }
+
+                renderizar(data);
+            } catch (e) {
+                mostrarError('Error: ' + e.message);
+            }
+        }
+
+        function mostrarError(msg) {
+            document.getElementById('content').innerHTML = `<div class="section error">âŒ ${msg}</div>`;
+        }
+
+        function renderizar(data) {
+            let html = '';
+
+            // Resumen
+            html += `<div class="section">
+                <h2>ðŸ“Š Resumen</h2>
+                <p>Timestamp: <strong>${data.timestamp}</strong></p>
+                <p>Formatos en BD: <strong>${data.formatos_totales}</strong></p>
+            </div>`;
+
+            // Listado de formatos
+            if (data.formatos_listado.length > 0) {
+                html += `<div class="section">
+                    <h2>ðŸ“‹ Formatos en BD</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Margen Sup</th>
+                                <th>Margen Inf</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+                data.formatos_listado.forEach(f => {
+                    html += `<tr>
+                        <td>${f.id}</td>
+                        <td>${f.nombre}</td>
+                        <td>${f.tipo}</td>
+                        <td>${f.margen_superior}mm</td>
+                        <td>${f.margen_inferior}mm</td>
+                    </tr>`;
+                });
+
+                html += `</tbody></table></div>`;
+            }
+
+            // Debug del primer formato
+            if (data.debug_primer_formato && Object.keys(data.debug_primer_formato).length > 0) {
+                const debug = data.debug_primer_formato;
+                html += `<div class="section">
+                    <h2>ðŸ”¬ AuditorÃ­a: ${debug.formato_nombre} (ID: ${debug.formato_id})</h2>
+
+                    <h3 style="color: #9cdcfe; margin-top: 15px;">MÃ¡rgenes Configurados:</h3>
+                    <pre>${JSON.stringify(debug.margenes, null, 2)}</pre>
+
+                    <h3 style="color: #9cdcfe; margin-top: 15px;">configuracion_json:</h3>`;
+
+                if (debug.configuracion_json.error) {
+                    html += `<div class="error">âš ï¸ ERROR: ${debug.configuracion_json.error}</div>`;
+                } else if (!debug.configuracion_json.existe) {
+                    html += `<div class="highlight-warn">âš ï¸ configuracion_json ESTÃ VACÃO o NULL</div>`;
+                } else {
+                    html += `<div class="success">âœ“ configuracion_json EXISTE (${debug.configuracion_json.largo} bytes)</div>`;
+                    html += `<p><strong>Bloques guardados:</strong> ${debug.configuracion_json.bloques_count}</p>`;
+                    if (debug.configuracion_json.primer_bloque) {
+                        html += `<details style="margin-top: 10px;">
+                            <summary>Ver primer bloque...</summary>
+                            <pre>${JSON.stringify(debug.configuracion_json.primer_bloque, null, 2)}</pre>
+                        </details>`;
+                    }
+                    if (debug.configuracion_json.bloques_con_posicion.length > 0) {
+                        html += `<p><strong>Bloques con posiciÃ³n (left/top):</strong></p>
+                            <ul>`;
+                        debug.configuracion_json.bloques_con_posicion.forEach(b => {
+                            html += `<li>${b}</li>`;
+                        });
+                        html += `</ul>`;
+                    } else {
+                        html += `<div class="highlight-error">âŒ NO HAY BLOQUES CON POSICIÃ“N (left/top) GUARDADA</div>`;
+                    }
+                }
+
+                html += `<h3 style="color: #9cdcfe; margin-top: 15px;">contenido_html:</h3>`;
+                if (!debug.contenido_html.existe) {
+                    html += `<div class="highlight-warn">âš ï¸ contenido_html ESTÃ VACÃO o NULL</div>`;
+                } else {
+                    html += `<div class="success">âœ“ contenido_html EXISTE (${debug.contenido_html.largo} bytes)</div>`;
+                    html += `<ul>
+                        <li>Tiene &lt;bloque-avanzado&gt;: ${debug.contenido_html.tiene_bloque_avanzado ? '<span class="highlight-ok">SÃ âœ“</span>' : '<span class="highlight-error">NO âœ—</span>'}</li>
+                        <li>Tiene position:absolute: ${debug.contenido_html.tiene_style_position ? '<span class="highlight-ok">SÃ âœ“</span>' : '<span class="highlight-error">NO âœ—</span>'}</li>
+                    </ul>`;
+                    html += `<details style="margin-top: 10px;">
+                        <summary>Ver primeros 200 caracteres...</summary>
+                        <pre>${escapeHtml(debug.contenido_html.primeros_200_chars)}</pre>
+                    </details>`;
+                }
+
+                html += `</div>`;
+            }
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Cargar al abrir
+        cargarDatos();
+
+        // Auto-refrescar cada 5 segundos
+        setInterval(cargarDatos, 5000);
+    </script>
+</body>
+</html>

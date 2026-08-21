@@ -30,7 +30,7 @@ try {
     echo "⚡ Agregando columna disciplina_men a especialidades...\n";
     
     $hasColumn = false;
-    $columns = $pdo->query("PRAGMA table_info(especialidades)")->fetchAll();
+    $stmt = $pdo->prepare("PRAGMA table_info(especialidades)"); $stmt->execute(); $columns = $stmt->fetchAll();
     foreach ($columns as $c) {
         if ($c['name'] === 'disciplina_men') {
             $hasColumn = true;

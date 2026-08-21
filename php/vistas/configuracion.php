@@ -21,7 +21,7 @@ $dias_gracia = (int)($global_cfg['dias_gracia_recuperaciones'] ?? 5);
 $limite_horas = (int)($global_cfg['limite_horas_docente'] ?? 24);
 
 // 🏛️ CARGAR ESCALA INSTITUCIONAL ACTIVA
-$stmt_esc = $db->query("SELECT * FROM eval_config_escala WHERE activo = 1 LIMIT 1");
+$stmt_esc = $db->prepare("SELECT * FROM eval_config_escala WHERE activo = 1 LIMIT 1"); $stmt_esc->execute();
 $escala = $stmt_esc->fetch(PDO::FETCH_ASSOC) ?: [
     'nota_minima' => 1.0,
     'nota_maxima' => 5.0,
@@ -32,15 +32,15 @@ $escala = $stmt_esc->fetch(PDO::FETCH_ASSOC) ?: [
 ];
 
 // 🏛️ CARGAR DIMENSIONES ACADÉMICAS (ARES CLASES NOTA)
-$stmt_dim = $db->query("SELECT * FROM ares_clases_nota WHERE estado = 1 ORDER BY id");
+$stmt_dim = $db->prepare("SELECT * FROM ares_clases_nota WHERE estado = 1 ORDER BY id"); $stmt_dim->execute();
 $dimensiones = $stmt_dim->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
 // 🏛️ CARGAR PERIODOS ACADÉMICOS PARA EL CALENDARIO ESCOLAR
-$stmt_p_ac = $db->query("SELECT * FROM eval_periodos_academicos ORDER BY id");
+$stmt_p_ac = $db->prepare("SELECT * FROM eval_periodos_academicos ORDER BY id"); $stmt_p_ac->execute();
 $periodos_academicos = $stmt_p_ac->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
 // 🏛️ CARGAR JORNADAS ACTIVAS EN CURSOS PARA KHRONOS MULTIJORNADA DINDAMICO
-$stmt_j = $db->query("SELECT DISTINCT jornada FROM cursos WHERE jornada IS NOT NULL AND jornada != ''");
+$stmt_j = $db->prepare("SELECT DISTINCT jornada FROM cursos WHERE jornada IS NOT NULL AND jornada != ''"); $stmt_j->execute();
 $jornadas_activas = $stmt_j->fetchAll(PDO::FETCH_COLUMN) ?: ['Mañana'];
 
 if (!function_exists('obtener_khronos_cfg')) {

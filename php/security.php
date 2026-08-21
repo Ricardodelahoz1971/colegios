@@ -15,6 +15,21 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 /**
+ * MIDDLEWARE GLOBAL DE SANEAMIENTO (Inyectado por DeepSeek)
+ * Intercepta y sanitiza todo $_POST antes de que llegue a la lógica de negocio.
+ */
+function sanitize_global_input($data) {
+    if (is_array($data)) {
+        return array_map('sanitize_global_input', $data);
+    }
+    $data = strip_tags((string)$data);
+    return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+}
+if (!empty($_POST)) {
+    $_POST = sanitize_global_input($_POST);
+}
+
+/**
  * Genera un token CSRF único si no existe.
  * @return string El token generado.
  */
@@ -27,7 +42,7 @@ function generar_csrf_token(): string {
 
 function validar_csrf(?string $token = null): bool {
     if ($token === null) {
-        $token = $_POST['csrf_token'] ?? '';
+        $token = filter_input(INPUT_POST, 'csrf_token') ?? '';
     }
     if (empty($token)) {
         // Soporte para cabeceras HTTP (AJAX)

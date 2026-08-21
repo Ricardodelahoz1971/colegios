@@ -21,7 +21,7 @@ $stmt_m->execute([$mi_id]);
 $materias = $stmt_m->fetchAll();
 
 // 🏛️ CARGAR ESCALA INSTITUCIONAL ACTIVA
-$stmt_esc = $db->query("SELECT * FROM eval_config_escala WHERE activo = 1 LIMIT 1");
+$stmt_esc = $db->prepare("SELECT * FROM eval_config_escala WHERE activo = 1 LIMIT 1"); $stmt_esc->execute();
 $escala = $stmt_esc->fetch(PDO::FETCH_ASSOC) ?: [
     'nota_minima' => 1.0,
     'nota_maxima' => 5.0,

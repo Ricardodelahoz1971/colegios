@@ -11,15 +11,15 @@ if (!tiene_permiso('configuracion')) {
 
 // Cargar formatos para el renderizado inicial
 require_once __DIR__ . '/../db.php';
-$stmt = $db->query("SELECT * FROM formatos_matricula ORDER BY tipo DESC, id ASC");
+$stmt = $db->prepare("SELECT * FROM formatos_matricula ORDER BY tipo DESC, id ASC"); $stmt->execute();
 $formatos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Cargar rector para la vista previa
-$rector_stmt = $db->query("SELECT nombre FROM usuarios WHERE rol_id = 3 LIMIT 1");
+$rector_stmt = $db->prepare("SELECT nombre FROM usuarios WHERE rol_id = 3 LIMIT 1"); $rector_stmt->execute();
 $rector_nombre = $rector_stmt->fetchColumn() ?: 'Rector Institucional';
 
 // Cargar datos estéticos
-$stmt_estetica = $db->query("SELECT clave, valor FROM ajustes_estetica");
+$stmt_estetica = $db->prepare("SELECT clave, valor FROM ajustes_estetica"); $stmt_estetica->execute();
 $cfg = $stmt_estetica->fetchAll(PDO::FETCH_KEY_PAIR);
 $school_name = $cfg['school_name'] ?? 'SISTEMA ESCOLAR ÉLITE';
 $school_motto = $cfg['school_motto'] ?? 'Excelencia en Gestión Educativa';
@@ -32,7 +32,7 @@ if (empty($school_logo)) {
 }
 
 // Cargar año lectivo activo
-$stmt_anio = $db->query("SELECT valor FROM configuracion_global WHERE clave = 'anio_lectivo_oficial' LIMIT 1");
+$stmt_anio = $db->prepare("SELECT valor FROM configuracion_global WHERE clave = 'anio_lectivo_oficial' LIMIT 1"); $stmt_anio->execute();
 $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y');
 ?>
 

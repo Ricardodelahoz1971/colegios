@@ -4,7 +4,7 @@ session_start();
 require_once 'db.php';
 
 // Obtener el primer usuario administrador o docente
-$stmt = $db->query("SELECT u.id, u.nombre, u.rol_id, r.nombre_rol FROM usuarios u JOIN roles r ON u.rol_id = r.id WHERE u.rol_id IN (1,2,3,11) LIMIT 1");
+$stmt = $db->prepare("SELECT u.id, u.nombre, u.rol_id, r.nombre_rol FROM usuarios u JOIN roles r ON u.rol_id = r.id WHERE u.rol_id IN (1,2,3,11) LIMIT 1"); $stmt->execute();
 $user = $stmt->fetch();
 
 if ($user) {
