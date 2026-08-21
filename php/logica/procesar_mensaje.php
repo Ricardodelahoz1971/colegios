@@ -2,8 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
-// PHP/LOGICA/PROCESAR_MENSAJE.PHP - MOTOR DE COMUNICACIONES v1.1 (ELITE)
+session_write_close();
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
@@ -15,17 +14,16 @@ try {
     proteccion_extrema();
 
     $remitente_id = (int)$_SESSION['usuario_id'];
-    $destinatario_id = (int)($_POST['destinatario_id'] ?? 0);
-    $chat_type = $_POST['chat_type'] ?? 'direct';
-    $asunto = e($_POST['asunto'] ?? 'Sin asunto');
-    $contenido = trim($_POST['contenido'] ?? '');
-    $prioridad = (int)($_POST['prioridad'] ?? 1);
+    $destinatario_id = (int)(filter_input(INPUT_POST, 'destinatario_id', FILTER_VALIDATE_INT) ?? 0);
+    $chat_type = filter_input(INPUT_POST, 'chat_type', FILTER_SANITIZE_STRING) ?? 'direct';
+    $asunto = filter_input(INPUT_POST, 'asunto', FILTER_SANITIZE_STRING) ?? 'Sin asunto';
+    $contenido = trim(filter_input(INPUT_POST, 'contenido', FILTER_SANITIZE_STRING) ?? '');
+    $prioridad = (int)(filter_input(INPUT_POST, 'prioridad', FILTER_VALIDATE_INT) ?? 1);
 
     if (empty($contenido)) {
         throw new Exception('El contenido del mensaje no puede estar vacío.');
     }
 
-    // 🛡️ ACCIÓN: Determinar destino
     $grupo_id = ($chat_type === 'group') ? $destinatario_id : 0;
     $real_dest_id = ($chat_type === 'group') ? 0 : $destinatario_id;
 
@@ -52,4 +50,3 @@ try {
 }
 exit();
 ?>
-

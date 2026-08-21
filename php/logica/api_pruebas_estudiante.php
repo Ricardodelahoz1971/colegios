@@ -2,9 +2,9 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
-// PHP/LOGICA/API_PRUEBAS_ESTUDIANTE.PHP - BÓVEDA ESTUDIANTIL v1.2
-ob_start(); 
+session_write_close();
+
+ob_start();
 require_once '../db.php';
 require_once '../auth.php';
 
@@ -21,7 +21,6 @@ try {
         throw new Exception("Acceso denegado a la bóveda estudiantil.");
     }
 
-    // OBTENER ID DE ESTUDIANTE REAL (Soberanía de Identidad)
     $sql_est = "SELECT id, curso_id FROM estudiantes WHERE id = (SELECT estudiante_id FROM usuarios WHERE id = ?) LIMIT 1";
     $stmt_est = $db->prepare($sql_est);
     $stmt_est->execute([$mi_user_id]);
@@ -32,7 +31,7 @@ try {
     $mi_id = (int)$mi_info['id'];
     $mi_curso_id = (int)$mi_info['curso_id'];
 
-    $accion = $_GET['accion'] ?? $_POST['accion'] ?? '';
+    $accion = filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_STRING) ?? '';
 
     switch ($accion) {
         case 'listar_mis_examenes':
@@ -94,19 +93,18 @@ try {
             break;
 
         case 'entregar_examen':
-            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_STRING);
+            if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
                 throw new Exception("Error de seguridad (CSRF).");
             }
-            $asig_id = (int)($_POST['asignacion_id'] ?? 0);
-            $respuestas_json = $_POST['respuestas'] ?? '{}';
+            $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id', FILTER_VALIDATE_INT);
+            $respuestas_json = filter_input(INPUT_POST, 'respuestas', FILTER_SANITIZE_STRING) ?? '{}';
             $respuestas = json_decode($respuestas_json, true) ?: [];
 
-            // 🛡️ DETECTOR DE BYPASS / SEGURIDAD CENTINELA: Validar ticket_examen y que corresponda a la asignacion
             if (!isset($_SESSION['ticket_examen']) || (int)($_SESSION['ticket_asignacion_id'] ?? 0) !== $asig_id) {
                 throw new Exception("Acceso no autorizado: No se ha iniciado una sesión de examen legítima.");
             }
 
-            // 🏛️ INICIALIZACIÓN SOBERANA (Evitar Warning de PHP 8.x)
             $nota_automatica = 0.0;
             $tiene_abiertas = false;
 
@@ -115,7 +113,6 @@ try {
             $asig = $stmt->fetch();
             if (!$asig) throw new Exception("Asignación no válida.");
 
-            // 🛡️ VALIDACIÓN DE HORARIO DE ENTREGA: Comprobar que no haya expirado
             $ahora = new DateTime();
             $fin = new DateTime($asig['fecha_fin']);
             if ($ahora > $fin) {
@@ -141,13 +138,12 @@ try {
                 $puntaje_item = 0.0;
 
                 if ($respuesta_alumno !== null) {
-                    if ($tipo == 1) { // Selección Múltiple - Motor Híbrido
+                    if ($tipo == 1) {
                         if (isset($meta['opciones'])) {
                             foreach ($meta['opciones'] as $i => $opc) {
                                 $texto_opc = trim(mb_strtolower((string)($opc['t'] ?? $opc['texto'] ?? '')));
                                 $texto_alu = trim(mb_strtolower((string)$respuesta_alumno));
                                 
-                                // Validación Híbrida: Por índice (idx_N) o por texto (Fallback)
                                 if ($texto_alu === "idx_$i" || $texto_opc === $texto_alu) {
                                     if ((isset($opc['c']) && $opc['c'] == true) || (isset($opc['es_correcta']) && $opc['es_correcta'] == true)) {
                                         $es_correcta = true;
@@ -158,7 +154,7 @@ try {
                             }
                         }
                     } 
-                    elseif ($tipo == 3) { // Emparejamiento - Motor Proporcional
+                    elseif ($tipo == 3) {
                         $correctas_b = array_map(function($p) { return trim(mb_strtolower((string)$p['b'])); }, $meta['pares'] ?? []);
                         $respondidas = is_array($respuesta_alumno) ? $respuesta_alumno : (json_decode($respuesta_alumno, true) ?: []);
                         $aciertos = 0;
@@ -172,7 +168,7 @@ try {
                             if ($aciertos === $total_pares) $es_correcta = true;
                         }
                     }
-                    elseif ($tipo == 4) { // Completar Huecos
+                    elseif ($tipo == 4) {
                         $correctas = $meta['respuestas'] ?? [];
                         if (is_string($correctas)) $correctas = array_map('trim', explode(',', $correctas));
                         $correctas = array_map(function($r) { return trim(mb_strtolower((string)$r)); }, (array)$correctas);
@@ -192,8 +188,8 @@ try {
                             if ($aciertos >= $total_huecos) $es_correcta = true;
                         }
                     }
-                    elseif ($tipo == 2) { // Abierta
-                        $puntaje_item = 0; // Pendiente de calificación manual
+                    elseif ($tipo == 2) {
+                        $puntaje_item = 0;
                     }
                 }
 
@@ -206,7 +202,7 @@ try {
                 ];
             }
 
-            $nuevo_estado = $tiene_abiertas ? 1 : 2; // 2 = Calificado (Publicado) si no hay abiertas
+            $nuevo_estado = $tiene_abiertas ? 1 : 2;
 
             $stmt_check = $db->prepare("SELECT id FROM eval_respuestas WHERE asignacion_id = ? AND estudiante_id = ?");
             $stmt_check->execute([$asig_id, $mi_id]);
@@ -217,7 +213,6 @@ try {
                 $stmt_upd = $db->prepare("UPDATE eval_respuestas SET respuestas_json = ?, calificacion_automatica = ?, estado = ?, fecha_entrega = CURRENT_TIMESTAMP WHERE id = ?");
                 $stmt_upd->execute([$respuestas_json, $nota_automatica, $nuevo_estado, $respuesta_id]);
                 
-                // Limpieza de detalles previos (Re-calificación)
                 $db->prepare("DELETE FROM eval_respuestas_detalles WHERE respuesta_id = ?")->execute([$respuesta_id]);
             } else {
                 $stmt_ins = $db->prepare("INSERT INTO eval_respuestas (asignacion_id, estudiante_id, prueba_id, respuestas_json, calificacion_automatica, estado) VALUES (?, ?, ?, ?, ?, ?)");
@@ -225,7 +220,6 @@ try {
                 $respuesta_id = (int)$db->lastInsertId();
             }
 
-            // ATOMIZACIÓN ELITE: Guardar cada respuesta individualmente
             $stmt_det = $db->prepare("INSERT INTO eval_respuestas_detalles (respuesta_id, pregunta_id, respuesta_alumno, es_correcta, puntaje_obtenido) VALUES (?, ?, ?, ?, ?)");
             foreach ($detalles_respuestas as $det) {
                 $stmt_det->execute([
@@ -242,11 +236,12 @@ try {
             break;
 
         case 'verificar_acceso':
-            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_STRING);
+            if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
                 throw new Exception("Error de validación (CSRF).");
             }
-            $asig_id = (int)($_POST['asignacion_id'] ?? $_REQUEST['asignacion_id'] ?? 0);
-            $clave = $_POST['clave'] ?? '';
+            $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id', FILTER_VALIDATE_INT);
+            $clave = filter_input(INPUT_POST, 'clave', FILTER_SANITIZE_STRING) ?? '';
             $stmt = $db->prepare("SELECT id, clave_acceso, fecha_inicio, fecha_fin FROM eval_asignaciones WHERE id = ?");
             $stmt->execute([$asig_id]);
             $asig = $stmt->fetch();
@@ -269,12 +264,13 @@ try {
             break;
 
         case 'registrar_incidente':
-            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_STRING);
+            if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
                 throw new Exception("CSRF Inválido.");
             }
-            $asig_id = (int)($_POST['asignacion_id'] ?? 0);
-            $tipo = $_POST['tipo'] ?? 'desconocido';
-            $detalles = $_POST['detalles'] ?? '';
+            $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id', FILTER_VALIDATE_INT);
+            $tipo = filter_input(INPUT_POST, 'tipo', FILTER_SANITIZE_STRING) ?? 'desconocido';
+            $detalles = filter_input(INPUT_POST, 'detalles', FILTER_SANITIZE_STRING) ?? '';
             $stmt_p = $db->prepare("SELECT prueba_id FROM eval_asignaciones WHERE id = ?");
             $stmt_p->execute([$asig_id]);
             $prueba_id = $stmt_p->fetchColumn() ?: 0;
@@ -291,8 +287,6 @@ try {
     $resultado = ['status' => 'error', 'message' => $e->getMessage()];
 }
 
-// LIMPIEZA FINAL: Borrar cualquier advertencia/basura del búfer antes de enviar el JSON
 ob_clean();
 echo json_encode($resultado);
 ob_end_flush();
-

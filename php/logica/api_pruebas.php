@@ -18,18 +18,18 @@ try {
 
     $mi_id = (int)$_SESSION['usuario_id'];
     session_write_close();
-    $accion = $_POST['accion'] ?? $_GET['accion'] ?? 'listar';
+    $accion = filter_input(INPUT_POST, 'accion') ?? $_GET['accion'] ?? 'listar';
 
     switch ($accion) {
         case 'guardar':
             proteccion_extrema();
-            $id = (int)($_POST['id'] ?? 0);
-            $materia_id = (int)($_POST['materia_id'] ?? 0);
-            $titulo = $_POST['titulo'] ?? '';
-            $instrucciones = $_POST['instrucciones'] ?? '';
-            $tiempo = (int)($_POST['tiempo_limite'] ?? 60);
+            $id = (int)(filter_input(INPUT_POST, 'id') ?? 0);
+            $materia_id = (int)(filter_input(INPUT_POST, 'materia_id') ?? 0);
+            $titulo = filter_input(INPUT_POST, 'titulo') ?? '';
+            $instrucciones = filter_input(INPUT_POST, 'instrucciones') ?? '';
+            $tiempo = (int)(filter_input(INPUT_POST, 'tiempo_limite') ?? 60);
 
-            $modalidad = (int)($_POST['modalidad'] ?? 1);
+            $modalidad = (int)(filter_input(INPUT_POST, 'modalidad') ?? 1);
 
             if (empty($titulo) || !$materia_id) {
                 throw new Exception('El título y la materia son obligatorios.');
@@ -60,10 +60,10 @@ try {
 
         case 'vincular_pregunta':
             proteccion_extrema();
-            $prueba_id = (int)$_POST['prueba_id'];
-            $pregunta_id = (int)$_POST['pregunta_id'];
-            $peso = (float)($_POST['peso'] ?? 1.0);
-            $vincular = ($_POST['vincular'] === 'true');
+            $prueba_id = (int)filter_input(INPUT_POST, 'prueba_id');
+            $pregunta_id = (int)filter_input(INPUT_POST, 'pregunta_id');
+            $peso = (float)(filter_input(INPUT_POST, 'peso') ?? 1.0);
+            $vincular = (filter_input(INPUT_POST, 'vincular') === 'true');
 
             if ($vincular) {
                 // Agregar
@@ -80,8 +80,8 @@ try {
         case 'actualizar_items':
             proteccion_extrema();
             // Actualización masiva de pesos y orden
-            $prueba_id = (int)$_POST['prueba_id'];
-            $items = json_decode($_POST['items'], true); // [{pregunta_id, peso, orden}, ...]
+            $prueba_id = (int)filter_input(INPUT_POST, 'prueba_id');
+            $items = json_decode(filter_input(INPUT_POST, 'items'), true); // [{pregunta_id, peso, orden}, ...]
 
             $db->beginTransaction();
             try {
@@ -141,7 +141,7 @@ try {
 
         case 'eliminar':
             proteccion_extrema();
-            $id = (int)$_POST['id'];
+            $id = (int)filter_input(INPUT_POST, 'id');
 
             // 🏛️ DETECTOR DE DESTRUCCIÓN DE DATOS: Validar propiedad de la prueba antes de tocar tablas hijas
             $stmt_check = $db->prepare("SELECT 1 FROM eval_pruebas WHERE id = ? AND docente_id = ?");
@@ -164,17 +164,17 @@ try {
 
         case 'guardar_asignacion':
             proteccion_extrema();
-            $id = (int)($_POST['id'] ?? 0);
-            $prueba_id = (int)$_POST['prueba_id'];
-            $curso_id = (int)$_POST['curso_id'];
-            $inicio = $_POST['fecha_inicio'];
-            $fin = $_POST['fecha_fin'];
-            $clave = $_POST['clave'] ?? '';
-            $intentos = (int)($_POST['intentos'] ?? 1);
-            $resultados = (int)($_POST['resultados'] ?? 0);
-            $tipo_navegacion = $_POST['tipo_navegacion'] ?? 'libre';
-            $ambito = trim($_POST['ambito'] ?? 'estandar');
-            $recupera_actividad_id = (int)($_POST['recupera_actividad_id'] ?? 0);
+            $id = (int)(filter_input(INPUT_POST, 'id') ?? 0);
+            $prueba_id = (int)filter_input(INPUT_POST, 'prueba_id');
+            $curso_id = (int)filter_input(INPUT_POST, 'curso_id');
+            $inicio = filter_input(INPUT_POST, 'fecha_inicio');
+            $fin = filter_input(INPUT_POST, 'fecha_fin');
+            $clave = filter_input(INPUT_POST, 'clave') ?? '';
+            $intentos = (int)(filter_input(INPUT_POST, 'intentos') ?? 1);
+            $resultados = (int)(filter_input(INPUT_POST, 'resultados') ?? 0);
+            $tipo_navegacion = filter_input(INPUT_POST, 'tipo_navegacion') ?? 'libre';
+            $ambito = trim(filter_input(INPUT_POST, 'ambito') ?? 'estandar');
+            $recupera_actividad_id = (int)(filter_input(INPUT_POST, 'recupera_actividad_id') ?? 0);
             
             $db_ambito = $ambito === 'recuperacion' ? 'recuperacion' : 'estandar';
             $db_recupera_id = $db_ambito === 'recuperacion' && $recupera_actividad_id > 0 ? $recupera_actividad_id : null;
@@ -222,14 +222,14 @@ try {
 
         case 'eliminar_asignacion':
             proteccion_extrema();
-            $id = (int)$_POST['id'];
+            $id = (int)filter_input(INPUT_POST, 'id');
             $db->prepare("DELETE FROM eval_asignaciones WHERE id = ? AND docente_id = ?")->execute([$id, $mi_id]);
             echo json_encode(['status' => 'success', 'message' => 'Programación cancelada.']);
             break;
 
         case 'duplicar_prueba':
             proteccion_extrema();
-            $id = (int)$_POST['id'];
+            $id = (int)filter_input(INPUT_POST, 'id');
             
             $db->beginTransaction();
             try {
@@ -261,7 +261,7 @@ try {
 
         case 'eliminar_prueba':
             proteccion_extrema();
-            $id = (int)$_POST['id'];
+            $id = (int)filter_input(INPUT_POST, 'id');
             
             $db->beginTransaction();
             try {
@@ -308,8 +308,8 @@ try {
             break;
 
         case 'listar_entregas_asignacion':
-            $asig_id = (int)$_POST['asignacion_id'];
-            $prueba_id = (int)$_POST['prueba_id'];
+            $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id');
+            $prueba_id = (int)filter_input(INPUT_POST, 'prueba_id');
             
             // Traer estructura
             $stmt_p = $db->prepare("SELECT p.id, p.enunciado, p.tipo_id, p.metadata_json, i.peso 
@@ -356,9 +356,9 @@ try {
             break;
 
         case 'obtener_detalle_entrega':
-            $entrega_id = (int)$_POST['entrega_id'];
-            $asig_id = (int)$_POST['asignacion_id'];
-            $est_id = (int)$_POST['estudiante_id'];
+            $entrega_id = (int)filter_input(INPUT_POST, 'entrega_id');
+            $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id');
+            $est_id = (int)filter_input(INPUT_POST, 'estudiante_id');
 
             // 🛡️ CONTROL DE ACCESO ANTICORRUPCIÓN / ANTI-LEAK: Verificar que el docente sea propietario de la asignación
             $stmt_prop = $db->prepare("SELECT docente_id FROM eval_asignaciones WHERE id = ?");
@@ -388,12 +388,12 @@ try {
 
         case 'guardar_calificacion_final':
             proteccion_extrema();
-            $entrega_id = (int)$_POST['entrega_id'];
-            $nota_manual = (float)$_POST['calificacion_manual'];
-            $nota_auto = isset($_POST['calificacion_auto']) ? (float)$_POST['calificacion_auto'] : null;
-            $respuestas_json = $_POST['respuestas_json'] ?? null;
+            $entrega_id = (int)filter_input(INPUT_POST, 'entrega_id');
+            $nota_manual = (float)filter_input(INPUT_POST, 'calificacion_manual');
+            $nota_auto = (null !== filter_input(INPUT_POST, 'calificacion_auto')) ? (float)filter_input(INPUT_POST, 'calificacion_auto') : null;
+            $respuestas_json = filter_input(INPUT_POST, 'respuestas_json') ?? null;
             
-            $calificacion_recuperacion = isset($_POST['calificacion_recuperacion']) && $_POST['calificacion_recuperacion'] !== '' ? (float)$_POST['calificacion_recuperacion'] : null;
+            $calificacion_recuperacion = (null !== filter_input(INPUT_POST, 'calificacion_recuperacion')) && filter_input(INPUT_POST, 'calificacion_recuperacion') !== '' ? (float)filter_input(INPUT_POST, 'calificacion_recuperacion') : null;
 
             // Autodetectar si la asignación es de recuperación para guardar la nota obtenida como recuperación
             $stmt_asig_info = $db->prepare("SELECT r.asignacion_id, r.calificacion_automatica FROM eval_respuestas r WHERE r.id = ?");
@@ -449,7 +449,7 @@ try {
 
             if ($ejecutado) {
                 // 1.1 Persistir los detalles de calificaciones manuales por reactivo si vienen provistos
-                $detalles_manuales_raw = $_POST['detalles_manuales'] ?? null;
+                $detalles_manuales_raw = filter_input(INPUT_POST, 'detalles_manuales') ?? null;
                 if ($detalles_manuales_raw !== null) {
                     $detalles_manuales = json_decode($detalles_manuales_raw, true) ?: [];
                     foreach ($detalles_manuales as $det) {
@@ -523,8 +523,8 @@ try {
             break;
 
         case 'recalibrar_nota':
-            $entrega_id = (int)$_POST['entrega_id'];
-            $nota_auto = (float)$_POST['nota_auto'];
+            $entrega_id = (int)filter_input(INPUT_POST, 'entrega_id');
+            $nota_auto = (float)filter_input(INPUT_POST, 'nota_auto');
             $stmt = $db->prepare("UPDATE eval_respuestas SET calificacion_automatica = ? WHERE id = ?");
             if ($stmt->execute([$nota_auto, $entrega_id])) {
                 ob_clean();
@@ -533,8 +533,8 @@ try {
             break;
 
         case 'identificar_estudiante_qr':
-            $est_id = (int)$_POST['estudiante_id'];
-            $asig_id = (int)$_POST['asignacion_id'];
+            $est_id = (int)filter_input(INPUT_POST, 'estudiante_id');
+            $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id');
             
             // LOG DE DEBUG TEMPORAL
             // error_log("ARES_DEBUG: Escaneando Est: $est_id en Asig: $asig_id");

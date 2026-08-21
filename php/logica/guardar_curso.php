@@ -2,8 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
-// PHP/LOGICA/GUARDAR_CURSO.PHP - PROCESADOR DE ALTA DE AULAS v1.1
+session_write_close();
 header('Content-Type: application/json');
 require_once '../db.php';
 require_once '../auth.php';
@@ -11,20 +10,20 @@ require_once '../auth.php';
 try {
     proteccion_extrema();
 
-    // 🛡️ CAPA 2: VALIDACIÓN DE PERMISOS
     if (!tiene_permiso('cursos')) { 
         throw new Exception("Acceso denegado: Rango académico insuficiente."); 
     }
 
-    $nombre = e($_POST['nombre_curso'] ?? '');
-    $tutor = filter_var($_POST['tutor_id'] ?? '', FILTER_VALIDATE_INT);
-    $jornada = e($_POST['jornada'] ?? 'Mañana');
+    $input = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    $nombre = trim(filter_var($input['nombre_curso'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+    $tutor = isset($input['tutor_id']) ? filter_var($input['tutor_id'], FILTER_VALIDATE_INT) : null;
+    $jornada = trim(filter_var($input['jornada'] ?? 'Mañana', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
 
     if (empty($nombre)) {
         throw new Exception("El nombre del aula/curso es obligatorio.");
     }
 
-    // Calcular nivel_id a partir del nombre del curso
     $nivel_id = 0;
     if (preg_match('/^\d+/', $nombre, $matches)) {
         $nivel_id = (int)$matches[0];
@@ -42,7 +41,6 @@ try {
         }
     }
 
-    // 🛡️ SOBERANÍA: Evitar duplicados (Case Insensitive)
     $stmt_check = $db->prepare('SELECT COUNT(*) FROM cursos WHERE nombre_curso = :nom');
     $stmt_check->bindValue(':nom', $nombre, PDO::PARAM_STR);
     $stmt_check->execute();
@@ -50,7 +48,6 @@ try {
         throw new Exception("Ya existe un curso registrado con ese nombre.");
     }
 
-    // 🛡️ ACCIÓN: Insertar curso
     $stmt = $db->prepare('INSERT INTO cursos (nombre_curso, tutor_id, nivel_id, jornada) VALUES (:nom, :tut, :niv, :jor)');
     $stmt->bindValue(':nom', $nombre, PDO::PARAM_STR);
     $stmt->bindValue(':niv', $nivel_id, PDO::PARAM_INT);
@@ -73,4 +70,3 @@ try {
 }
 exit();
 ?>
-

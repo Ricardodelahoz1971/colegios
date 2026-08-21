@@ -1,6 +1,5 @@
 <?php
 declare(strict_types=1);
-// PHP/PROCESAR_MATRICULA.PHP - MOTOR FUNCIONAL ELITE
 header('Content-Type: application/json');
 session_start();
 require_once 'db.php';
@@ -12,20 +11,17 @@ try {
     if (!tiene_permiso('matricula')) {
         throw new Exception('Acceso denegado o permisos insuficientes.');
     }
-    // Liberar sesión para permitir concurrencia
     session_write_close();
 
-    $identificacion = $_POST['identificacion'] ?? '';
-    $nombre = $_POST['nombre'] ?? '';
-    $apellido = $_POST['apellido'] ?? '';
-    $curso_id = $_POST['curso_id'] ?? 0;
+    $identificacion = filter_input(INPUT_POST, 'identificacion', FILTER_SANITIZE_STRING) ?? '';
+    $nombre = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING) ?? '';
+    $apellido = filter_input(INPUT_POST, 'apellido', FILTER_SANITIZE_STRING) ?? '';
+    $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
     
-    // Validar datos mínimos
     if (empty($identificacion) || empty($nombre) || empty($apellido)) {
         throw new Exception('Faltan datos obligatorios para matricular.');
     }
 
-    // Validar por duplicados (v9.2 PDO)
     $check = $db->prepare("SELECT id FROM estudiantes WHERE identificacion = :id");
     $check->bindValue(':id', $identificacion, PDO::PARAM_STR);
     $check->execute();
@@ -33,14 +29,19 @@ try {
         throw new Exception('Este estudiante ya se encuentra registrado con la identificación: ' . $identificacion);
     }
     
-    // Obtener nombre del curso para compatibilidad
     $c_stmt = $db->prepare("SELECT nombre_curso FROM cursos WHERE id = :cid");
     $c_stmt->bindValue(':cid', $curso_id, PDO::PARAM_INT);
     $c_stmt->execute();
     $c_data = $c_stmt->fetch(PDO::FETCH_ASSOC);
     $nombre_curso = $c_data['nombre_curso'] ?? 'Sin Asignar';
 
-    // Insertar
+    $tipo_documento = filter_input(INPUT_POST, 'tipo_documento', FILTER_SANITIZE_STRING) ?? '';
+    $tipo_sangre = filter_input(INPUT_POST, 'tipo_sangre', FILTER_SANITIZE_STRING) ?? '';
+    $genero = filter_input(INPUT_POST, 'genero', FILTER_SANITIZE_STRING) ?? '';
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL) ?? '';
+    $celular = filter_input(INPUT_POST, 'celular', FILTER_SANITIZE_STRING) ?? '';
+    $es_antiguo = filter_input(INPUT_POST, 'es_antiguo', FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+
     $sql = "INSERT INTO estudiantes (identificacion, nombre, apellido, curso_id, curso, tipo_documento, rh, genero, email, celular, es_antiguo) 
             VALUES (:id, :nom, :ape, :cid, :cur, :tdoc, :rh, :gen, :mail, :cel, :ant)";
     
@@ -50,17 +51,16 @@ try {
     $stmt->bindValue(':ape', $apellido, PDO::PARAM_STR);
     $stmt->bindValue(':cid', $curso_id, PDO::PARAM_INT);
     $stmt->bindValue(':cur', $nombre_curso, PDO::PARAM_STR);
-    $stmt->bindValue(':tdoc', $_POST['tipo_documento'] ?? '', PDO::PARAM_STR);
-    $stmt->bindValue(':rh', $_POST['tipo_sangre'] ?? '', PDO::PARAM_STR);
-    $stmt->bindValue(':gen', $_POST['genero'] ?? '', PDO::PARAM_STR);
-    $stmt->bindValue(':mail', $_POST['email'] ?? '', PDO::PARAM_STR);
-    $stmt->bindValue(':cel', $_POST['celular'] ?? '', PDO::PARAM_STR);
-    $stmt->bindValue(':ant', isset($_POST['es_antiguo']) ? 1 : 0, PDO::PARAM_INT);
+    $stmt->bindValue(':tdoc', $tipo_documento, PDO::PARAM_STR);
+    $stmt->bindValue(':rh', $tipo_sangre, PDO::PARAM_STR);
+    $stmt->bindValue(':gen', $genero, PDO::PARAM_STR);
+    $stmt->bindValue(':mail', $email, PDO::PARAM_STR);
+    $stmt->bindValue(':cel', $celular, PDO::PARAM_STR);
+    $stmt->bindValue(':ant', $es_antiguo, PDO::PARAM_INT);
 
     if ($stmt->execute()) {
         $nuevo_id = $db->lastInsertId();
         
-        // Insertar datos adicionales y acudientes en la tabla relacionada
         $sql_adicional = "INSERT INTO estudiantes_datos_adicionales (
             estudiante_id, lugar_nacimiento, fecha_nacimiento, edad, nacionalidad, colegio_anterior, direccion_estudiante, folio_matricula,
             padre_nombre, padre_tipo_documento, padre_documento, padre_documento_expedicion, padre_nacionalidad, padre_celular, padre_telefono, padre_direccion, padre_profesion, padre_email,
@@ -72,38 +72,38 @@ try {
         )";
         $stmt_adicional = $db->prepare($sql_adicional);
         
-        $fecha_nac = !empty($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : null;
-        $edad_val = !empty($_POST['edad']) ? (int)$_POST['edad'] : null;
+        $fecha_nac = filter_input(INPUT_POST, 'fecha_nacimiento', FILTER_SANITIZE_STRING) ?: null;
+        $edad_val = filter_input(INPUT_POST, 'edad', FILTER_VALIDATE_INT) ?: null;
         
         $stmt_adicional->execute([
             ':estudiante_id' => $nuevo_id,
-            ':lugar_nacimiento' => !empty($_POST['lugar_nacimiento']) ? trim($_POST['lugar_nacimiento']) : null,
+            ':lugar_nacimiento' => filter_input(INPUT_POST, 'lugar_nacimiento', FILTER_SANITIZE_STRING) ?: null,
             ':fecha_nacimiento' => $fecha_nac,
             ':edad' => $edad_val,
-            ':nacionalidad' => !empty($_POST['nacionalidad']) ? trim($_POST['nacionalidad']) : null,
-            ':colegio_anterior' => !empty($_POST['colegio_anterior']) ? trim($_POST['colegio_anterior']) : null,
-            ':direccion_estudiante' => !empty($_POST['direccion_estudiante']) ? trim($_POST['direccion_estudiante']) : null,
-            ':folio_matricula' => !empty($_POST['folio_matricula']) ? trim($_POST['folio_matricula']) : null,
-            ':padre_nombre' => !empty($_POST['padre_nombre']) ? trim($_POST['padre_nombre']) : null,
-            ':padre_tipo_documento' => !empty($_POST['padre_tipo_documento']) ? trim($_POST['padre_tipo_documento']) : null,
-            ':padre_documento' => !empty($_POST['padre_documento']) ? trim($_POST['padre_documento']) : null,
-            ':padre_documento_expedicion' => !empty($_POST['padre_documento_expedicion']) ? trim($_POST['padre_documento_expedicion']) : null,
-            ':padre_nacionalidad' => !empty($_POST['padre_nacionalidad']) ? trim($_POST['padre_nacionalidad']) : null,
-            ':padre_celular' => !empty($_POST['padre_celular']) ? trim($_POST['padre_celular']) : null,
-            ':padre_telefono' => !empty($_POST['padre_telefono']) ? trim($_POST['padre_telefono']) : null,
-            ':padre_direccion' => !empty($_POST['padre_direccion']) ? trim($_POST['padre_direccion']) : null,
-            ':padre_profesion' => !empty($_POST['padre_profesion']) ? trim($_POST['padre_profesion']) : null,
-            ':padre_email' => !empty($_POST['padre_email']) ? trim($_POST['padre_email']) : null,
-            ':madre_nombre' => !empty($_POST['madre_nombre']) ? trim($_POST['madre_nombre']) : null,
-            ':madre_tipo_documento' => !empty($_POST['madre_tipo_documento']) ? trim($_POST['madre_tipo_documento']) : null,
-            ':madre_documento' => !empty($_POST['madre_documento']) ? trim($_POST['madre_documento']) : null,
-            ':madre_documento_expedicion' => !empty($_POST['madre_documento_expedicion']) ? trim($_POST['madre_documento_expedicion']) : null,
-            ':madre_nacionalidad' => !empty($_POST['madre_nacionalidad']) ? trim($_POST['madre_nacionalidad']) : null,
-            ':madre_celular' => !empty($_POST['madre_celular']) ? trim($_POST['madre_celular']) : null,
-            ':madre_telefono' => !empty($_POST['madre_telefono']) ? trim($_POST['madre_telefono']) : null,
-            ':madre_direccion' => !empty($_POST['madre_direccion']) ? trim($_POST['madre_direccion']) : null,
-            ':madre_profesion' => !empty($_POST['madre_profesion']) ? trim($_POST['madre_profesion']) : null,
-            ':madre_email' => !empty($_POST['madre_email']) ? trim($_POST['madre_email']) : null
+            ':nacionalidad' => filter_input(INPUT_POST, 'nacionalidad', FILTER_SANITIZE_STRING) ?: null,
+            ':colegio_anterior' => filter_input(INPUT_POST, 'colegio_anterior', FILTER_SANITIZE_STRING) ?: null,
+            ':direccion_estudiante' => filter_input(INPUT_POST, 'direccion_estudiante', FILTER_SANITIZE_STRING) ?: null,
+            ':folio_matricula' => filter_input(INPUT_POST, 'folio_matricula', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_nombre' => filter_input(INPUT_POST, 'padre_nombre', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_tipo_documento' => filter_input(INPUT_POST, 'padre_tipo_documento', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_documento' => filter_input(INPUT_POST, 'padre_documento', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_documento_expedicion' => filter_input(INPUT_POST, 'padre_documento_expedicion', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_nacionalidad' => filter_input(INPUT_POST, 'padre_nacionalidad', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_celular' => filter_input(INPUT_POST, 'padre_celular', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_telefono' => filter_input(INPUT_POST, 'padre_telefono', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_direccion' => filter_input(INPUT_POST, 'padre_direccion', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_profesion' => filter_input(INPUT_POST, 'padre_profesion', FILTER_SANITIZE_STRING) ?: null,
+            ':padre_email' => filter_input(INPUT_POST, 'padre_email', FILTER_SANITIZE_EMAIL) ?: null,
+            ':madre_nombre' => filter_input(INPUT_POST, 'madre_nombre', FILTER_SANITIZE_STRING) ?: null,
+            ':madre_tipo_documento' => filter_input(INPUT_POST, 'madre_tipo_documento', FILTER_SANITIZE_STRING) ?: null,
+            ':madre_documento' => filter_input(INPUT_POST, 'madre_documento', FILTER_SANITIZE_STRING) ?: null,
+            ':madre_documento_expedicion' => filter_input(INPUT_POST, 'madre_documento_expedicion', FILTER_SANITIZE_STRING) ?: null,
+            ':madre_nacionalidad' => filter_input(INPUT_POST, 'madre_nacionalidad', FILTER_SANITIZE_STRING) ?: null,
+            ':madre_celular' => filter_input(INPUT_POST, 'madre_celular', FILTER_SANITIZE_STRING) ?: null,
+            ':madre_telefono' => filter_input(INPUT_POST, 'madre_telefono', FILTER_SANITIZE_STRING) ?: null,
+            ':madre_direccion' => filter_input(INPUT_POST, 'madre_direccion', FILTER_SANITIZE_STRING) ?: null,
+            ':madre_profesion' => filter_input(INPUT_POST, 'madre_profesion', FILTER_SANITIZE_STRING) ?: null,
+            ':madre_email' => filter_input(INPUT_POST, 'madre_email', FILTER_SANITIZE_EMAIL) ?: null
         ]);
 
         $pass_hash = password_hash($identificacion, PASSWORD_DEFAULT);
@@ -111,7 +111,7 @@ try {
         $stmt_usr->execute([
             ':u' => $identificacion,
             ':p' => $pass_hash,
-            ':e' => $_POST['email'] ?? '',
+            ':e' => $email,
             ':n' => $nombre . ' ' . $apellido,
             ':eid' => $nuevo_id
         ]);
@@ -126,7 +126,6 @@ try {
         'message' => 'Error de Bóveda: ' . $e->getMessage()
     ]);
 } finally {
-    if (isset($db)) $db = null; // En PDO se cierra asignando null
+    if (isset($db)) $db = null;
 }
 ?>
-

@@ -16,7 +16,7 @@ try {
 
     session_write_close();
 
-    $action = $_GET['action'] ?? $_POST['action'] ?? '';
+    $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING) ?? '';
 
     if ($action === 'listar') {
         $stmt = $db->prepare("SELECT id, nombre, descripcion, tipo, activo, margen_superior, margen_inferior, tipo_documento, tamano_lienzo FROM formatos_matricula ORDER BY id DESC");
@@ -27,7 +27,6 @@ try {
     }
 
     if ($action === 'obtener_datos_preview') {
-        // Obtener el primer estudiante registrado
         $sqlEstudiante = "SELECT e.*, c.nombre_curso, da.*
                           FROM estudiantes e
                           LEFT JOIN cursos c ON e.curso_id = c.id
@@ -42,7 +41,6 @@ try {
             throw new Exception("No hay estudiantes registrados en la base de datos.");
         }
 
-        // Obtener configuración global del colegio
         $sqlConfig = "SELECT clave, valor FROM configuracion_global WHERE clave IN 
                       ('school_name', 'school_motto', 'colegio_nit', 'colegio_resolucion', 'rector_nombre', 'secretaria_nombre', 'anio_lectivo_oficial')";
         $stmtConfig = $db->prepare($sqlConfig);
@@ -53,7 +51,6 @@ try {
             $config[$row['clave']] = $row['valor'];
         }
 
-        // Obtener ajustes estéticos
         $stmtAjustes = $db->prepare('SELECT clave, valor FROM ajustes_estetica');
         $stmtAjustes->execute();
         $ajustesEstetica = $stmtAjustes->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -73,7 +70,6 @@ try {
         $stmtSecretaria->execute();
         $secretaria_nombre = $stmtSecretaria->fetchColumn() ?: 'Secretaria Académica';
 
-        // Calcular edad del estudiante
         $fechaNacimiento = $estudiante['fecha_nacimiento'] ?? '';
         $edad = '';
         if (!empty($fechaNacimiento)) {
@@ -83,26 +79,21 @@ try {
             $edad = $diferencia->y . ' años';
         }
 
-        // Formatear documento del estudiante
         $tipoDocEstudiante = $estudiante['tipo_documento'] ?? 'T.I.';
         $identificacionEstudiante = $estudiante['identificacion'] ?? '';
         $documentoCompleto = trim($tipoDocEstudiante . ' ' . $identificacionEstudiante);
 
-        // Formatear documento del padre
         $tipoDocPadre = $estudiante['padre_tipo_documento'] ?? 'C.C.';
         $documentoPadre = $estudiante['padre_documento'] ?? '';
         $documentoPadreCompleto = trim($tipoDocPadre . ' ' . $documentoPadre);
 
-        // Formatear documento de la madre
         $tipoDocMadre = $estudiante['madre_tipo_documento'] ?? 'C.C.';
         $documentoMadre = $estudiante['madre_documento'] ?? '';
         $documentoMadreCompleto = trim($tipoDocMadre . ' ' . $documentoMadre);
 
-        // Fechas actuales
         $fechaActual = !empty($estudiante['fecha_registro']) ? date('d/m/Y', strtotime($estudiante['fecha_registro'])) : date('d/m/Y');
         $anioLectivo = $config['anio_lectivo_oficial'] ?? date('Y');
 
-        // Construir el mapa de variables exactamente como en imprimir_matricula.php
         $data = [
             'estudiante_nombre' => trim(($estudiante['nombre'] ?? '') . ' ' . ($estudiante['apellido'] ?? '')),
             'estudiante_documento' => $documentoCompleto,
@@ -154,9 +145,8 @@ try {
         exit();
     }
 
-
     if ($action === 'obtener') {
-        $id = (int)($_REQUEST['id'] ?? 0);
+        $id = (int)(filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) ?? filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) ?? 0);
         if ($id <= 0) {
             throw new Exception("Identificador de formato no válido.");
         }
@@ -169,12 +159,10 @@ try {
 
         if (!empty($formato['configuracion_json'])) {
             $config_parsed = json_decode($formato['configuracion_json'], true);
-            // Si tiene estructura nueva con "bloques" y "zonas"
             if (is_array($config_parsed) && isset($config_parsed['bloques'])) {
                 $formato['configuracion_json'] = $config_parsed['bloques'];
                 $formato['zonas_config'] = $config_parsed['zonas'] ?? null;
             } else {
-                // Estructura legacy: solo bloques
                 $formato['configuracion_json'] = $config_parsed;
             }
         }
@@ -184,20 +172,19 @@ try {
     }
 
     if ($action === 'guardar') {
-        $id = (int)($_POST['id'] ?? 0);
-        $nombre = trim($_POST['nombre'] ?? '');
-        $descripcion = trim($_POST['descripcion'] ?? '');
-        $contenido_html = trim($_POST['contenido_html'] ?? '');
-        $configuracion_json = trim($_POST['configuracion_json'] ?? '');
-        $zonas_config = trim($_POST['zonas_config'] ?? '');
-        $margen_superior = (int)($_POST['margen_superior'] ?? 20);
-        $margen_inferior = (int)($_POST['margen_inferior'] ?? 20);
-        $margen_izquierdo = (int)($_POST['margen_izquierdo'] ?? 20);
-        $margen_derecho = (int)($_POST['margen_derecho'] ?? 20);
-        $tipo_documento = trim($_POST['tipo_documento'] ?? 'matricula');
-        $tamano_lienzo = trim($_POST['tamano_lienzo'] ?? 'carta');
+        $id = (int)(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) ?? 0);
+        $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING) ?? '');
+        $descripcion = trim(filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING) ?? '');
+        $contenido_html = trim(filter_input(INPUT_POST, 'contenido_html', FILTER_SANITIZE_STRING) ?? '');
+        $configuracion_json = trim(filter_input(INPUT_POST, 'configuracion_json', FILTER_SANITIZE_STRING) ?? '');
+        $zonas_config = trim(filter_input(INPUT_POST, 'zonas_config', FILTER_SANITIZE_STRING) ?? '');
+        $margen_superior = (int)(filter_input(INPUT_POST, 'margen_superior', FILTER_SANITIZE_NUMBER_INT) ?? 20);
+        $margen_inferior = (int)(filter_input(INPUT_POST, 'margen_inferior', FILTER_SANITIZE_NUMBER_INT) ?? 20);
+        $margen_izquierdo = (int)(filter_input(INPUT_POST, 'margen_izquierdo', FILTER_SANITIZE_NUMBER_INT) ?? 20);
+        $margen_derecho = (int)(filter_input(INPUT_POST, 'margen_derecho', FILTER_SANITIZE_NUMBER_INT) ?? 20);
+        $tipo_documento = trim(filter_input(INPUT_POST, 'tipo_documento', FILTER_SANITIZE_STRING) ?? 'matricula');
+        $tamano_lienzo = trim(filter_input(INPUT_POST, 'tamano_lienzo', FILTER_SANITIZE_STRING) ?? 'carta');
 
-        // Agregar zonas al JSON de configuración
         if (!empty($zonas_config)) {
             $bloques = json_decode($configuracion_json, true) ?? [];
             $zonas_data = json_decode($zonas_config, true) ?? [];
@@ -207,10 +194,6 @@ try {
             ];
             $configuracion_json = json_encode($config_final, JSON_UNESCAPED_UNICODE);
         }
-
-        // DEBUG: Log del JSON guardado (Desactivado para mejorar el rendimiento)
-        // error_log("📝 GUARDANDO FORMATO '$nombre' - JSON recibido del frontend:");
-        // error_log($configuracion_json);
 
         $tipos_permitidos = ['matricula', 'carne', 'certificado', 'constancia'];
         if (!in_array($tipo_documento, $tipos_permitidos, true)) {
@@ -230,7 +213,6 @@ try {
         }
 
         if ($id > 0) {
-            // Validar que exista
             $stmt_check = $db->prepare("SELECT tipo FROM formatos_matricula WHERE id = ?");
             $stmt_check->execute([$id]);
             $formato_ex = $stmt_check->fetch();
@@ -250,12 +232,11 @@ try {
     }
 
     if ($action === 'eliminar') {
-        $id = (int)($_POST['id'] ?? 0);
+        $id = (int)(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) ?? 0);
         if ($id <= 0) {
             throw new Exception("Identificador no válido.");
         }
 
-        // No permitir eliminar formatos prediseñados
         $stmt_check = $db->prepare("SELECT tipo FROM formatos_matricula WHERE id = ?");
         $stmt_check->execute([$id]);
         $tipo = $stmt_check->fetchColumn();
@@ -270,8 +251,8 @@ try {
     }
 
     if ($action === 'cambiar_estado') {
-        $id = (int)($_POST['id'] ?? 0);
-        $activo = (int)($_POST['activo'] ?? 1);
+        $id = (int)(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) ?? 0);
+        $activo = (int)(filter_input(INPUT_POST, 'activo', FILTER_SANITIZE_NUMBER_INT) ?? 1);
         if ($id <= 0) {
             throw new Exception("Identificador no válido.");
         }
@@ -288,3 +269,4 @@ try {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 exit();
+?>

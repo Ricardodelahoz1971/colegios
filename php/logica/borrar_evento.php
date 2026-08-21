@@ -2,9 +2,8 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
+session_write_close();
 proteccion_extrema();
-// PHP/LOGICA/BORRAR_EVENTO.PHP - ELIMINACIÓN DE EVENTOS v1.0
 include '../db.php';
 include '../auth.php';
 
@@ -15,10 +14,11 @@ if (!isset($_SESSION['usuario_id']) || !$es_admin_cron) {
     exit;
 }
 
-$id = (int)($_POST['id'] ?? 0);
-if ($id > 0) {
-    $stmt = $db->prepare("DELETE FROM cronograma WHERE id = ?");
-    if ($stmt->execute([$id])) {
+$id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+if ($id !== false && $id !== null && $id > 0) {
+    $stmt = $db->prepare("DELETE FROM cronograma WHERE id = :id");
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    if ($stmt->execute()) {
         header('Content-Type: application/json');
         echo json_encode(['status' => 'success']);
     } else {
@@ -31,4 +31,3 @@ if ($id > 0) {
 }
 exit;
 ?>
-

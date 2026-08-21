@@ -2,8 +2,8 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
-// PHP/LOGICA/API_AULA.PHP - MOTOR DE RECURSOS SOBERANOS v1.0
+session_write_close();
+
 require_once '../db.php';
 require_once '../auth.php';
 
@@ -12,11 +12,10 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-$action = $_GET['action'] ?? '';
+$action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING) ?? '';
 $mi_id = (int)$_SESSION['usuario_id'];
 $ver_todo = tiene_permiso('matricula') || tiene_permiso('personal');
 
-// 🏛️ DEFENSOR DE SESIÓN ESTUDIANTIL (HEALER EN CALIENTE)
 $rol_id_session = (int)($_SESSION['rol_id'] ?? 0);
 if ($rol_id_session === 5) {
     if (!isset($_SESSION['estudiante_id']) || empty($_SESSION['estudiante_id'])) {
@@ -45,8 +44,8 @@ header('Content-Type: application/json');
 
 switch ($action) {
     case 'listar':
-        $materia_id = (int)($_GET['materia_id'] ?? 0);
-        $curso_id = (int)($_GET['curso_id'] ?? 0);
+        $materia_id = (int)filter_input(INPUT_GET, 'materia_id', FILTER_VALIDATE_INT) ?? 0;
+        $curso_id = (int)filter_input(INPUT_GET, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
         
         $sql = "SELECT r.*, e.nombre_especialidad, c.nombre_curso, a.ambito as aula_ambito, a.recupera_actividad_id as recupera_actividad_id
                 FROM aula_recursos r
@@ -82,34 +81,31 @@ switch ($action) {
 
     case 'guardar':
         try {
-            proteccion_extrema(); // 🛡️ CAPA CSRF: Evitar secuestros de formulario
-            $id = (int)($_POST['id'] ?? 0);
-            $titulo = trim($_POST['titulo'] ?? '');
-            $tipo = $_POST['tipo_recurso'] ?? 'LINK';
-            $url = trim($_POST['url_recurso'] ?? '');
-            $materia = (int)($_POST['especialidad_id'] ?? 0);
-            $curso = (int)($_POST['curso_id'] ?? 0);
-            $desc = trim($_POST['descripcion'] ?? '');
-            $es_evaluativo = (int)($_POST['es_evaluativo'] ?? 0);
-            $aula_ambito = trim($_POST['aula_ambito'] ?? 'estandar');
-            $recupera_actividad_id = (int)($_POST['recupera_actividad_id'] ?? 0);
-            $fecha_inicio = trim($_POST['fecha_inicio'] ?? '');
-            $fecha_fin = trim($_POST['fecha_fin'] ?? '');
+            proteccion_extrema();
+            $id = (int)filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
+            $titulo = trim(filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING) ?? '');
+            $tipo = filter_input(INPUT_POST, 'tipo_recurso', FILTER_SANITIZE_STRING) ?? 'LINK';
+            $url = trim(filter_input(INPUT_POST, 'url_recurso', FILTER_SANITIZE_URL) ?? '');
+            $materia = (int)filter_input(INPUT_POST, 'especialidad_id', FILTER_VALIDATE_INT) ?? 0;
+            $curso = (int)filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
+            $desc = trim(filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING) ?? '');
+            $es_evaluativo = (int)filter_input(INPUT_POST, 'es_evaluativo', FILTER_VALIDATE_INT) ?? 0;
+            $aula_ambito = trim(filter_input(INPUT_POST, 'aula_ambito', FILTER_SANITIZE_STRING) ?? 'estandar');
+            $recupera_actividad_id = (int)filter_input(INPUT_POST, 'recupera_actividad_id', FILTER_VALIDATE_INT) ?? 0;
+            $fecha_inicio = trim(filter_input(INPUT_POST, 'fecha_inicio', FILTER_SANITIZE_STRING) ?? '');
+            $fecha_fin = trim(filter_input(INPUT_POST, 'fecha_fin', FILTER_SANITIZE_STRING) ?? '');
 
             if ($mi_id === 0) {
                 throw new Exception("Sesión de docente no detectada.");
             }
 
-            // Restricción estricta de tipo
             if (!in_array(strtoupper($tipo), ['PDF', 'DOC', 'DOCX'])) {
                 $es_evaluativo = 0;
             }
 
-            // Mapear fechas vacías a NULL, y convertir T de datetime-local a espacio
             $f_inicio_val = $fecha_inicio !== '' ? str_replace('T', ' ', $fecha_inicio) : null;
             $f_fin_val = $fecha_fin !== '' ? str_replace('T', ' ', $fecha_fin) : null;
 
-            // RECUPERACIÓN DE DATOS PREVIOS (Garantía de Edición y Seguridad)
             $docente_propietario = $mi_id;
             $es_evaluativo_actual = 0;
             if ($id > 0) {
@@ -130,25 +126,21 @@ switch ($action) {
                     $url = $url_actual;
                 }
 
-                // Restricción: solo el docente propietario puede alternar si es calificable
                 if ($es_evaluativo !== $es_evaluativo_actual && $docente_propietario !== $mi_id) {
                     throw new Exception("Solo el docente propietario del recurso puede cambiar el estado calificable.");
                 }
             }
 
-            // PROCESAMIENTO DE ARCHIVOS (Soberanía Local y Blindaje RCE)
             if (isset($_FILES['archivo_recurso']) && $_FILES['archivo_recurso']['error'] === UPLOAD_ERR_OK) {
                 $tmp_name = $_FILES['archivo_recurso']['tmp_name'];
                 $original_name = $_FILES['archivo_recurso']['name'];
                 $ext = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
 
-                // 🛡️ LISTA BLANCA ESTRICTA DE SEGURIDAD (Evitar RCE de Web Shells)
                 $allowed_extensions = ['pdf', 'doc', 'docx'];
                 if (!in_array($ext, $allowed_extensions, true)) {
                     throw new Exception("Tipo de archivo no permitido. Solo se aceptan extensiones: " . implode(', ', $allowed_extensions));
                 }
 
-                // 🛡️ VALIDACIÓN DE TIPO MIME REAL (Orientada a Objetos compatible con PHP 8.5+)
                 $finfo = new finfo(FILEINFO_MIME_TYPE);
                 $mime = $finfo->file($tmp_name);
 
@@ -185,7 +177,6 @@ switch ($action) {
                 }
             }
 
-            // Sincronización en Caliente con Gradebook (Ares Actividades)
             if ($es_evaluativo === 1) {
                 $act_stmt = $db->prepare("SELECT actividad_vinculada_id FROM aula_recursos WHERE id = ?");
                 $act_stmt->execute([$id]);
@@ -195,11 +186,9 @@ switch ($action) {
                 $db_recupera_id = $db_ambito === 'recuperacion' && $recupera_actividad_id > 0 ? $recupera_actividad_id : null;
 
                 if ($act_id) {
-                    // Actualizar actividad existente
                     $up_act = $db->prepare("UPDATE ares_actividades SET titulo = ?, curso_id = ?, especialidad_id = ?, ambito = ?, recupera_actividad_id = ? WHERE id = ?");
                     $up_act->execute([$titulo, $curso, $materia, $db_ambito, $db_recupera_id, $act_id]);
                 } else {
-                    // Crear nueva actividad en el calificador
                     $cn_stmt = $db->prepare("SELECT id FROM ares_clases_nota WHERE estado = :estado ORDER BY id LIMIT 1");
                     $cn_stmt->execute([':estado' => 1]);
                     $clase_nota_id = (int)($cn_stmt->fetchColumn() ?: 1);
@@ -212,7 +201,6 @@ switch ($action) {
                     $up_res->execute([$act_id, $id]);
                 }
             } else {
-                // Si ya no es evaluativo, purgar la actividad asociada en cascada limpia
                 $act_stmt = $db->prepare("SELECT actividad_vinculada_id FROM aula_recursos WHERE id = ?");
                 $act_stmt->execute([$id]);
                 $act_id = $act_stmt->fetchColumn();
@@ -244,8 +232,8 @@ switch ($action) {
 
     case 'eliminar':
         try {
-            proteccion_extrema(); // 🛡️ CAPA CSRF: Evitar secuestros de formulario
-            $id = (int)($_POST['id'] ?? 0);
+            proteccion_extrema();
+            $id = (int)filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
             
             $db->beginTransaction();
             
@@ -258,7 +246,6 @@ switch ($action) {
             }
             $act_id = $act_stmt->fetchColumn();
 
-            // Verificar existencia/permiso
             if ($ver_todo) {
                 $check_stmt = $db->prepare("SELECT id FROM aula_recursos WHERE id = ?");
                 $check_stmt->execute([$id]);
@@ -271,7 +258,6 @@ switch ($action) {
             }
 
             if ($act_id) {
-                // Borrado en cascada limpia
                 $del_calif = $db->prepare("DELETE FROM ares_calificaciones_desglose WHERE actividad_id = ?");
                 $del_calif->execute([$act_id]);
 
@@ -302,8 +288,8 @@ switch ($action) {
 
     case 'toggle_evaluativo':
         try {
-            proteccion_extrema(); // 🛡️ CAPA CSRF: Evitar secuestros de formulario
-            $id = (int)($_POST['id'] ?? 0);
+            proteccion_extrema();
+            $id = (int)filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
             
             $db->beginTransaction();
             
@@ -377,7 +363,7 @@ switch ($action) {
         break;
 
     case 'toggle_visibilidad':
-        $id = (int)($_POST['id'] ?? 0);
+        $id = (int)filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
         if ($ver_todo) {
             $stmt = $db->prepare("UPDATE aula_recursos SET visibilidad = 1 - visibilidad WHERE id = ?");
             $stmt->execute([$id]);
@@ -393,7 +379,6 @@ switch ($action) {
             $cur_id = (int)($_SESSION['curso_id'] ?? 0);
             
             if ($cur_id === 0 && $est_id > 0) {
-                // Intento de recuperación de curso_id desde DB si no está en sesión
                 $stmt_c = $db->prepare("SELECT curso_id FROM estudiantes WHERE id = ?");
                 $stmt_c->execute([$est_id]);
                 $cur_id = (int)$stmt_c->fetchColumn();
@@ -465,7 +450,7 @@ switch ($action) {
     case 'marcar_visto':
         try {
             $est_id = (int)($_SESSION['estudiante_id'] ?? 0);
-            $recurso_id = (int)($_POST['recurso_id'] ?? 0);
+            $recurso_id = (int)filter_input(INPUT_POST, 'recurso_id', FILTER_VALIDATE_INT) ?? 0;
             
             if ($est_id > 0 && $recurso_id > 0) {
                 $check = $db->prepare("SELECT COUNT(*) FROM aula_vistos WHERE estudiante_id = ? AND recurso_id = ?");

@@ -2,8 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
-// PHP/LOGICA/EDITAR_PERSONAL.PHP - ACTUALIZADOR DE IDENTIDAD v1.1 (ELITE)
+session_write_close();
 header('Content-Type: application/json');
 require_once '../db.php';
 require_once '../auth.php';
@@ -11,38 +10,33 @@ require_once '../auth.php';
 try {
     proteccion_extrema();
 
-    // 🛡️ CAPA 2: VALIDACIÓN DE AUTORIDAD
     if (!tiene_permiso('personal')) {
         throw new Exception('Acceso denegado o privilegios insuficientes.');
     }
 
-    $id = $_POST['id'] ?? '';
-    $nombre = trim($_POST['nombre'] ?? '');
-    $user = strtoupper(trim($_POST['user'] ?? ''));
-    $pass = $_POST['pass'] ?? '';
-    $rol = $_POST['rol'] ?? '';
-    $esp = $_POST['esp'] ?? '';
+    $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+    $nombre = trim((string)filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
+    $user = strtoupper(trim((string)filter_input(INPUT_POST, 'user', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? ''));
+    $pass = (string)filter_input(INPUT_POST, 'pass', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
+    $rol = filter_input(INPUT_POST, 'rol', FILTER_VALIDATE_INT);
+    $esp = filter_input(INPUT_POST, 'esp', FILTER_VALIDATE_INT);
 
-    // Solo a los docentes (rol_id = 11) se les asigna una especialidad/materia
     if ((int)$rol !== 11) {
-        $esp = '';
+        $esp = null;
     }
 
-    if (empty($id) || empty($nombre) || empty($user) || empty($rol)) {
+    if ($id === null || $id === false || $nombre === '' || $user === '' || $rol === null || $rol === false) {
         throw new Exception('Faltan datos obligatorios para actualizar el perfil.');
     }
 
-    // BLOQUEO DE SEGURIDAD ELITE: Impedir rol Estudiante desde Personal
     if ((int)$rol === 12) {
         throw new Exception('Operación Inválida: No se puede asignar el rol de Estudiante desde este módulo.');
     }
 
-    // 1. REGLA DE PROTECCIÓN: El superadministrador (ID 1) mantiene su rol 1
-    if ($id == 1) {
+    if ($id === 1) {
         $rol = 1;
     }
 
-    // 2. CONSTRUIR SQL DINÁMICO (Contraseña opcional)
     if (!empty($pass)) {
         $pass_cripto = password_hash($pass, PASSWORD_DEFAULT);
         $stmt = $db->prepare('UPDATE usuarios SET nombre = :nom, usuario = :usr, password = :pwd, rol_id = :rol, especialidad_id = :esp WHERE id = :id');
@@ -53,12 +47,12 @@ try {
 
     $stmt->bindValue(':nom', $nombre, PDO::PARAM_STR);
     $stmt->bindValue(':usr', $user, PDO::PARAM_STR);
-    $stmt->bindValue(':rol', (int)$rol, PDO::PARAM_INT);
+    $stmt->bindValue(':rol', $rol, PDO::PARAM_INT);
     
-    if ($esp === '' || $esp === null || $esp === '0') {
+    if ($esp === null || $esp === 0) {
         $stmt->bindValue(':esp', null, PDO::PARAM_NULL);
     } else {
-        $stmt->bindValue(':esp', (int)$esp, PDO::PARAM_INT);
+        $stmt->bindValue(':esp', $esp, PDO::PARAM_INT);
     }
     
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
@@ -77,4 +71,3 @@ try {
 }
 exit();
 ?>
-

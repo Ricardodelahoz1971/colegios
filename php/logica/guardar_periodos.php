@@ -10,36 +10,35 @@ guardia_sesion();
 session_write_close();
 
 try {
-    // 🛡️ CAPA 1: PROTECCIÓN CSRF E INTEGRIDAD
     proteccion_extrema();
 
-    // 🛡️ CAPA 2: AUTORIZACIÓN DE PERMISOS
     if (!tiene_permiso('configuracion')) {
         throw new Exception("Acceso denegado: Privilegios insuficientes.");
     }
 
-    // 🛡️ CAPA 3: AUTORIZACIÓN POR ROL (Coordinador / Administrador)
     $mi_rol_nombre = strtolower($_SESSION['rol_nombre'] ?? '');
     if ($mi_rol_nombre !== 'administrador' && $mi_rol_nombre !== 'coordinador') {
         throw new Exception("Acceso denegado: Su rol no posee autoría para esta acción.");
     }
 
-    $periodos = $_POST['periodo'] ?? null;
-    if (!is_array($periodos)) {
+    $periodos_raw = filter_input(INPUT_POST, 'periodo', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+    if (!is_array($periodos_raw)) {
         throw new Exception("Parámetros de entrada inválidos.");
     }
 
-    $periodo_activo_id = isset($_POST['periodo_activo']) ? (int)$_POST['periodo_activo'] : null;
-    if ($periodo_activo_id === null || !array_key_exists($periodo_activo_id, $periodos)) {
+    $periodo_activo_raw = filter_input(INPUT_POST, 'periodo_activo', FILTER_VALIDATE_INT);
+    $periodo_activo_id = $periodo_activo_raw !== false && $periodo_activo_raw !== null ? (int)$periodo_activo_raw : null;
+    if ($periodo_activo_id === null || !array_key_exists($periodo_activo_id, $periodos_raw)) {
         throw new Exception("Debe seleccionar un periodo como activo.");
     }
 
-    // 1. Validar fechas individuales e ir armando una lista para validación cronológica
     $periodos_procesados = [];
-    foreach ($periodos as $id => $fechas) {
+    foreach ($periodos_raw as $id => $fechas) {
         $pid = (int)$id;
-        $f_inicio = trim($fechas['inicio'] ?? '');
-        $f_fin = trim($fechas['fin'] ?? '');
+        $f_inicio_raw = filter_input(INPUT_POST, 'periodo[' . $id . '][inicio]', FILTER_SANITIZE_STRING);
+        $f_fin_raw = filter_input(INPUT_POST, 'periodo[' . $id . '][fin]', FILTER_SANITIZE_STRING);
+        $f_inicio = trim($f_inicio_raw ?? '');
+        $f_fin = trim($f_fin_raw ?? '');
 
         if (empty($f_inicio) || empty($f_fin)) {
             throw new Exception("Las fechas de inicio y fin del Periodo $pid no pueden estar vacías.");
@@ -65,12 +64,10 @@ try {
         ];
     }
 
-    // 2. Ordenar por ID para garantizar consistencia cronológica
     usort($periodos_procesados, function ($a, $b) {
         return $a['id'] <=> $b['id'];
     });
 
-    // 3. Validar no-superposición y orden cronológico contiguo
     $total_p = count($periodos_procesados);
     for ($i = 1; $i < $total_p; $i++) {
         if ($periodos_procesados[$i]['inicio'] < $periodos_procesados[$i - 1]['fin']) {
@@ -78,7 +75,6 @@ try {
         }
     }
 
-    // 4. Guardar en base de datos bajo transacción
     $db->beginTransaction();
     try {
         foreach ($periodos_procesados as $p) {
@@ -106,3 +102,4 @@ try {
     ]);
 }
 exit();
+?>

@@ -34,13 +34,13 @@ try {
         throw new Exception('Acceso denegado: No posee credenciales para gestionar rúbricas.');
     }
 
-    $accion = $_POST['accion'] ?? $_GET['accion'] ?? 'invalid';
+    $accion = filter_input(INPUT_POST, 'accion') ?? $_GET['accion'] ?? 'invalid';
 
     switch ($accion) {
         case 'obtener_evidencias_digitales':
-            $estudiante_id = (int)($_GET['estudiante_id'] ?? $_POST['estudiante_id'] ?? 0);
-            $especialidad_id = (int)($_GET['especialidad_id'] ?? $_POST['especialidad_id'] ?? 0);
-            $tipo = $_GET['tipo'] ?? $_POST['tipo'] ?? '';
+            $estudiante_id = (int)($_GET['estudiante_id'] ?? filter_input(INPUT_POST, 'estudiante_id') ?? 0);
+            $especialidad_id = (int)($_GET['especialidad_id'] ?? filter_input(INPUT_POST, 'especialidad_id') ?? 0);
+            $tipo = $_GET['tipo'] ?? filter_input(INPUT_POST, 'tipo') ?? '';
 
             if (!$estudiante_id || !$especialidad_id || !$tipo) {
                 throw new Exception('Parámetros estudiante_id, especialidad_id y tipo son obligatorios.');
@@ -156,17 +156,17 @@ try {
         case 'guardar_actividad':
             proteccion_extrema(); // CSRF
             
-            $titulo = trim($_POST['titulo'] ?? '');
-            $curso_id = (int)($_POST['curso_id'] ?? 0);
-            $especialidad_id = (int)($_POST['especialidad_id'] ?? 0);
-            $clase_nota_id = (int)($_POST['clase_nota_id'] ?? 0);
-            $tipo_evaluacion = $_POST['tipo_evaluacion'] ?? 'directo'; // 'deductivo', 'rubrica', 'directo'
-            $ambito = trim($_POST['ambito'] ?? 'estandar');
+            $titulo = trim(filter_input(INPUT_POST, 'titulo') ?? '');
+            $curso_id = (int)(filter_input(INPUT_POST, 'curso_id') ?? 0);
+            $especialidad_id = (int)(filter_input(INPUT_POST, 'especialidad_id') ?? 0);
+            $clase_nota_id = (int)(filter_input(INPUT_POST, 'clase_nota_id') ?? 0);
+            $tipo_evaluacion = filter_input(INPUT_POST, 'tipo_evaluacion') ?? 'directo'; // 'deductivo', 'rubrica', 'directo'
+            $ambito = trim(filter_input(INPUT_POST, 'ambito') ?? 'estandar');
             if (!in_array($ambito, ['estandar', 'recuperacion'])) {
                 $ambito = 'estandar';
             }
-            $recupera_actividad_id = isset($_POST['recupera_actividad_id']) && (int)$_POST['recupera_actividad_id'] > 0 
-                ? (int)$_POST['recupera_actividad_id'] 
+            $recupera_actividad_id = (null !== filter_input(INPUT_POST, 'recupera_actividad_id')) && (int)filter_input(INPUT_POST, 'recupera_actividad_id') > 0 
+                ? (int)filter_input(INPUT_POST, 'recupera_actividad_id') 
                 : null;
             
             if (empty($titulo) || !$curso_id || !$especialidad_id || !$clase_nota_id) {
@@ -181,9 +181,9 @@ try {
                 $actividad_id = (int)$db->lastInsertId();
 
                 // 2. Si es modo Rúbrica, insertar los criterios
-                if ($tipo_evaluacion === 'rubrica' && isset($_POST['criterios'])) {
+                if ($tipo_evaluacion === 'rubrica' && (null !== filter_input(INPUT_POST, 'criterios'))) {
                     // Espera JSON [{"titulo": "Redaccion", "peso": 40}, ...]
-                    $criterios = json_decode($_POST['criterios'], true);
+                    $criterios = json_decode(filter_input(INPUT_POST, 'criterios'), true);
                     if (!is_array($criterios) || count($criterios) === 0) {
                         throw new Exception('El modo rúbrica exige al menos un criterio de evaluación.');
                     }
@@ -230,18 +230,18 @@ try {
 
         case 'actualizar_actividad':
             proteccion_extrema();
-            $id = (int)($_POST['id'] ?? 0);
-            $titulo = trim($_POST['titulo'] ?? '');
-            $tipo = $_POST['tipo_evaluacion'] ?? 'directo';
-            $clase_nota_id = (int)($_POST['clase_nota_id'] ?? 0);
-            $curso_id = (int)($_POST['curso_id'] ?? 0);
-            $especialidad_id = (int)($_POST['especialidad_id'] ?? 0);
-            $ambito = trim($_POST['ambito'] ?? 'estandar');
+            $id = (int)(filter_input(INPUT_POST, 'id') ?? 0);
+            $titulo = trim(filter_input(INPUT_POST, 'titulo') ?? '');
+            $tipo = filter_input(INPUT_POST, 'tipo_evaluacion') ?? 'directo';
+            $clase_nota_id = (int)(filter_input(INPUT_POST, 'clase_nota_id') ?? 0);
+            $curso_id = (int)(filter_input(INPUT_POST, 'curso_id') ?? 0);
+            $especialidad_id = (int)(filter_input(INPUT_POST, 'especialidad_id') ?? 0);
+            $ambito = trim(filter_input(INPUT_POST, 'ambito') ?? 'estandar');
             if (!in_array($ambito, ['estandar', 'recuperacion'])) {
                 $ambito = 'estandar';
             }
-            $recupera_actividad_id = isset($_POST['recupera_actividad_id']) && (int)$_POST['recupera_actividad_id'] > 0 
-                ? (int)$_POST['recupera_actividad_id'] 
+            $recupera_actividad_id = (null !== filter_input(INPUT_POST, 'recupera_actividad_id')) && (int)filter_input(INPUT_POST, 'recupera_actividad_id') > 0 
+                ? (int)filter_input(INPUT_POST, 'recupera_actividad_id') 
                 : null;
 
             if (!$id || !$titulo) throw new Exception('Datos insuficientes para la actualización.');
@@ -258,7 +258,7 @@ try {
                    ->execute([$titulo, $tipo, $clase_nota_id, $curso_id, $especialidad_id, $ambito, $recupera_actividad_id, $id]);
 
                 if ($tipo === 'rubrica') {
-                    $criterios = json_decode($_POST['criterios'] ?? '[]', true);
+                    $criterios = json_decode(filter_input(INPUT_POST, 'criterios') ?? '[]', true);
                     $ids_enviados = [];
 
                     foreach ($criterios as $c) {
@@ -440,7 +440,7 @@ try {
 
         case 'eliminar_actividad':
             proteccion_extrema();
-            $actividad_id = (int)($_POST['actividad_id'] ?? 0);
+            $actividad_id = (int)(filter_input(INPUT_POST, 'actividad_id') ?? 0);
             if (!$actividad_id) throw new Exception('ID de actividad no válido.');
 
             // Validar propiedad
@@ -467,8 +467,8 @@ try {
         case 'guardar_calificaciones_focus':
             proteccion_extrema();
             
-            $actividad_id = (int)($_POST['actividad_id'] ?? 0);
-            $estudiante_id = (int)($_POST['estudiante_id'] ?? 0);
+            $actividad_id = (int)(filter_input(INPUT_POST, 'actividad_id') ?? 0);
+            $estudiante_id = (int)(filter_input(INPUT_POST, 'estudiante_id') ?? 0);
             
             if (!$actividad_id || !$estudiante_id) {
                 throw new Exception('Identidad de estudiante o actividad no proporcionada.');
@@ -513,9 +513,9 @@ try {
                 // Calcular nota nueva
                 $nota_nueva = 0.0;
                 if ($actividad['tipo_evaluacion'] === 'directo') {
-                    $nota_nueva = (float)($_POST['calificacion_directa'] ?? 0);
+                    $nota_nueva = (float)(filter_input(INPUT_POST, 'calificacion_directa') ?? 0);
                 } else {
-                    $calificaciones = json_decode($_POST['calificaciones_rubrica'] ?? '[]', true);
+                    $calificaciones = json_decode(filter_input(INPUT_POST, 'calificaciones_rubrica') ?? '[]', true);
                     if (is_array($calificaciones)) {
                         $suma_ponderada = 0.0;
                         $stmt_pesos = $db->prepare("SELECT id, peso_porcentaje FROM ares_actividad_criterios WHERE actividad_id = ?");
@@ -534,7 +534,7 @@ try {
 
                 // Validar justificación si es edición/corrección que cambia la nota
                 if ($ya_tenia_nota && $nota_anterior != $nota_nueva) {
-                    $justificacion = trim($_POST['justificacion_cambio'] ?? '');
+                    $justificacion = trim(filter_input(INPUT_POST, 'justificacion_cambio') ?? '');
                     if (empty($justificacion) || strlen($justificacion) < 10) {
                         throw new Exception('Se requiere una justificación válida (mínimo 10 caracteres) para corregir una nota registrada.');
                     }
@@ -547,10 +547,10 @@ try {
                 $stmt_del = $db->prepare("DELETE FROM ares_calificaciones_desglose WHERE actividad_id = ? AND estudiante_id = ?");
                 $stmt_del->execute([$actividad_id, $estudiante_id]);
 
-                $nota_recuperacion = isset($_POST['nota_recuperacion']) && $_POST['nota_recuperacion'] !== '' ? (float)$_POST['nota_recuperacion'] : null;
-                $metodo_recuperacion = isset($_POST['metodo_recuperacion']) && $_POST['metodo_recuperacion'] !== '' ? trim($_POST['metodo_recuperacion']) : null;
-                $justificacion_recuperacion = isset($_POST['justificacion_recuperacion']) && $_POST['justificacion_recuperacion'] !== '' ? trim($_POST['justificacion_recuperacion']) : null;
-                $soporte_recuperacion_id = isset($_POST['soporte_recuperacion_id']) && $_POST['soporte_recuperacion_id'] !== '' ? (int)$_POST['soporte_recuperacion_id'] : null;
+                $nota_recuperacion = (null !== filter_input(INPUT_POST, 'nota_recuperacion')) && filter_input(INPUT_POST, 'nota_recuperacion') !== '' ? (float)filter_input(INPUT_POST, 'nota_recuperacion') : null;
+                $metodo_recuperacion = (null !== filter_input(INPUT_POST, 'metodo_recuperacion')) && filter_input(INPUT_POST, 'metodo_recuperacion') !== '' ? trim(filter_input(INPUT_POST, 'metodo_recuperacion')) : null;
+                $justificacion_recuperacion = (null !== filter_input(INPUT_POST, 'justificacion_recuperacion')) && filter_input(INPUT_POST, 'justificacion_recuperacion') !== '' ? trim(filter_input(INPUT_POST, 'justificacion_recuperacion')) : null;
+                $soporte_recuperacion_id = (null !== filter_input(INPUT_POST, 'soporte_recuperacion_id')) && filter_input(INPUT_POST, 'soporte_recuperacion_id') !== '' ? (int)filter_input(INPUT_POST, 'soporte_recuperacion_id') : null;
                 
                 // Si la nueva nota original es aprobatoria (>= 3.0), no requiere recuperación
                 if ($nota_nueva >= 3.0) {
@@ -576,12 +576,12 @@ try {
                 $stmt_ins = $db->prepare("INSERT INTO ares_calificaciones_desglose (actividad_id, criterio_id, estudiante_id, calificacion, es_edicion, nota_recuperacion, metodo_recuperacion, justificacion_recuperacion, soporte_recuperacion_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
                 if ($actividad['tipo_evaluacion'] === 'directo') {
-                    $calificacion_unica = (float)($_POST['calificacion_directa'] ?? 0);
+                    $calificacion_unica = (float)(filter_input(INPUT_POST, 'calificacion_directa') ?? 0);
                     $stmt_ins->execute([$actividad_id, null, $estudiante_id, $calificacion_unica, $es_edicion, $nota_recuperacion, $metodo_recuperacion, $justificacion_recuperacion, $soporte_recuperacion_id]);
                 } 
-                elseif ($actividad['tipo_evaluacion'] === 'rubrica' && isset($_POST['calificaciones_rubrica'])) {
+                elseif ($actividad['tipo_evaluacion'] === 'rubrica' && (null !== filter_input(INPUT_POST, 'calificaciones_rubrica'))) {
                     // Esperamos JSON [{"criterio_id": 1, "calificacion": 4.5}, ...]
-                    $calificaciones = json_decode($_POST['calificaciones_rubrica'], true);
+                    $calificaciones = json_decode(filter_input(INPUT_POST, 'calificaciones_rubrica'), true);
                     if (is_array($calificaciones)) {
                         foreach ($calificaciones as $calif) {
                             $c_id = (int)$calif['criterio_id'];

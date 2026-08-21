@@ -2,9 +2,8 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
+session_write_close();
 proteccion_extrema();
-// PHP/LOGICA/GUARDAR_EVENTO.PHP - REGISTRO DE EVENTOS v1.0
 include '../db.php';
 include '../auth.php';
 
@@ -15,11 +14,17 @@ if (!isset($_SESSION['usuario_id']) || !$es_admin_cron) {
     exit;
 }
 
-$titulo = isset($_POST['titulo']) ? trim($_POST['titulo']) : '';
-$fecha  = isset($_POST['fecha']) ? $_POST['fecha'] : '';
-$desc   = isset($_POST['desc']) ? trim($_POST['desc']) : '';
-$tipo   = isset($_POST['tipo']) ? $_POST['tipo'] : 'EVENTO';
-$color  = isset($_POST['color']) ? $_POST['color'] : 'rgb(13, 202, 240)';
+$titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
+$fecha = filter_input(INPUT_POST, 'fecha', FILTER_SANITIZE_STRING);
+$desc = filter_input(INPUT_POST, 'desc', FILTER_SANITIZE_STRING);
+$tipo = filter_input(INPUT_POST, 'tipo', FILTER_SANITIZE_STRING);
+$color = filter_input(INPUT_POST, 'color', FILTER_SANITIZE_STRING);
+
+$titulo = $titulo !== null ? trim($titulo) : '';
+$fecha = $fecha !== null ? trim($fecha) : '';
+$desc = $desc !== null ? trim($desc) : '';
+$tipo = $tipo !== null ? trim($tipo) : 'EVENTO';
+$color = $color !== null ? trim($color) : 'rgb(13, 202, 240)';
 
 if (!$titulo || !$fecha) {
     header('Content-Type: application/json');
@@ -45,4 +50,3 @@ if ($stmt->execute()) {
 }
 exit;
 ?>
-

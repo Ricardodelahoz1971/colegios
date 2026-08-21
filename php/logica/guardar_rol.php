@@ -2,8 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
-// PHP/LOGICA/GUARDAR_ROL.PHP - PROCESADOR DE ALTA DE PERFILES v1.1
+session_write_close();
 header('Content-Type: application/json');
 require_once '../db.php';
 require_once '../auth.php';
@@ -11,18 +10,16 @@ require_once '../auth.php';
 try {
     proteccion_extrema();
 
-    // 🛡️ CAPA 2: VALIDACIÓN DE PERMISOS
-    if (!tiene_permiso('roles')) { 
-        throw new Exception("Acceso denegado: Rango académico insuficiente."); 
+    if (!tiene_permiso('roles')) {
+        throw new Exception("Acceso denegado: Rango académico insuficiente.");
     }
 
-    $nombre = trim($_POST['nombre_rol'] ?? '');
+    $nombre = trim(filter_input(INPUT_POST, 'nombre_rol', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
 
     if (empty($nombre)) {
         throw new Exception("El nombre del perfil es obligatorio.");
     }
 
-    // 🛡️ SOBERANÍA: Evitar duplicados (Case Insensitive)
     $check = $db->prepare('SELECT COUNT(*) FROM roles WHERE nombre_rol = :nom');
     $check->bindValue(':nom', $nombre, PDO::PARAM_STR);
     $check->execute();
@@ -44,4 +41,3 @@ try {
 }
 exit();
 ?>
-

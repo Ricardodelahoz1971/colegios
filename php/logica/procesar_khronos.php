@@ -25,7 +25,7 @@ if (!tienen_rol(['administrador', 'coordinador', 'rector'])) {
     exit();
 }
 
-$accion = $_POST['accion'] ?? '';
+$accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_STRING) ?? '';
 
 // HELPER PARA CALCULAR TIEMPOS BASADOS EN CONFIGURACIÓN (v9.2 PDO)
 function getTiempos(PDO $db, int $hora_num, int $curso_id = 0): array {
@@ -75,12 +75,12 @@ function getTiempos(PDO $db, int $hora_num, int $curso_id = 0): array {
 switch ($accion) {
     case 'asignar':
     case 'mover':
-        $id = (int)($_POST['id'] ?? 0);
-        $curso_id = (int)$_POST['curso_id'];
-        $docente_id = (int)$_POST['docente_id'];
-        $especialidad_id = (int)$_POST['especialidad_id'];
-        $dia = $_POST['dia_semana'];
-        $hora = (int)$_POST['hora_numero'];
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
+        $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
+        $docente_id = filter_input(INPUT_POST, 'docente_id', FILTER_VALIDATE_INT) ?? 0;
+        $especialidad_id = filter_input(INPUT_POST, 'especialidad_id', FILTER_VALIDATE_INT) ?? 0;
+        $dia = filter_input(INPUT_POST, 'dia_semana', FILTER_SANITIZE_STRING) ?? '';
+        $hora = filter_input(INPUT_POST, 'hora_numero', FILTER_VALIDATE_INT) ?? 0;
         [$ini, $fin] = getTiempos($db, $hora, $curso_id);
 
         if ($id > 0) {
@@ -100,9 +100,12 @@ switch ($accion) {
         break;
 
     case 'swap':
-        $id_a = (int)$_POST['id_a']; $id_b = (int)$_POST['id_b'];
-        $dia_a = $_POST['dia_a']; $hora_a = (int)$_POST['hora_a'];
-        $dia_b = $_POST['dia_b']; $hora_b = (int)$_POST['hora_b'];
+        $id_a = filter_input(INPUT_POST, 'id_a', FILTER_VALIDATE_INT) ?? 0;
+        $id_b = filter_input(INPUT_POST, 'id_b', FILTER_VALIDATE_INT) ?? 0;
+        $dia_a = filter_input(INPUT_POST, 'dia_a', FILTER_SANITIZE_STRING) ?? '';
+        $hora_a = filter_input(INPUT_POST, 'hora_a', FILTER_VALIDATE_INT) ?? 0;
+        $dia_b = filter_input(INPUT_POST, 'dia_b', FILTER_SANITIZE_STRING) ?? '';
+        $hora_b = filter_input(INPUT_POST, 'hora_b', FILTER_VALIDATE_INT) ?? 0;
         
         $stmt_c_a = $db->prepare("SELECT curso_id FROM khronos_horarios WHERE id = ?");
         $stmt_c_a->execute([$id_a]);
@@ -128,11 +131,12 @@ switch ($accion) {
         break;
 
     case 'reemplazar':
-        $id_eliminar = (int)$_POST['id_eliminar'];
-        $curso_id = (int)$_POST['curso_id'];
-        $docente_id = (int)$_POST['docente_id'];
-        $especialidad_id = (int)$_POST['especialidad_id'];
-        $dia = $_POST['dia_semana']; $hora = (int)$_POST['hora_numero'];
+        $id_eliminar = filter_input(INPUT_POST, 'id_eliminar', FILTER_VALIDATE_INT) ?? 0;
+        $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
+        $docente_id = filter_input(INPUT_POST, 'docente_id', FILTER_VALIDATE_INT) ?? 0;
+        $especialidad_id = filter_input(INPUT_POST, 'especialidad_id', FILTER_VALIDATE_INT) ?? 0;
+        $dia = filter_input(INPUT_POST, 'dia_semana', FILTER_SANITIZE_STRING) ?? '';
+        $hora = filter_input(INPUT_POST, 'hora_numero', FILTER_VALIDATE_INT) ?? 0;
         [$ini, $fin] = getTiempos($db, $hora, $curso_id);
 
         try {
@@ -158,13 +162,13 @@ switch ($accion) {
         break;
 
     case 'eliminar':
-        $id = (int)$_POST['id'];
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
         $stmt = $db->prepare("DELETE FROM khronos_horarios WHERE id = :id");
         if ($stmt->execute([':id' => $id])) echo json_encode(['status' => 'success']);
         break;
 
     case 'limpiar':
-        $curso_id = (int)$_POST['curso_id'];
+        $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
         $stmt = $db->prepare("DELETE FROM khronos_horarios WHERE curso_id = :cid");
         if ($stmt->execute([':cid' => $curso_id])) echo json_encode(['status' => 'success']);
         break;

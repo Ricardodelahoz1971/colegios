@@ -2,14 +2,14 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
-// PHP/LOGICA/API_PREGUNTAS.PHP - CEREBRO DE REACTIVOS v2.0 (ARQUITECTURA DE LINAJE)
+session_write_close();
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
 header('Content-Type: application/json');
 require_once '../db.php';
 require_once '../auth.php';
+
 function procesarImagenesCanvasMetadata(string $metadataJson): string {
     $data = json_decode($metadataJson, true);
     if (!is_array($data) || !isset($data['nodes']) || !is_array($data['nodes'])) {
@@ -74,40 +74,39 @@ try {
     }
 
     $mi_id = (int)$_SESSION['usuario_id'];
-    $accion = $_POST['accion'] ?? $_GET['accion'] ?? 'listar';
+    $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_STRING) ?? 'listar';
 
     switch ($accion) {
         case 'guardar':
             proteccion_extrema();
-            $id = (int)($_POST['id'] ?? 0);
-            $materia_id = (int)($_POST['materia_id'] ?? 0);
-            $tipo_id = (int)($_POST['tipo_id'] ?? 0);
-            $enunciado = $_POST['enunciado'] ?? '';
-            $metadata = $_POST['metadata'] ?? ''; 
+            $id = (int)filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
+            $materia_id = (int)filter_input(INPUT_POST, 'materia_id', FILTER_VALIDATE_INT) ?? 0;
+            $tipo_id = (int)filter_input(INPUT_POST, 'tipo_id', FILTER_VALIDATE_INT) ?? 0;
+            $enunciado = filter_input(INPUT_POST, 'enunciado', FILTER_SANITIZE_STRING) ?? '';
+            $metadata = filter_input(INPUT_POST, 'metadata', FILTER_SANITIZE_STRING) ?? '';
             if (!empty($metadata)) {
                 $metadata = procesarImagenesCanvasMetadata($metadata);
             }
-            $complejidad = $_POST['complejidad'] ?? 'Media';
-
-            $titulo = trim($_POST['titulo'] ?? '');
+            $complejidad = filter_input(INPUT_POST, 'complejidad', FILTER_SANITIZE_STRING) ?? 'Media';
+            $titulo = trim(filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING) ?? '');
+            $aprendizaje_id = (int)filter_input(INPUT_POST, 'aprendizaje_id', FILTER_VALIDATE_INT) ?? 0;
+            $evidencia_id = (int)filter_input(INPUT_POST, 'evidencia_id', FILTER_VALIDATE_INT) ?? 0;
 
             if (empty($titulo) || empty($enunciado) || empty($metadata) || !$materia_id || !$tipo_id) {
                 throw new Exception('Información incompleta para registrar el reactivo (El título es obligatorio).');
             }
 
             if ($id > 0) {
-                // UPDATE (Docentes solo pueden actualizar lo propio, Admins/Coordinadores pueden actualizar cualquier registro)
                 if (tienen_rol(['Administrador', 'Coordinador'])) {
                     $stmt = $db->prepare("UPDATE eval_preguntas SET titulo = ?, materia_id = ?, tipo_id = ?, enunciado = ?, metadata_json = ?, complejidad = ?, aprendizaje_id = ?, evidencia_id = ?, fecha_modificacion = CURRENT_TIMESTAMP WHERE id = ?");
-                    $params = [$titulo, $materia_id, $tipo_id, $enunciado, $metadata, $complejidad, (int)($_POST['aprendizaje_id'] ?? 0) ?: null, (int)($_POST['evidencia_id'] ?? 0) ?: null, $id];
+                    $params = [$titulo, $materia_id, $tipo_id, $enunciado, $metadata, $complejidad, $aprendizaje_id ?: null, $evidencia_id ?: null, $id];
                 } else {
                     $stmt = $db->prepare("UPDATE eval_preguntas SET titulo = ?, materia_id = ?, tipo_id = ?, enunciado = ?, metadata_json = ?, complejidad = ?, aprendizaje_id = ?, evidencia_id = ?, fecha_modificacion = CURRENT_TIMESTAMP WHERE id = ? AND docente_id = ?");
-                    $params = [$titulo, $materia_id, $tipo_id, $enunciado, $metadata, $complejidad, (int)($_POST['aprendizaje_id'] ?? 0) ?: null, (int)($_POST['evidencia_id'] ?? 0) ?: null, $id, $mi_id];
+                    $params = [$titulo, $materia_id, $tipo_id, $enunciado, $metadata, $complejidad, $aprendizaje_id ?: null, $evidencia_id ?: null, $id, $mi_id];
                 }
             } else {
-                // INSERT
                 $stmt = $db->prepare("INSERT INTO eval_preguntas (titulo, docente_id, materia_id, tipo_id, enunciado, metadata_json, complejidad, original_author_id, aprendizaje_id, evidencia_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $params = [$titulo, $mi_id, $materia_id, $tipo_id, $enunciado, $metadata, $complejidad, $mi_id, (int)($_POST['aprendizaje_id'] ?? 0) ?: null, (int)($_POST['evidencia_id'] ?? 0) ?: null];
+                $params = [$titulo, $mi_id, $materia_id, $tipo_id, $enunciado, $metadata, $complejidad, $mi_id, $aprendizaje_id ?: null, $evidencia_id ?: null];
             }
 
             if ($stmt->execute($params)) {
@@ -119,17 +118,15 @@ try {
 
         case 'adaptar':
             proteccion_extrema();
-            $id_original = (int)($_POST['id'] ?? 0);
+            $id_original = (int)filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
             if ($id_original <= 0) throw new Exception('ID de reactivo original no válido.');
 
-            // Obtener el ADN original
             $stmt_o = $db->prepare("SELECT * FROM eval_preguntas WHERE id = ?");
             $stmt_o->execute([$id_original]);
             $original = $stmt_o->fetch();
 
             if (!$original) throw new Exception('El reactivo original ya no existe en la bóveda.');
 
-            // Crear la Adaptación (Fork)
             $sql = "INSERT INTO eval_preguntas 
                     (titulo, docente_id, materia_id, tipo_id, enunciado, metadata_json, complejidad, parent_id, original_author_id, aprendizaje_id, evidencia_id) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -137,14 +134,14 @@ try {
             $stmt_a = $db->prepare($sql);
             $res = $stmt_a->execute([
                 $original['titulo'],
-                $mi_id, // Nuevo dueño
+                $mi_id,
                 $original['materia_id'],
                 $original['tipo_id'],
                 $original['enunciado'],
                 $original['metadata_json'],
                 $original['complejidad'],
-                $original['id'], // Parent
-                $original['original_author_id'] ?? $original['docente_id'], // Autor Original
+                $original['id'],
+                $original['original_author_id'] ?? $original['docente_id'],
                 $original['aprendizaje_id'],
                 $original['evidencia_id']
             ]);
@@ -158,7 +155,7 @@ try {
 
         case 'eliminar':
             proteccion_extrema();
-            $id = (int)($_POST['id'] ?? 0);
+            $id = (int)filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
             
             $check = $db->prepare("SELECT COUNT(*) FROM eval_pruebas_items WHERE pregunta_id = ?");
             $check->execute([$id]);
@@ -181,7 +178,7 @@ try {
             break;
 
         case 'obtener':
-            $id = (int)$_GET['id'];
+            $id = (int)filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?? 0;
             $stmt = $db->prepare("SELECT p.*,
                                     u.nombre as autor_nombre, 
                                     (SELECT nombre FROM usuarios WHERE id = p.original_author_id) as autor_original_nombre,
@@ -201,8 +198,8 @@ try {
             break;
 
         case 'listar':
-            $scope = $_GET['scope'] ?? 'mine'; // 'mine' o 'universal'
-            $materia_id = (int)($_GET['materia_id'] ?? 0);
+            $scope = filter_input(INPUT_GET, 'scope', FILTER_SANITIZE_STRING) ?? 'mine';
+            $materia_id = (int)filter_input(INPUT_GET, 'materia_id', FILTER_VALIDATE_INT) ?? 0;
             
             $query = "SELECT p.*, 
                              t.nombre as tipo_nombre, u.nombre as autor_nombre, 
@@ -215,7 +212,6 @@ try {
                       WHERE 1=1";
             $params = [];
 
-            // RESTRICCIÓN SOBERANA: Siempre ver lo propio + lo que pertenece a su carga académica
             if (!tienen_rol(['Administrador', 'Coordinador'])) {
                 $query .= " AND (p.docente_id = ? OR p.materia_id IN (SELECT especialidad_id FROM carga_academica WHERE docente_id = ?))";
                 $params[] = $mi_id;
@@ -249,16 +245,16 @@ try {
             break;
 
         case 'catalogo_grados':
-            $area_id = (int)($_GET['area_id'] ?? 0);
+            $area_id = (int)filter_input(INPUT_GET, 'area_id', FILTER_VALIDATE_INT) ?? 0;
             $stmt = $db->prepare("SELECT DISTINCT grado FROM ares_catalogo_aprendizajes WHERE area_id = ? ORDER BY CAST(grado AS INTEGER) ASC, grado ASC");
             $stmt->execute([$area_id]);
             echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_COLUMN)]);
             break;
 
         case 'catalogo_dbas':
-            $area_id = (int)($_GET['area_id'] ?? 0);
-            $grado = $_GET['grado'] ?? '';
-            $disciplina = $_GET['disciplina'] ?? '';
+            $area_id = (int)filter_input(INPUT_GET, 'area_id', FILTER_VALIDATE_INT) ?? 0;
+            $grado = filter_input(INPUT_GET, 'grado', FILTER_SANITIZE_STRING) ?? '';
+            $disciplina = filter_input(INPUT_GET, 'disciplina', FILTER_SANITIZE_STRING) ?? '';
 
             $sql = "SELECT id, num_dba, enunciado FROM ares_catalogo_aprendizajes WHERE area_id = ? AND grado = ?";
             $params = [$area_id, $grado];
@@ -275,14 +271,15 @@ try {
             break;
 
         case 'catalogo_evidencias':
-            $aprendizaje_id = (int)($_GET['aprendizaje_id'] ?? 0);
+            $aprendizaje_id = (int)filter_input(INPUT_GET, 'aprendizaje_id', FILTER_VALIDATE_INT) ?? 0;
             $stmt = $db->prepare("SELECT id, texto as enunciado FROM ares_catalogo_evidencias WHERE aprendizaje_id = ? ORDER BY id ASC");
             $stmt->execute([$aprendizaje_id]);
             echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll()]);
             break;
 
         case 'tipos':
-            $stmt_stmt = $db->prepare("SELECT * FROM eval_tipos WHERE estado = 1"); $stmt_stmt->execute(); $stmt = $stmt_stmt;
+            $stmt = $db->prepare("SELECT * FROM eval_tipos WHERE estado = 1");
+            $stmt->execute();
             echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll()]);
             break;
 
@@ -294,3 +291,4 @@ try {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 exit();
+?>

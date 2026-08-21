@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 /**
- * PHP/LOGIN.PHP - PROCESAMIENTO DE ACCESO v9.2
+ * PHP/LOGIN.PHP - PROCESAMIENTO DE ACCESO v9.3
  * Este archivo actúa como el punto de entrada lógico para las peticiones de acceso,
  * delegando la validación y gestión de sesiones al AuthController.
  */
@@ -13,9 +13,9 @@ require_once 'logica/AuthController.php';
 // Blindaje contra ataques CSRF y Method Hijacking
 proteccion_extrema();
 
-// Captura de datos del formulario institucional
-$usuario = $_POST['usuario'] ?? '';
-$password = $_POST['password'] ?? '';
+// Captura de datos del formulario institucional usando filter_input
+$usuario = filter_input(INPUT_POST, 'usuario', FILTER_SANITIZE_STRING) ?? '';
+$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING) ?? '';
 
 // Ejecutar protocolo de autenticación Senior
 $auth = AuthController::login($db, $usuario, $password);

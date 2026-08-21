@@ -2,7 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
+session_write_close();
 proteccion_extrema();
 require_once '../db.php';
 require_once '../auth.php';
@@ -12,18 +12,17 @@ header('Content-Type: application/json');
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception("Método no permitido");
     
-    $curso_id = (int)($_POST['curso_id'] ?? 0);
-    $dia = $_POST['dia'] ?? '';
-    $hora = (int)($_POST['hora'] ?? 0);
-    $evento = trim($_POST['evento'] ?? '');
+    $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
+    $dia = filter_input(INPUT_POST, 'dia', FILTER_SANITIZE_STRING) ?? '';
+    $hora = filter_input(INPUT_POST, 'hora', FILTER_VALIDATE_INT) ?? 0;
+    $evento = filter_input(INPUT_POST, 'evento', FILTER_SANITIZE_STRING) ?? '';
+    $evento = trim($evento);
     
     if (!$curso_id || !$dia || !$hora) throw new Exception("Parámetros incompletos");
     
-    // 1. ELIMINAR CUALQUIER REGISTRO PREVIO EN ESE SLOT
     $stmt_del = $db->prepare("DELETE FROM khronos_horarios WHERE curso_id = ? AND dia_semana = ? AND hora_numero = ?");
     $stmt_del->execute([$curso_id, $dia, $hora]);
     
-    // 2. SI HAY TEXTO, INSERTAR EVENTO
     if (!empty($evento)) {
         $stmt_ins = $db->prepare("INSERT INTO khronos_horarios (curso_id, dia_semana, hora_numero, evento_nombre, especialidad_id, docente_id) VALUES (?, ?, ?, ?, 0, 0)");
         $stmt_ins->execute([$curso_id, $dia, $hora, $evento]);

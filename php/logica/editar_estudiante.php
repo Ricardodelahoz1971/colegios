@@ -2,10 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
-/**
- * 🎓 PROCESADOR DE EDICIÓN DE ESTUDIANTES v1.1 (ELITE)
- */
+session_write_close();
 header('Content-Type: application/json');
 require_once '../db.php';
 require_once '../auth.php';
@@ -13,32 +10,44 @@ require_once '../auth.php';
 try {
     proteccion_extrema();
 
-    // 🛡️ CAPA 2: VALIDACIÓN DE AUTORIDAD
     if (!tiene_permiso('estudiantes')) {
         throw new Exception('Permisos insuficientes para esta operación.');
     }
 
-    $id = $_POST['id'] ?? null;
+    $input = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    $id = filter_var($input['id'] ?? null, FILTER_VALIDATE_INT);
     if (!$id) throw new Exception('Identificador de estudiante ausente.');
 
-    // Mapeo manual para asegurar integridad
+    $identificacion = trim(filter_var($input['identificacion'] ?? '', FILTER_SANITIZE_STRING));
+    $nombre = mb_strtoupper(trim(filter_var($input['nombre'] ?? '', FILTER_SANITIZE_STRING)), 'UTF-8');
+    $apellido = mb_strtoupper(trim(filter_var($input['apellido'] ?? '', FILTER_SANITIZE_STRING)), 'UTF-8');
+    $curso_id_raw = trim(filter_var($input['curso_id'] ?? '', FILTER_SANITIZE_STRING));
+    $curso_id = ($curso_id_raw === '' || $curso_id_raw === 'null' || $curso_id_raw === '0') ? null : (int)$curso_id_raw;
+    $promedio = (float)(filter_var($input['promedio'] ?? 0, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
+    $tipo_documento = trim(filter_var($input['tipo_documento'] ?? '', FILTER_SANITIZE_STRING));
+    $tipo_sangre = trim(filter_var($input['tipo_sangre'] ?? '', FILTER_SANITIZE_STRING));
+    $genero = trim(filter_var($input['genero'] ?? '', FILTER_SANITIZE_STRING));
+    $email = mb_strtolower(trim(filter_var($input['email'] ?? '', FILTER_SANITIZE_EMAIL)), 'UTF-8');
+    $celular = trim(filter_var($input['celular'] ?? '', FILTER_SANITIZE_STRING));
+    $es_antiguo = (filter_var($input['es_antiguo'] ?? 0, FILTER_VALIDATE_INT) === 1) ? 1 : 0;
+
     $params = [
-        ':ide'  => $_POST['identificacion'] ?? '',
-        ':nom'  => mb_strtoupper($_POST['nombre'] ?? '', 'UTF-8'),
-        ':ape'  => mb_strtoupper($_POST['apellido'] ?? '', 'UTF-8'),
-        ':cid'  => ($_POST['curso_id'] === '' || $_POST['curso_id'] === 'null' || $_POST['curso_id'] === '0') ? null : (int)$_POST['curso_id'],
+        ':ide'  => $identificacion,
+        ':nom'  => $nombre,
+        ':ape'  => $apellido,
+        ':cid'  => $curso_id,
         ':cur'  => 'ACTUALIZANDO...',
-        ':pro'  => (float)($_POST['promedio'] ?? 0),
-        ':tdoc' => $_POST['tipo_documento'] ?? '',
-        ':rh'   => $_POST['tipo_sangre'] ?? '',
-        ':gen'  => $_POST['genero'] ?? '',
-        ':mail' => mb_strtolower($_POST['email'] ?? '', 'UTF-8'),
-        ':cel'  => $_POST['celular'] ?? '',
-        ':ant'  => (isset($_POST['es_antiguo']) && $_POST['es_antiguo'] == 1) ? 1 : 0,
-        ':id'   => (int)$id
+        ':pro'  => $promedio,
+        ':tdoc' => $tipo_documento,
+        ':rh'   => $tipo_sangre,
+        ':gen'  => $genero,
+        ':mail' => $email,
+        ':cel'  => $celular,
+        ':ant'  => $es_antiguo,
+        ':id'   => $id
     ];
 
-    // Sincronizar nombre de curso para compatibilidad legacy
     if ($params[':cid']) {
         $stmt_c = $db->prepare("SELECT nombre_curso FROM cursos WHERE id = ?");
         $stmt_c->execute([$params[':cid']]);
@@ -57,54 +66,52 @@ try {
     $stmt = $db->prepare($sql);
     
     if ($stmt->execute($params)) {
-        // 🎓 PERSISTENCIA DE DATOS ADICIONALES Y ACUDIENTES
-        $estudiante_id = (int)$id;
+        $estudiante_id = $id;
         
-        // Comprobar existencia previa de registro
         $stmt_check = $db->prepare("SELECT COUNT(*) FROM estudiantes_datos_adicionales WHERE estudiante_id = ?");
         $stmt_check->execute([$estudiante_id]);
         $existe_adicional = ((int)$stmt_check->fetchColumn() > 0);
         
-        // Calcular edad dinámicamente si se suministra fecha de nacimiento
+        $fecha_nacimiento = trim(filter_var($input['fecha_nacimiento'] ?? '', FILTER_SANITIZE_STRING));
         $edad_val = null;
-        if (!empty($_POST['fecha_nacimiento'])) {
+        if (!empty($fecha_nacimiento)) {
             try {
-                $birthDate = new DateTime($_POST['fecha_nacimiento']);
+                $birthDate = new DateTime($fecha_nacimiento);
                 $today = new DateTime();
                 $edad_val = $today->diff($birthDate)->y;
             } catch (Throwable $t) {}
         }
         
         $params_adicional = [
-            ':lugar_nac'   => !empty($_POST['lugar_nacimiento']) ? trim($_POST['lugar_nacimiento']) : null,
-            ':fecha_nac'   => !empty($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : null,
+            ':lugar_nac'   => !empty($input['lugar_nacimiento']) ? trim(filter_var($input['lugar_nacimiento'], FILTER_SANITIZE_STRING)) : null,
+            ':fecha_nac'   => !empty($fecha_nacimiento) ? $fecha_nacimiento : null,
             ':edad'        => $edad_val,
-            ':nacionalidad'=> !empty($_POST['nacionalidad']) ? trim($_POST['nacionalidad']) : null,
-            ':col_ant'     => !empty($_POST['colegio_anterior']) ? trim($_POST['colegio_anterior']) : null,
-            ':dir_est'     => !empty($_POST['direccion_estudiante']) ? trim($_POST['direccion_estudiante']) : null,
-            ':folio'       => !empty($_POST['folio_matricula']) ? trim($_POST['folio_matricula']) : null,
+            ':nacionalidad'=> !empty($input['nacionalidad']) ? trim(filter_var($input['nacionalidad'], FILTER_SANITIZE_STRING)) : null,
+            ':col_ant'     => !empty($input['colegio_anterior']) ? trim(filter_var($input['colegio_anterior'], FILTER_SANITIZE_STRING)) : null,
+            ':dir_est'     => !empty($input['direccion_estudiante']) ? trim(filter_var($input['direccion_estudiante'], FILTER_SANITIZE_STRING)) : null,
+            ':folio'       => !empty($input['folio_matricula']) ? trim(filter_var($input['folio_matricula'], FILTER_SANITIZE_STRING)) : null,
             
-            ':padre_nom'   => !empty($_POST['padre_nombre']) ? trim($_POST['padre_nombre']) : null,
-            ':padre_tdoc'  => !empty($_POST['padre_tipo_documento']) ? trim($_POST['padre_tipo_documento']) : null,
-            ':padre_doc'   => !empty($_POST['padre_documento']) ? trim($_POST['padre_documento']) : null,
-            ':padre_doc_exp'=> !empty($_POST['padre_documento_expedicion']) ? trim($_POST['padre_documento_expedicion']) : null,
-            ':padre_nac'   => !empty($_POST['padre_nacionalidad']) ? trim($_POST['padre_nacionalidad']) : null,
-            ':padre_cel'   => !empty($_POST['padre_celular']) ? trim($_POST['padre_celular']) : null,
-            ':padre_tel'   => !empty($_POST['padre_telefono']) ? trim($_POST['padre_telefono']) : null,
-            ':padre_dir'   => !empty($_POST['padre_direccion']) ? trim($_POST['padre_direccion']) : null,
-            ':padre_prof'  => !empty($_POST['padre_profesion']) ? trim($_POST['padre_profesion']) : null,
-            ':padre_email' => !empty($_POST['padre_email']) ? trim($_POST['padre_email']) : null,
+            ':padre_nom'   => !empty($input['padre_nombre']) ? trim(filter_var($input['padre_nombre'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_tdoc'  => !empty($input['padre_tipo_documento']) ? trim(filter_var($input['padre_tipo_documento'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_doc'   => !empty($input['padre_documento']) ? trim(filter_var($input['padre_documento'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_doc_exp'=> !empty($input['padre_documento_expedicion']) ? trim(filter_var($input['padre_documento_expedicion'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_nac'   => !empty($input['padre_nacionalidad']) ? trim(filter_var($input['padre_nacionalidad'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_cel'   => !empty($input['padre_celular']) ? trim(filter_var($input['padre_celular'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_tel'   => !empty($input['padre_telefono']) ? trim(filter_var($input['padre_telefono'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_dir'   => !empty($input['padre_direccion']) ? trim(filter_var($input['padre_direccion'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_prof'  => !empty($input['padre_profesion']) ? trim(filter_var($input['padre_profesion'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_email' => !empty($input['padre_email']) ? trim(filter_var($input['padre_email'], FILTER_SANITIZE_EMAIL)) : null,
             
-            ':madre_nom'   => !empty($_POST['madre_nombre']) ? trim($_POST['madre_nombre']) : null,
-            ':madre_tdoc'  => !empty($_POST['madre_tipo_documento']) ? trim($_POST['madre_tipo_documento']) : null,
-            ':madre_doc'   => !empty($_POST['madre_documento']) ? trim($_POST['madre_documento']) : null,
-            ':madre_doc_exp'=> !empty($_POST['madre_documento_expedicion']) ? trim($_POST['madre_documento_expedicion']) : null,
-            ':madre_nac'   => !empty($_POST['madre_nacionalidad']) ? trim($_POST['madre_nacionalidad']) : null,
-            ':madre_cel'   => !empty($_POST['madre_celular']) ? trim($_POST['madre_celular']) : null,
-            ':madre_tel'   => !empty($_POST['madre_telefono']) ? trim($_POST['madre_telefono']) : null,
-            ':madre_dir'   => !empty($_POST['madre_direccion']) ? trim($_POST['madre_direccion']) : null,
-            ':madre_prof'  => !empty($_POST['madre_profesion']) ? trim($_POST['madre_profesion']) : null,
-            ':madre_email' => !empty($_POST['madre_email']) ? trim($_POST['madre_email']) : null,
+            ':madre_nom'   => !empty($input['madre_nombre']) ? trim(filter_var($input['madre_nombre'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_tdoc'  => !empty($input['madre_tipo_documento']) ? trim(filter_var($input['madre_tipo_documento'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_doc'   => !empty($input['madre_documento']) ? trim(filter_var($input['madre_documento'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_doc_exp'=> !empty($input['madre_documento_expedicion']) ? trim(filter_var($input['madre_documento_expedicion'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_nac'   => !empty($input['madre_nacionalidad']) ? trim(filter_var($input['madre_nacionalidad'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_cel'   => !empty($input['madre_celular']) ? trim(filter_var($input['madre_celular'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_tel'   => !empty($input['madre_telefono']) ? trim(filter_var($input['madre_telefono'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_dir'   => !empty($input['madre_direccion']) ? trim(filter_var($input['madre_direccion'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_prof'  => !empty($input['madre_profesion']) ? trim(filter_var($input['madre_profesion'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_email' => !empty($input['madre_email']) ? trim(filter_var($input['madre_email'], FILTER_SANITIZE_EMAIL)) : null,
             
             ':eid'         => $estudiante_id
         ];
@@ -133,7 +140,6 @@ try {
         $stmt_adicional = $db->prepare($sql_adicional);
         $stmt_adicional->execute($params_adicional);
 
-        // Procesar carga de Fotografía Digital 3x4 del Estudiante si se ha adjuntado
         if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
             $file = $_FILES['foto'];
             $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -148,22 +154,20 @@ try {
                 if (move_uploaded_file($file['tmp_name'], $destination)) {
                     $relative_path = 'uploads/fotos/' . $filename;
                     
-                    // Asegurar idempotencia de columna foto en la tabla
                     try {
                         $db->exec("ALTER TABLE estudiantes_datos_adicionales ADD COLUMN foto VARCHAR(255) NULL");
                     } catch (Throwable $th) {}
 
-                    // Guardar/Actualizar en estudiantes_datos_adicionales
                     $stmt_check_f = $db->prepare("SELECT COUNT(*) FROM estudiantes_datos_adicionales WHERE estudiante_id = ?");
-                    $stmt_check_f->execute([(int)$id]);
+                    $stmt_check_f->execute([$id]);
                     $exists_f = ((int)$stmt_check_f->fetchColumn() > 0);
 
                     if ($exists_f) {
                         $stmt_f = $db->prepare("UPDATE estudiantes_datos_adicionales SET foto = ? WHERE estudiante_id = ?");
-                        $stmt_f->execute([$relative_path, (int)$id]);
+                        $stmt_f->execute([$relative_path, $id]);
                     } else {
                         $stmt_f = $db->prepare("INSERT INTO estudiantes_datos_adicionales (estudiante_id, foto) VALUES (?, ?)");
-                        $stmt_f->execute([(int)$id, $relative_path]);
+                        $stmt_f->execute([$id, $relative_path]);
                     }
                 }
             }
@@ -185,4 +189,3 @@ try {
 }
 exit();
 ?>
-

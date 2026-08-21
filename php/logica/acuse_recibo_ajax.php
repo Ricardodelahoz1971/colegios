@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
 
-ob_start(); // Capturar avisos/warnings accidentales de PHP
+ob_start();
 require_once '../db.php';
 require_once '../auth.php';
 ob_clean();
@@ -17,13 +17,12 @@ try {
     proteccion_extrema();
 
     $user_id = (int)$_SESSION['usuario_id'];
-    $mensaje_id = (int)($_POST['mensaje_id'] ?? 0);
+    $mensaje_id = filter_input(INPUT_POST, 'mensaje_id', FILTER_VALIDATE_INT);
 
-    if ($mensaje_id <= 0) {
+    if ($mensaje_id === false || $mensaje_id === null || $mensaje_id <= 0) {
         throw new Exception('Identificador de mensaje no válido.');
     }
 
-    // Verificar que el mensaje sea destinado al usuario logueado
     $stmt_check = $db->prepare("SELECT destinatario_id, leido, prioridad FROM mensajes WHERE id = :id");
     $stmt_check->bindValue(':id', $mensaje_id, PDO::PARAM_INT);
     $stmt_check->execute();
@@ -41,7 +40,6 @@ try {
         throw new Exception('Solo se pueden firmar acuses de mensajes urgentes.');
     }
 
-    // Actualizar acuse de recibo
     $fecha_actual = date('Y-m-d H:i:s');
     $stmt_upd = $db->prepare("UPDATE mensajes SET leido = 1, fecha_lectura = :fecha WHERE id = :id");
     $stmt_upd->bindValue(':fecha', $fecha_actual, PDO::PARAM_STR);

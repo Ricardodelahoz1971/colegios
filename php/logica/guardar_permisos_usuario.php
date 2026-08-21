@@ -2,8 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../security.php';
 guardia_sesion();
-    session_write_close();
-// PHP/LOGICA/GUARDAR_PERMISOS_USUARIO.PHP - GESTIÓN DE SOBERANÍA INDIVIDUAL v1.1 (ELITE)
+session_write_close();
 header('Content-Type: application/json');
 require_once '../db.php';
 require_once '../auth.php';
@@ -12,13 +11,12 @@ require_once 'auditoria.php';
 try {
     proteccion_extrema();
 
-    // 🛡️ CAPA 2: VALIDACIÓN DE AUTORIDAD (Solo usuarios con permiso 'personal' o Admin)
     if (!tiene_permiso('personal')) {
         throw new Exception('Acceso denegado: No posee facultades para alterar permisos personalizados.');
     }
 
-    $usuario_id = filter_var($_POST['usuario_id'] ?? '', FILTER_VALIDATE_INT);
-    $permisos_json = $_POST['permisos'] ?? '[]';
+    $usuario_id = filter_input(INPUT_POST, 'usuario_id', FILTER_VALIDATE_INT);
+    $permisos_json = filter_input(INPUT_POST, 'permisos', FILTER_DEFAULT) ?? '[]';
     $permisos = json_decode($permisos_json, true);
     if (json_last_error() !== JSON_ERROR_NONE || !is_array($permisos)) {
         throw new Exception("El payload de permisos provisto no posee un formato JSON estructurado válido.");
@@ -28,7 +26,6 @@ try {
         throw new Exception('Identificador de Usuario ausente.');
     }
 
-    // 🛡️ PROTECCIÓN CONTRA AUTOELEVACIÓN Y JERARQUÍA
     if ($usuario_id === (int)$_SESSION['usuario_id']) {
         throw new Exception('Seguridad: Está terminantemente prohibido alterar sus propios permisos.');
     }
@@ -43,7 +40,6 @@ try {
         throw new Exception("El Administrador posee facultades totales permanentes. El protocolo prohíbe la gestión individual.");
     }
 
-    // Validación jerárquica (Admin=100, Rector=90, Coordinador=80)
     $jerarquia = [1 => 100, 3 => 90, 2 => 80];
     $mi_rol = (int)($_SESSION['rol_id'] ?? 0);
     $target_rol = $res_target ? (int)($res_target['rol_id'] ?? 0) : 0;
@@ -56,12 +52,10 @@ try {
 
     $db->beginTransaction();
 
-    // 1. LIMPIAR COMISIONES ANTERIORES PARA ESTE USUARIO (Reset Individual)
     $stmt_del = $db->prepare("DELETE FROM usuario_permisos WHERE usuario_id = :usr");
     $stmt_del->bindValue(':usr', $usuario_id, PDO::PARAM_INT);
     $stmt_del->execute();
 
-    // 2. INYECTAR NUEVAS COMISIONES
     if (!empty($permisos)) {
         foreach ($permisos as $p_id) {
             $stmt_ins = $db->prepare("INSERT INTO usuario_permisos (usuario_id, permiso_id) VALUES (:usr, :p)");
@@ -71,12 +65,10 @@ try {
         }
     }
 
-    // 3. SELLAR SOBERANÍA: El usuario ahora vive bajo sus propias reglas
     $stmt_custom = $db->prepare("UPDATE usuarios SET permisos_custom = 1 WHERE id = :usr");
     $stmt_custom->bindValue(':usr', $usuario_id, PDO::PARAM_INT);
     $stmt_custom->execute();
     
-    // 4. REGISTRO DE AUDITORÍA
     $detalles = "Asignación de Permisos Custom (Usuario ID: $usuario_id). Cantidad: " . count($permisos);
     registrar_accion($db, $_SESSION['usuario_id'], 'PERMISOS_PERSONALIZADOS', 'USUARIO', $usuario_id, $detalles);
 
@@ -96,4 +88,3 @@ try {
 }
 exit();
 ?>
-

@@ -1,27 +1,29 @@
 <?php
+
 declare(strict_types=1);
 ob_start();
-// PHP/LOGICA/GUARDAR_ESTETICA.PHP - HUB DE IDENTIDAD v3.5 (TRAZABILIDAD TOTAL)
 header('Content-Type: application/json');
 require_once '../db.php';
 require_once '../auth.php';
 require_once '../security.php';
 guardia_sesion();
-    session_write_close();
+session_write_close();
 
-// 📔 SISTEMA DE TRAZABILIDAD ÉLITE (Caja Negra Proactiva)
-function registrar_evento_elite(string $categoria, string $mensaje) {
+function registrar_evento_elite(string $categoria, string $mensaje): void {
     $fecha = date('Y-m-d H:i:s');
     $log = "[{$fecha}] [{$categoria}] {$mensaje}" . PHP_EOL;
     file_put_contents(__DIR__ . '/../logs/elite_trace.log', $log, FILE_APPEND);
 }
 
+function obtener_post(string $clave, int $filtro = FILTER_DEFAULT, array $opciones = []): mixed {
+    $valor = filter_input(INPUT_POST, $clave, $filtro, $opciones);
+    return $valor !== null && $valor !== false ? $valor : null;
+}
+
 try {
-    // 1. INICIO DE TRAZA
     $input = json_encode($_POST);
     registrar_evento_elite('INPUT', "Petición recibida. Datos: {$input}");
 
-    // 🛡️ CAPA 1: PROTECCIÓN CSRF INVALORABLE
     proteccion_extrema();
 
     if (!tiene_permiso('configuracion')) {
@@ -29,9 +31,13 @@ try {
         throw new Exception("Acceso denegado.");
     }
 
-    // 🏗️ MÓDULO A: APLICAR PALETA
-    if (isset($_POST['accion']) && $_POST['accion'] === 'aplicar_paleta' && isset($_POST['paleta_id'])) {
-        $pid = (int)$_POST['paleta_id'];
+    $accion = obtener_post('accion', FILTER_SANITIZE_STRING);
+
+    if ($accion === 'aplicar_paleta') {
+        $pid = obtener_post('paleta_id', FILTER_VALIDATE_INT);
+        if ($pid === null || $pid === false) {
+            throw new Exception("ID de paleta inválido.");
+        }
         registrar_evento_elite('LOGICA', "Iniciando aplicación de paleta ID: {$pid}");
         
         $stmt = $db->prepare("SELECT * FROM paletas_elite WHERE id = ?");
@@ -66,15 +72,15 @@ try {
         }
     }
 
-    // 🏗️ MÓDULO C: GESTIÓN DE PALETAS (FORJADO DE IDENTIDAD)
-    if (isset($_POST['accion']) && $_POST['accion'] === 'guardar_paleta') {
-        $nombre = trim($_POST['nombre'] ?? 'Nueva Identidad');
-        $p = $_POST['primary_color'] ?? '#204192';
-        $a = $_POST['accent_color'] ?? '#f0bb1c';
-        $i = $_POST['info_color'] ?? '#0098da';
-        $s = $_POST['success_color'] ?? '#059669'; // Fallback a estándar élite
-        $d_color = $_POST['danger_color'] ?? '#dc2626'; // Fallback a estándar élite
-        $id = (isset($_POST['id']) && (int)$_POST['id'] > 0) ? (int)$_POST['id'] : null;
+    if ($accion === 'guardar_paleta') {
+        $nombre = trim(obtener_post('nombre', FILTER_SANITIZE_STRING) ?? 'Nueva Identidad');
+        $p = obtener_post('primary_color', FILTER_SANITIZE_STRING) ?? '#204192';
+        $a = obtener_post('accent_color', FILTER_SANITIZE_STRING) ?? '#f0bb1c';
+        $i = obtener_post('info_color', FILTER_SANITIZE_STRING) ?? '#0098da';
+        $s = obtener_post('success_color', FILTER_SANITIZE_STRING) ?? '#059669';
+        $d_color = obtener_post('danger_color', FILTER_SANITIZE_STRING) ?? '#dc2626';
+        $id = obtener_post('id', FILTER_VALIDATE_INT);
+        $id = ($id !== null && $id !== false && $id > 0) ? $id : null;
 
         if ($id) {
             registrar_evento_elite('LOGICA', "Actualizando paleta ID: {$id} ({$nombre})");
@@ -93,11 +99,12 @@ try {
         exit();
     }
 
-    // 🏗️ MÓDULO D: ELIMINACIÓN DE PALETAS
-    if (isset($_POST['accion']) && $_POST['accion'] === 'borrar_paleta' && isset($_POST['id'])) {
-        $id = (int)$_POST['id'];
+    if ($accion === 'borrar_paleta') {
+        $id = obtener_post('id', FILTER_VALIDATE_INT);
+        if ($id === null || $id === false) {
+            throw new Exception("ID de paleta inválido.");
+        }
         
-        // Protección contra purga de paletas maestras (1-4)
         if ($id <= 4) {
             throw new Exception("Las identidades maestras son inmutables y no pueden ser purgadas.");
         }
@@ -111,15 +118,14 @@ try {
         exit();
     }
 
-    // 🏗️ MÓDULO B: ARQUITECTURA
-    if (isset($_POST['menu_style'])) {
-        $valor = trim($_POST['menu_style']);
+    $menu_style = obtener_post('menu_style', FILTER_SANITIZE_STRING);
+    if ($menu_style !== null) {
+        $valor = trim($menu_style);
         registrar_evento_elite('LOGICA', "Cambiando Arquitectura a: {$valor}");
         $db->prepare("DELETE FROM ajustes_estetica WHERE clave = 'menu_style'")->execute();
         $db->prepare("INSERT INTO ajustes_estetica (clave, valor) VALUES ('menu_style', ?)")->execute([$valor]);
     }
 
-    // 🛡️ LISTA BLANCA ÉLITE
     $whiteList = [
         'school_name', 'school_motto', 'school_font', 'brand_color', 
         'brand_accent', 'brand_info', 'brand_success', 'brand_danger',
@@ -132,7 +138,8 @@ try {
     ];
 
     $procesados = 0;
-    foreach ($_POST as $clave => $valor) {
+    $postData = filter_input_array(INPUT_POST, FILTER_DEFAULT) ?? [];
+    foreach ($postData as $clave => $valor) {
         $es_valido = false;
         if (in_array($clave, $whiteList)) {
             $es_valido = true;
@@ -140,7 +147,7 @@ try {
             $es_valido = true;
         }
         if (!$es_valido) continue;
-        // Almacenar datos puros sin escapar HTML con e() (Anti-patrón de Saneamiento)
+        
         $valor = is_array($valor) ? implode(',', $valor) : $valor;
         
         $db->prepare("DELETE FROM ajustes_estetica WHERE clave = ?")->execute([$clave]);
