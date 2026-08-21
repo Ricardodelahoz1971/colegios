@@ -98,9 +98,9 @@ function renderizarFormato(array $configuracionJson, array $datos, bool $modoDis
         } elseif ($tipo === 'texto') {
             $inner_html = $content !== '' ? $content : 'TEXTO_A_REEMPLAZAR';
         } elseif ($tipo === 'firma_rector') {
-            $inner_html = '<div class="block-content-wysiwyg text-center"><p class="mb-0" ' . $prop_s . '="border-top: 1px solid #000; padding-top: 5px;">' . htmlspecialchars($rector_nombre, ENT_QUOTES, 'UTF-8') . '<br><small>Rector(a)</small></p></div>';
+            $inner_html = '<div class="block-content-wysiwyg text-center"><p class="mb-0" ' . $prop_s . '="border-top: 1px solid var(--el-text-main); padding-top: 5px;">' . htmlspecialchars($rector_nombre, ENT_QUOTES, 'UTF-8') . '<br><small>Rector(a)</small></p></div>';
         } elseif ($tipo === 'firma_secretaria') {
-            $inner_html = '<div class="block-content-wysiwyg text-center"><p class="mb-0" ' . $prop_s . '="border-top: 1px solid #000; padding-top: 5px;">' . htmlspecialchars($secretaria_nombre, ENT_QUOTES, 'UTF-8') . '<br><small>Secretaria</small></p></div>';
+            $inner_html = '<div class="block-content-wysiwyg text-center"><p class="mb-0" ' . $prop_s . '="border-top: 1px solid var(--el-text-main); padding-top: 5px;">' . htmlspecialchars($secretaria_nombre, ENT_QUOTES, 'UTF-8') . '<br><small>Secretaria</small></p></div>';
         } else {
             $inner_html = $content !== '' ? $content : 'Contenido para ' . htmlspecialchars($tipo, ENT_QUOTES, 'UTF-8');
         }

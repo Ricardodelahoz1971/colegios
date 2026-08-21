@@ -71,7 +71,7 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
                     $tipo_label = htmlspecialchars((string)($f['tipo'] === 'predisenado' ? 'Prediseñado' : 'Personalizado'), ENT_QUOTES, 'UTF-8');
                     $f_id = (int)$f['id'];
                 ?>
-                    <div class="format-card d-flex flex-column justify-content-between" data-id="<?php echo $f_id; ?>">
+                    <div class="format-card d-flex flex-column justify-content-between" data-id="<?php echo htmlspecialchars((string)$f_id, ENT_QUOTES, 'UTF-8'); ?>">
                         <div class="format-card__header">
                             <span class="format-card__badge format-card__badge--<?php echo htmlspecialchars($tipo_class, ENT_QUOTES, 'UTF-8'); ?>">
                                 <?php echo htmlspecialchars($tipo_label, ENT_QUOTES, 'UTF-8'); ?>

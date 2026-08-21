@@ -1414,41 +1414,20 @@ function actualizarZonaSeguraLienzo() {
 }
 
 function alternarBloqueoCabecera(abierto) {
-    const canvas = document.getElementById('canvas-builder');
-    if (!canvas) return;
-
-    const factorMmPx = 3.78;
-    // El membrete va desde 1 cm (38px) hasta el inicio del Margen Superior
-    const margenSup = Math.round((parseFloat(document.getElementById('formato-margen-superior').value) || 20) * factorMmPx);
-
+    if (abierto) {
+        activeZone = 'header';
+    } else {
+        activeZone = 'body';
+    }
+    
     const label = document.getElementById('switch-cabecera-label');
     if (label) {
         label.className = abierto ? 'small fw-bold text-uppercase text-primary m-0 cursor-pointer' : 'small fw-bold text-uppercase text-secondary m-0 cursor-pointer';
     }
-
-    const bloques = canvas.querySelectorAll('.canvas-block-wrapper');
-    bloques.forEach(bloque => {
-        const topVal = parseFloat(bloque.style.top) || 0;
-        
-        // Bloqueo Cruzado exacto
-        if (topVal < margenSup) {
-            // Zona de Cabecera / Membrete
-            if (abierto) {
-                bloque.classList.remove('header-locked');
-            } else {
-                bloque.classList.add('header-locked');
-                bloque.classList.remove('selected');
-            }
-        } else {
-            // Zona del Cuerpo del Documento
-            if (abierto) {
-                bloque.classList.add('body-locked');
-                bloque.classList.remove('selected');
-            } else {
-                bloque.classList.remove('body-locked');
-            }
-        }
-    });
+    
+    if (typeof updateZonesUI === 'function') {
+        updateZonesUI();
+    }
 }
 
 function actualizarBloqueFirmasCanvas(bloque, numColumnas, dataHeredada) {

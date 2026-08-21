@@ -1,5 +1,5 @@
-<?php
-// @sast-ignore - Deuda técnica legacy controlada bajo línea base de seguridad v5.0
+﻿<?php
+// @sast-ignore - Deuda tÃ©cnica legacy controlada bajo lÃ­nea base de seguridad v5.0
 declare(strict_types=1);
 
 require_once __DIR__ . '/php/auth.php';
@@ -7,7 +7,7 @@ guardia_sesion();
 session_write_close();
 
 if (!tiene_permiso('estudiantes')) {
-    die("No tiene permisos para ver este módulo.");
+    die("No tiene permisos para ver este mÃ³dulo.");
 }
 
 require_once __DIR__ . '/php/db.php';
@@ -18,7 +18,7 @@ $estudiante_id = isset($_GET['estudiante_id']) ? (int)$_GET['estudiante_id'] : 0
 $formato_id = isset($_GET['formato_id']) ? (int)$_GET['formato_id'] : 0;
 
 if ($estudiante_id <= 0 || $formato_id <= 0) {
-    die("Parámetros inválidos.");
+    die("ParÃ¡metros invÃ¡lidos.");
 }
 
 // Instanciar el controlador de formatos y obtener todos los datos necesarios
@@ -27,18 +27,18 @@ $controller = new FormatosController($db);
 try {
     $datos = $controller->obtenerDatosMatricula($estudiante_id, $formato_id);
 } catch (Exception $e) {
-    die("Error al obtener los datos de matrícula: " . $e->getMessage());
+    die("Error al obtener los datos de matrÃ­cula: " . $e->getMessage());
 }
 
 // Extraer variables para mantener la compatibilidad con el resto del script
 $formato = $datos['formato'];
 $estudiante = $datos['estudiante'];
 $rector_nombre = $datos['rector_nombre'] ?: 'Rector Institucional';
-$secretaria_nombre = $datos['secretaria_nombre'] ?: 'Secretaria Académica';
+$secretaria_nombre = $datos['secretaria_nombre'] ?: 'Secretaria AcadÃ©mica';
 $cfg = $datos['ajustes_estetica'];
 $notas = $datos['notas'];
 
-// Año lectivo activo desde configuración global
+// AÃ±o lectivo activo desde configuraciÃ³n global
 $stmt = $db->prepare("SELECT valor FROM configuracion_global WHERE clave = ? LIMIT 1");
 $stmt->execute(['anio_lectivo_oficial']);
 $anio_lectivo = $stmt->fetchColumn();
@@ -47,9 +47,9 @@ if (!$anio_lectivo) {
     $anio_lectivo = date('Y');
 }
 
-// 1. CARGAR AJUSTES DE ESTÉTICA
-$school_name = $cfg['school_name'] ?? 'SISTEMA ESCOLAR ÉLITE';
-$school_motto = $cfg['school_motto'] ?? 'Excelencia en Gestión Educativa';
+// 1. CARGAR AJUSTES DE ESTÃ‰TICA
+$school_name = $cfg['school_name'] ?? 'SISTEMA ESCOLAR Ã‰LITE';
+$school_motto = $cfg['school_motto'] ?? 'Excelencia en GestiÃ³n Educativa';
 $school_logo = $cfg['school_logo'] ?? '';
 if (!empty($school_logo) && strpos($school_logo, 'http') === false) { 
     // Mantener la ruta original (ruta relativa o absoluta local limpia)
@@ -64,8 +64,8 @@ $jornada_escolar = $estudiante['jornada'] ?? '';
 $fecha_registro_fija = !empty($estudiante['fecha_registro']) ? date('d/m/Y', strtotime($estudiante['fecha_registro'])) : date('d/m/Y');
 
 // 2. MAPEAR VARIABLES DISPONIBLES
-// Mapa unificado: clave = data-var code del catálogo del builder
-// Cada código se sustituye en tres formas:
+// Mapa unificado: clave = data-var code del catÃ¡logo del builder
+// Cada cÃ³digo se sustituye en tres formas:
 //   a) <span data-var="codigo">[ Label ]</span>  (badge del builder)
 //   b) [CODIGO] o [codigo]                        (texto libre del usuario)
 //   c) [[CODIGO]] o [[codigo]]                    (formato legacy)
@@ -79,7 +79,7 @@ $var_map = [
     'estudiante_celular'          => $estudiante['celular'] ?? '',
     'estudiante_email'            => $estudiante['email'] ?? '',
     'estudiante_fecha_nacimiento' => $estudiante['fecha_nacimiento'] ?? '',
-    'estudiante_edad'             => isset($estudiante['edad']) ? $estudiante['edad'] . ' años' : '',
+    'estudiante_edad'             => isset($estudiante['edad']) ? $estudiante['edad'] . ' aÃ±os' : '',
     'estudiante_lugar_nacimiento' => $estudiante['lugar_nacimiento'] ?? '',
     'estudiante_nacionalidad'     => $estudiante['nacionalidad'] ?? 'COLOMBIANA',
     'estudiante_colegio_anterior' => $estudiante['colegio_anterior'] ?? 'Ninguno',
@@ -107,7 +107,7 @@ $var_map = [
     'madre_profesion'             => $estudiante['madre_profesion'] ?? '',
     'madre_email'                 => $estudiante['madre_email'] ?? '',
 
-    // INSTITUCIÓN
+    // INSTITUCIÃ“N
     'colegio_nombre'              => $school_name,
     'colegio_lema'                => $school_motto,
     'colegio_nit'                 => $colegio_nit,
@@ -115,7 +115,7 @@ $var_map = [
     'rector_nombre'               => $rector_nombre,
     'secretaria_nombre'           => $secretaria_nombre,
 
-    // MATRÍCULA Y FOLIO
+    // MATRÃCULA Y FOLIO
     'curso_asignado'              => $estudiante['nombre_curso'] ?? 'Sin Curso',
     'jornada_escolar'             => $jornada_escolar,
     'fecha_registro'              => $fecha_registro_fija,
@@ -123,7 +123,85 @@ $var_map = [
     'anio_lectivo'                => date('Y'),
 ];
 
-// MOTOR DE RENDERIZADO DUAL (Deprecado a favor de JSON nativo)
+// Alias adicionales: mapear variantes textuales que el usuario pudo escribir manualmente
+// en la plantilla con nombres diferentes a los data-var del builder
+$alias_extra = [
+    'NOMBRE_INSTITUCION'          => $school_name,
+    'NUMERO_RESOLUCION'           => $colegio_resolucion,
+    'NIT_COLEGIO'                 => $colegio_nit,
+    'NOMBRE_RECTOR_REPRESENTANTE' => $rector_nombre,
+    'NOMBRE_PADRE_MADRE_ACUDIENTE' => ($estudiante['padre_nombre'] ?? '') ?: ($estudiante['madre_nombre'] ?? ''),
+    'NUMERO_DOC_ACUDIENTE'        => ($estudiante['padre_tipo_documento'] ?? 'C.C.') . ' ' . ($estudiante['padre_documento'] ?? ''),
+    'NOMBRES_ESTUDIANTE'          => $estudiante['nombre'] ?? '',
+    'APELLIDOS_ESTUDIANTE'        => $estudiante['apellido'] ?? '',
+    'TIPO_DOC_ESTUDIANTE'         => $estudiante['tipo_documento'] ?? 'T.I.',
+    'NUMERO_DOC_ESTUDIANTE'       => $estudiante['identificacion'] ?? '',
+    'FECHA_NACIMIENTO_ESTUDIANTE' => $estudiante['fecha_nacimiento'] ?? '',
+    'GRADO_A_CURSAR'              => $estudiante['nombre_curso'] ?? 'Sin Curso',
+    'NUMERO_MATRICULA'            => $estudiante['folio_matricula'] ?? '',
+    'FECHA_REGISTRO'              => $fecha_registro_fija,
+    'ANIO_LECTIVO'                => date('Y'),
+    'VALOR_MATRICULA'             => '0',
+    'VALOR_PENSION'               => '0',
+    'DIAS_PLAZO_PAGO'             => '10',
+    'CIUDAD_EXPEDICION'           => $estudiante['lugar_nacimiento'] ?? '',
+    'DIA_FIRMA'                   => date('d'),
+    'MES_FIRMA'                   => (function() {
+        $meses = [
+            1 => 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        return $meses[(int)date('n')] ?? date('F');
+    })(),
+    'ANIO_FIRMA'                  => date('Y'),
+    'JORNADA_ESCOLAR'             => $jornada_escolar,
+];
+
+// MOTOR DE SUSTITUCIÃ“N TRIPLE
+$contenido_sustituido = $formato['contenido_html'];
+
+// Paso A: Sustituir badges del builder â†’ <span class="ares-variable-badge" data-var="CODIGO">[ Label ]</span>
+$contenido_sustituido = preg_replace_callback(
+    '/<span[^>]*class="[^"]*ares-variable-badge[^"]*"[^>]*data-var="([^"]+)"[^>]*>.*?<\/span>/is',
+    function($m) use ($var_map) {
+        $codigo = strtolower(trim($m[1]));
+        if (isset($var_map[$codigo])) {
+            return '<span class="ares-campo-valor">' . htmlspecialchars((string)$var_map[$codigo], ENT_QUOTES, 'UTF-8') . '</span>';
+        }
+        return $m[0];
+    },
+    $contenido_sustituido
+);
+
+// Paso B: Sustituir [[VARIABLE]] doble corchete (formato legacy) â€” var_map + alias_extra
+foreach ($var_map as $code => $val) {
+    $safe = '<span class="ares-campo-valor">' . htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8') . '</span>';
+    $contenido_sustituido = str_ireplace('[[' . $code . ']]', $safe, $contenido_sustituido);
+    $contenido_sustituido = str_ireplace('[[' . strtoupper($code) . ']]', $safe, $contenido_sustituido);
+}
+foreach ($alias_extra as $code => $val) {
+    $safe = '<span class="ares-campo-valor">' . htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8') . '</span>';
+    $contenido_sustituido = str_ireplace('[[' . $code . ']]', $safe, $contenido_sustituido);
+    $contenido_sustituido = str_ireplace('[[' . strtoupper($code) . ']]', $safe, $contenido_sustituido);
+}
+
+// Paso C: Sustituir [VARIABLE] corchete simple (texto libre del usuario) â€” var_map + alias_extra
+foreach ($var_map as $code => $val) {
+    $safe = '<span class="ares-campo-valor">' . htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8') . '</span>';
+    $contenido_sustituido = str_ireplace('[' . $code . ']', $safe, $contenido_sustituido);
+    $contenido_sustituido = str_ireplace('[' . strtoupper($code) . ']', $safe, $contenido_sustituido);
+}
+foreach ($alias_extra as $code => $val) {
+    $safe = '<span class="ares-campo-valor">' . htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8') . '</span>';
+    $contenido_sustituido = str_ireplace('[' . $code . ']', $safe, $contenido_sustituido);
+}
+
+// SanitizaciÃ³n: eliminar etiquetas <code> heredadas al copiar/pegar de la referencia de variables
+$contenido_sustituido = preg_replace('/<code[^>]*>(.*?)<\/code>/is', '$1', $contenido_sustituido);
+
+// MOTOR DE RENDERIZADO DUAL:
+// Paso 1 â†’ Procesa bloque-avanzado con data-tipo (estructura real guardada por el builder)
+// Paso 2 â†’ Fallback: bloque-backend-html con data-type (compatibilidad con formatos legacy)
 $margen_top = (int)($formato['margen_superior'] ?? 20);
 
 // Pre-calcular el color RGB principal para evitar ensuciar el JS
@@ -139,7 +217,7 @@ if (strlen($hex_color) == 3) {
 }
 $primary_rgb = "$r_c, $g_c, $b_c";
 
-// BLOCK_STYLE_CONFIG (PHP) — Estilos base para cada tipo de bloque
+// BLOCK_STYLE_CONFIG (PHP) â€” Estilos base para cada tipo de bloque
 $BLOCK_STYLE_CONFIG_PHP = array_map(
     static fn(array $bloque): array => $bloque['estilo'],
     obtenerConfiguracionBloques($cfg)
@@ -150,7 +228,7 @@ $BLOCK_STYLE_CONFIG_PHP = array_map(
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Impresión de Matrícula - <?php echo htmlspecialchars(($estudiante['nombre'] ?? '') . ' ' . ($estudiante['apellido'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></title>
+    <title>ImpresiÃ³n de MatrÃ­cula - <?php echo htmlspecialchars(($estudiante['nombre'] ?? '') . ' ' . ($estudiante['apellido'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&family=Inter:wght@400;500;600;800&family=Roboto:wght@300;400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
@@ -172,7 +250,7 @@ $BLOCK_STYLE_CONFIG_PHP = array_map(
             root.style.setProperty('--el-primary', '<?php echo htmlspecialchars($cfg['brand_color'] ?? '#0f0664', ENT_QUOTES, 'UTF-8'); ?>');
             root.style.setProperty('--el-primary-rgb', '<?php echo $primary_rgb; ?>');
             
-            // Configurar dinámicamente las variables de altura de las zonas
+            // Configurar dinÃ¡micamente las variables de altura de las zonas
             document.querySelectorAll('[data-height-mm]').forEach(el => {
                 const height = el.getAttribute('data-height-mm');
                 const zone = el.classList.contains('print-header-zone') ? 'header' :
@@ -184,7 +262,7 @@ $BLOCK_STYLE_CONFIG_PHP = array_map(
 </head>
 <body>
 
-<!-- BOTONES FAB DE IMPRESIÓN -->
+<!-- BOTONES FAB DE IMPRESIÃ“N -->
 <button class="btn-fab-print" onclick="window.print()" aria-label="Imprimir" title="Imprimir (Ctrl+P)">
     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="print-icon">
         <polyline points="6 9 6 2 18 2 18 9"></polyline>
@@ -321,7 +399,7 @@ async function descargarFormatoPDF() {
                 doc.addImage(imgData, 'JPEG', 0, 0, paperWidth, paperHeight);
             }
             
-            // Liberar memoria del canvas inmediatamente después de usarlo
+            // Liberar memoria del canvas inmediatamente despuÃ©s de usarlo
             canvas.width = 0;
             canvas.height = 0;
             createdCanvases.splice(createdCanvases.indexOf(canvas), 1);
@@ -357,7 +435,7 @@ async function descargarFormatoPDF() {
             } catch (e) {}
         }
         
-        // 2. Limpiar todas las páginas virtuales que no hayan sido eliminadas
+        // 2. Limpiar todas las pÃ¡ginas virtuales que no hayan sido eliminadas
         while (createdVirtualPages.length > 0) {
             const virtualPage = createdVirtualPages.pop();
             if (virtualPage.parentNode) {
