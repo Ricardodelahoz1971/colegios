@@ -35,7 +35,7 @@ try {
         throw new Exception('Acceso denegado: No posee privilegios de evaluación.');
     }
 
-    $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_STRING) ?? 'invalid';
+    $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'invalid';
 
     switch ($accion) {
         case 'cargar_consolidado_curso':

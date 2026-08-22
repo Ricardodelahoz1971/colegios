@@ -25,7 +25,7 @@ if (!tienen_rol(['administrador', 'coordinador', 'rector'])) {
     exit();
 }
 
-$accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_STRING) ?? '';
+$accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 
 // HELPER PARA CALCULAR TIEMPOS BASADOS EN CONFIGURACIÓN (v9.2 PDO)
 function getTiempos(PDO $db, int $hora_num, int $curso_id = 0): array {
@@ -79,7 +79,7 @@ switch ($accion) {
         $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
         $docente_id = filter_input(INPUT_POST, 'docente_id', FILTER_VALIDATE_INT) ?? 0;
         $especialidad_id = filter_input(INPUT_POST, 'especialidad_id', FILTER_VALIDATE_INT) ?? 0;
-        $dia = filter_input(INPUT_POST, 'dia_semana', FILTER_SANITIZE_STRING) ?? '';
+        $dia = filter_input(INPUT_POST, 'dia_semana', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
         $hora = filter_input(INPUT_POST, 'hora_numero', FILTER_VALIDATE_INT) ?? 0;
         [$ini, $fin] = getTiempos($db, $hora, $curso_id);
 
@@ -102,9 +102,9 @@ switch ($accion) {
     case 'swap':
         $id_a = filter_input(INPUT_POST, 'id_a', FILTER_VALIDATE_INT) ?? 0;
         $id_b = filter_input(INPUT_POST, 'id_b', FILTER_VALIDATE_INT) ?? 0;
-        $dia_a = filter_input(INPUT_POST, 'dia_a', FILTER_SANITIZE_STRING) ?? '';
+        $dia_a = filter_input(INPUT_POST, 'dia_a', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
         $hora_a = filter_input(INPUT_POST, 'hora_a', FILTER_VALIDATE_INT) ?? 0;
-        $dia_b = filter_input(INPUT_POST, 'dia_b', FILTER_SANITIZE_STRING) ?? '';
+        $dia_b = filter_input(INPUT_POST, 'dia_b', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
         $hora_b = filter_input(INPUT_POST, 'hora_b', FILTER_VALIDATE_INT) ?? 0;
         
         $stmt_c_a = $db->prepare("SELECT curso_id FROM khronos_horarios WHERE id = ?");
@@ -135,7 +135,7 @@ switch ($accion) {
         $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
         $docente_id = filter_input(INPUT_POST, 'docente_id', FILTER_VALIDATE_INT) ?? 0;
         $especialidad_id = filter_input(INPUT_POST, 'especialidad_id', FILTER_VALIDATE_INT) ?? 0;
-        $dia = filter_input(INPUT_POST, 'dia_semana', FILTER_SANITIZE_STRING) ?? '';
+        $dia = filter_input(INPUT_POST, 'dia_semana', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
         $hora = filter_input(INPUT_POST, 'hora_numero', FILTER_VALIDATE_INT) ?? 0;
         [$ini, $fin] = getTiempos($db, $hora, $curso_id);
 

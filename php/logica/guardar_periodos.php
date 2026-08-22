@@ -35,8 +35,8 @@ try {
     $periodos_procesados = [];
     foreach ($periodos_raw as $id => $fechas) {
         $pid = (int)$id;
-        $f_inicio_raw = filter_input(INPUT_POST, 'periodo[' . $id . '][inicio]', FILTER_SANITIZE_STRING);
-        $f_fin_raw = filter_input(INPUT_POST, 'periodo[' . $id . '][fin]', FILTER_SANITIZE_STRING);
+        $f_inicio_raw = filter_input(INPUT_POST, 'periodo[' . $id . '][inicio]', FILTER_SANITIZE_SPECIAL_CHARS);
+        $f_fin_raw = filter_input(INPUT_POST, 'periodo[' . $id . '][fin]', FILTER_SANITIZE_SPECIAL_CHARS);
         $f_inicio = trim($f_inicio_raw ?? '');
         $f_fin = trim($f_fin_raw ?? '');
 

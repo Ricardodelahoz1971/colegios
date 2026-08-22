@@ -74,7 +74,7 @@ try {
     }
 
     $mi_id = (int)$_SESSION['usuario_id'];
-    $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_STRING) ?? 'listar';
+    $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'listar';
 
     switch ($accion) {
         case 'guardar':
@@ -82,13 +82,13 @@ try {
             $id = (int)filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
             $materia_id = (int)filter_input(INPUT_POST, 'materia_id', FILTER_VALIDATE_INT) ?? 0;
             $tipo_id = (int)filter_input(INPUT_POST, 'tipo_id', FILTER_VALIDATE_INT) ?? 0;
-            $enunciado = filter_input(INPUT_POST, 'enunciado', FILTER_SANITIZE_STRING) ?? '';
-            $metadata = filter_input(INPUT_POST, 'metadata', FILTER_SANITIZE_STRING) ?? '';
+            $enunciado = filter_input(INPUT_POST, 'enunciado', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+            $metadata = filter_input(INPUT_POST, 'metadata', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
             if (!empty($metadata)) {
                 $metadata = procesarImagenesCanvasMetadata($metadata);
             }
-            $complejidad = filter_input(INPUT_POST, 'complejidad', FILTER_SANITIZE_STRING) ?? 'Media';
-            $titulo = trim(filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING) ?? '');
+            $complejidad = filter_input(INPUT_POST, 'complejidad', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'Media';
+            $titulo = trim(filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
             $aprendizaje_id = (int)filter_input(INPUT_POST, 'aprendizaje_id', FILTER_VALIDATE_INT) ?? 0;
             $evidencia_id = (int)filter_input(INPUT_POST, 'evidencia_id', FILTER_VALIDATE_INT) ?? 0;
 
@@ -198,7 +198,7 @@ try {
             break;
 
         case 'listar':
-            $scope = filter_input(INPUT_GET, 'scope', FILTER_SANITIZE_STRING) ?? 'mine';
+            $scope = filter_input(INPUT_GET, 'scope', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'mine';
             $materia_id = (int)filter_input(INPUT_GET, 'materia_id', FILTER_VALIDATE_INT) ?? 0;
             
             $query = "SELECT p.*, 
@@ -253,8 +253,8 @@ try {
 
         case 'catalogo_dbas':
             $area_id = (int)filter_input(INPUT_GET, 'area_id', FILTER_VALIDATE_INT) ?? 0;
-            $grado = filter_input(INPUT_GET, 'grado', FILTER_SANITIZE_STRING) ?? '';
-            $disciplina = filter_input(INPUT_GET, 'disciplina', FILTER_SANITIZE_STRING) ?? '';
+            $grado = filter_input(INPUT_GET, 'grado', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+            $disciplina = filter_input(INPUT_GET, 'disciplina', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 
             $sql = "SELECT id, num_dba, enunciado FROM ares_catalogo_aprendizajes WHERE area_id = ? AND grado = ?";
             $params = [$area_id, $grado];

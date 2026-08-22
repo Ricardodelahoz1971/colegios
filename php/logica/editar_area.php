@@ -15,7 +15,7 @@ try {
     }
 
     $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-    $nombre = trim((string)filter_input(INPUT_POST, 'nombre_area', FILTER_SANITIZE_STRING) ?? '');
+    $nombre = trim((string)filter_input(INPUT_POST, 'nombre_area', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
 
     if (empty($id) || empty($nombre)) {
         throw new Exception("Datos incompletos para procesar la edición.");

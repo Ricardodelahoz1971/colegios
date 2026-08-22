@@ -21,12 +21,12 @@ try {
         throw new Exception("Acceso denegado: Su rol no posee autoría para esta acción.");
     }
 
-    $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_STRING) ?? '';
+    $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
     
     if ($accion === 'crear') {
-        $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING) ?? '');
-        $fecha_inicio = trim(filter_input(INPUT_POST, 'fecha_inicio', FILTER_SANITIZE_STRING) ?? '');
-        $fecha_fin = trim(filter_input(INPUT_POST, 'fecha_fin', FILTER_SANITIZE_STRING) ?? '');
+        $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $fecha_inicio = trim(filter_input(INPUT_POST, 'fecha_inicio', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $fecha_fin = trim(filter_input(INPUT_POST, 'fecha_fin', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
 
         if (empty($nombre) || empty($fecha_inicio) || empty($fecha_fin)) {
             throw new Exception("Todos los campos del receso son requeridos.");
@@ -106,9 +106,9 @@ try {
 
     } elseif ($accion === 'editar') {
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING) ?? '');
-        $fecha_inicio = trim(filter_input(INPUT_POST, 'fecha_inicio', FILTER_SANITIZE_STRING) ?? '');
-        $fecha_fin = trim(filter_input(INPUT_POST, 'fecha_fin', FILTER_SANITIZE_STRING) ?? '');
+        $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $fecha_inicio = trim(filter_input(INPUT_POST, 'fecha_inicio', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $fecha_fin = trim(filter_input(INPUT_POST, 'fecha_fin', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
 
         if ($id === null || $id === false || $id <= 0 || empty($nombre) || empty($fecha_inicio) || empty($fecha_fin)) {
             throw new Exception("Todos los campos del receso son requeridos.");

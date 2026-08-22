@@ -31,7 +31,7 @@ try {
         throw new Exception("Acceso denegado.");
     }
 
-    $accion = obtener_post('accion', FILTER_SANITIZE_STRING);
+    $accion = obtener_post('accion', FILTER_SANITIZE_SPECIAL_CHARS);
 
     if ($accion === 'aplicar_paleta') {
         $pid = obtener_post('paleta_id', FILTER_VALIDATE_INT);
@@ -73,12 +73,12 @@ try {
     }
 
     if ($accion === 'guardar_paleta') {
-        $nombre = trim(obtener_post('nombre', FILTER_SANITIZE_STRING) ?? 'Nueva Identidad');
-        $p = obtener_post('primary_color', FILTER_SANITIZE_STRING) ?? '#204192';
-        $a = obtener_post('accent_color', FILTER_SANITIZE_STRING) ?? '#f0bb1c';
-        $i = obtener_post('info_color', FILTER_SANITIZE_STRING) ?? '#0098da';
-        $s = obtener_post('success_color', FILTER_SANITIZE_STRING) ?? '#059669';
-        $d_color = obtener_post('danger_color', FILTER_SANITIZE_STRING) ?? '#dc2626';
+        $nombre = trim(obtener_post('nombre', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'Nueva Identidad');
+        $p = obtener_post('primary_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#204192';
+        $a = obtener_post('accent_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#f0bb1c';
+        $i = obtener_post('info_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#0098da';
+        $s = obtener_post('success_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#059669';
+        $d_color = obtener_post('danger_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#dc2626';
         $id = obtener_post('id', FILTER_VALIDATE_INT);
         $id = ($id !== null && $id !== false && $id > 0) ? $id : null;
 
@@ -118,7 +118,7 @@ try {
         exit();
     }
 
-    $menu_style = obtener_post('menu_style', FILTER_SANITIZE_STRING);
+    $menu_style = obtener_post('menu_style', FILTER_SANITIZE_SPECIAL_CHARS);
     if ($menu_style !== null) {
         $valor = trim($menu_style);
         registrar_evento_elite('LOGICA', "Cambiando Arquitectura a: {$valor}");

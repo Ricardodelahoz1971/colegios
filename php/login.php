@@ -14,8 +14,8 @@ require_once 'logica/AuthController.php';
 proteccion_extrema();
 
 // Captura de datos del formulario institucional usando filter_input
-$usuario = filter_input(INPUT_POST, 'usuario', FILTER_SANITIZE_STRING) ?? '';
-$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING) ?? '';
+$usuario = filter_input(INPUT_POST, 'usuario', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 
 // Ejecutar protocolo de autenticación Senior
 $auth = AuthController::login($db, $usuario, $password);

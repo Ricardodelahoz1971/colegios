@@ -14,7 +14,7 @@ try {
         throw new Exception("Acceso denegado: Rango académico insuficiente.");
     }
 
-    $nombre = trim(filter_input(INPUT_POST, 'nombre_especialidad', FILTER_SANITIZE_STRING) ?? '');
+    $nombre = trim(filter_input(INPUT_POST, 'nombre_especialidad', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
     $area_id = filter_input(INPUT_POST, 'area_id', FILTER_VALIDATE_INT);
     $nivel_desde = filter_input(INPUT_POST, 'nivel_desde', FILTER_VALIDATE_INT) ?: 1;
     $nivel_hasta = filter_input(INPUT_POST, 'nivel_hasta', FILTER_VALIDATE_INT) ?: 11;

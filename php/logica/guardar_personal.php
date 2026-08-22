@@ -16,11 +16,11 @@ try {
 
     $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
-    $nombre = trim(filter_var($input['nombre'] ?? '', FILTER_SANITIZE_STRING));
-    $user = strtoupper(trim(filter_var($input['user'] ?? '', FILTER_SANITIZE_STRING)));
+    $nombre = trim(filter_var($input['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
+    $user = strtoupper(trim(filter_var($input['user'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS)));
     $pass = $input['pass'] ?? '';
     $rol = filter_var($input['rol'] ?? 0, FILTER_VALIDATE_INT);
-    $esp = filter_var($input['esp'] ?? '', FILTER_SANITIZE_STRING);
+    $esp = filter_var($input['esp'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
 
     if ($rol === false) {
         $rol = 0;

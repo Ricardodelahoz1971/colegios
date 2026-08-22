@@ -425,10 +425,32 @@ try {
             $filtrar = isset($_GET['filtrar_periodo']) && $_GET['filtrar_periodo'] == '1';
             if ($filtrar) {
                 $rango = determinarPeriodoActivo($db);
-                $stmt = $db->prepare("SELECT id, titulo, ambito FROM ares_actividades WHERE docente_id = ? AND curso_id = ? AND especialidad_id = ? AND fecha_registro BETWEEN ? AND ? ORDER BY titulo ASC");
+                $stmt = $db->prepare("SELECT a.id, a.titulo, a.tipo_evaluacion, a.fecha_registro,
+                                             a.especialidad_id, a.curso_id, a.clase_nota_id, a.ambito, a.recupera_actividad_id,
+                                             c.nombre_curso, e.nombre_especialidad, cn.nombre as clase_nota,
+                                             (SELECT GROUP_CONCAT(CONCAT(ac.id, '|', ac.titulo, '|', ac.peso_porcentaje)) 
+                                              FROM ares_actividad_criterios ac WHERE ac.actividad_id = a.id) as criterios_raw,
+                                             (SELECT COUNT(*) FROM ares_calificaciones_desglose WHERE actividad_id = a.id) as tiene_notas
+                                      FROM ares_actividades a
+                                      JOIN cursos c ON a.curso_id = c.id
+                                      JOIN especialidades e ON a.especialidad_id = e.id
+                                      LEFT JOIN ares_clases_nota cn ON a.clase_nota_id = cn.id
+                                      WHERE a.docente_id = ? AND a.curso_id = ? AND a.especialidad_id = ? AND a.fecha_registro BETWEEN ? AND ? 
+                                      ORDER BY a.fecha_registro DESC");
                 $stmt->execute([$mi_id, $curso_id, $especialidad_id, $rango['fecha_inicio'], $rango['fecha_fin']]);
             } else {
-                $stmt = $db->prepare("SELECT id, titulo, ambito FROM ares_actividades WHERE docente_id = ? AND curso_id = ? AND especialidad_id = ? ORDER BY titulo ASC");
+                $stmt = $db->prepare("SELECT a.id, a.titulo, a.tipo_evaluacion, a.fecha_registro,
+                                             a.especialidad_id, a.curso_id, a.clase_nota_id, a.ambito, a.recupera_actividad_id,
+                                             c.nombre_curso, e.nombre_especialidad, cn.nombre as clase_nota,
+                                             (SELECT GROUP_CONCAT(CONCAT(ac.id, '|', ac.titulo, '|', ac.peso_porcentaje)) 
+                                              FROM ares_actividad_criterios ac WHERE ac.actividad_id = a.id) as criterios_raw,
+                                             (SELECT COUNT(*) FROM ares_calificaciones_desglose WHERE actividad_id = a.id) as tiene_notas
+                                      FROM ares_actividades a
+                                      JOIN cursos c ON a.curso_id = c.id
+                                      JOIN especialidades e ON a.especialidad_id = e.id
+                                      LEFT JOIN ares_clases_nota cn ON a.clase_nota_id = cn.id
+                                      WHERE a.docente_id = ? AND a.curso_id = ? AND a.especialidad_id = ? 
+                                      ORDER BY a.fecha_registro DESC");
                 $stmt->execute([$mi_id, $curso_id, $especialidad_id]);
             }
             ob_clean();

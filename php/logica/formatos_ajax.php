@@ -16,7 +16,7 @@ try {
 
     session_write_close();
 
-    $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING) ?? filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING) ?? '';
+    $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_SPECIAL_CHARS) ?? filter_input(INPUT_POST, 'action', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 
     if ($action === 'listar') {
         $stmt = $db->prepare("SELECT id, nombre, descripcion, tipo, activo, margen_superior, margen_inferior, tipo_documento, tamano_lienzo FROM formatos_matricula ORDER BY id DESC");
@@ -173,17 +173,17 @@ try {
 
     if ($action === 'guardar') {
         $id = (int)(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) ?? 0);
-        $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_STRING) ?? '');
-        $descripcion = trim(filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING) ?? '');
-        $contenido_html = trim(filter_input(INPUT_POST, 'contenido_html', FILTER_SANITIZE_STRING) ?? '');
-        $configuracion_json = trim(filter_input(INPUT_POST, 'configuracion_json', FILTER_SANITIZE_STRING) ?? '');
-        $zonas_config = trim(filter_input(INPUT_POST, 'zonas_config', FILTER_SANITIZE_STRING) ?? '');
+        $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $descripcion = trim(filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $contenido_html = trim(filter_input(INPUT_POST, 'contenido_html', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $configuracion_json = trim(filter_input(INPUT_POST, 'configuracion_json', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $zonas_config = trim(filter_input(INPUT_POST, 'zonas_config', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
         $margen_superior = (int)(filter_input(INPUT_POST, 'margen_superior', FILTER_SANITIZE_NUMBER_INT) ?? 20);
         $margen_inferior = (int)(filter_input(INPUT_POST, 'margen_inferior', FILTER_SANITIZE_NUMBER_INT) ?? 20);
         $margen_izquierdo = (int)(filter_input(INPUT_POST, 'margen_izquierdo', FILTER_SANITIZE_NUMBER_INT) ?? 20);
         $margen_derecho = (int)(filter_input(INPUT_POST, 'margen_derecho', FILTER_SANITIZE_NUMBER_INT) ?? 20);
-        $tipo_documento = trim(filter_input(INPUT_POST, 'tipo_documento', FILTER_SANITIZE_STRING) ?? 'matricula');
-        $tamano_lienzo = trim(filter_input(INPUT_POST, 'tamano_lienzo', FILTER_SANITIZE_STRING) ?? 'carta');
+        $tipo_documento = trim(filter_input(INPUT_POST, 'tipo_documento', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'matricula');
+        $tamano_lienzo = trim(filter_input(INPUT_POST, 'tamano_lienzo', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'carta');
 
         if (!empty($zonas_config)) {
             $bloques = json_decode($configuracion_json, true) ?? [];

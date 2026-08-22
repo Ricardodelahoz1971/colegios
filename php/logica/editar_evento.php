@@ -15,11 +15,11 @@ if (!isset($_SESSION['usuario_id']) || !$es_admin_cron) {
 }
 
 $id     = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
-$titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING) ?? '';
-$fecha  = filter_input(INPUT_POST, 'fecha', FILTER_SANITIZE_STRING) ?? '';
-$desc   = filter_input(INPUT_POST, 'desc', FILTER_SANITIZE_STRING) ?? '';
-$tipo   = filter_input(INPUT_POST, 'tipo', FILTER_SANITIZE_STRING) ?? 'EVENTO';
-$color  = filter_input(INPUT_POST, 'color', FILTER_SANITIZE_STRING) ?? 'rgb(13, 202, 240)';
+$titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+$fecha  = filter_input(INPUT_POST, 'fecha', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+$desc   = filter_input(INPUT_POST, 'desc', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+$tipo   = filter_input(INPUT_POST, 'tipo', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'EVENTO';
+$color  = filter_input(INPUT_POST, 'color', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'rgb(13, 202, 240)';
 
 $titulo = trim($titulo);
 $desc   = trim($desc);

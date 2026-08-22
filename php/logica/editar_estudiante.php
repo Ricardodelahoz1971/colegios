@@ -19,17 +19,17 @@ try {
     $id = filter_var($input['id'] ?? null, FILTER_VALIDATE_INT);
     if (!$id) throw new Exception('Identificador de estudiante ausente.');
 
-    $identificacion = trim(filter_var($input['identificacion'] ?? '', FILTER_SANITIZE_STRING));
-    $nombre = mb_strtoupper(trim(filter_var($input['nombre'] ?? '', FILTER_SANITIZE_STRING)), 'UTF-8');
-    $apellido = mb_strtoupper(trim(filter_var($input['apellido'] ?? '', FILTER_SANITIZE_STRING)), 'UTF-8');
-    $curso_id_raw = trim(filter_var($input['curso_id'] ?? '', FILTER_SANITIZE_STRING));
+    $identificacion = trim(filter_var($input['identificacion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
+    $nombre = mb_strtoupper(trim(filter_var($input['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS)), 'UTF-8');
+    $apellido = mb_strtoupper(trim(filter_var($input['apellido'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS)), 'UTF-8');
+    $curso_id_raw = trim(filter_var($input['curso_id'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
     $curso_id = ($curso_id_raw === '' || $curso_id_raw === 'null' || $curso_id_raw === '0') ? null : (int)$curso_id_raw;
     $promedio = (float)(filter_var($input['promedio'] ?? 0, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION));
-    $tipo_documento = trim(filter_var($input['tipo_documento'] ?? '', FILTER_SANITIZE_STRING));
-    $tipo_sangre = trim(filter_var($input['tipo_sangre'] ?? '', FILTER_SANITIZE_STRING));
-    $genero = trim(filter_var($input['genero'] ?? '', FILTER_SANITIZE_STRING));
+    $tipo_documento = trim(filter_var($input['tipo_documento'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
+    $tipo_sangre = trim(filter_var($input['tipo_sangre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
+    $genero = trim(filter_var($input['genero'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
     $email = mb_strtolower(trim(filter_var($input['email'] ?? '', FILTER_SANITIZE_EMAIL)), 'UTF-8');
-    $celular = trim(filter_var($input['celular'] ?? '', FILTER_SANITIZE_STRING));
+    $celular = trim(filter_var($input['celular'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
     $es_antiguo = (filter_var($input['es_antiguo'] ?? 0, FILTER_VALIDATE_INT) === 1) ? 1 : 0;
 
     $params = [
@@ -72,7 +72,7 @@ try {
         $stmt_check->execute([$estudiante_id]);
         $existe_adicional = ((int)$stmt_check->fetchColumn() > 0);
         
-        $fecha_nacimiento = trim(filter_var($input['fecha_nacimiento'] ?? '', FILTER_SANITIZE_STRING));
+        $fecha_nacimiento = trim(filter_var($input['fecha_nacimiento'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
         $edad_val = null;
         if (!empty($fecha_nacimiento)) {
             try {
@@ -83,34 +83,34 @@ try {
         }
         
         $params_adicional = [
-            ':lugar_nac'   => !empty($input['lugar_nacimiento']) ? trim(filter_var($input['lugar_nacimiento'], FILTER_SANITIZE_STRING)) : null,
+            ':lugar_nac'   => !empty($input['lugar_nacimiento']) ? trim(filter_var($input['lugar_nacimiento'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
             ':fecha_nac'   => !empty($fecha_nacimiento) ? $fecha_nacimiento : null,
             ':edad'        => $edad_val,
-            ':nacionalidad'=> !empty($input['nacionalidad']) ? trim(filter_var($input['nacionalidad'], FILTER_SANITIZE_STRING)) : null,
-            ':col_ant'     => !empty($input['colegio_anterior']) ? trim(filter_var($input['colegio_anterior'], FILTER_SANITIZE_STRING)) : null,
-            ':dir_est'     => !empty($input['direccion_estudiante']) ? trim(filter_var($input['direccion_estudiante'], FILTER_SANITIZE_STRING)) : null,
-            ':folio'       => !empty($input['folio_matricula']) ? trim(filter_var($input['folio_matricula'], FILTER_SANITIZE_STRING)) : null,
+            ':nacionalidad'=> !empty($input['nacionalidad']) ? trim(filter_var($input['nacionalidad'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':col_ant'     => !empty($input['colegio_anterior']) ? trim(filter_var($input['colegio_anterior'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':dir_est'     => !empty($input['direccion_estudiante']) ? trim(filter_var($input['direccion_estudiante'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':folio'       => !empty($input['folio_matricula']) ? trim(filter_var($input['folio_matricula'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
             
-            ':padre_nom'   => !empty($input['padre_nombre']) ? trim(filter_var($input['padre_nombre'], FILTER_SANITIZE_STRING)) : null,
-            ':padre_tdoc'  => !empty($input['padre_tipo_documento']) ? trim(filter_var($input['padre_tipo_documento'], FILTER_SANITIZE_STRING)) : null,
-            ':padre_doc'   => !empty($input['padre_documento']) ? trim(filter_var($input['padre_documento'], FILTER_SANITIZE_STRING)) : null,
-            ':padre_doc_exp'=> !empty($input['padre_documento_expedicion']) ? trim(filter_var($input['padre_documento_expedicion'], FILTER_SANITIZE_STRING)) : null,
-            ':padre_nac'   => !empty($input['padre_nacionalidad']) ? trim(filter_var($input['padre_nacionalidad'], FILTER_SANITIZE_STRING)) : null,
-            ':padre_cel'   => !empty($input['padre_celular']) ? trim(filter_var($input['padre_celular'], FILTER_SANITIZE_STRING)) : null,
-            ':padre_tel'   => !empty($input['padre_telefono']) ? trim(filter_var($input['padre_telefono'], FILTER_SANITIZE_STRING)) : null,
-            ':padre_dir'   => !empty($input['padre_direccion']) ? trim(filter_var($input['padre_direccion'], FILTER_SANITIZE_STRING)) : null,
-            ':padre_prof'  => !empty($input['padre_profesion']) ? trim(filter_var($input['padre_profesion'], FILTER_SANITIZE_STRING)) : null,
+            ':padre_nom'   => !empty($input['padre_nombre']) ? trim(filter_var($input['padre_nombre'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':padre_tdoc'  => !empty($input['padre_tipo_documento']) ? trim(filter_var($input['padre_tipo_documento'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':padre_doc'   => !empty($input['padre_documento']) ? trim(filter_var($input['padre_documento'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':padre_doc_exp'=> !empty($input['padre_documento_expedicion']) ? trim(filter_var($input['padre_documento_expedicion'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':padre_nac'   => !empty($input['padre_nacionalidad']) ? trim(filter_var($input['padre_nacionalidad'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':padre_cel'   => !empty($input['padre_celular']) ? trim(filter_var($input['padre_celular'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':padre_tel'   => !empty($input['padre_telefono']) ? trim(filter_var($input['padre_telefono'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':padre_dir'   => !empty($input['padre_direccion']) ? trim(filter_var($input['padre_direccion'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':padre_prof'  => !empty($input['padre_profesion']) ? trim(filter_var($input['padre_profesion'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
             ':padre_email' => !empty($input['padre_email']) ? trim(filter_var($input['padre_email'], FILTER_SANITIZE_EMAIL)) : null,
             
-            ':madre_nom'   => !empty($input['madre_nombre']) ? trim(filter_var($input['madre_nombre'], FILTER_SANITIZE_STRING)) : null,
-            ':madre_tdoc'  => !empty($input['madre_tipo_documento']) ? trim(filter_var($input['madre_tipo_documento'], FILTER_SANITIZE_STRING)) : null,
-            ':madre_doc'   => !empty($input['madre_documento']) ? trim(filter_var($input['madre_documento'], FILTER_SANITIZE_STRING)) : null,
-            ':madre_doc_exp'=> !empty($input['madre_documento_expedicion']) ? trim(filter_var($input['madre_documento_expedicion'], FILTER_SANITIZE_STRING)) : null,
-            ':madre_nac'   => !empty($input['madre_nacionalidad']) ? trim(filter_var($input['madre_nacionalidad'], FILTER_SANITIZE_STRING)) : null,
-            ':madre_cel'   => !empty($input['madre_celular']) ? trim(filter_var($input['madre_celular'], FILTER_SANITIZE_STRING)) : null,
-            ':madre_tel'   => !empty($input['madre_telefono']) ? trim(filter_var($input['madre_telefono'], FILTER_SANITIZE_STRING)) : null,
-            ':madre_dir'   => !empty($input['madre_direccion']) ? trim(filter_var($input['madre_direccion'], FILTER_SANITIZE_STRING)) : null,
-            ':madre_prof'  => !empty($input['madre_profesion']) ? trim(filter_var($input['madre_profesion'], FILTER_SANITIZE_STRING)) : null,
+            ':madre_nom'   => !empty($input['madre_nombre']) ? trim(filter_var($input['madre_nombre'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':madre_tdoc'  => !empty($input['madre_tipo_documento']) ? trim(filter_var($input['madre_tipo_documento'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':madre_doc'   => !empty($input['madre_documento']) ? trim(filter_var($input['madre_documento'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':madre_doc_exp'=> !empty($input['madre_documento_expedicion']) ? trim(filter_var($input['madre_documento_expedicion'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':madre_nac'   => !empty($input['madre_nacionalidad']) ? trim(filter_var($input['madre_nacionalidad'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':madre_cel'   => !empty($input['madre_celular']) ? trim(filter_var($input['madre_celular'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':madre_tel'   => !empty($input['madre_telefono']) ? trim(filter_var($input['madre_telefono'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':madre_dir'   => !empty($input['madre_direccion']) ? trim(filter_var($input['madre_direccion'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
+            ':madre_prof'  => !empty($input['madre_profesion']) ? trim(filter_var($input['madre_profesion'], FILTER_SANITIZE_SPECIAL_CHARS)) : null,
             ':madre_email' => !empty($input['madre_email']) ? trim(filter_var($input['madre_email'], FILTER_SANITIZE_EMAIL)) : null,
             
             ':eid'         => $estudiante_id
