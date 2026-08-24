@@ -7,6 +7,11 @@ if (!tiene_permiso('matricula')) {
     echo "<div class='container py-5 text-center'><h2 class='text-danger fw-bold'>ACCESO DENEGADO</h2><p>No tienes privilegios para realizar matrículas.</p></div>";
     return;
 }
+
+$stmt_school = $db->prepare("SELECT valor FROM ajustes_estetica WHERE clave = 'school_name'");
+$stmt_school->execute();
+$cfg_school = $cfg_school ?? ($stmt_school->fetchColumn() ?: 'SISTEMA ESCOLAR');
+
 $stmt_courses = $db->prepare("SELECT * FROM cursos ORDER BY nombre_curso ASC");
 $stmt_courses->execute();
 
