@@ -2042,35 +2042,37 @@ body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
     font-weight: 700;
 }
 
-@keyframes btnPulseDangerElite {
+@keyframes btnPulseDangerLineElite {
     0%, 100% {
-        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
-        border-color: rgba(220, 38, 38, 0.6);
+        border-color: rgba(220, 38, 38, 0.4);
         transform: scale(1);
     }
     50% {
-        box-shadow: 0 0 0 0.35rem rgba(220, 38, 38, 0.15);
         border-color: rgb(220, 38, 38);
-        transform: scale(1.05);
+        transform: scale(1.08);
     }
 }
 
 .btn-elite-icon.btn-elite-icon--danger-pulse,
 .btn-elite-icon--danger-pulse {
     background: transparent;
-    border: 0.0625rem solid rgb(220, 38, 38);
+    background-color: transparent;
+    border: 0.09375rem solid rgb(220, 38, 38);
     color: rgb(220, 38, 38);
-    animation: btnPulseDangerElite 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+    animation: btnPulseDangerLineElite 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease;
 }
 
 .btn-elite-icon.btn-elite-icon--danger-pulse:hover,
 .btn-elite-icon--danger-pulse:hover {
     animation-play-state: paused;
-    transform: scale(1.15);
-    background: rgba(220, 38, 38, 0.12);
+    transform: scale(1.18);
+    background: transparent;
+    background-color: transparent;
     border-color: rgb(220, 38, 38);
     color: rgb(220, 38, 38);
+    box-shadow: none;
 }
 
 /* ðŸ” BUSCADOR GLOBAL Ã‰LITE (PROTOCOLO INSTITUCIONAL) */

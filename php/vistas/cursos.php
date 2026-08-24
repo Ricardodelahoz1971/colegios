@@ -135,7 +135,7 @@ if ($puede_gestionar) {
                                     if ($puede_gestionar) {
                                         if ($total_materias === 0) {
                                             echo "<button class='btn-elite-icon btn-elite-icon--danger-pulse' onclick='navegarModulo(\"carga\", \"id=" . $c_id . "\")' title='¡Carga académica pendiente! Haz clic para asignar materias'>
-                                                    <i class='bi bi-book-half'></i>
+                                                    <i class='bi bi-book'></i>
                                                   </button>";
                                         } else {
                                             echo "<button class='btn-elite-icon' onclick='navegarModulo(\"carga\", \"id=" . $c_id . "\")' title='Carga Académica (" . $total_materias . " asignaturas)'>
