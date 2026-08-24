@@ -9,16 +9,28 @@ window.lanzarToastElite = function (tipo, mensaje, titulo = null) {
     const tipoNormalizado = (tipo === 'error') ? 'danger' : (tipo || 'info');
     toast.className = `toast-elite toast-elite--${tipoNormalizado} toast-floating-elite animate__animated animate__fadeInRight`;
 
-    let icon = 'bi-check-circle-fill text-success';
-    if (tipoNormalizado === 'danger') icon = 'bi-exclamation-triangle-fill text-danger';
-    else if (tipoNormalizado === 'warning') icon = 'bi-exclamation-circle-fill text-warning';
-    else if (tipoNormalizado === 'info') icon = 'bi-info-circle-fill text-info';
+    let iconClass = 'bi-info-circle-fill';
+    let defaultTitle = 'Notificación';
 
-    const headerText = titulo || (tipoNormalizado === 'danger' ? 'Error' : (tipoNormalizado === 'warning' ? 'Advertencia' : 'Notificación'));
+    if (tipoNormalizado === 'danger') {
+        iconClass = 'bi-exclamation-triangle-fill';
+        defaultTitle = 'Error';
+    } else if (tipoNormalizado === 'warning') {
+        iconClass = 'bi-exclamation-circle-fill';
+        defaultTitle = 'Advertencia';
+    } else if (tipoNormalizado === 'success') {
+        iconClass = 'bi-check-circle-fill';
+        defaultTitle = 'Éxito';
+    } else if (tipoNormalizado === 'info') {
+        iconClass = 'bi-info-circle-fill';
+        defaultTitle = 'Información';
+    }
+
+    const headerText = titulo || defaultTitle;
 
     toast.innerHTML = `
         <div class="d-flex align-items-center gap-2">
-            <i class="bi ${icon} fs-5"></i>
+            <i class="bi ${iconClass} fs-5 toast-icon-elite"></i>
             <div>
                 <div class="fw-bold small text-uppercase">${headerText}</div>
                 <div class="small text-secondary">${mensaje}</div>

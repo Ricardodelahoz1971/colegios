@@ -123,7 +123,7 @@ if ($puede_gestionar) {
                         echo "<tr>";
                             echo "<td class='ps-4 text-muted fw-bold small'>#" . $c_id . "</td>";
                             echo "<td><span class='fw-semibold text-dark fs-6'>" . htmlspecialchars($row['nombre_curso'], ENT_QUOTES, 'UTF-8') . "</span></td>";
-                            echo "<td class='text-center'><span class='badge-elite badge-elite--neutral'>" . htmlspecialchars(strtoupper($row['jornada'] ?? 'Mañana'), ENT_QUOTES, 'UTF-8') . "</span></td>";
+                            echo "<td class='text-center'><span class='badge-elite badge-elite--neutral'>" . htmlspecialchars(mb_strtoupper((string)($row['jornada'] ?? 'Mañana'), 'UTF-8'), ENT_QUOTES, 'UTF-8') . "</span></td>";
                             echo "<td class='text-center'>" . $badge_rol . "</td>";
                             echo "<td class='text-center'>" . ($row['nombre_tutor'] ? "<span class='badge-elite badge-elite--primary'>" . htmlspecialchars($row['nombre_tutor'], ENT_QUOTES, 'UTF-8') . "</span>" : "<em class='text-muted small italic'>Sin tutor asignado</em>") . "</td>";
                             echo "<td class='pe-4 text-center'>";

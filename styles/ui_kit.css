@@ -1994,8 +1994,31 @@ body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
     content: ''; position: absolute; inset-inline-start: 0; top: 0; height: 100%; width: 0.25rem;
     background: var(--el-primary);
 }
-.toast-elite.toast-elite--success::before { background: var(--el-primary); }
-.toast-elite.toast-elite--danger::before { background: var(--el-primary); }
+
+.toast-elite.toast-elite--danger::before,
+.toast-elite.toast-elite--error::before {
+    background: var(--bs-danger);
+}
+.toast-elite.toast-elite--danger .toast-icon-elite,
+.toast-elite.toast-elite--error .toast-icon-elite {
+    color: var(--bs-danger);
+}
+
+.toast-elite.toast-elite--success::before,
+.toast-elite.toast-elite--info::before {
+    background: var(--el-primary);
+}
+.toast-elite.toast-elite--success .toast-icon-elite,
+.toast-elite.toast-elite--info .toast-icon-elite {
+    color: var(--el-primary);
+}
+
+.toast-elite.toast-elite--warning::before {
+    background: var(--el-accent);
+}
+.toast-elite.toast-elite--warning .toast-icon-elite {
+    color: var(--el-accent);
+}
 
 /* ðŸ” BUSCADOR GLOBAL Ã‰LITE (PROTOCOLO INSTITUCIONAL) */
 /* 

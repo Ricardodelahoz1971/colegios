@@ -3,32 +3,7 @@
  * Responsable de la lógica de administración de Roles, Personal, Áreas, Cursos y Alumnos.
  */
 
-// Helper universal para lanzar notificaciones toast flotantes sin interferir con modales activos de SweetAlert2
-window.lanzarToastElite = function (tipo, mensaje) {
-    const toast = document.createElement('div');
-    toast.className = `toast-elite toast-elite--${tipo} toast-floating-elite animate__animated animate__fadeInRight`;
-
-    let icon = 'bi-check-circle-fill text-success';
-    if (tipo === 'danger') icon = 'bi-exclamation-triangle-fill text-danger';
-    else if (tipo === 'warning') icon = 'bi-exclamation-circle-fill text-warning';
-
-    toast.innerHTML = `
-        <div class="d-flex align-items-center gap-2">
-            <i class="bi ${icon} fs-5"></i>
-            <div>
-                <div class="fw-bold small text-uppercase">Notificación</div>
-                <div class="small text-secondary">${mensaje}</div>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.classList.remove('animate__fadeInRight');
-        toast.classList.add('animate__fadeOutRight');
-        setTimeout(() => toast.remove(), 500);
-    }, 4000);
-};
+// El helper universal window.lanzarToastElite reside de forma centralizada en dashboard.js
 
 // --- GESTIÓN DE ROLES ---
 window.nuevoRol = async function () {
