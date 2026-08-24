@@ -14,7 +14,7 @@ try {
         throw new Exception("Acceso denegado: Rango académico insuficiente.");
     }
 
-    $nombre = trim(filter_input(INPUT_POST, 'nombre_rol', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
+    $nombre = limpiar_texto_utf8(filter_input(INPUT_POST, 'nombre_rol', FILTER_DEFAULT) ?? '');
 
     if (empty($nombre)) {
         throw new Exception("El nombre del perfil es obligatorio.");

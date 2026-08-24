@@ -34,17 +34,19 @@ window.enviarPostElite = async function(url, params = {}, silencioso = false) {
         }
 
         const data = await response.json();
+        
+        // 🔒 CERRAR MODAL DE CARGA SI SE ABRIÓ
+        if (!silencioso && typeof Swal !== 'undefined' && typeof Swal.close === 'function') {
+            Swal.close();
+        }
+
         if (!data) return; 
 
         if (data.status === 'success') {
             if (!silencioso) {
-                await Swal.fire({
-                    title: '¡Éxito!',
-                    text: data.message || 'Operación completada.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
+                if (typeof window.lanzarToastElite === 'function') {
+                    window.lanzarToastElite('success', data.message || 'Operación completada.');
+                }
 
                 if (data.redirect) {
                     window.location.href = data.redirect;
@@ -57,12 +59,23 @@ window.enviarPostElite = async function(url, params = {}, silencioso = false) {
             }
             return data; // Devolver datos para procesamiento manual soberano
         } else {
-            Swal.fire('Error de Bóveda', data.message || 'Error desconocido', 'error');
+            if (typeof window.lanzarToastElite === 'function') {
+                window.lanzarToastElite('danger', data.message || 'Error desconocido', 'Error de Bóveda');
+            } else {
+                Swal.fire('Error de Bóveda', data.message || 'Error desconocido', 'error');
+            }
             return data;
         }
     } catch (error) {
         if (!silencioso) {
-            Swal.fire('Falla Crítica', 'El servidor no respondió en el formato esperado o hubo un error de red.', 'error');
+            if (typeof Swal !== 'undefined' && typeof Swal.close === 'function') {
+                Swal.close();
+            }
+            if (typeof window.lanzarToastElite === 'function') {
+                window.lanzarToastElite('danger', 'El servidor no respondió en el formato esperado o hubo un error de red.', 'Falla Crítica');
+            } else {
+                Swal.fire('Falla Crítica', 'El servidor no respondió en el formato esperado o hubo un error de red.', 'error');
+            }
         }
     }
 };

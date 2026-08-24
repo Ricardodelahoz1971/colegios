@@ -160,11 +160,22 @@ function asignarHora(PDO $db, array $m, string $dia, int $hora, array $cfg, int 
     };
 
     $h_ini_base = $obtener_cfg('khronos_inicio', $jornada_curso) ?? '07:00';
-    $dur = (int)($obtener_cfg('khronos_duracion', $jornada_curso) ?? 55);
-    $d1h = (int)($obtener_cfg('khronos_descanso_h', $jornada_curso) ?? 0);
-    $d1m = (int)($obtener_cfg('khronos_descanso_m', $jornada_curso) ?? 0);
-    $d2h = (int)($obtener_cfg('khronos_descanso2_h', $jornada_curso) ?? 0);
-    $d2m = (int)($obtener_cfg('khronos_descanso2_m', $jornada_curso) ?? 0);
+    $recesos_raw = $obtener_cfg('khronos_recesos', $jornada_curso);
+    $recesos_lista = [];
+    if (!empty($recesos_raw)) {
+        $decoded = json_decode((string)$recesos_raw, true);
+        if (is_array($decoded)) {
+            $recesos_lista = $decoded;
+        }
+    }
+    if (empty($recesos_lista)) {
+        $d1h = (int)($obtener_cfg('khronos_descanso_h', $jornada_curso) ?? 0);
+        $d1m = (int)($obtener_cfg('khronos_descanso_m', $jornada_curso) ?? 0);
+        if ($d1h > 0 && $d1m > 0) $recesos_lista[] = ['bloque' => $d1h, 'duracion' => $d1m];
+        $d2h = (int)($obtener_cfg('khronos_descanso2_h', $jornada_curso) ?? 0);
+        $d2m = (int)($obtener_cfg('khronos_descanso2_m', $jornada_curso) ?? 0);
+        if ($d2h > 0 && $d2m > 0) $recesos_lista[] = ['bloque' => $d2h, 'duracion' => $d2m];
+    }
 
     [$h, $min] = explode(':', $h_ini_base);
     $t_ini = '';
@@ -176,15 +187,13 @@ function asignarHora(PDO $db, array $m, string $dia, int $hora, array $cfg, int 
         $min = $total % 60;
         $t_fin = sprintf("%02d:%02d", $h, $min);
 
-        if ($j == $d1h) {
-            $total_d = $min + $d1m;
-            $h += floor($total_d/60);
-            $min = $total_d % 60;
-        }
-        if ($j == $d2h) {
-            $total_d = $min + $d2m;
-            $h += floor($total_d/60);
-            $min = $total_d % 60;
+        foreach ($recesos_lista as $rec) {
+            if ((int)($rec['bloque'] ?? 0) === $j) {
+                $dur_rec = (int)($rec['duracion'] ?? 0);
+                $total_d = $min + $dur_rec;
+                $h += floor($total_d/60);
+                $min = $total_d % 60;
+            }
         }
     }
 

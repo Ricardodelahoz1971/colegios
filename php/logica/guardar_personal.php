@@ -16,11 +16,11 @@ try {
 
     $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
-    $nombre = trim(filter_var($input['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS));
-    $user = strtoupper(trim(filter_var($input['user'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS)));
-    $pass = $input['pass'] ?? '';
-    $rol = filter_var($input['rol'] ?? 0, FILTER_VALIDATE_INT);
-    $esp = filter_var($input['esp'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+    $nombre = trim(limpiar_texto_utf8($input['nombre'] ?? filter_input(INPUT_POST, 'nombre', FILTER_DEFAULT) ?? ''));
+    $user = strtoupper(trim(limpiar_texto_utf8($input['user'] ?? filter_input(INPUT_POST, 'user', FILTER_DEFAULT) ?? '')));
+    $pass = (string)($input['pass'] ?? filter_input(INPUT_POST, 'pass', FILTER_DEFAULT) ?? '');
+    $rol = filter_var($input['rol'] ?? filter_input(INPUT_POST, 'rol', FILTER_VALIDATE_INT) ?? 0, FILTER_VALIDATE_INT);
+    $esp = limpiar_texto_utf8($input['esp'] ?? filter_input(INPUT_POST, 'esp', FILTER_DEFAULT) ?? '');
 
     if ($rol === false) {
         $rol = 0;
@@ -47,7 +47,7 @@ try {
     $stmt_check->bindValue(':usr', $user, PDO::PARAM_STR);
     $stmt_check->execute();
     if ($stmt_check->fetch()) {
-        throw new Exception('El nombre de usuario "'.$user.'" ya se encuentra en uso.');
+        throw new Exception('El nombre de usuario "'.$user.'" ya se encuentra registrado en el sistema.');
     }
 
     $pass_segura = password_hash($pass, PASSWORD_BCRYPT);
@@ -70,6 +70,15 @@ try {
         throw new Exception('Fallo crítico al registrar en la base de datos.');
     }
 
+} catch (PDOException $pe) {
+    $msg = $pe->getMessage();
+    if ($pe->getCode() === '23000' || strpos($msg, '1062') !== false || strpos($msg, 'Duplicate entry') !== false) {
+        $msg = 'El nombre de usuario ya se encuentra registrado. Por favor ingrese uno diferente.';
+    }
+    echo json_encode([
+        'status' => 'error', 
+        'message' => 'Error de Bóveda: ' . $msg
+    ]);
 } catch (Exception $e) {
     echo json_encode([
         'status' => 'error', 

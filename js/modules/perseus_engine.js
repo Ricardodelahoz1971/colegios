@@ -1593,7 +1593,7 @@ window.Perseus = (function() {
                     est.soporte_recuperacion_id = soporteRecupId;
                 }
                 
-                Toast.fire({ icon: 'success', title: 'Nota guardada para ' + est.nombre.split(' ')[0] });
+                lanzarToastElite('success', 'Nota guardada para ' + est.nombre.split(' ')[0]);
                 
                 if (d.es_reprobado) {
                     const stats = d.data || { total_reprobados: 1, total_estudiantes: 1, porcentaje_perdida: 0 };
@@ -1630,7 +1630,7 @@ window.Perseus = (function() {
                 throw new Error(d.message);
             }
         } catch (e) {
-            Swal.fire('Error', e.message, 'error');
+            lanzarToastElite('danger', e.message || 'Error al procesar la calificación');
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-check-all me-2"></i> REGISTRAR NOTA <i class="bi bi-arrow-right ms-2"></i>';

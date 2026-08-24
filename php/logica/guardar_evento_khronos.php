@@ -13,9 +13,9 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') throw new Exception("Método no permitido");
     
     $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
-    $dia = filter_input(INPUT_POST, 'dia', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+    $dia = limpiar_texto_utf8($_POST['dia'] ?? '') ?? '';
     $hora = filter_input(INPUT_POST, 'hora', FILTER_VALIDATE_INT) ?? 0;
-    $evento = filter_input(INPUT_POST, 'evento', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+    $evento = limpiar_texto_utf8($_POST['evento'] ?? '') ?? '';
     $evento = trim($evento);
     
     if (!$curso_id || !$dia || !$hora) throw new Exception("Parámetros incompletos");

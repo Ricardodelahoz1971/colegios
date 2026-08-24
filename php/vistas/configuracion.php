@@ -44,13 +44,44 @@ $stmt_j = $db->prepare("SELECT DISTINCT jornada FROM cursos WHERE jornada IS NOT
 $jornadas_activas = $stmt_j->fetchAll(PDO::FETCH_COLUMN) ?: ['Mañana'];
 
 if (!function_exists('obtener_khronos_cfg')) {
-    function obtener_khronos_cfg($clave, $jornada, $cfg, $fallback = '') {
+    function obtener_khronos_cfg(string $clave, string $jornada, array $cfg, string $fallback = ''): string {
         $suffix = strtolower(str_replace([' ', 'á', 'é', 'í', 'ó', 'ú'], ['', 'a', 'e', 'i', 'o', 'u'], $jornada));
         $clave_jornada = $clave . '_' . $suffix;
-        if (isset($cfg[$clave_jornada]) && $cfg[$clave_jornada] !== '') {
-            return $cfg[$clave_jornada];
+        if (isset($cfg[$clave_jornada]) && (string)$cfg[$clave_jornada] !== '') {
+            return (string)$cfg[$clave_jornada];
         }
-        return $cfg[$clave] ?? $fallback;
+        return (string)($cfg[$clave] ?? $fallback);
+    }
+}
+
+if (!function_exists('obtener_recesos_khronos')) {
+    function obtener_recesos_khronos(string $jornada, array $cfg): array {
+        $suffix = strtolower(str_replace([' ', 'á', 'é', 'í', 'ó', 'ú'], ['', 'a', 'e', 'i', 'o', 'u'], $jornada));
+        $clave_jornada = 'khronos_recesos_' . $suffix;
+        
+        $json_raw = $cfg[$clave_jornada] ?? ($cfg['khronos_recesos'] ?? null);
+        if (!empty($json_raw)) {
+            $decoded = json_decode((string)$json_raw, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
+            }
+        }
+        
+        // Fallback a campos legados
+        $recesos = [];
+        $desc1_h = (int)obtener_khronos_cfg('khronos_descanso_h', $jornada, $cfg, '2');
+        $desc1_m = (int)obtener_khronos_cfg('khronos_descanso_m', $jornada, $cfg, '15');
+        if ($desc1_h > 0 && $desc1_m > 0) {
+            $recesos[] = ['bloque' => $desc1_h, 'duracion' => $desc1_m, 'tipo' => 'Receso'];
+        }
+        
+        $desc2_h = (int)obtener_khronos_cfg('khronos_descanso2_h', $jornada, $cfg, '4');
+        $desc2_m = (int)obtener_khronos_cfg('khronos_descanso2_m', $jornada, $cfg, '15');
+        if ($desc2_h > 0 && $desc2_m > 0) {
+            $recesos[] = ['bloque' => $desc2_h, 'duracion' => $desc2_m, 'tipo' => 'Receso'];
+        }
+        
+        return $recesos;
     }
 }
 
@@ -129,20 +160,20 @@ if (isset($_GET['success']) && (strpos($_GET['success'], 'adn') !== false || str
                             <input type="hidden" name="csrf_token" value="<?php echo generar_csrf_token(); ?>">
                             <div class="mb-4">
                                 <label for="school_name" class="form-label small fw-bold text-uppercase">Nombre de la Institución</label>
-                                <input type="text" id="school_name" name="school_name" class="input-elite" value="<?php echo $cfg['school_name'] ?? ''; ?>">
+                                <input type="text" id="school_name" name="school_name" class="input-elite" placeholder="Ej: Institución Educativa Modelo" value="<?php echo htmlspecialchars($cfg['school_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="mb-4">
                                 <label for="school_motto" class="form-label small fw-bold text-uppercase">Lema Institucional</label>
-                                <input type="text" id="school_motto" name="school_motto" class="input-elite" value="<?php echo $cfg['school_motto'] ?? ''; ?>">
+                                <input type="text" id="school_motto" name="school_motto" class="input-elite" placeholder="Ej: Ciencia, Virtud y Liderazgo" value="<?php echo htmlspecialchars($cfg['school_motto'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="row g-3 mb-4">
                                 <div class="col-6">
                                     <label for="colegio_nit" class="form-label small fw-bold text-uppercase">NIT del Colegio</label>
-                                    <input type="text" id="colegio_nit" name="colegio_nit" class="input-elite" placeholder="Ej: 800123456-7" value="<?php echo htmlspecialchars($cfg['colegio_nit'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="text" id="colegio_nit" name="colegio_nit" class="input-elite" placeholder="Ej: 800.189.040-3" value="<?php echo htmlspecialchars($cfg['colegio_nit'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                                 <div class="col-6">
                                     <label for="colegio_resolucion" class="form-label small fw-bold text-uppercase">Resolución Oficial</label>
-                                    <input type="text" id="colegio_resolucion" name="colegio_resolucion" class="input-elite" placeholder="Ej: Res. 001234 de 2024" value="<?php echo htmlspecialchars($cfg['colegio_resolucion'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="text" id="colegio_resolucion" name="colegio_resolucion" class="input-elite" placeholder="Ej: Res. N° 18904 de 2024" value="<?php echo htmlspecialchars($cfg['colegio_resolucion'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                             </div>
                             <div class="mb-4">
@@ -159,14 +190,15 @@ if (isset($_GET['success']) && (strpos($_GET['success'], 'adn') !== false || str
                 <div class="col-md-5">
                     <div class="config-main-card-elite text-center h-100 d-flex flex-column justify-content-center">
                         <span class="fw-bold text-muted small text-uppercase mb-3">Vista Previa del Logo</span>
-                        <div class="config-preview-card mx-auto">
+                        <div class="config-preview-card mx-auto" id="config-logo-preview-box">
                             <?php 
                             $logo_path = $cfg['school_logo'] ?? '';
                             if (!empty($logo_path) && strpos($logo_path, 'http') === false) { $logo_path = '../' . $logo_path; }
                             if (!empty($logo_path)): ?>
-                                <img src="<?php echo $logo_path; ?>" class="preview-img-fit">
+                                <img src="<?php echo $logo_path; ?>" class="preview-img-fit school-logo-global" alt="Logo">
                             <?php else: ?>
-                                <i class="bi bi-image text-muted fs-1"></i>
+                                <img src="" class="preview-img-fit school-logo-global d-none" alt="Logo">
+                                <i class="bi bi-image text-muted fs-1 fallback-icon"></i>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -279,7 +311,8 @@ if (isset($_GET['success']) && (strpos($_GET['success'], 'adn') !== false || str
                                     $val_desc2_m = obtener_khronos_cfg('khronos_descanso2_m', $jor, $cfg, '15');
                                 ?>
                                     <div class="<?php echo count($jornadas_activas) > 1 ? 'tab-pane fade ' . ($idx === 0 ? 'show active' : '') : ''; ?>" id="tab-jornada-<?php echo $suffix; ?>">
-                                        <!-- GRID MAESTRO DE 2 COLUMNAS (Sincronización Binaria) -->
+                                        <!-- SECCIÓN: CONFIGURACIÓN GENERAL -->
+                                        <span class="small fw-bold text-muted text-uppercase d-block config-soberania-label-elite mb-2">Configuración General</span>
                                         <div class="config-flex-row-elite mb-2">
                                             <div class="config-flex-col-elite">
                                                 <div class="config-input-card-elite">
@@ -307,7 +340,7 @@ if (isset($_GET['success']) && (strpos($_GET['success'], 'adn') !== false || str
                                             </div>
                                         </div>
 
-                                        <div class="mb-2 mt-2">
+                                        <div class="mb-2 mt-3">
                                             <span class="small fw-bold text-muted text-uppercase d-block config-soberania-label-elite">Soberanía de Días Laborales</span>
                                             <div class="d-flex flex-wrap gap-2">
                                                 <?php 
@@ -321,37 +354,55 @@ if (isset($_GET['success']) && (strpos($_GET['success'], 'adn') !== false || str
                                             </div>
                                         </div>
 
-                                        <div class="config-flex-row-elite">
-                                            <div class="config-flex-col-elite">
-                                                <div class="config-input-card-elite">
-                                                    <label class="fw-bold fs-mini text-primary text-uppercase d-block mb-2">Receso 01</label>
-                                                    <div class="d-flex gap-2 align-items-center">
-                                                        <div class="w-50">
-                                                            <span class="fs-nano text-muted d-block mb-1 text-center">Después de (Bloque)</span>
-                                                            <input type="number" id="khronos_descanso_h<?php echo $sufijo_input; ?>" name="khronos_descanso_h<?php echo $sufijo_input; ?>" class="input-elite text-center" oninput="window.actualizarVistaKhronos()" value="<?php echo $val_desc1_h; ?>">
+                                        <!-- SECCIÓN: RECESOS Y PAUSAS PEDAGÓGICAS -->
+                                        <div class="mt-4 pt-3 border-top">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="small fw-bold text-muted text-uppercase d-block config-soberania-label-elite">Recesos y Pausas Pedagógicas</span>
+                                                <button type="button" class="btn-action-elite text-primary d-flex align-items-center gap-1 fs-nano fw-bold" onclick="window.agregarFilaReceso('<?php echo $suffix; ?>')">
+                                                    <i class="bi bi-plus-circle"></i> AÑADIR RECESO
+                                                </button>
+                                            </div>
+                                            
+                                            <div id="recesos-container-<?php echo $suffix; ?>" class="d-flex flex-column gap-2 mb-2">
+                                                <?php 
+                                                $lista_recesos = obtener_recesos_khronos($jor, $cfg);
+                                                if (empty($lista_recesos)) {
+                                                    $lista_recesos = [
+                                                        ['bloque' => 2, 'duracion' => 15, 'tipo' => 'Receso'],
+                                                        ['bloque' => 4, 'duracion' => 15, 'tipo' => 'Receso']
+                                                    ];
+                                                }
+                                                foreach ($lista_recesos as $r_idx => $r_item):
+                                                ?>
+                                                <div class="config-input-card-elite p-2 d-flex align-items-center gap-2 fila-receso-khronos">
+                                                    <span class="badge-elite badge-elite--primary fs-nano receso-num">#<?php echo $r_idx + 1; ?></span>
+                                                    <div class="d-flex flex-fill align-items-center gap-2">
+                                                        <div class="w-25">
+                                                            <span class="fs-nano text-muted d-block text-center mb-1">Tras Bloque</span>
+                                                            <input type="number" class="input-elite text-center receso-bloque" min="1" max="12" value="<?php echo (int)($r_item['bloque'] ?? 2); ?>" oninput="window.actualizarVistaKhronos()">
                                                         </div>
-                                                        <div class="w-50">
-                                                            <span class="fs-nano text-muted d-block mb-1 text-center">Duración (Minutos)</span>
-                                                            <input type="number" id="khronos_descanso_m<?php echo $sufijo_input; ?>" name="khronos_descanso_m<?php echo $sufijo_input; ?>" class="input-elite text-center" oninput="window.actualizarVistaKhronos()" value="<?php echo $val_desc1_m; ?>">
+                                                        <div class="w-25">
+                                                            <span class="fs-nano text-muted d-block text-center mb-1">Minutos</span>
+                                                            <input type="number" class="input-elite text-center receso-duracion" min="5" max="120" step="5" value="<?php echo (int)($r_item['duracion'] ?? 15); ?>" oninput="window.actualizarVistaKhronos()">
+                                                        </div>
+                                                        <div class="flex-fill">
+                                                            <span class="fs-nano text-muted d-block text-center mb-1">Tipo de Pausa</span>
+                                                            <select class="select-elite-sm w-100 receso-tipo" onchange="window.actualizarVistaKhronos()">
+                                                                <option value="Receso" <?php echo ($r_item['tipo'] ?? '') === 'Receso' ? 'selected' : ''; ?>>✦ Receso</option>
+                                                                <option value="Almuerzo" <?php echo ($r_item['tipo'] ?? '') === 'Almuerzo' ? 'selected' : ''; ?>>✦ Almuerzo</option>
+                                                                <option value="Pausa Activa" <?php echo ($r_item['tipo'] ?? '') === 'Pausa Activa' ? 'selected' : ''; ?>>✦ Pausa Activa</option>
+                                                            </select>
                                                         </div>
                                                     </div>
+                                                    <button type="button" class="btn-action-elite text-danger p-2" title="Eliminar Receso" onclick="window.eliminarFilaReceso(this)">
+                                                        <i class="bi bi-trash3"></i>
+                                                    </button>
                                                 </div>
+                                                <?php endforeach; ?>
                                             </div>
-                                            <div class="config-flex-col-elite">
-                                                <div class="config-input-card-elite">
-                                                    <label class="fw-bold fs-mini text-primary text-uppercase d-block mb-2">Receso 02</label>
-                                                    <div class="d-flex gap-2 align-items-center">
-                                                        <div class="w-50">
-                                                            <span class="fs-nano text-muted d-block mb-1 text-center">Después de (Bloque)</span>
-                                                            <input type="number" id="khronos_descanso2_h<?php echo $sufijo_input; ?>" name="khronos_descanso2_h<?php echo $sufijo_input; ?>" class="input-elite text-center" oninput="window.actualizarVistaKhronos()" value="<?php echo $val_desc2_h; ?>">
-                                                        </div>
-                                                        <div class="w-50">
-                                                            <span class="fs-nano text-muted d-block mb-1 text-center">Duración (Minutos)</span>
-                                                            <input type="number" id="khronos_descanso2_m<?php echo $sufijo_input; ?>" name="khronos_descanso2_m<?php echo $sufijo_input; ?>" class="input-elite text-center" oninput="window.actualizarVistaKhronos()" value="<?php echo $val_desc2_m; ?>">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
+                                            <!-- Campo serializado para persistencia -->
+                                            <input type="hidden" id="khronos_recesos<?php echo $sufijo_input; ?>" name="khronos_recesos<?php echo $sufijo_input; ?>" value='<?php echo htmlspecialchars(json_encode($lista_recesos)); ?>'>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>

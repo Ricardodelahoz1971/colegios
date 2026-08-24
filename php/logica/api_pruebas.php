@@ -140,26 +140,44 @@ try {
             break;
 
         case 'eliminar':
+        case 'eliminar_prueba':
             proteccion_extrema();
             $id = (int)filter_input(INPUT_POST, 'id');
 
-            // 🏛️ DETECTOR DE DESTRUCCIÓN DE DATOS: Validar propiedad de la prueba antes de tocar tablas hijas
-            $stmt_check = $db->prepare("SELECT 1 FROM eval_pruebas WHERE id = ? AND docente_id = ?");
-            $stmt_check->execute([$id, $mi_id]);
-            if (!$stmt_check->fetch()) {
-                throw new Exception("Acceso denegado: No es el autor de esta prueba o la prueba no existe.");
+            // Validar existencia y permisos
+            $es_admin = tienen_rol(['Administrador', 'Coordinador']);
+            if (!$es_admin) {
+                $stmt_check = $db->prepare("SELECT 1 FROM eval_pruebas WHERE id = ? AND docente_id = ?");
+                $stmt_check->execute([$id, $mi_id]);
+                if (!$stmt_check->fetch()) {
+                    throw new Exception("Acceso denegado: No es el autor de esta prueba o la prueba no existe.");
+                }
+            } else {
+                $stmt_check = $db->prepare("SELECT 1 FROM eval_pruebas WHERE id = ?");
+                $stmt_check->execute([$id]);
+                if (!$stmt_check->fetch()) {
+                    throw new Exception("La prueba no existe.");
+                }
             }
 
             // Verificar inmutabilidad
             $check = $db->prepare("SELECT COUNT(*) FROM eval_respuestas WHERE prueba_id = ?");
             $check->execute([$id]);
             if ($check->fetchColumn() > 0) {
-                throw new Exception('No se puede eliminar una prueba con resultados registrados.');
+                throw new Exception('No se puede eliminar una prueba con respuestas o calificaciones registradas.');
             }
 
-            $db->prepare("DELETE FROM eval_pruebas_items WHERE prueba_id = ?")->execute([$id]);
-            $db->prepare("DELETE FROM eval_pruebas WHERE id = ? AND docente_id = ?")->execute([$id, $mi_id]);
-            echo json_encode(['status' => 'success', 'message' => 'Prueba purgada.']);
+            $db->beginTransaction();
+            try {
+                $db->prepare("DELETE FROM eval_asignaciones WHERE prueba_id = ?")->execute([$id]);
+                $db->prepare("DELETE FROM eval_pruebas_items WHERE prueba_id = ?")->execute([$id]);
+                $db->prepare("DELETE FROM eval_pruebas WHERE id = ?")->execute([$id]);
+                $db->commit();
+                echo json_encode(['status' => 'success', 'message' => 'Prueba eliminada del sistema.']);
+            } catch (Exception $e) {
+                $db->rollBack();
+                throw $e;
+            }
             break;
 
         case 'guardar_asignacion':

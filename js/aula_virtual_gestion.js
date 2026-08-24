@@ -1,4 +1,4 @@
-﻿(function() {
+(function() {
     try {
         let modalRecurso = null;
 
@@ -106,10 +106,10 @@
                         if (res.status === 'success') {
                             const inst = bootstrap.Modal.getInstance(document.getElementById('modalRecurso'));
                             if (inst) inst.hide();
-                            Swal.fire({ icon: 'success', title: 'Actualización Exitosa', text: res.message, timer: 1500, showConfirmButton: false });
+                            lanzarToastElite('success', res.message || 'Recurso guardado correctamente');
                             cargarRecursos();
                         } else {
-                            Swal.fire('Falla de Bóveda', res.message, 'error');
+                            lanzarToastElite('danger', res.message || 'Error al guardar recurso', 'Falla de Bóveda');
                         }
                     })
                     .catch(err => {
@@ -117,7 +117,7 @@
                             btn.disabled = false;
                             btn.innerHTML = 'GUARDAR RECURSO';
                         }
-                        Swal.fire('Error de Comunicación', 'No se pudo conectar con la bóveda.', 'error');
+                        lanzarToastElite('danger', 'No se pudo conectar con la bóveda.', 'Error de Comunicación');
                     });
                 };
 
@@ -340,24 +340,14 @@
             .then(r => r.json())
             .then(res => {
                 if (res.status === 'success') {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        timerProgressBar: true
-                    });
-                    Toast.fire({
-                        icon: 'success',
-                        title: res.message
-                    });
+                    lanzarToastElite('success', res.message || 'Estado evaluativo actualizado');
                 } else {
-                    Swal.fire('Falla de Bóveda', res.message, 'error');
+                    lanzarToastElite('danger', res.message || 'Error al actualizar', 'Falla de Bóveda');
                 }
                 cargarRecursos();
             })
             .catch(err => {
-                Swal.fire('Error', 'No se pudo sincronizar el estado evaluativo.', 'error');
+                lanzarToastElite('danger', 'No se pudo sincronizar el estado evaluativo.');
                 cargarRecursos();
             });
         };
@@ -375,7 +365,10 @@
                     const fd = new FormData();
                     fd.append('id', id);
                     fetch('logica/api_aula.php?action=eliminar', { method: 'POST', body: fd })
-                    .then(() => cargarRecursos());
+                    .then(() => {
+                        lanzarToastElite('success', 'Recurso eliminado correctamente');
+                        cargarRecursos();
+                    });
                 }
             });
         };

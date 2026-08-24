@@ -23,6 +23,11 @@ if ($last_f_val) {
     }
 }
 $next_folio_str = $current_year . '-' . str_pad((string)$next_f_num, 4, '0', STR_PAD_LEFT);
+
+// Catálogo de Países para Nacionalidad y Cascada
+$stmt_paises = $db->prepare("SELECT id, codigo_iso, nombre, gentilicio FROM cat_paises ORDER BY CASE WHEN id = 1 THEN 0 ELSE 1 END, nombre ASC");
+$stmt_paises->execute();
+$lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
 ?>
 
 <div class="container py-4">
@@ -50,8 +55,7 @@ $next_folio_str = $current_year . '-' . str_pad((string)$next_f_num, 4, '0', STR
                     <!-- I. IDENTIDAD -->
                     <div class="mb-5">
                         <div class="d-flex align-items-center mb-4 border-bottom pb-2 border-topbar-elite">
-                            <span class="matricula-step-badge">1</span>
-                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">Identidad del Estudiante</h2>
+                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">1. Identidad del Estudiante</h2>
                         </div>
                         
                         <div class="row g-4">
@@ -119,8 +123,7 @@ $next_folio_str = $current_year . '-' . str_pad((string)$next_f_num, 4, '0', STR
                     <!-- II. CONTACTO -->
                     <div class="mb-5">
                         <div class="d-flex align-items-center mb-4 border-bottom pb-2 border-topbar-elite">
-                            <span class="matricula-step-badge">2</span>
-                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">Información de Contacto</h2>
+                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">2. Información de Contacto</h2>
                         </div>
                         
                         <div class="row g-4">
@@ -145,37 +148,65 @@ $next_folio_str = $current_year . '-' . str_pad((string)$next_f_num, 4, '0', STR
                     <!-- III. INFORMACIÓN ADICIONAL DEL ESTUDIANTE -->
                     <div class="mb-5">
                         <div class="d-flex align-items-center mb-4 border-bottom pb-2 border-topbar-elite">
-                            <span class="matricula-step-badge">3</span>
-                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">Información Adicional del Estudiante</h2>
+                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">3. Información Adicional del Estudiante</h2>
                         </div>
                         
                         <div class="row g-4">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fw-bold small text-secondary">Fecha de Nacimiento</label>
-                                <input type="date" name="fecha_nacimiento" class="input-elite">
+                                <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" class="input-elite" required>
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label fw-bold small text-secondary">Edad</label>
-                                <input type="number" name="edad" min="0" max="99" class="input-elite">
+                                <input type="number" name="edad" id="edad_estudiante" min="0" max="99" class="input-elite" readonly placeholder="-">
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold small text-secondary">Lugar de Nacimiento</label>
-                                <input type="text" name="lugar_nacimiento" placeholder="Ciudad, Dpto." class="input-elite">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold small text-secondary">Nacionalidad</label>
-                                <input type="text" name="nacionalidad" placeholder="Ej: Colombiana" class="input-elite">
+                            <div class="col-md-7">
+                                <label class="form-label fw-bold small text-secondary">Colegio Anterior</label>
+                                <input type="text" name="colegio_anterior" placeholder="Institución previa (opcional)" class="input-elite">
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold small text-secondary">Colegio Anterior</label>
-                                <input type="text" name="colegio_anterior" placeholder="Institución previa" class="input-elite">
-                            </div>
+                            <!-- LUGAR DE NACIMIENTO EN CASCADA INTELIGENTE -->
                             <div class="col-md-4">
+                                <label class="form-label fw-bold small text-secondary">País de Nacimiento</label>
+                                <select name="pais_nacimiento_id" id="pais_nacimiento" class="select-elite">
+                                    <?php foreach ($lista_paises as $p): ?>
+                                        <option value="<?php echo $p['id']; ?>" data-nombre="<?php echo htmlspecialchars($p['nombre']); ?>" data-gentilicio="<?php echo htmlspecialchars($p['gentilicio']); ?>" <?php echo $p['id'] == 1 ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($p['nombre']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-4" id="grupo_departamento">
+                                <label class="form-label fw-bold small text-secondary">Departamento / Región</label>
+                                <select name="depto_nacimiento_id" id="departamento_nacimiento" class="select-elite">
+                                    <option value="">Cargando departamentos...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" id="grupo_municipio">
+                                <label class="form-label fw-bold small text-secondary">Municipio / Ciudad</label>
+                                <select name="mun_nacimiento_id" id="municipio_nacimiento" class="select-elite">
+                                    <option value="">Seleccione Municipio...</option>
+                                </select>
+                            </div>
+                            <!-- Fallback de texto libre para países internacionales -->
+                            <div class="col-md-4 d-none" id="grupo_depto_libre">
+                                <label class="form-label fw-bold small text-secondary">Estado / Provincia / Región</label>
+                                <input type="text" id="depto_nacimiento_libre" placeholder="Estado o provincia..." class="input-elite">
+                            </div>
+                            <div class="col-md-4 d-none" id="grupo_ciudad_libre">
+                                <label class="form-label fw-bold small text-secondary">Ciudad / Municipio Natal</label>
+                                <input type="text" id="ciudad_nacimiento_libre" placeholder="Ciudad o localidad..." class="input-elite">
+                            </div>
+
+                            <!-- Campos calculados transparentes -->
+                            <input type="hidden" name="nacionalidad" id="nacionalidad_estudiante" value="Colombiana">
+                            <input type="hidden" name="lugar_nacimiento" id="lugar_nacimiento_final" value="">
+
+                            <div class="col-md-8">
                                 <label class="form-label fw-bold small text-secondary">Dirección del Estudiante</label>
                                 <input type="text" name="direccion_estudiante" placeholder="Calle/Cra #..." class="input-elite">
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <label class="form-label fw-bold small text-secondary">Folio Matrícula</label>
                                 <input type="text" name="folio_matricula" value="<?php echo htmlspecialchars($next_folio_str); ?>" class="input-elite" readonly>
                             </div>
@@ -185,8 +216,7 @@ $next_folio_str = $current_year . '-' . str_pad((string)$next_f_num, 4, '0', STR
                     <!-- IV. INFORMACIÓN DE PADRES Y ACUDIENTES -->
                     <div class="mb-5">
                         <div class="d-flex align-items-center mb-4 border-bottom pb-2 border-topbar-elite">
-                            <span class="matricula-step-badge">4</span>
-                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">Información de Padres / Acudiente</h2>
+                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">4. Información de Padres / Acudiente</h2>
                         </div>
                         
                         <div class="row g-4">
@@ -297,8 +327,7 @@ $next_folio_str = $current_year . '-' . str_pad((string)$next_f_num, 4, '0', STR
                     <!-- V. ACADÉMICO -->
                     <div class="mb-5">
                         <div class="d-flex align-items-center mb-4 border-bottom pb-2 border-topbar-elite">
-                            <span class="matricula-step-badge">5</span>
-                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">Asignación</h2>
+                            <h2 class="h5 fw-bold text-primary mb-0 text-uppercase letter-spacing-1">5. Asignación y Matrícula</h2>
                         </div>
                         
                         <div class="row g-4 align-items-center">

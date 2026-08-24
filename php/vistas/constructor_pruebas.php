@@ -90,8 +90,7 @@ if (tienen_rol(['Administrador', 'Coordinador'])) {
                 <div class="card-header bg-white border-bottom p-4">
                     <h5 class="fw-bold mb-0 text-dark text-uppercase fs-nano">1. Identidad de la Prueba</h5>
                 </div>
-                <div class="card-body p-4">
-                    <form id="form-info-prueba">
+                    <form id="form-info-prueba" onsubmit="guardarCabeceraPrueba(event); return false;">
                         <input type="hidden" id="construct-prueba-id" value="0">
                         <div class="mb-3">
                             <label class="form-label fs-nano text-muted fw-bold text-uppercase">Título Institucional</label>

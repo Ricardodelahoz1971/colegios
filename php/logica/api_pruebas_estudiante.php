@@ -31,7 +31,7 @@ try {
     $mi_id = (int)$mi_info['id'];
     $mi_curso_id = (int)$mi_info['curso_id'];
 
-    $accion = filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+    $accion = limpiar_texto_utf8($_GET['accion'] ?? '') ?? limpiar_texto_utf8($_POST['accion'] ?? '') ?? '';
 
     switch ($accion) {
         case 'listar_mis_examenes':
@@ -93,12 +93,12 @@ try {
             break;
 
         case 'entregar_examen':
-            $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_SPECIAL_CHARS);
+            $csrf_token = limpiar_texto_utf8($_POST['csrf_token'] ?? '');
             if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
                 throw new Exception("Error de seguridad (CSRF).");
             }
             $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id', FILTER_VALIDATE_INT);
-            $respuestas_json = filter_input(INPUT_POST, 'respuestas', FILTER_SANITIZE_SPECIAL_CHARS) ?? '{}';
+            $respuestas_json = limpiar_texto_utf8($_POST['respuestas'] ?? '') ?? '{}';
             $respuestas = json_decode($respuestas_json, true) ?: [];
 
             if (!isset($_SESSION['ticket_examen']) || (int)($_SESSION['ticket_asignacion_id'] ?? 0) !== $asig_id) {
@@ -236,12 +236,12 @@ try {
             break;
 
         case 'verificar_acceso':
-            $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_SPECIAL_CHARS);
+            $csrf_token = limpiar_texto_utf8($_POST['csrf_token'] ?? '');
             if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
                 throw new Exception("Error de validación (CSRF).");
             }
             $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id', FILTER_VALIDATE_INT);
-            $clave = filter_input(INPUT_POST, 'clave', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+            $clave = limpiar_texto_utf8($_POST['clave'] ?? '') ?? '';
             $stmt = $db->prepare("SELECT id, clave_acceso, fecha_inicio, fecha_fin FROM eval_asignaciones WHERE id = ?");
             $stmt->execute([$asig_id]);
             $asig = $stmt->fetch();
@@ -264,13 +264,13 @@ try {
             break;
 
         case 'registrar_incidente':
-            $csrf_token = filter_input(INPUT_POST, 'csrf_token', FILTER_SANITIZE_SPECIAL_CHARS);
+            $csrf_token = limpiar_texto_utf8($_POST['csrf_token'] ?? '');
             if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
                 throw new Exception("CSRF Inválido.");
             }
             $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id', FILTER_VALIDATE_INT);
-            $tipo = filter_input(INPUT_POST, 'tipo', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'desconocido';
-            $detalles = filter_input(INPUT_POST, 'detalles', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+            $tipo = limpiar_texto_utf8($_POST['tipo'] ?? '') ?? 'desconocido';
+            $detalles = limpiar_texto_utf8($_POST['detalles'] ?? '') ?? '';
             $stmt_p = $db->prepare("SELECT prueba_id FROM eval_asignaciones WHERE id = ?");
             $stmt_p->execute([$asig_id]);
             $prueba_id = $stmt_p->fetchColumn() ?: 0;

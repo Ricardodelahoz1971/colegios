@@ -11,13 +11,20 @@
     };
 
     window.sincronizarPestañaElite = () => {
-        const hash = window.location.hash;
-        if (hash && typeof bootstrap !== 'undefined') {
-            const tabEl = document.querySelector(`button[data-bs-target="${hash}"]`);
-            if (tabEl) {
+        let target = window.location.hash || sessionStorage.getItem('configuracion_active_tab');
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'paleta' || urlParams.get('success') === 'adn') {
+            target = '#tab-visual';
+        }
+        if (target && typeof bootstrap !== 'undefined') {
+            const tabBtn = document.querySelector(`button[data-bs-target="${target}"]`);
+            if (tabBtn) {
                 try {
-                    const tab = new bootstrap.Tab(tabEl);
+                    const tab = bootstrap.Tab.getOrCreateInstance(tabBtn);
                     tab.show();
+                    if (target === '#tab-visual') {
+                        sincronizarColoresPaletas();
+                    }
                 } catch(err) {
                     // Ignorar silenciosamente si no se puede abrir la pestaña
                 }
@@ -116,17 +123,17 @@
             const data = await res.json();
 
             if (data.status === 'success') {
-                await Swal.fire({title: 'IDENTIDAD FORJADA', text: 'La nueva configuración estética se ha sincronizado en el oráculo.', icon: 'success', timer: 1500, showConfirmButton: false});
+                lanzarToastElite('success', 'La nueva configuración estética se ha sincronizado en el oráculo.', 'Identidad Forjada');
                 if (typeof navegarModulo === 'function') {
                     navegarModulo('configuracion&success=paleta');
                 } else {
                     window.location.href = window.location.href;
                 }
             } else {
-                Swal.fire('Error', data.message, 'error');
+                lanzarToastElite('danger', data.message || 'Error al guardar identidad');
             }
         } catch (error) {
-            Swal.fire('FALLO CRÍTICO', 'Error en la sincronización de identidad.', 'error');
+            lanzarToastElite('danger', 'Error en la sincronización de identidad.', 'Fallo Crítico');
         }
     };
 
@@ -141,13 +148,44 @@
             const data = await res.json();
 
             if (data.status === 'success') {
-                await Swal.fire('IDENTIDAD APLICADA', 'Sincronizando ADN institucional...', 'success');
-                window.location.href = window.location.href;
+                if (data.paleta) {
+                    const p = data.paleta;
+                    const hexToRgb = (hex) => {
+                        hex = hex.replace('#', '');
+                        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+                        const num = parseInt(hex, 16);
+                        return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
+                    };
+                    const root = document.documentElement;
+                    if (p.primary_color) {
+                        root.style.setProperty('--el-primary', p.primary_color);
+                        root.style.setProperty('--el-primary-rgb', hexToRgb(p.primary_color));
+                        root.style.setProperty('--bs-primary', p.primary_color);
+                        root.style.setProperty('--bs-primary-rgb', hexToRgb(p.primary_color));
+                        root.style.setProperty('--sidebar-bg', p.primary_color);
+                    }
+                    if (p.accent_color) {
+                        root.style.setProperty('--el-accent', p.accent_color);
+                        root.style.setProperty('--el-accent-rgb', hexToRgb(p.accent_color));
+                    }
+                    if (p.info_color) {
+                        root.style.setProperty('--el-info', p.info_color);
+                        root.style.setProperty('--el-info-rgb', hexToRgb(p.info_color));
+                    }
+                }
+                
+                // Actualizar estado visual de tarjetas de paletas de inmediato
+                document.querySelectorAll('.palette-swatch-elite-mini, .paleta-card-elite').forEach(card => card.classList.remove('active'));
+                const activeCard = document.querySelector(`.palette-swatch-elite-mini[onclick*="'${id}'"]`) || document.querySelector(`.paleta-card-elite[data-paleta-id="${id}"]`);
+                if (activeCard) activeCard.classList.add('active');
+
+                sessionStorage.setItem('configuracion_active_tab', '#tab-visual');
+                lanzarToastElite('success', 'Identidad institucional aplicada de inmediato.', 'Tema Aplicado');
             } else {
-                Swal.fire('Error', data.message, 'error');
+                lanzarToastElite('danger', data.message || 'Error al aplicar identidad');
             }
         } catch (error) {
-            Swal.fire('ERROR DE VUELO', 'No se pudo aplicar la identidad seleccionada.', 'error');
+            lanzarToastElite('danger', 'No se pudo aplicar la identidad seleccionada.', 'Error de Vuelo');
         }
     };
 
@@ -172,21 +210,44 @@
                 const data = await res.json();
 
                 if (data.status === 'success') {
-                    await Swal.fire({title: 'IDENTIDAD PURGADA', text: 'Registro eliminado del núcleo.', icon: 'success', timer: 1500, showConfirmButton: false});
+                    lanzarToastElite('success', 'Registro eliminado del núcleo.', 'Identidad Purgada');
                     if (typeof navegarModulo === 'function') {
                         navegarModulo('configuracion&success=paleta');
                     } else {
-                        window.location.href = window.location.href;
+                        window.location.reload();
                     }
+                } else {
+                    lanzarToastElite('danger', data.message || 'Error al eliminar');
                 }
-            } catch (error) {
-                Swal.fire('Error', 'No se pudo eliminar la paleta.', 'error');
+            } catch (e) {
+                lanzarToastElite('danger', 'Fallo al purgar la identidad.');
             }
         }
     };
 
+    window.sincronizarColoresPaletas = () => {
+        document.querySelectorAll('.color-circle-elite-micro').forEach(el => {
+            const bg = el.dataset.bg;
+            if (bg) el.style.backgroundColor = bg;
+        });
+    };
+
     window.actualizarArquitecturaMenu = async (valor) => {
         try {
+            // 1. Mutación instantánea del DOM (0ms)
+            document.querySelectorAll('link[href*="elite_aero"], link[href*="elite_blade"]').forEach(el => el.remove());
+            const existingLink = document.getElementById('live-menu-style');
+            if (existingLink) existingLink.remove();
+
+            if (valor !== 'legacy') {
+                const link = document.createElement('link');
+                link.id = 'live-menu-style';
+                link.rel = 'stylesheet';
+                link.href = `../styles/modules/elite_${valor}.css?v=${Date.now()}`;
+                document.head.appendChild(link);
+            }
+
+            // 2. Persistencia en base de datos
             const token = window.CSRF_TOKEN || '';
             const fd = new FormData();
             fd.append('menu_style', valor);
@@ -196,54 +257,48 @@
             const data = await res.json();
 
             if (data.status === 'success') {
-                await Swal.fire({
-                    title: 'ARQUITECTURA ACTUALIZADA',
-                    text: 'Sincronizando estética institucional...',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-                // Actualizar DOM con la nueva arquitectura de menú sin recargar la página
-                if (typeof navegarModulo === 'function') {
-                    navegarModulo('configuracion&success=menu');
-                } else {
-                    // Refrescar tema CSS sin reload
-                    document.documentElement.setAttribute('data-menu-style', valor);
-                }
+                sessionStorage.setItem('configuracion_active_tab', '#tab-visual');
+                lanzarToastElite('success', `Arquitectura "${valor.toUpperCase()}" aplicada en tiempo real.`, 'Arquitectura Actualizada');
             } else {
-                Swal.fire('ERROR DE SEGURIDAD', data.message, 'error');
+                lanzarToastElite('danger', data.message || 'Error de seguridad', 'Error de Seguridad');
             }
         } catch (err) {
-            Swal.fire('FALLO DE COMUNICACIÓN', 'No se pudo conectar con el motor de temas.', 'error');
+            lanzarToastElite('danger', 'No se pudo conectar con el motor de temas.', 'Fallo de Comunicación');
         }
     };
 
     window.cambiarTipografiaSistema = async (valor) => {
         try {
+            // 1. Inyección de tipografía inmediata en el DOM (0ms)
+            let styleEl = document.getElementById('live-font-override');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'live-font-override';
+                document.head.appendChild(styleEl);
+            }
+            document.documentElement.style.setProperty('--el-font-institutional', `'${valor}', sans-serif`);
+            styleEl.textContent = `
+                :root, body, button, input, select, textarea, .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6, .menu-link-elite, .card, .table { 
+                    font-family: var(--el-font-institutional); 
+                }
+            `;
+
+            // 2. Persistencia en base de datos
             const fd = new FormData();
             fd.append('school_font', valor);
-            fd.append('csrf_token', document.querySelector('input[name="csrf_token"]')?.value || '');
+            fd.append('csrf_token', document.querySelector('input[name="csrf_token"]')?.value || window.CSRF_TOKEN || '');
 
             const res = await fetch('logica/guardar_estetica.php', { method: 'POST', body: fd });
             const data = await res.json();
 
             if (data.status === 'success') {
-                await Swal.fire({
-                    title: 'TIPOGRAFÍA ACTUALIZADA',
-                    text: 'Sincronizando fuentes institucionales...',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-                // Actualizar DOM con la nueva tipografía sin recargar la página
-                document.documentElement.setAttribute('data-school-font', valor);
-                // Refrescar módulo de configuración para ver cambios
-                if (typeof navegarModulo === 'function') {
-                    navegarModulo('configuracion&success=font');
-                }
+                sessionStorage.setItem('configuracion_active_tab', '#tab-visual');
+                lanzarToastElite('success', `Tipografía "${valor}" aplicada en tiempo real.`, 'Tipografía Actualizada');
+            } else {
+                lanzarToastElite('danger', data.message || 'Error al actualizar tipografía.');
             }
         } catch (error) {
-            Swal.fire('Error', 'Fallo al actualizar tipografía.', 'error');
+            lanzarToastElite('danger', 'Fallo al actualizar tipografía.');
         }
     };
 
@@ -267,27 +322,71 @@
                 const data = await res.json();
 
                 if (data.status === 'success') {
-                    await Swal.fire({
-                        title: 'PURGA TOTAL',
-                        text: 'El sistema ha sido reiniciado a valores de fábrica.',
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+                    lanzarToastElite('success', 'El sistema ha sido reiniciado a valores de fábrica.', 'Purga Total');
                     window.location.href = 'dashboard.php?p=inicio';
                 } else {
-                    Swal.fire('FALLO EN LIMPIEZA', data.message, 'error');
+                    lanzarToastElite('danger', data.message || 'Error en la limpieza', 'Fallo en Limpieza');
                 }
             } catch (error) {
-                Swal.fire('FALLO CRÍTICO', 'No se pudo conectar con el motor de purga.', 'error');
+                lanzarToastElite('danger', 'No se pudo conectar con el motor de purga.', 'Fallo Crítico');
             }
         }
     };
 
-    // --- KHRONOS ENGINE (Timeline Dinámico) ---
+    // --- KHRONOS ENGINE (Recesos Dinámicos 0 a N & Timeline) ---
+    window.agregarFilaReceso = (suffix = '') => {
+        const contenedor = document.getElementById(`recesos-container-${suffix}`) || document.querySelector('[id^="recesos-container-"]');
+        if (!contenedor) return;
+        
+        const count = contenedor.querySelectorAll('.fila-receso-khronos').length + 1;
+        const filaHTML = `
+            <div class="config-input-card-elite p-2 d-flex align-items-center gap-2 fila-receso-khronos animate__animated animate__fadeIn">
+                <span class="badge-elite badge-elite--primary fs-nano receso-num">#${count}</span>
+                <div class="d-flex flex-fill align-items-center gap-2">
+                    <div class="w-25">
+                        <span class="fs-nano text-muted d-block text-center mb-1">Tras Bloque</span>
+                        <input type="number" class="input-elite text-center receso-bloque" min="1" max="12" value="${count * 2}" oninput="window.actualizarVistaKhronos()">
+                    </div>
+                    <div class="w-25">
+                        <span class="fs-nano text-muted d-block text-center mb-1">Minutos</span>
+                        <input type="number" class="input-elite text-center receso-duracion" min="5" max="120" step="5" value="15" oninput="window.actualizarVistaKhronos()">
+                    </div>
+                    <div class="flex-fill">
+                        <span class="fs-nano text-muted d-block text-center mb-1">Tipo de Pausa</span>
+                        <select class="select-elite-sm w-100 receso-tipo" onchange="window.actualizarVistaKhronos()">
+                            <option value="Receso">✦ Receso</option>
+                            <option value="Almuerzo">✦ Almuerzo</option>
+                            <option value="Pausa Activa">✦ Pausa Activa</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="btn-action-elite text-danger p-2" title="Eliminar Receso" onclick="window.eliminarFilaReceso(this)">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </div>
+        `;
+        contenedor.insertAdjacentHTML('beforeend', filaHTML);
+        window.actualizarVistaKhronos();
+    };
+
+    window.eliminarFilaReceso = (btn) => {
+        const fila = btn.closest('.fila-receso-khronos');
+        const contenedor = fila?.closest('[id^="recesos-container-"]');
+        if (fila) {
+            fila.remove();
+            if (contenedor) {
+                contenedor.querySelectorAll('.fila-receso-khronos').forEach((f, idx) => {
+                    const badge = f.querySelector('.receso-num');
+                    if (badge) badge.innerText = `#${idx + 1}`;
+                });
+            }
+            window.actualizarVistaKhronos();
+        }
+    };
+
     window.actualizarVistaKhronos = () => {
-        const activeTab = document.querySelector('#pills-tab-jornadas-khronos button.active');
-        const suffix = activeTab ? activeTab.getAttribute('data-suffix') : '';
+        const activeTab = document.querySelector('#pills-tab-jornadas-khronos button.active') || document.querySelector('#pills-tab-jornadas-khronos button');
+        const suffix = activeTab ? (activeTab.getAttribute('data-suffix') || '') : '';
         const idSuffix = (suffix && suffix !== 'manana') ? '_' + suffix : '';
 
         const inicio = document.getElementById('khronos_inicio' + idSuffix)?.value || '06:30';
@@ -295,6 +394,26 @@
         const totalHoras = parseInt(document.getElementById('khronos_max_horas' + idSuffix)?.value) || 6;
         const container = document.querySelector('.khronos-timeline-elite');
         
+        // Recopilar recesos dinámicos
+        const recesosContainer = document.getElementById(`recesos-container-${suffix}`) || document.querySelector('[id^="recesos-container-"]');
+        const recesos = [];
+        if (recesosContainer) {
+            recesosContainer.querySelectorAll('.fila-receso-khronos').forEach(fila => {
+                const b = parseInt(fila.querySelector('.receso-bloque')?.value) || 1;
+                const d = parseInt(fila.querySelector('.receso-duracion')?.value) || 15;
+                const t = fila.querySelector('.receso-tipo')?.value || 'Receso';
+                if (b > 0 && d > 0) {
+                    recesos.push({ bloque: b, duracion: d, tipo: t });
+                }
+            });
+            
+            // Serializar en el input hidden
+            const hiddenInput = document.getElementById('khronos_recesos' + idSuffix) || recesosContainer.parentElement?.querySelector('input[name^="khronos_recesos"]');
+            if (hiddenInput) {
+                hiddenInput.value = JSON.stringify(recesos);
+            }
+        }
+
         if (!container) return;
         
         let html = '';
@@ -314,24 +433,26 @@
                 </div>
             `;
 
-            const r1 = parseInt(document.getElementById('khronos_descanso_m' + idSuffix)?.value) || 15;
-            const r2 = parseInt(document.getElementById('khronos_descanso2_m' + idSuffix)?.value) || 15;
-            const pos1 = parseInt(document.getElementById('khronos_descanso_h' + idSuffix)?.value) || 2;
-            const pos2 = parseInt(document.getElementById('khronos_descanso2_h' + idSuffix)?.value) || 4;
+            // Intercalar todos los recesos configurados tras este bloque i
+            const recesosBloque = recesos.filter(r => r.bloque === i);
+            recesosBloque.forEach(r => {
+                const rs = formatTime(current);
+                current.setMinutes(current.getMinutes() + r.duracion);
+                const re = formatTime(current);
+                let icono = 'bi-cup-hot';
+                if (r.tipo === 'Almuerzo') icono = 'bi-egg-fried';
+                else if (r.tipo === 'Pausa Activa') icono = 'bi-activity';
 
-            if (i === pos1) {
-                const rs = formatTime(current);
-                current.setMinutes(current.getMinutes() + r1);
-                const re = formatTime(current);
-                html += `<div class="timeline-break-elite"><i class="bi bi-cup-hot me-2"></i> RECESO 01 (${r1} min) | ${rs} - ${re}</div>`;
-            } else if (i === pos2) {
-                const rs = formatTime(current);
-                current.setMinutes(current.getMinutes() + r2);
-                const re = formatTime(current);
-                html += `<div class="timeline-break-elite"><i class="bi bi-clock me-2"></i> RECESO 02 (${r2} min) | ${rs} - ${re}</div>`;
-            }
+                html += `<div class="timeline-break-elite"><i class="bi ${icono} me-2"></i> ${r.tipo.toUpperCase()} (${r.duracion} min) | ${rs} - ${re}</div>`;
+            });
         }
         container.innerHTML = html;
+
+        // Disparar auto-guardado debounced
+        const formKhronos = document.getElementById('formKhronos');
+        if (formKhronos && typeof debounceSave === 'function') {
+            debounceSave(formKhronos);
+        }
     };
 
     // --- CENTINELA DE AUTO-SAVE (HEFESTO) ---
@@ -439,7 +560,11 @@
         document.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
             tab.removeEventListener('shown.bs.tab', tab._shownHandler);
             tab._shownHandler = (e) => {
-                if (e.target.id === 'pills-adn-tab') sincronizarColoresPaletas();
+                const target = e.target.getAttribute('data-bs-target');
+                if (target) {
+                    sessionStorage.setItem('configuracion_active_tab', target);
+                }
+                if (e.target.id === 'pills-adn-tab' || target === '#tab-visual') sincronizarColoresPaletas();
                 inicializarAjustesAncho();
             };
             tab.addEventListener('shown.bs.tab', tab._shownHandler);
@@ -474,8 +599,19 @@
                 if (e.target.id === 'input-logo-file') {
                     const file = e.target.files[0];
                     if (file) {
+                        const fileNameEl = document.getElementById('logo-file-name');
+                        if (fileNameEl) fileNameEl.innerText = file.name;
+                        
                         const reader = new FileReader();
-                        reader.onload = (ev) => document.querySelectorAll('.preview-img-fit, .school-logo-global').forEach(p => p.src = ev.target.result);
+                        reader.onload = (ev) => {
+                            document.querySelectorAll('.preview-img-fit, .school-logo-global').forEach(p => {
+                                p.src = ev.target.result;
+                                p.classList.remove('d-none');
+                            });
+                            document.querySelectorAll('.config-preview-card .fallback-icon, .logo-fallback-elite').forEach(icon => {
+                                icon.classList.add('d-none');
+                            });
+                        };
                         reader.readAsDataURL(file);
                     }
                 }
@@ -765,15 +901,13 @@
                 
                 const res = await fetch('logica/guardar_escala.php', { method: 'POST', body: fd });
                 const result = await res.json();
+                
+                if (typeof Swal !== 'undefined' && typeof Swal.close === 'function') {
+                    Swal.close();
+                }
 
                 if (result.status === 'success') {
-                    await Swal.fire({
-                        title: 'ESCALAS SELLADAS',
-                        text: result.message,
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+                    lanzarToastElite('success', result.message || 'Configuración de escalas actualizada', 'Escalas Selladas');
                     // Actualizar DOM con las nuevas escalas sin recargar la página
                     if (typeof navegarModulo === 'function') {
                         navegarModulo('configuracion&success=escala');
@@ -782,7 +916,10 @@
                     throw new Error(result.message);
                 }
             } catch (err) {
-                Swal.fire('FALLO CRÍTICO', err.message || 'Error de sincronización.', 'error');
+                if (typeof Swal !== 'undefined' && typeof Swal.close === 'function') {
+                    Swal.close();
+                }
+                lanzarToastElite('danger', err.message || 'Error de sincronización.', 'Fallo Crítico');
             }
         }
     };
@@ -808,7 +945,7 @@
                 const finVal = form.querySelector(`input[name="periodo[${id}][fin]"]`)?.value;
 
                 if (!inicioVal || !finVal) {
-                    Swal.fire('ERROR DE VALIDACIÓN', `Las fechas para el Periodo ${id} no pueden estar vacías.`, 'error');
+                    lanzarToastElite('warning', `Las fechas para el Periodo ${id} no pueden estar vacías.`);
                     return;
                 }
 
@@ -816,12 +953,12 @@
                 const tFin = new Date(finVal).getTime();
 
                 if (isNaN(tInicio) || isNaN(tFin)) {
-                    Swal.fire('ERROR DE VALIDACIÓN', `El formato de fecha provisto para el Periodo ${id} no es válido.`, 'error');
+                    lanzarToastElite('warning', `El formato de fecha provisto para el Periodo ${id} no es válido.`);
                     return;
                 }
 
                 if (tInicio >= tFin) {
-                    Swal.fire('ERROR DE VALIDACIÓN', `La fecha de inicio del Periodo ${id} debe ser anterior a su fecha de terminación.`, 'error');
+                    lanzarToastElite('warning', `La fecha de inicio del Periodo ${id} debe ser anterior a su fecha de terminación.`);
                     return;
                 }
 
@@ -834,7 +971,7 @@
 
         for (let i = 1; i < periodos.length; i++) {
             if (periodos[i].inicio < periodos[i-1].fin) {
-                Swal.fire('ERROR DE CRONOGRAMA', `Existe superposición de tiempos: el Periodo ${periodos[i].id} inicia antes de la finalización del Periodo ${periodos[i-1].id}.`, 'error');
+                lanzarToastElite('warning', `Existe superposición de tiempos: el Periodo ${periodos[i].id} inicia antes de la finalización del Periodo ${periodos[i-1].id}.`);
                 return;
             }
         }
@@ -858,15 +995,13 @@
                 
                 const res = await fetch('logica/guardar_periodos.php', { method: 'POST', body: fd });
                 const result = await res.json();
+                
+                if (typeof Swal !== 'undefined' && typeof Swal.close === 'function') {
+                    Swal.close();
+                }
 
                 if (result.status === 'success') {
-                    await Swal.fire({
-                        title: 'CALENDARIO ESCOLAR GUARDADO',
-                        text: result.message,
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+                    lanzarToastElite('success', result.message || 'Calendario escolar actualizado correctamente', 'Calendario Guardado');
                     // Actualizar DOM con el nuevo calendario sin recargar la página
                     if (typeof navegarModulo === 'function') {
                         navegarModulo('configuracion&success=periodos');
@@ -875,7 +1010,10 @@
                     throw new Error(result.message);
                 }
             } catch (err) {
-                Swal.fire('FALLO CRÍTICO', err.message || 'Error de sincronización.', 'error');
+                if (typeof Swal !== 'undefined' && typeof Swal.close === 'function') {
+                    Swal.close();
+                }
+                lanzarToastElite('danger', err.message || 'Error de sincronización.', 'Fallo Crítico');
             }
         }
     };

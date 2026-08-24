@@ -35,10 +35,8 @@ try {
     $periodos_procesados = [];
     foreach ($periodos_raw as $id => $fechas) {
         $pid = (int)$id;
-        $f_inicio_raw = filter_input(INPUT_POST, 'periodo[' . $id . '][inicio]', FILTER_SANITIZE_SPECIAL_CHARS);
-        $f_fin_raw = filter_input(INPUT_POST, 'periodo[' . $id . '][fin]', FILTER_SANITIZE_SPECIAL_CHARS);
-        $f_inicio = trim($f_inicio_raw ?? '');
-        $f_fin = trim($f_fin_raw ?? '');
+        $f_inicio = trim((string)($fechas['inicio'] ?? ''));
+        $f_fin = trim((string)($fechas['fin'] ?? ''));
 
         if (empty($f_inicio) || empty($f_fin)) {
             throw new Exception("Las fechas de inicio y fin del Periodo $pid no pueden estar vacías.");

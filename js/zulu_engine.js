@@ -118,14 +118,14 @@
                 const c = await Swal.fire({ title: 'Conflicto', text: res.message, icon: 'warning', showCancelButton: true });
                 if (c.isConfirmed) ejecutarAsignacion(cursoDest, accion, true, finalMateriaId);
             } else if (res.success) {
-                await Swal.fire('¡Éxito!', res.message, 'success');
+                lanzarToastElite('success', res.message || 'Carga académica actualizada');
                 window.forceRefreshElite = true;
                 navegarModulo('zulu');
             } else {
-                Swal.fire('Error', res.message, 'error');
+                lanzarToastElite('danger', res.message || 'Error al asignar');
             }
         } catch (err) {
-            Swal.fire('Error de Red', 'Fallo al comunicarse con el servidor.', 'error');
+            lanzarToastElite('danger', 'Fallo al comunicarse con el servidor.');
         }
     }
 
@@ -185,7 +185,7 @@
 
     window.guardarPlanMaestro = async function() {
         const nivel = document.getElementById('nivel-plan-zulu').value;
-        if (!nivel) return Swal.fire('Aviso', 'Selecciona nivel.', 'warning');
+        if (!nivel) return lanzarToastElite('warning', 'Por favor selecciona un nivel.');
         const materias = Array.from(document.querySelectorAll('.chk-materia-plan:checked')).map(c => {
             const h = document.getElementById(`intensidad-mat-${c.value}`).value;
             return { id: c.value, h: parseInt(h) };
@@ -195,17 +195,17 @@
             const res = await r.json();
 
             if (res.success) {
-                await Swal.fire('¡Éxito!', 'Plan Maestro actualizado.', 'success');
+                lanzarToastElite('success', 'Plan Maestro actualizado correctamente.');
                 const modalBus = bootstrap.Modal.getInstance(document.getElementById('modalPlanMaster'));
                 if (modalBus) modalBus.hide();
                 document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
                 window.forceRefreshElite = true;
                 navegarModulo('zulu');
             } else {
-                Swal.fire('Error', res.message, 'error');
+                lanzarToastElite('danger', res.message || 'Error al actualizar el Plan Maestro');
             }
         } catch (err) {
-            Swal.fire('Error', 'Fallo al guardar el Plan Maestro.', 'error');
+            lanzarToastElite('danger', 'Fallo al guardar el Plan Maestro.');
         }
     };
 

@@ -32,8 +32,8 @@ try {
         throw new Exception("Acceso denegado: Su rol no posee autoría para esta acción.");
     }
 
-    $clave = filter_input(INPUT_POST, 'clave', FILTER_SANITIZE_SPECIAL_CHARS);
-    $valor = filter_input(INPUT_POST, 'valor', FILTER_SANITIZE_SPECIAL_CHARS);
+    $clave = limpiar_texto_utf8($_POST['clave'] ?? '');
+    $valor = limpiar_texto_utf8($_POST['valor'] ?? '');
 
     if ($clave === null || $clave === false || trim($clave) === '') {
         throw new Exception("Parámetro inválido: Nombre de clave ausente.");

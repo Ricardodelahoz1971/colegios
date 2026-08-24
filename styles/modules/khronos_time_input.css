@@ -34,4 +34,15 @@
     font-weight: 500;
 }
 
+.fila-receso-khronos {
+    position: relative;
+    z-index: 1;
+    transition: var(--el-transition-premium);
+}
+
+.fila-receso-khronos:hover,
+.fila-receso-khronos:focus-within {
+    z-index: 30;
+}
+
 }

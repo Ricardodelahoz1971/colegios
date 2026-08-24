@@ -82,23 +82,35 @@ window.borrarRol = async function (id, nombre) {
 
 window.gestionarPermisos = async function (id, nombre, actuales, todos, tipo = 'rol', base = [], nombreRol = '', esCustom = 0) {
     let checkboxes = '';
-    const actualesStr = actuales.map(v => String(v));
-    const baseStr = base.map(v => String(v));
-    const isAdmin = nombreRol.toLowerCase().includes('administrador');
+    const actualesArray = Array.isArray(actuales) ? actuales : [];
+    const baseArray = Array.isArray(base) ? base : [];
+    const todosArray = Array.isArray(todos) ? todos : [];
 
-    todos.forEach(p => {
+    const actualesStr = actualesArray.map(v => String(v));
+    const baseStr = baseArray.map(v => String(v));
+    const nombreParaCheck = (tipo === 'rol' ? (nombre || '') : (nombreRol || '')).toLowerCase();
+    const isAdmin = nombreParaCheck.includes('administrador');
+
+    todosArray.forEach(p => {
         let pId = String(p.id);
         let chkAttr = (isAdmin || (tipo === 'rol' && actualesStr.includes(pId)) || (esCustom == 1 && actualesStr.includes(pId)) || (tipo !== 'rol' && esCustom == 0 && baseStr.includes(pId))) ? 'checked' : '';
         let disAttr = isAdmin ? 'disabled' : '';
         let belongsToBase = baseStr.includes(pId);
-        let labelColor = isAdmin ? 'text-muted' : 'text-dark';
-        let baseBadge = isAdmin ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 ms-2 fw-normal fs-nano">Privilegio Maestro</span>` : (belongsToBase ? `<span class="badge bg-light text-muted border ms-2 fw-normal fs-nano">Sugerido por Rol (${nombreRol})</span>` : '');
+        let labelColor = 'text-dark';
+
+        let subtextoHtml = '';
+        if (isAdmin) {
+            subtextoHtml = `<div class="permiso-subtexto-elite"><i class="bi bi-shield-lock me-1"></i>Privilegio Maestro Permanente</div>`;
+        } else if (belongsToBase) {
+            subtextoHtml = `<div class="permiso-subtexto-elite"><i class="bi bi-person-check me-1"></i>Sugerido por Rol (${nombreRol})</div>`;
+        }
 
         checkboxes += `
-            <div class="form-check text-start mb-2 border-bottom pb-2">
-                <input class="form-check-input swal-permiso-chk chk-elite-outline shadow-sm" type="checkbox" value="${p.id}" id="perm_${p.id}" ${chkAttr} ${disAttr}>
-                <label class="form-check-label fw-semibold ms-2 ${labelColor} cursor-pointer fs-md-elite" for="perm_${p.id}">
-                    ${p.nombre.toUpperCase()} ${baseBadge}
+            <div class="form-check text-start mb-2 border-bottom pb-2 d-flex align-items-start">
+                <input class="form-check-input swal-permiso-chk chk-elite-outline shadow-sm me-2 mt-1" type="checkbox" value="${p.id}" id="perm_${p.id}" ${chkAttr} ${disAttr}>
+                <label class="form-check-label cursor-pointer flex-grow-1" for="perm_${p.id}">
+                    <div class="fw-semibold ${labelColor} fs-md-elite">${p.nombre.toUpperCase()}</div>
+                    ${subtextoHtml}
                 </label>
             </div>
         `;
@@ -263,13 +275,7 @@ window.nuevoPersonal = async function (listaRoles, listaEspecialidades) {
 
     if (result.isConfirmed && result.value) {
         sessionStorage.setItem('reabrir_nuevo_personal', 'true');
-        await Swal.fire({
-            title: '¡Éxito!',
-            text: result.value.message || 'Personal registrado correctamente.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        lanzarToastElite('success', result.value.message || 'Personal registrado correctamente.');
         if (typeof navegarModulo === 'function') {
             window.forceRefreshElite = true;
             navegarModulo(window.MODULO_ACTUAL || 'inicio');
@@ -354,13 +360,7 @@ window.editarPersonal = async function (id, nombreActual, usuarioActual, rolActu
         }
     });
     if (result.isConfirmed && result.value) {
-        await Swal.fire({
-            title: '¡Éxito!',
-            text: result.value.message || 'Personal actualizado correctamente.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        lanzarToastElite('success', result.value.message || 'Personal actualizado correctamente.');
         if (typeof navegarModulo === 'function') {
             window.forceRefreshElite = true;
             navegarModulo(window.MODULO_ACTUAL || 'inicio');
@@ -563,13 +563,7 @@ window.nuevoCurso = async function (tutoresJSON) {
     });
 
     if (r.isConfirmed && r.value) {
-        await Swal.fire({
-            title: '¡Éxito!',
-            text: r.value.message || 'Curso creado correctamente.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        lanzarToastElite('success', r.value.message || 'Curso creado correctamente.');
         if (typeof navegarModulo === 'function') {
             window.forceRefreshElite = true;
             navegarModulo(window.MODULO_ACTUAL || 'inicio');
@@ -630,18 +624,11 @@ window.editarCurso = async function (id, nombre, tutorActual, jornadaActual, tut
     });
 
     if (r.isConfirmed && r.value) {
-        Swal.fire({
-            title: '¡Éxito!',
-            text: r.value.message || 'Curso actualizado correctamente.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-        }).then(() => {
-            if (typeof navegarModulo === 'function') {
-                window.forceRefreshElite = true;
-                navegarModulo(window.MODULO_ACTUAL || 'inicio');
-            }
-        });
+        lanzarToastElite('success', r.value.message || 'Curso actualizado correctamente.');
+        if (typeof navegarModulo === 'function') {
+            window.forceRefreshElite = true;
+            navegarModulo(window.MODULO_ACTUAL || 'inicio');
+        }
     }
 };
 

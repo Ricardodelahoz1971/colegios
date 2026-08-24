@@ -198,4 +198,18 @@ function guardia_sesion(): void {
         die(json_encode(['status' => 'error', 'message' => 'Sesión no autorizada']));
     }
 }
+
+/**
+ * Sanitiza texto eliminando caracteres de control invisibles sin alterar
+ * caracteres UTF-8 nativos (tildes, eñes, diéresis, símbolos) ni convertirlos a entidades HTML.
+ *
+ * @param string|null $texto
+ * @return string
+ */
+function limpiar_texto_utf8(?string $texto): string {
+    if ($texto === null) return '';
+    $t = trim((string)$texto);
+    $limpio = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $t);
+    return $limpio !== null ? $limpio : $t;
+}
 ?>

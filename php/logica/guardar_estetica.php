@@ -30,8 +30,7 @@ try {
         registrar_evento_elite('SEGURIDAD', "Intento de acceso no autorizado por ID: {$_SESSION['usuario_id']}");
         throw new Exception("Acceso denegado.");
     }
-
-    $accion = obtener_post('accion', FILTER_SANITIZE_SPECIAL_CHARS);
+    $accion = obtener_post('accion');
 
     if ($accion === 'aplicar_paleta') {
         $pid = obtener_post('paleta_id', FILTER_VALIDATE_INT);
@@ -43,28 +42,26 @@ try {
         $stmt = $db->prepare("SELECT * FROM paletas_elite WHERE id = ?");
         $stmt->execute([$pid]);
         $paleta = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if ($paleta) {
-            registrar_evento_elite('LOGICA', "Paleta '{$paleta['nombre']}' localizada. Iniciando mapeo de colores.");
-            $mapeo = [
+            registrar_evento_elite('LOGICA', "Paleta encontrada: {$paleta['nombre']}. Aplicando...");
+            $configs = [
                 'brand_color'   => $paleta['primary_color'],
-                'brand_accent'  => $paleta['accent_color'],
-                'brand_info'    => $paleta['info_color'],
-                'sidebar_bg'    => $paleta['primary_color'],
-                'active_palette_id' => $pid
+                'accent_color'  => $paleta['accent_color'],
+                'info_color'    => $paleta['info_color'],
+                'success_color' => $paleta['success_color'],
+                'danger_color'  => $paleta['danger_color']
             ];
-
-            $cambios = 0;
-            foreach ($mapeo as $clave => $valor) {
-                $db->prepare("DELETE FROM ajustes_estetica WHERE clave = ?")->execute([$clave]);
-                $stmt_ins = $db->prepare("INSERT INTO ajustes_estetica (clave, valor) VALUES (?, ?)");
-                if ($stmt_ins->execute([$clave, $valor])) $cambios++;
-            }
             
-            registrar_evento_elite('SUCCESS', "Identidad aplicada. {$cambios} variables actualizadas en la bóveda.");
+            $db->beginTransaction();
+            foreach ($configs as $k => $v) {
+                $db->prepare("DELETE FROM ajustes_estetica WHERE clave = ?")->execute([$k]);
+                $db->prepare("INSERT INTO ajustes_estetica (clave, valor) VALUES (?, ?)")->execute([$k, $v]);
+            }
+            $db->commit();
+            registrar_evento_elite('EXITO', "Paleta '{$paleta['nombre']}' aplicada con éxito.");
             
             if (ob_get_length()) ob_clean();
-            echo json_encode(['status' => 'success', 'message' => 'Identidad "' . $paleta['nombre'] . '" sincronizada.']);
+            echo json_encode(['status' => 'success', 'message' => "Identidad visual '{$paleta['nombre']}' restaurada al núcleo."]);
             exit();
         } else {
             registrar_evento_elite('LOGICA_FAIL', "Error de lógica: El ID {$pid} no existe en paletas_elite.");
@@ -73,12 +70,12 @@ try {
     }
 
     if ($accion === 'guardar_paleta') {
-        $nombre = trim(obtener_post('nombre', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'Nueva Identidad');
-        $p = obtener_post('primary_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#204192';
-        $a = obtener_post('accent_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#f0bb1c';
-        $i = obtener_post('info_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#0098da';
-        $s = obtener_post('success_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#059669';
-        $d_color = obtener_post('danger_color', FILTER_SANITIZE_SPECIAL_CHARS) ?? '#dc2626';
+        $nombre = trim(limpiar_texto_utf8(obtener_post('nombre')) ?: 'Nueva Identidad');
+        $p = limpiar_texto_utf8(obtener_post('primary_color')) ?: '';
+        $a = limpiar_texto_utf8(obtener_post('accent_color')) ?: '';
+        $i = limpiar_texto_utf8(obtener_post('info_color')) ?: '';
+        $s = limpiar_texto_utf8(obtener_post('success_color')) ?: '';
+        $d_color = limpiar_texto_utf8(obtener_post('danger_color')) ?: '';
         $id = obtener_post('id', FILTER_VALIDATE_INT);
         $id = ($id !== null && $id !== false && $id > 0) ? $id : null;
 
@@ -118,7 +115,7 @@ try {
         exit();
     }
 
-    $menu_style = obtener_post('menu_style', FILTER_SANITIZE_SPECIAL_CHARS);
+    $menu_style = obtener_post('menu_style');
     if ($menu_style !== null) {
         $valor = trim($menu_style);
         registrar_evento_elite('LOGICA', "Cambiando Arquitectura a: {$valor}");
@@ -155,10 +152,51 @@ try {
         $procesados++;
     }
 
+    // 🏛️ PROCESAR SUBIDA DE LOGO INSTITUCIONAL
+    $logo_actualizado = null;
+    if (isset($_FILES['school_logo']) && $_FILES['school_logo']['error'] === UPLOAD_ERR_OK) {
+        $max_size = 5 * 1024 * 1024; // 5MB
+        $allowed_ext = ['png', 'jpg', 'jpeg', 'svg', 'webp'];
+        
+        if ($_FILES['school_logo']['size'] > $max_size) {
+            throw new Exception("El logo excede el tamaño máximo permitido (5MB).");
+        }
+        
+        $file_ext = strtolower(pathinfo($_FILES['school_logo']['name'], PATHINFO_EXTENSION));
+        if (!in_array($file_ext, $allowed_ext)) {
+            throw new Exception("Formato de archivo no permitido. Use: " . implode(', ', $allowed_ext));
+        }
+        
+        $upload_dir = __DIR__ . '/../../uploads/branding/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
+        }
+        
+        $file_name = 'logo_institucional_' . time() . '.' . $file_ext;
+        $destination = $upload_dir . $file_name;
+        
+        if (move_uploaded_file($_FILES['school_logo']['tmp_name'], $destination)) {
+            $logo_path = 'uploads/branding/' . $file_name;
+            
+            $db->prepare("DELETE FROM ajustes_estetica WHERE clave = 'school_logo'")->execute();
+            $db->prepare("INSERT INTO ajustes_estetica (clave, valor) VALUES ('school_logo', ?)")->execute([$logo_path]);
+            
+            $logo_actualizado = $logo_path;
+            $procesados++;
+            registrar_evento_elite('SUCCESS', "Logo institucional actualizado con éxito: {$logo_path}");
+        } else {
+            throw new Exception("Error al mover el archivo de logo al directorio de destino.");
+        }
+    }
+
     registrar_evento_elite('SUCCESS', "Sincronización finalizada. {$procesados} variables procesadas.");
 
     if (ob_get_length()) ob_clean();
-    echo json_encode(['status' => 'success', 'message' => 'Sincronización Élite Finalizada.']);
+    $resp = ['status' => 'success', 'message' => 'Sincronización Élite Finalizada.'];
+    if ($logo_actualizado !== null) {
+        $resp['logo_path'] = $logo_actualizado;
+    }
+    echo json_encode($resp);
 
 } catch (Throwable $e) {
     registrar_evento_elite('FATAL_ERROR', $e->getMessage());

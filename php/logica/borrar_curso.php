@@ -16,8 +16,19 @@ try {
     }
 
     $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-    if (!$id) {
-        throw new Exception("Identificador de curso inválido.");
+    // 🛡️ VALIDACIONES PREVENTIVAS
+    // 1. Estudiantes matriculados
+    $stmt_e = $db->prepare("SELECT COUNT(*) FROM estudiantes WHERE curso_id = ?");
+    $stmt_e->execute([$id]);
+    if ((int)$stmt_e->fetchColumn() > 0) {
+        throw new Exception("No es posible eliminar el curso: Tiene estudiantes matriculados asignados.");
+    }
+
+    // 2. Carga Académica vinculada
+    $stmt_ca = $db->prepare("SELECT COUNT(*) FROM carga_academica WHERE curso_id = ?");
+    $stmt_ca->execute([$id]);
+    if ((int)$stmt_ca->fetchColumn() > 0) {
+        throw new Exception("No es posible eliminar el curso: Tiene materias y docentes asignados en la Carga Académica.");
     }
 
     $stmt = $db->prepare('DELETE FROM cursos WHERE id = :id');
@@ -29,6 +40,12 @@ try {
         throw new Exception("Fallo en la operación de base de datos.");
     }
 
+} catch (PDOException $pe) {
+    $msg = $pe->getMessage();
+    if ($pe->getCode() === '23000' || strpos($msg, '1451') !== false || strpos($msg, 'foreign key constraint') !== false) {
+        $msg = 'Acción Bloqueada: El curso contiene registros dependientes (estudiantes, notas o carga horaria) y no puede eliminarse directamente.';
+    }
+    echo json_encode(['status' => 'error', 'message' => 'Error de Bóveda: ' . $msg]);
 } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }

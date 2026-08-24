@@ -28,6 +28,13 @@ try {
         throw new Exception("Este perfil está protegido por el protocolo del sistema.");
     }
 
+    // 🛡️ VALIDACIÓN PREVENTIVA: Usuarios asignados al rol
+    $stmt_u = $db->prepare("SELECT COUNT(*) FROM usuarios WHERE rol_id = ?");
+    $stmt_u->execute([$id]);
+    if ((int)$stmt_u->fetchColumn() > 0) {
+        throw new Exception("No es posible eliminar el rol: Existen usuarios institucionales asignados a este perfil. Reasigne su rol antes de continuar.");
+    }
+
     $stmt = $db->prepare('DELETE FROM roles WHERE id = :id');
     $stmt->bindValue(':id', $id, PDO::PARAM_INT);
 
@@ -37,6 +44,12 @@ try {
         throw new Exception("Error en la ejecución de base de datos.");
     }
 
+} catch (PDOException $pe) {
+    $msg = $pe->getMessage();
+    if ($pe->getCode() === '23000' || strpos($msg, '1451') !== false || strpos($msg, 'foreign key constraint') !== false) {
+        $msg = 'Acción Bloqueada: El rol está asignado a usuarios existentes y no puede eliminarse.';
+    }
+    echo json_encode(['status' => 'error', 'message' => 'Error de Bóveda: ' . $msg]);
 } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }

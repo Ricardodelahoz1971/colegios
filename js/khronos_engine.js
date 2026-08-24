@@ -92,12 +92,13 @@
             const data = await res.json();
             
             if (data.status === 'success') {
+                lanzarToastElite('success', 'Asignación horaria registrada');
                 navegarModulo('khronos&curso_id=' + curso_id);
             } else {
-                Swal.fire('Error de Khronos', data.message, 'error');
+                lanzarToastElite('danger', data.message || 'Error en horario', 'Error de Khronos');
             }
         } catch (error) {
-            Swal.fire('Error de Conexión', 'No se pudo procesar la asignación.', 'error');
+            lanzarToastElite('danger', 'No se pudo procesar la asignación.', 'Error de Conexión');
         }
     }
 
@@ -138,9 +139,10 @@
                 fd.append('id', id);
                 await fetch('logica/procesar_khronos.php', { method: 'POST', body: fd });
                 const curso_id = new URLSearchParams(window.location.search).get('curso_id');
+                lanzarToastElite('success', 'Bloque horario liberado');
                 if (typeof navegarModulo === 'function') navegarModulo('khronos&curso_id=' + curso_id);
             } catch (error) {
-                Swal.fire('Error', 'No se pudo eliminar el bloque.', 'error');
+                lanzarToastElite('danger', 'No se pudo eliminar el bloque.');
             }
         }
     };
@@ -157,10 +159,10 @@
                 const res = await fetch('logica/khronos_auto_gen.php?curso_id=' + curso_id);
                 const data = await res.json();
                 
-                Swal.fire('Info', data.message, data.status);
+                lanzarToastElite(data.status === 'success' ? 'success' : 'danger', data.message || 'Horario procesado');
                 if (data.status === 'success') navegarModulo('khronos&curso_id=' + curso_id);
             } catch (error) {
-                Swal.fire('Error', 'Fallo en la generación automática.', 'error');
+                lanzarToastElite('danger', 'Fallo en la generación automática.');
             }
         }
     };

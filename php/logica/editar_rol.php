@@ -15,7 +15,7 @@ try {
     }
 
     $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-    $nombre = trim((string)filter_input(INPUT_POST, 'nombre_rol', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
+    $nombre = limpiar_texto_utf8(filter_input(INPUT_POST, 'nombre_rol', FILTER_DEFAULT) ?? '');
 
     if (empty($id) || empty($nombre)) {
         throw new Exception("Datos incompletos para actualizar el perfil.");

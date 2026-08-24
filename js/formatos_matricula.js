@@ -339,7 +339,7 @@ function editarFormato(id) {
                     tab.show();
                 }
             } else {
-                Swal.fire('Error', res.message, 'error');
+                lanzarToastElite('danger', res.message || 'Error al procesar el formato');
             }
         });
 }
@@ -362,20 +362,19 @@ function eliminarFormato(id) {
 
             fetch('/sistema_escolar/php/logica/formatos_ajax.php', { method: 'POST', body: formData })
             .then(res => res.json())
-            .then(async (res) => {
+            .then((res) => {
                 if (res.status === 'success') {
                     // Remover tarjeta sin recarga
                     const tarjeta = document.querySelector(`.format-card[data-id="${id}"]`);
                     if (tarjeta) {
                         tarjeta.remove();
-                        Swal.fire('Eliminado', 'Plantilla removida correctamente', 'success');
+                        lanzarToastElite('success', 'Plantilla removida correctamente');
                     } else {
-                        // Si no encuentra la tarjeta, navegar al módulo para refrescar
-                        await Swal.fire('Eliminado', 'Plantilla removida correctamente', 'success');
+                        lanzarToastElite('success', 'Plantilla removida correctamente');
                         navegarModulo('formatos_matricula', true);
                     }
                 } else {
-                    Swal.fire('Error', res.message, 'error');
+                    lanzarToastElite('danger', res.message || 'Error al eliminar');
                 }
             });
         }

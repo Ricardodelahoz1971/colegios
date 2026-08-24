@@ -14,12 +14,14 @@ try {
         throw new Exception('Acceso denegado o privilegios insuficientes.');
     }
 
-    $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-    $nombre = trim((string)filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
-    $user = strtoupper(trim((string)filter_input(INPUT_POST, 'user', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? ''));
-    $pass = (string)filter_input(INPUT_POST, 'pass', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
-    $rol = filter_input(INPUT_POST, 'rol', FILTER_VALIDATE_INT);
-    $esp = filter_input(INPUT_POST, 'esp', FILTER_VALIDATE_INT);
+    $input = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    $id = filter_var($input['id'] ?? filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? null, FILTER_VALIDATE_INT);
+    $nombre = trim(limpiar_texto_utf8($input['nombre'] ?? filter_input(INPUT_POST, 'nombre', FILTER_DEFAULT) ?? ''));
+    $user = strtoupper(trim(limpiar_texto_utf8($input['user'] ?? filter_input(INPUT_POST, 'user', FILTER_DEFAULT) ?? '')));
+    $pass = (string)($input['pass'] ?? filter_input(INPUT_POST, 'pass', FILTER_DEFAULT) ?? '');
+    $rol = filter_var($input['rol'] ?? filter_input(INPUT_POST, 'rol', FILTER_VALIDATE_INT) ?? null, FILTER_VALIDATE_INT);
+    $esp = filter_var($input['esp'] ?? filter_input(INPUT_POST, 'esp', FILTER_VALIDATE_INT) ?? null, FILTER_VALIDATE_INT);
 
     if ((int)$rol !== 11) {
         $esp = null;
@@ -29,12 +31,21 @@ try {
         throw new Exception('Faltan datos obligatorios para actualizar el perfil.');
     }
 
-    if ((int)$rol === 12) {
-        throw new Exception('Operación Inválida: No se puede asignar el rol de Estudiante desde este módulo.');
+    if ((int)$rol === 12 || (int)$rol === 5) {
+        throw new Exception('Operación Inválida: La gestión de estudiantes debe realizarse desde el módulo de Matrícula.');
     }
 
     if ($id === 1) {
         $rol = 1;
+    }
+
+    // Validar que el usuario no esté en uso por otro registro
+    $stmt_check = $db->prepare('SELECT id FROM usuarios WHERE UPPER(usuario) = UPPER(:usr) AND id != :id');
+    $stmt_check->bindValue(':usr', $user, PDO::PARAM_STR);
+    $stmt_check->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmt_check->execute();
+    if ($stmt_check->fetch()) {
+        throw new Exception('El nombre de usuario "' . $user . '" ya pertenece a otro miembro del personal.');
     }
 
     if (!empty($pass)) {
@@ -63,6 +74,15 @@ try {
         throw new Exception('Fallo crítico al actualizar en la bóveda de datos.');
     }
 
+} catch (PDOException $pe) {
+    $msg = $pe->getMessage();
+    if ($pe->getCode() === '23000' || strpos($msg, '1062') !== false || strpos($msg, 'Duplicate entry') !== false) {
+        $msg = 'El nombre de usuario ya está asignado a otra cuenta. Elija uno diferente.';
+    }
+    echo json_encode([
+        'status' => 'error', 
+        'message' => 'Error de Bóveda: ' . $msg
+    ]);
 } catch (Exception $e) {
     echo json_encode([
         'status' => 'error', 

@@ -15,9 +15,9 @@ try {
 
     $remitente_id = (int)$_SESSION['usuario_id'];
     $destinatario_id = (int)(filter_input(INPUT_POST, 'destinatario_id', FILTER_VALIDATE_INT) ?? 0);
-    $chat_type = filter_input(INPUT_POST, 'chat_type', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'direct';
-    $asunto = filter_input(INPUT_POST, 'asunto', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'Sin asunto';
-    $contenido = trim(filter_input(INPUT_POST, 'contenido', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+    $chat_type = limpiar_texto_utf8($_POST['chat_type'] ?? '') ?? 'direct';
+    $asunto = limpiar_texto_utf8($_POST['asunto'] ?? '') ?? 'Sin asunto';
+    $contenido = trim(limpiar_texto_utf8($_POST['contenido'] ?? '') ?? '');
     $prioridad = (int)(filter_input(INPUT_POST, 'prioridad', FILTER_VALIDATE_INT) ?? 1);
 
     if (empty($contenido)) {

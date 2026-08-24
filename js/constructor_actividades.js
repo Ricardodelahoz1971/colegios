@@ -1,4 +1,4 @@
-﻿// --- ORQUESTADOR FRONTERIZO DE ACTIVIDADES ---
+// --- ORQUESTADOR FRONTERIZO DE ACTIVIDADES ---
 
 function toggleRubricaMode() {
     const modo = document.querySelector('input[name="modo_eval"]:checked').value;
@@ -88,7 +88,7 @@ async function cargarActividades() {
             }
             
             tbody.innerHTML = res.data.map(act => {
-                const badgeDim = `<span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 fs-nano text-uppercase">${act.clase_nota}</span>`;
+                const badgeDim = `<span class="badge-elite badge-elite--info">${escapeHtml(act.clase_nota || 'Actividad')}</span>`;
                 const badgeMode = act.tipo_evaluacion === 'rubrica' 
                     ? `<span class="text-primary fw-bold fs-micro"><i class="bi bi-layers"></i> RÚBRICA</span>` 
                     : `<span class="text-secondary fw-bold fs-micro"><i class="bi bi-123"></i> DIRECTO</span>`;
@@ -279,20 +279,14 @@ async function guardarActividad(e) {
         const res = await response.json();
         
         if (res.status === 'success') {
-            Swal.fire({
-                icon: 'success',
-                title: 'Sincronización Exitosa',
-                text: res.message,
-                timer: 2000,
-                showConfirmButton: false
-            });
+            lanzarToastElite('success', res.message || 'Actividad guardada correctamente');
             cancelarEdicion();
             cargarActividades();
         } else {
-            Swal.fire('Error al Guardar', res.message, 'error');
+            lanzarToastElite('danger', res.message || 'Error al guardar la actividad');
         }
     } catch (err) {
-        Swal.fire('Error Crítico', 'No se pudo comunicar con el servidor.', 'error');
+        lanzarToastElite('danger', 'No se pudo comunicar con el servidor.');
     }
 }
 
@@ -323,13 +317,13 @@ function eliminarActividad(id) {
                 const res = await response.json();
                 
                 if (res.status === 'success') {
-                    Swal.fire('Eliminado', res.message, 'success');
+                    lanzarToastElite('success', res.message || 'Actividad eliminada correctamente');
                     cargarActividades();
                 } else {
-                    Swal.fire('Error', res.message, 'error');
+                    lanzarToastElite('danger', res.message || 'Error al eliminar');
                 }
             } catch (err) {
-                Swal.fire('Error', 'No se pudo procesar la solicitud.', 'error');
+                lanzarToastElite('danger', 'No se pudo procesar la solicitud.');
             }
         }
     });
@@ -402,7 +396,7 @@ async function cargarActividadesOrigen() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initConstructorActividades() {
     cargarActividades();
     toggleRubricaMode();
     
@@ -412,22 +406,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const paramMateria = urlParams.get('especialidad_id');
     const paramAmbito = urlParams.get('ambito');
     if (paramCurso && paramMateria) {
-        document.getElementById('act-curso').value = paramCurso;
-        document.getElementById('act-materia').value = paramMateria;
-        
-        // Disparar cambio visual si se usa AresSelectEngine u otros componentes
-        const evt = new CustomEvent('change', { bubbles: true });
-        document.getElementById('act-curso').dispatchEvent(evt);
-        document.getElementById('act-materia').dispatchEvent(evt);
+        const cEl = document.getElementById('act-curso');
+        const mEl = document.getElementById('act-materia');
+        if (cEl && mEl) {
+            cEl.value = paramCurso;
+            mEl.value = paramMateria;
+            
+            // Disparar cambio visual si se usa AresSelectEngine u otros componentes
+            const evt = new CustomEvent('change', { bubbles: true });
+            cEl.dispatchEvent(evt);
+            mEl.dispatchEvent(evt);
+        }
     }
     
     if (paramAmbito === 'recuperacion') {
-        document.getElementById('ambito-recuperacion').checked = true;
-        toggleAmbitoRecuperacion();
+        const ambEl = document.getElementById('ambito-recuperacion');
+        if (ambEl) {
+            ambEl.checked = true;
+            toggleAmbitoRecuperacion();
+        }
     }
-});
+}
+
+// Inicialización SPA-Safe (Funciona tanto en carga directa como en navegación AJAX)
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initConstructorActividades();
+} else {
+    document.addEventListener('DOMContentLoaded', initConstructorActividades);
+}
 
 // Vinculación al scope global
+window.initConstructorActividades = initConstructorActividades;
 window.toggleRubricaMode = toggleRubricaMode;
 window.agregarCriterio = agregarCriterio;
 window.eliminarCriterio = eliminarCriterio;

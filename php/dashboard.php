@@ -382,18 +382,13 @@ if (isset($_GET['raw'])) {
         <nav class="sidebar-container d-flex flex-column p-0 shadow-lg" id="sidebarMaestro">
             <div class="sidebar-header-elite p-4 border-bottom">
                 <div class="logo-container-elite mb-3">
-                    <?php 
-                    $logo_exists = !empty($cfg_logo_raw) && file_exists(__DIR__ . '/../' . $cfg_logo_raw);
-                    if ($logo_exists): ?>
-                        <img src="../<?php echo $cfg_logo_raw; ?>" alt="Logo" class="logo-img-elite school-logo-global">
-                    <?php else: ?>
-                        <!-- ESCUDO ELITE FALLBACK (SVG) -->
-                        <div class="logo-fallback-elite">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-white-50">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                            </svg>
-                        </div>
-                    <?php endif; ?>
+                    <?php $logo_exists = !empty($cfg_logo_raw) && file_exists(__DIR__ . '/../' . $cfg_logo_raw); ?>
+                    <img src="<?php echo $logo_exists ? ('../' . $cfg_logo_raw) : ''; ?>" alt="Logo" class="logo-img-elite school-logo-global <?php echo $logo_exists ? '' : 'd-none'; ?>">
+                    <div class="logo-fallback-elite <?php echo $logo_exists ? 'd-none' : ''; ?>">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-white-50">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
                 </div>
                 <div class="school-name-container-elite">
                     <h2 class="school-name-elite school-name-global"><?php echo $cfg_school; ?></h2>
@@ -405,7 +400,7 @@ if (isset($_GET['raw'])) {
                     
                     <!-- INICIO -->
                     <li class="menu-item-elite">
-                        <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="menu-link-elite <?php echo ($pagina == 'inicio') ? 'active' : ''; ?>">
+                        <a href="dashboard.php?p=inicio" onclick="event.preventDefault(); navegarModulo('inicio')" class="menu-link-elite <?php echo ($pagina == 'inicio') ? 'active' : ''; ?>">
                             <div class="d-flex align-items-center">
                                 <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                                 <span>Inicio</span>
@@ -416,7 +411,7 @@ if (isset($_GET['raw'])) {
                     <!-- EVALUACIÓN (ESTUDIANTES) -->
                     <?php if ($_SESSION['rol_id'] == 3 || $_SESSION['rol_nombre'] == 'Estudiante'): ?>
                     <li class="menu-item-elite">
-                        <a href="javascript:void(0)" onclick="navegarModulo('estudiante_examenes')" class="menu-link-elite <?php echo ($pagina == 'estudiante_examenes') ? 'active' : ''; ?>">
+                        <a href="dashboard.php?p=estudiante_examenes" onclick="event.preventDefault(); navegarModulo('estudiante_examenes')" class="menu-link-elite <?php echo ($pagina == 'estudiante_examenes') ? 'active' : ''; ?>">
                             <div class="d-flex align-items-center">
                                 <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                 <span>Mis Exámenes</span>
@@ -424,7 +419,7 @@ if (isset($_GET['raw'])) {
                         </a>
                     </li>
                     <li class="menu-item-elite">
-                        <a href="javascript:void(0)" onclick="navegarModulo('aula_virtual_estudiante')" class="menu-link-elite <?php echo ($pagina == 'aula_virtual_estudiante') ? 'active' : ''; ?>">
+                        <a href="dashboard.php?p=aula_virtual_estudiante" onclick="event.preventDefault(); navegarModulo('aula_virtual_estudiante')" class="menu-link-elite <?php echo ($pagina == 'aula_virtual_estudiante') ? 'active' : ''; ?>">
                             <div class="d-flex align-items-center">
                                 <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                                 <span>Aula Virtual</span>
@@ -444,10 +439,10 @@ if (isset($_GET['raw'])) {
                         </a>
                         <ul class="submenu-elite">
                             <?php if (tiene_permiso('matricula') && moduloAutorizadoMovil('matricula', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'matricula') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('matricula')">Nueva Matrícula</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'matricula') ? 'active' : ''; ?>" href="dashboard.php?p=matricula" onclick="event.preventDefault(); navegarModulo('matricula')">Nueva Matrícula</a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('estudiantes') && moduloAutorizadoMovil('matriculados', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'matriculados') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('matriculados')">Gestión de Matriculados</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'matriculados') ? 'active' : ''; ?>" href="dashboard.php?p=matriculados" onclick="event.preventDefault(); navegarModulo('matriculados')">Gestión de Matriculados</a></li>
                             <?php endif; ?>
                         </ul>
                     </li>
@@ -465,35 +460,35 @@ if (isset($_GET['raw'])) {
                         </a>
                         <ul class="submenu-elite">
                             <?php if (tiene_permiso('areas') && moduloAutorizadoMovil('areas', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'areas') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('areas')">Áreas Curriculares</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'areas') ? 'active' : ''; ?>" href="dashboard.php?p=areas" onclick="event.preventDefault(); navegarModulo('areas')">Áreas Curriculares</a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('especialidades') && moduloAutorizadoMovil('especialidades', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'especialidades') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('especialidades')">Especialidades</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'especialidades') ? 'active' : ''; ?>" href="dashboard.php?p=especialidades" onclick="event.preventDefault(); navegarModulo('especialidades')">Especialidades</a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('cursos') && moduloAutorizadoMovil('cursos', $mi_rol_id_enc)): ?>
                                 <?php 
                                     $es_admin_r = in_array($_SESSION['rol_id'], [1, 2, 10, 20]);
                                     $label_cursos = $es_admin_r ? 'Cursos / Grupos' : 'Mis Grupos';
                                 ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'cursos') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('cursos')"><?php echo $label_cursos; ?></a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'cursos') ? 'active' : ''; ?>" href="dashboard.php?p=cursos" onclick="event.preventDefault(); navegarModulo('cursos')"><?php echo $label_cursos; ?></a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('zulu') && moduloAutorizadoMovil('khronos', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'zulu') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('zulu')">Carga Académica</a></li>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'khronos') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('khronos')">Horario Escolar</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'zulu') ? 'active' : ''; ?>" href="dashboard.php?p=zulu" onclick="event.preventDefault(); navegarModulo('zulu')">Carga Académica</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'khronos') ? 'active' : ''; ?>" href="dashboard.php?p=khronos" onclick="event.preventDefault(); navegarModulo('khronos')">Horario Escolar</a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('estudiantes') && moduloAutorizadoMovil('reporte_listas', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'reporte_listas') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('reporte_listas')">Centro de Reportes</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'reporte_listas') ? 'active' : ''; ?>" href="dashboard.php?p=reporte_listas" onclick="event.preventDefault(); navegarModulo('reporte_listas')">Centro de Reportes</a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('aula_virtual') && moduloAutorizadoMovil('aula_virtual_gestion', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'aula_virtual_gestion') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('aula_virtual_gestion')">Aula Virtual</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'aula_virtual_gestion') ? 'active' : ''; ?>" href="dashboard.php?p=aula_virtual_gestion" onclick="event.preventDefault(); navegarModulo('aula_virtual_gestion')">Aula Virtual</a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('evaluacion') && moduloAutorizadoMovil('editor_preguntas', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'editor_preguntas') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('editor_preguntas')">Banco de Reactivos</a></li>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'constructor_pruebas') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('constructor_pruebas')">Creador de exámenes</a></li>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'constructor_actividades') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('constructor_actividades')">Gestor de Actividades</a></li>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'calificar_pruebas') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('calificar_pruebas')">Calificación de pruebas</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'editor_preguntas') ? 'active' : ''; ?>" href="dashboard.php?p=editor_preguntas" onclick="event.preventDefault(); navegarModulo('editor_preguntas')">Banco de Reactivos</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'constructor_pruebas') ? 'active' : ''; ?>" href="dashboard.php?p=constructor_pruebas" onclick="event.preventDefault(); navegarModulo('constructor_pruebas')">Creador de exámenes</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'constructor_actividades') ? 'active' : ''; ?>" href="dashboard.php?p=constructor_actividades" onclick="event.preventDefault(); navegarModulo('constructor_actividades')">Gestor de Actividades</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'calificar_pruebas') ? 'active' : ''; ?>" href="dashboard.php?p=calificar_pruebas" onclick="event.preventDefault(); navegarModulo('calificar_pruebas')">Calificación de pruebas</a></li>
                                 <?php if (moduloAutorizadoMovil('sabana_calificaciones', $mi_rol_id_enc)): ?>
-                                    <li><a class="submenu-link-elite <?php echo ($pagina == 'sabana_calificaciones') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('sabana_calificaciones')">Sábana de Notas</a></li>
+                                    <li><a class="submenu-link-elite <?php echo ($pagina == 'sabana_calificaciones') ? 'active' : ''; ?>" href="dashboard.php?p=sabana_calificaciones" onclick="event.preventDefault(); navegarModulo('sabana_calificaciones')">Sábana de Notas</a></li>
                                 <?php endif; ?>
                             <?php endif; ?>
                         </ul>
@@ -518,15 +513,15 @@ if (isset($_GET['raw'])) {
                             $es_dir = tiene_permiso('matricula') || tiene_permiso('personal');
                             
                             if (tiene_permiso('asistencia') && ($es_tutor || $es_dir) && moduloAutorizadoMovil('asistencia', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'asistencia') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('asistencia')">Control de Asistencia</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'asistencia') ? 'active' : ''; ?>" href="dashboard.php?p=asistencia" onclick="event.preventDefault(); navegarModulo('asistencia')">Control de Asistencia</a></li>
                             <?php endif; ?>
                             
                             <?php if (tiene_permiso('agenda') && moduloAutorizadoMovil('agenda', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'agenda') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('agenda')">Agenda Académica</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'agenda') ? 'active' : ''; ?>" href="dashboard.php?p=agenda" onclick="event.preventDefault(); navegarModulo('agenda')">Agenda Académica</a></li>
                             <?php endif; ?>
 
                             <?php if (tiene_permiso('cronograma') && moduloAutorizadoMovil('calendario', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'calendario') ? 'active' : ''; ?>" href="javascript:void(0)" onclick="navegarModulo('calendario')">Cronograma Escolar</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'calendario') ? 'active' : ''; ?>" href="dashboard.php?p=calendario" onclick="event.preventDefault(); navegarModulo('calendario')">Cronograma Escolar</a></li>
                             <?php endif; ?>
                         </ul>
                     </li>
@@ -535,7 +530,7 @@ if (isset($_GET['raw'])) {
                     <!-- MENSAJERÍA -->
                     <?php if (tiene_permiso('mensajeria') && moduloAutorizadoMovil('mensajeria', $mi_rol_id_enc)): ?>
                     <li class="menu-item-elite">
-                        <a href="javascript:void(0)" onclick="navegarModulo('mensajeria')" class="menu-link-elite <?php echo ($pagina == 'mensajeria') ? 'active' : ''; ?>">
+                        <a href="dashboard.php?p=mensajeria" onclick="event.preventDefault(); navegarModulo('mensajeria')" class="menu-link-elite <?php echo ($pagina == 'mensajeria') ? 'active' : ''; ?>">
                             <div class="d-flex align-items-center">
                                 <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                                 <span>Mensajería</span>
@@ -556,13 +551,13 @@ if (isset($_GET['raw'])) {
                         </a>
                         <ul class="submenu-elite">
                             <?php if (tiene_permiso('configuracion') && moduloAutorizadoMovil('configuracion', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'configuracion') ? 'active' : ''; ?>" href="#!" onclick="event.preventDefault(); navegarModulo('configuracion')">Configuración</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'configuracion') ? 'active' : ''; ?>" href="dashboard.php?p=configuracion" onclick="event.preventDefault(); navegarModulo('configuracion')">Configuración</a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('personal') && moduloAutorizadoMovil('personal', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'personal') ? 'active' : ''; ?>" href="#!" onclick="event.preventDefault(); navegarModulo('personal')">Talento Humano</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'personal') ? 'active' : ''; ?>" href="dashboard.php?p=personal" onclick="event.preventDefault(); navegarModulo('personal')">Talento Humano</a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('auditoria') && moduloAutorizadoMovil('auditoria', $mi_rol_id_enc)): ?>
-                                <li><a class="submenu-link-elite <?php echo ($pagina == 'auditoria') ? 'active' : ''; ?>" href="#!" onclick="event.preventDefault(); navegarModulo('auditoria')">Bitácora de Sistema</a></li>
+                                <li><a class="submenu-link-elite <?php echo ($pagina == 'auditoria') ? 'active' : ''; ?>" href="dashboard.php?p=auditoria" onclick="event.preventDefault(); navegarModulo('auditoria')">Bitácora de Sistema</a></li>
                             <?php endif; ?>
                             
                             <?php if ($_SESSION['rol_id'] == 1): ?>
@@ -641,7 +636,7 @@ if (isset($_GET['raw'])) {
                                     <div class="fw-bold text-dark"><?php echo $_SESSION['nombre'] ?? 'Usuario'; ?></div>
                                     <small class="text-muted text-uppercase fs-nano"><?php echo $_SESSION['rol_nombre'] ?? 'Personal'; ?></small>
                                 </li>
-                                <li><a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="navegarModulo('mi_perfil')">
+                                <li><a class="dropdown-item d-flex align-items-center py-2" href="dashboard.php?p=mi_perfil" onclick="event.preventDefault(); navegarModulo('mi_perfil')">
                                     <i class="bi bi-person me-2"></i> Mi Perfil</a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>

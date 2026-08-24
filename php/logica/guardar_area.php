@@ -14,7 +14,7 @@ try {
         throw new Exception("Acceso denegado: Rango académico insuficiente.");
     }
 
-    $nombre = trim((string)filter_input(INPUT_POST, 'nombre_area', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
+    $nombre = limpiar_texto_utf8(filter_input(INPUT_POST, 'nombre_area', FILTER_DEFAULT) ?? '');
 
     if (empty($nombre)) {
         throw new Exception("El nombre del área es obligatorio.");

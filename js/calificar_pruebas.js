@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+function initCalificarPruebas() {
     // 1. Inicializar variables globales basadas en el contenedor
     const container = document.getElementById('gradebook-container');
     if (container) {
@@ -14,4 +14,10 @@
     if (typeof Perseus !== 'undefined') {
         Perseus.init();
     }
-});
+}
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initCalificarPruebas();
+} else {
+    document.addEventListener('DOMContentLoaded', initCalificarPruebas);
+}

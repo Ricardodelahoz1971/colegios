@@ -25,7 +25,7 @@ if (!tienen_rol(['administrador', 'coordinador', 'rector'])) {
     exit();
 }
 
-$accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+$accion = limpiar_texto_utf8($_POST['accion'] ?? '') ?? '';
 
 // HELPER PARA CALCULAR TIEMPOS BASADOS EN CONFIGURACIÓN (v9.2 PDO)
 function getTiempos(PDO $db, int $hora_num, int $curso_id = 0): array {
@@ -53,10 +53,22 @@ function getTiempos(PDO $db, int $hora_num, int $curso_id = 0): array {
     
     $h_ini = $obtener_cfg('khronos_inicio', $jornada) ?? '07:00';
     $dur = (int)($obtener_cfg('khronos_duracion', $jornada) ?? 55);
-    $d1h = (int)($obtener_cfg('khronos_descanso_h', $jornada) ?? 0);
-    $d1m = (int)($obtener_cfg('khronos_descanso_m', $jornada) ?? 0);
-    $d2h = (int)($obtener_cfg('khronos_descanso2_h', $jornada) ?? 0);
-    $d2m = (int)($obtener_cfg('khronos_descanso2_m', $jornada) ?? 0);
+    $recesos_raw = $obtener_cfg('khronos_recesos', $jornada);
+    $recesos_lista = [];
+    if (!empty($recesos_raw)) {
+        $decoded = json_decode((string)$recesos_raw, true);
+        if (is_array($decoded)) {
+            $recesos_lista = $decoded;
+        }
+    }
+    if (empty($recesos_lista)) {
+        $d1h = (int)($obtener_cfg('khronos_descanso_h', $jornada) ?? 0);
+        $d1m = (int)($obtener_cfg('khronos_descanso_m', $jornada) ?? 0);
+        if ($d1h > 0 && $d1m > 0) $recesos_lista[] = ['bloque' => $d1h, 'duracion' => $d1m];
+        $d2h = (int)($obtener_cfg('khronos_descanso2_h', $jornada) ?? 0);
+        $d2m = (int)($obtener_cfg('khronos_descanso2_m', $jornada) ?? 0);
+        if ($d2h > 0 && $d2m > 0) $recesos_lista[] = ['bloque' => $d2h, 'duracion' => $d2m];
+    }
 
     [$h, $m] = explode(':', $h_ini);
     $t_ini = '';
@@ -66,8 +78,15 @@ function getTiempos(PDO $db, int $hora_num, int $curso_id = 0): array {
         $total = $m + $dur;
         $h += floor($total/60); $m = $total % 60;
         $t_fin = sprintf("%02d:%02d", $h, $m);
-        if ($i == $d1h) { $total_d = $m + $d1m; $h += floor($total_d/60); $m = $total_d % 60; }
-        if ($i == $d2h) { $total_d = $m + $d2m; $h += floor($total_d/60); $m = $total_d % 60; }
+        
+        foreach ($recesos_lista as $rec) {
+            if ((int)($rec['bloque'] ?? 0) === $i) {
+                $dur_rec = (int)($rec['duracion'] ?? 0);
+                $total_d = $m + $dur_rec;
+                $h += floor($total_d/60);
+                $m = $total_d % 60;
+            }
+        }
     }
     return [$t_ini, $t_fin];
 }
@@ -79,7 +98,7 @@ switch ($accion) {
         $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
         $docente_id = filter_input(INPUT_POST, 'docente_id', FILTER_VALIDATE_INT) ?? 0;
         $especialidad_id = filter_input(INPUT_POST, 'especialidad_id', FILTER_VALIDATE_INT) ?? 0;
-        $dia = filter_input(INPUT_POST, 'dia_semana', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+        $dia = limpiar_texto_utf8($_POST['dia_semana'] ?? '') ?? '';
         $hora = filter_input(INPUT_POST, 'hora_numero', FILTER_VALIDATE_INT) ?? 0;
         [$ini, $fin] = getTiempos($db, $hora, $curso_id);
 
@@ -102,9 +121,9 @@ switch ($accion) {
     case 'swap':
         $id_a = filter_input(INPUT_POST, 'id_a', FILTER_VALIDATE_INT) ?? 0;
         $id_b = filter_input(INPUT_POST, 'id_b', FILTER_VALIDATE_INT) ?? 0;
-        $dia_a = filter_input(INPUT_POST, 'dia_a', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+        $dia_a = limpiar_texto_utf8($_POST['dia_a'] ?? '') ?? '';
         $hora_a = filter_input(INPUT_POST, 'hora_a', FILTER_VALIDATE_INT) ?? 0;
-        $dia_b = filter_input(INPUT_POST, 'dia_b', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+        $dia_b = limpiar_texto_utf8($_POST['dia_b'] ?? '') ?? '';
         $hora_b = filter_input(INPUT_POST, 'hora_b', FILTER_VALIDATE_INT) ?? 0;
         
         $stmt_c_a = $db->prepare("SELECT curso_id FROM khronos_horarios WHERE id = ?");
@@ -135,7 +154,7 @@ switch ($accion) {
         $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
         $docente_id = filter_input(INPUT_POST, 'docente_id', FILTER_VALIDATE_INT) ?? 0;
         $especialidad_id = filter_input(INPUT_POST, 'especialidad_id', FILTER_VALIDATE_INT) ?? 0;
-        $dia = filter_input(INPUT_POST, 'dia_semana', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+        $dia = limpiar_texto_utf8($_POST['dia_semana'] ?? '') ?? '';
         $hora = filter_input(INPUT_POST, 'hora_numero', FILTER_VALIDATE_INT) ?? 0;
         [$ini, $fin] = getTiempos($db, $hora, $curso_id);
 

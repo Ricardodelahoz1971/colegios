@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initMatriculados() {
     const container = document.getElementById('matriculados-container');
     if (container) {
         try {
@@ -7,7 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
             window.formatosDisponibles = [];
         }
     }
-});
+}
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initMatriculados();
+} else {
+    document.addEventListener('DOMContentLoaded', initMatriculados);
+}
 
 function abrirSelectorImpresion(estudianteId, nombreEstudiante) {
     const container = document.getElementById('matriculados-container');
@@ -20,7 +26,7 @@ function abrirSelectorImpresion(estudianteId, nombreEstudiante) {
     }
     const listadoFormatos = window.formatosDisponibles || [];
     if (listadoFormatos.length === 0) {
-        Swal.fire('Aviso', 'No hay formatos de documentos activos. Por favor active o cree alguno en Configuración.', 'warning');
+        lanzarToastElite('warning', 'No hay formatos de documentos activos. Por favor active o cree alguno en Configuración.');
         return;
     }
     

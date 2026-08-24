@@ -18,9 +18,9 @@ try {
     $id = filter_var($input['id'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
     $curso_id = filter_var($input['curso_id'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
     $especialidad_id = filter_var($input['especialidad_id'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
-    $titulo = trim(filter_var($input['titulo'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
-    $desc = trim(filter_var($input['descripcion'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '');
-    $fecha = filter_var($input['fecha_entrega'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
+    $titulo = trim(limpiar_texto_utf8($input['titulo'] ?? '') ?? '');
+    $desc = trim(limpiar_texto_utf8($input['descripcion'] ?? '') ?? '');
+    $fecha = limpiar_texto_utf8($input['fecha_entrega'] ?? '') ?? '';
     $usuario_id = $_SESSION['usuario_id'];
     session_write_close();
 

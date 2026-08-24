@@ -16,7 +16,7 @@ try {
 
     session_write_close();
 
-    $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_SPECIAL_CHARS) ?? filter_input(INPUT_POST, 'action', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+    $action = limpiar_texto_utf8($_GET['action'] ?? '') ?? limpiar_texto_utf8($_POST['action'] ?? '') ?? '';
 
     if ($action === 'listar') {
         $stmt = $db->prepare("SELECT id, nombre, descripcion, tipo, activo, margen_superior, margen_inferior, tipo_documento, tamano_lienzo FROM formatos_matricula ORDER BY id DESC");
@@ -173,17 +173,17 @@ try {
 
     if ($action === 'guardar') {
         $id = (int)(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT) ?? 0);
-        $nombre = trim(filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
-        $descripcion = trim(filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
-        $contenido_html = trim(filter_input(INPUT_POST, 'contenido_html', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
-        $configuracion_json = trim(filter_input(INPUT_POST, 'configuracion_json', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
-        $zonas_config = trim(filter_input(INPUT_POST, 'zonas_config', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+        $nombre = trim(limpiar_texto_utf8($_POST['nombre'] ?? '') ?? '');
+        $descripcion = trim(limpiar_texto_utf8($_POST['descripcion'] ?? '') ?? '');
+        $contenido_html = trim(limpiar_texto_utf8($_POST['contenido_html'] ?? '') ?? '');
+        $configuracion_json = trim(limpiar_texto_utf8($_POST['configuracion_json'] ?? '') ?? '');
+        $zonas_config = trim(limpiar_texto_utf8($_POST['zonas_config'] ?? '') ?? '');
         $margen_superior = (int)(filter_input(INPUT_POST, 'margen_superior', FILTER_SANITIZE_NUMBER_INT) ?? 20);
         $margen_inferior = (int)(filter_input(INPUT_POST, 'margen_inferior', FILTER_SANITIZE_NUMBER_INT) ?? 20);
         $margen_izquierdo = (int)(filter_input(INPUT_POST, 'margen_izquierdo', FILTER_SANITIZE_NUMBER_INT) ?? 20);
         $margen_derecho = (int)(filter_input(INPUT_POST, 'margen_derecho', FILTER_SANITIZE_NUMBER_INT) ?? 20);
-        $tipo_documento = trim(filter_input(INPUT_POST, 'tipo_documento', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'matricula');
-        $tamano_lienzo = trim(filter_input(INPUT_POST, 'tamano_lienzo', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'carta');
+        $tipo_documento = trim(limpiar_texto_utf8($_POST['tipo_documento'] ?? '') ?? 'matricula');
+        $tamano_lienzo = trim(limpiar_texto_utf8($_POST['tamano_lienzo'] ?? '') ?? 'carta');
 
         if (!empty($zonas_config)) {
             $bloques = json_decode($configuracion_json, true) ?? [];

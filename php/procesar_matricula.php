@@ -11,11 +11,12 @@ try {
     if (!tiene_permiso('matricula')) {
         throw new Exception('Acceso denegado o permisos insuficientes.');
     }
+    require_once __DIR__ . '/security.php';
     session_write_close();
 
-    $identificacion = filter_input(INPUT_POST, 'identificacion', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-    $nombre = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-    $apellido = filter_input(INPUT_POST, 'apellido', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+    $identificacion = limpiar_texto_utf8($_POST['identificacion'] ?? '');
+    $nombre = limpiar_texto_utf8($_POST['nombre'] ?? '');
+    $apellido = limpiar_texto_utf8($_POST['apellido'] ?? '');
     $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
     
     if (empty($identificacion) || empty($nombre) || empty($apellido)) {
@@ -35,11 +36,11 @@ try {
     $c_data = $c_stmt->fetch(PDO::FETCH_ASSOC);
     $nombre_curso = $c_data['nombre_curso'] ?? 'Sin Asignar';
 
-    $tipo_documento = filter_input(INPUT_POST, 'tipo_documento', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-    $tipo_sangre = filter_input(INPUT_POST, 'tipo_sangre', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-    $genero = filter_input(INPUT_POST, 'genero', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+    $tipo_documento = limpiar_texto_utf8($_POST['tipo_documento'] ?? '');
+    $tipo_sangre = limpiar_texto_utf8($_POST['tipo_sangre'] ?? '');
+    $genero = limpiar_texto_utf8($_POST['genero'] ?? '');
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL) ?? '';
-    $celular = filter_input(INPUT_POST, 'celular', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+    $celular = limpiar_texto_utf8($_POST['celular'] ?? '');
     $es_antiguo = filter_input(INPUT_POST, 'es_antiguo', FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
 
     $sql = "INSERT INTO estudiantes (identificacion, nombre, apellido, curso_id, curso, tipo_documento, rh, genero, email, celular, es_antiguo) 
@@ -72,37 +73,37 @@ try {
         )";
         $stmt_adicional = $db->prepare($sql_adicional);
         
-        $fecha_nac = filter_input(INPUT_POST, 'fecha_nacimiento', FILTER_SANITIZE_SPECIAL_CHARS) ?: null;
+        $fecha_nac = limpiar_texto_utf8($_POST['fecha_nacimiento'] ?? '') ?: null;
         $edad_val = filter_input(INPUT_POST, 'edad', FILTER_VALIDATE_INT) ?: null;
         
         $stmt_adicional->execute([
             ':estudiante_id' => $nuevo_id,
-            ':lugar_nacimiento' => filter_input(INPUT_POST, 'lugar_nacimiento', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
+            ':lugar_nacimiento' => limpiar_texto_utf8($_POST['lugar_nacimiento'] ?? '') ?: null,
             ':fecha_nacimiento' => $fecha_nac,
             ':edad' => $edad_val,
-            ':nacionalidad' => filter_input(INPUT_POST, 'nacionalidad', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':colegio_anterior' => filter_input(INPUT_POST, 'colegio_anterior', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':direccion_estudiante' => filter_input(INPUT_POST, 'direccion_estudiante', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':folio_matricula' => filter_input(INPUT_POST, 'folio_matricula', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':padre_nombre' => filter_input(INPUT_POST, 'padre_nombre', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':padre_tipo_documento' => filter_input(INPUT_POST, 'padre_tipo_documento', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':padre_documento' => filter_input(INPUT_POST, 'padre_documento', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':padre_documento_expedicion' => filter_input(INPUT_POST, 'padre_documento_expedicion', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':padre_nacionalidad' => filter_input(INPUT_POST, 'padre_nacionalidad', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':padre_celular' => filter_input(INPUT_POST, 'padre_celular', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':padre_telefono' => filter_input(INPUT_POST, 'padre_telefono', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':padre_direccion' => filter_input(INPUT_POST, 'padre_direccion', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':padre_profesion' => filter_input(INPUT_POST, 'padre_profesion', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
+            ':nacionalidad' => limpiar_texto_utf8($_POST['nacionalidad'] ?? '') ?: null,
+            ':colegio_anterior' => limpiar_texto_utf8($_POST['colegio_anterior'] ?? '') ?: null,
+            ':direccion_estudiante' => limpiar_texto_utf8($_POST['direccion_estudiante'] ?? '') ?: null,
+            ':folio_matricula' => limpiar_texto_utf8($_POST['folio_matricula'] ?? '') ?: null,
+            ':padre_nombre' => limpiar_texto_utf8($_POST['padre_nombre'] ?? '') ?: null,
+            ':padre_tipo_documento' => limpiar_texto_utf8($_POST['padre_tipo_documento'] ?? '') ?: null,
+            ':padre_documento' => limpiar_texto_utf8($_POST['padre_documento'] ?? '') ?: null,
+            ':padre_documento_expedicion' => limpiar_texto_utf8($_POST['padre_documento_expedicion'] ?? '') ?: null,
+            ':padre_nacionalidad' => limpiar_texto_utf8($_POST['padre_nacionalidad'] ?? '') ?: null,
+            ':padre_celular' => limpiar_texto_utf8($_POST['padre_celular'] ?? '') ?: null,
+            ':padre_telefono' => limpiar_texto_utf8($_POST['padre_telefono'] ?? '') ?: null,
+            ':padre_direccion' => limpiar_texto_utf8($_POST['padre_direccion'] ?? '') ?: null,
+            ':padre_profesion' => limpiar_texto_utf8($_POST['padre_profesion'] ?? '') ?: null,
             ':padre_email' => filter_input(INPUT_POST, 'padre_email', FILTER_SANITIZE_EMAIL) ?: null,
-            ':madre_nombre' => filter_input(INPUT_POST, 'madre_nombre', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':madre_tipo_documento' => filter_input(INPUT_POST, 'madre_tipo_documento', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':madre_documento' => filter_input(INPUT_POST, 'madre_documento', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':madre_documento_expedicion' => filter_input(INPUT_POST, 'madre_documento_expedicion', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':madre_nacionalidad' => filter_input(INPUT_POST, 'madre_nacionalidad', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':madre_celular' => filter_input(INPUT_POST, 'madre_celular', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':madre_telefono' => filter_input(INPUT_POST, 'madre_telefono', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':madre_direccion' => filter_input(INPUT_POST, 'madre_direccion', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
-            ':madre_profesion' => filter_input(INPUT_POST, 'madre_profesion', FILTER_SANITIZE_SPECIAL_CHARS) ?: null,
+            ':madre_nombre' => limpiar_texto_utf8($_POST['madre_nombre'] ?? '') ?: null,
+            ':madre_tipo_documento' => limpiar_texto_utf8($_POST['madre_tipo_documento'] ?? '') ?: null,
+            ':madre_documento' => limpiar_texto_utf8($_POST['madre_documento'] ?? '') ?: null,
+            ':madre_documento_expedicion' => limpiar_texto_utf8($_POST['madre_documento_expedicion'] ?? '') ?: null,
+            ':madre_nacionalidad' => limpiar_texto_utf8($_POST['madre_nacionalidad'] ?? '') ?: null,
+            ':madre_celular' => limpiar_texto_utf8($_POST['madre_celular'] ?? '') ?: null,
+            ':madre_telefono' => limpiar_texto_utf8($_POST['madre_telefono'] ?? '') ?: null,
+            ':madre_direccion' => limpiar_texto_utf8($_POST['madre_direccion'] ?? '') ?: null,
+            ':madre_profesion' => limpiar_texto_utf8($_POST['madre_profesion'] ?? '') ?: null,
             ':madre_email' => filter_input(INPUT_POST, 'madre_email', FILTER_SANITIZE_EMAIL) ?: null
         ]);
 

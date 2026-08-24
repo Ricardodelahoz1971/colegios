@@ -13,9 +13,9 @@ require_once 'logica/AuthController.php';
 // Blindaje contra ataques CSRF y Method Hijacking
 proteccion_extrema();
 
-// Captura de datos del formulario institucional usando filter_input
-$usuario = filter_input(INPUT_POST, 'usuario', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-$password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+// Captura de datos del formulario institucional
+$usuario = filter_input(INPUT_POST, 'usuario', FILTER_DEFAULT) ?? '';
+$password = filter_input(INPUT_POST, 'password', FILTER_DEFAULT) ?? '';
 
 // Ejecutar protocolo de autenticación Senior
 $auth = AuthController::login($db, $usuario, $password);

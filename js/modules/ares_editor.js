@@ -645,11 +645,11 @@ async function adaptarPregunta(id) {
             const r = await fetch('logica/api_preguntas.php', { method: 'POST', body: formData });
             const d = await r.json();
             if (d.status === 'success') {
-                Swal.fire('Éxito', d.message, 'success');
+                lanzarToastElite('success', d.message || 'Reactivo adaptado');
                 cambiarScope('mine');
                 editarPregunta(d.nuevo_id);
             } else { throw new Error(d.message); }
-        } catch (e) { Swal.fire('Error', e.message, 'error'); }
+        } catch (e) { lanzarToastElite('danger', e.message || 'Error al adaptar reactivo'); }
     }
 }
 
@@ -704,11 +704,11 @@ async function guardarPregunta(e) {
         const r = await fetch('logica/api_preguntas.php', { method: 'POST', body: formData });
         const d = await r.json();
         if (d.status === 'success') {
-            Swal.fire({ icon: 'success', title: '¡Guardado!', text: d.message, timer: 1500, showConfirmButton: false });
+            lanzarToastElite('success', d.message || 'Reactivo guardado correctamente en bóveda.');
             cargarBanco();
             cerrarLaboratorio();
         } else { throw new Error(d.message); }
-    } catch (err) { Swal.fire('Error', err.message, 'error'); }
+    } catch (err) { lanzarToastElite('danger', err.message || 'Error al guardar reactivo'); }
 }
 
 async function eliminarPregunta(id) {
@@ -731,10 +731,11 @@ async function eliminarPregunta(id) {
             const r = await fetch('logica/api_preguntas.php', { method: 'POST', body: formData });
             const d = await r.json();
             if (d.status === 'success') {
+                lanzarToastElite('success', d.message || 'Reactivo purgado de la bóveda.');
                 cargarBanco();
                 if (document.getElementById('pregunta-id').value == id) nuevaPregunta();
             } else { throw new Error(d.message); }
-        } catch (e) { Swal.fire('Error', e.message, 'error'); }
+        } catch (e) { lanzarToastElite('danger', e.message || 'Error al eliminar reactivo'); }
     }
 }
 

@@ -23,7 +23,7 @@ $docente_id = filter_var($input['docente_id'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
 $materia_id = filter_var($input['materia_id'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
 $curso_dest = filter_var($input['curso_dest'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
 $curso_orig = filter_var($input['curso_orig'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
-$accion = filter_var($input['accion'] ?? 'asignar', FILTER_SANITIZE_SPECIAL_CHARS) ?: 'asignar';
+$accion = limpiar_texto_utf8($input['accion'] ?? 'asignar') ?: 'asignar';
 $confirmar = filter_var($input['confirmar'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
 if (!$docente_id || !$materia_id) {

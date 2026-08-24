@@ -12,7 +12,7 @@ if (!isset($_SESSION['usuario_id'])) {
     exit();
 }
 
-$action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+$action = limpiar_texto_utf8($_GET['action'] ?? '') ?? '';
 $mi_id = (int)$_SESSION['usuario_id'];
 $ver_todo = tiene_permiso('matricula') || tiene_permiso('personal');
 
@@ -83,17 +83,17 @@ switch ($action) {
         try {
             proteccion_extrema();
             $id = (int)filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT) ?? 0;
-            $titulo = trim(filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
-            $tipo = filter_input(INPUT_POST, 'tipo_recurso', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'LINK';
+            $titulo = trim(limpiar_texto_utf8($_POST['titulo'] ?? '') ?? '');
+            $tipo = limpiar_texto_utf8($_POST['tipo_recurso'] ?? '') ?? 'LINK';
             $url = trim(filter_input(INPUT_POST, 'url_recurso', FILTER_SANITIZE_URL) ?? '');
             $materia = (int)filter_input(INPUT_POST, 'especialidad_id', FILTER_VALIDATE_INT) ?? 0;
             $curso = (int)filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) ?? 0;
-            $desc = trim(filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+            $desc = trim(limpiar_texto_utf8($_POST['descripcion'] ?? '') ?? '');
             $es_evaluativo = (int)filter_input(INPUT_POST, 'es_evaluativo', FILTER_VALIDATE_INT) ?? 0;
-            $aula_ambito = trim(filter_input(INPUT_POST, 'aula_ambito', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'estandar');
+            $aula_ambito = trim(limpiar_texto_utf8($_POST['aula_ambito'] ?? '') ?? 'estandar');
             $recupera_actividad_id = (int)filter_input(INPUT_POST, 'recupera_actividad_id', FILTER_VALIDATE_INT) ?? 0;
-            $fecha_inicio = trim(filter_input(INPUT_POST, 'fecha_inicio', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
-            $fecha_fin = trim(filter_input(INPUT_POST, 'fecha_fin', FILTER_SANITIZE_SPECIAL_CHARS) ?? '');
+            $fecha_inicio = trim(limpiar_texto_utf8($_POST['fecha_inicio'] ?? '') ?? '');
+            $fecha_fin = trim(limpiar_texto_utf8($_POST['fecha_fin'] ?? '') ?? '');
 
             if ($mi_id === 0) {
                 throw new Exception("Sesión de docente no detectada.");

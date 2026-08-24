@@ -15,9 +15,9 @@ try {
     }
 
     $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-    $nombre = filter_input(INPUT_POST, 'nombre_curso', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $nombre = limpiar_texto_utf8(filter_input(INPUT_POST, 'nombre_curso', FILTER_DEFAULT) ?? '');
     $tutor = filter_input(INPUT_POST, 'tutor_id', FILTER_VALIDATE_INT);
-    $jornada = filter_input(INPUT_POST, 'jornada', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: 'Mañana';
+    $jornada = limpiar_texto_utf8(filter_input(INPUT_POST, 'jornada', FILTER_DEFAULT) ?? 'Mañana');
 
     if (empty($id) || empty($nombre)) {
         throw new Exception("Datos incompletos para actualizar el aula.");

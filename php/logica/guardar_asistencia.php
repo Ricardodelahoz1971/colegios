@@ -15,8 +15,8 @@ try {
 
     $mi_id = (int)($_SESSION['usuario_id'] ?? 0);
     $curso_id = filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT);
-    $fecha = filter_input(INPUT_POST, 'fecha', FILTER_SANITIZE_SPECIAL_CHARS);
-    $asistencias_raw = filter_input(INPUT_POST, 'asistencias', FILTER_SANITIZE_SPECIAL_CHARS);
+    $fecha = limpiar_texto_utf8($_POST['fecha'] ?? '');
+    $asistencias_raw = limpiar_texto_utf8($_POST['asistencias'] ?? '');
     $asistencias = json_decode($asistencias_raw ?? '[]', true);
     session_write_close();
 
@@ -38,8 +38,8 @@ try {
                               VALUES (:eid, :cid, :fec, :est, :obs, :reg)");
 
     foreach ($asistencias as $a) {
-        $estado = filter_var($a['estado'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-        $obs = filter_var($a['obs'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $estado = limpiar_texto_utf8($a['estado'] ?? '');
+        $obs = limpiar_texto_utf8($a['obs'] ?? '');
         $estudiante_id = filter_var($a['id'] ?? 0, FILTER_VALIDATE_INT);
 
         if ($estado === 'F') {

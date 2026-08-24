@@ -230,4 +230,4 @@ if ($origen_id > 0) {
     </div>
 </div>
 
-<script src="../js/constructor_actividades.js" defer></script>
+<script src="../js/constructor_actividades.js?v=1787418374" defer></script>

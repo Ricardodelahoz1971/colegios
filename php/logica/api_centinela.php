@@ -20,14 +20,14 @@ try {
         throw new Exception('Acceso denegado.');
     }
 
-    $accion = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) 
-              ?? filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) 
+    $accion = limpiar_texto_utf8($_POST['accion'] ?? '') 
+              ?? limpiar_texto_utf8($_GET['accion'] ?? '') 
               ?? 'consultar';
 
     switch ($accion) {
         case 'validar_tarea':
-            $fecha = filter_input(INPUT_GET, 'fecha', FILTER_SANITIZE_SPECIAL_CHARS) 
-                     ?? filter_input(INPUT_POST, 'fecha', FILTER_SANITIZE_SPECIAL_CHARS) 
+            $fecha = limpiar_texto_utf8($_GET['fecha'] ?? '') 
+                     ?? limpiar_texto_utf8($_POST['fecha'] ?? '') 
                      ?? '';
             if (empty($fecha)) {
                 throw new Exception('Fecha no proporcionada.');
@@ -45,8 +45,8 @@ try {
             break;
 
         case 'validar_examen':
-            $fecha = filter_input(INPUT_GET, 'fecha', FILTER_SANITIZE_SPECIAL_CHARS) 
-                     ?? filter_input(INPUT_POST, 'fecha', FILTER_SANITIZE_SPECIAL_CHARS) 
+            $fecha = limpiar_texto_utf8($_GET['fecha'] ?? '') 
+                     ?? limpiar_texto_utf8($_POST['fecha'] ?? '') 
                      ?? '';
             $curso_id = (int)(filter_input(INPUT_GET, 'curso_id', FILTER_VALIDATE_INT) 
                      ?? filter_input(INPUT_POST, 'curso_id', FILTER_VALIDATE_INT) 

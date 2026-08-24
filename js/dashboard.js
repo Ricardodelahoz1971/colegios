@@ -3,6 +3,37 @@
  * Maneja la navegación SPA, temas, sidebar táctil y ciclos de vida de modales bootstrap.
  */
 
+// 🔔 HELPER INSTITUCIONAL UNIVERSAL: TOAST FLOTANTE ÉLITE
+window.lanzarToastElite = function (tipo, mensaje, titulo = null) {
+    const toast = document.createElement('div');
+    const tipoNormalizado = (tipo === 'error') ? 'danger' : (tipo || 'info');
+    toast.className = `toast-elite toast-elite--${tipoNormalizado} toast-floating-elite animate__animated animate__fadeInRight`;
+
+    let icon = 'bi-check-circle-fill text-success';
+    if (tipoNormalizado === 'danger') icon = 'bi-exclamation-triangle-fill text-danger';
+    else if (tipoNormalizado === 'warning') icon = 'bi-exclamation-circle-fill text-warning';
+    else if (tipoNormalizado === 'info') icon = 'bi-info-circle-fill text-info';
+
+    const headerText = titulo || (tipoNormalizado === 'danger' ? 'Error' : (tipoNormalizado === 'warning' ? 'Advertencia' : 'Notificación'));
+
+    toast.innerHTML = `
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi ${icon} fs-5"></i>
+            <div>
+                <div class="fw-bold small text-uppercase">${headerText}</div>
+                <div class="small text-secondary">${mensaje}</div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.remove('animate__fadeInRight');
+        toast.classList.add('animate__fadeOutRight');
+        setTimeout(() => toast.remove(), 400);
+    }, 3500);
+};
+
 function toggleDarkMode() {
     const isDark = document.body.classList.toggle('dark-theme-mode');
     document.getElementById('icon-moon').classList.toggle('d-none', isDark);

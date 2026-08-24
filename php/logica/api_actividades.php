@@ -388,7 +388,7 @@ try {
                                       FROM ares_actividades a
                                       JOIN cursos c ON a.curso_id = c.id
                                       JOIN especialidades e ON a.especialidad_id = e.id
-                                      JOIN ares_clases_nota cn ON a.clase_nota_id = cn.id
+                                      LEFT JOIN ares_clases_nota cn ON a.clase_nota_id = cn.id
                                       WHERE a.docente_id = ? AND a.fecha_registro BETWEEN ? AND ?
                                       ORDER BY a.fecha_registro DESC");
                 $stmt->execute([$mi_id, $rango['fecha_inicio'], $rango['fecha_fin']]);
@@ -402,7 +402,7 @@ try {
                                       FROM ares_actividades a
                                       JOIN cursos c ON a.curso_id = c.id
                                       JOIN especialidades e ON a.especialidad_id = e.id
-                                      JOIN ares_clases_nota cn ON a.clase_nota_id = cn.id
+                                      LEFT JOIN ares_clases_nota cn ON a.clase_nota_id = cn.id
                                       WHERE a.docente_id = ?
                                       ORDER BY a.fecha_registro DESC");
                 $stmt->execute([$mi_id]);

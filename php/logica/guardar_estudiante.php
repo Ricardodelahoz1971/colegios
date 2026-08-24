@@ -17,43 +17,43 @@ try {
     }
 
     $input = filter_input_array(INPUT_POST, [
-        'identificacion' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'nombre' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'apellido' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'identificacion' => FILTER_DEFAULT,
+        'nombre' => FILTER_DEFAULT,
+        'apellido' => FILTER_DEFAULT,
         'curso_id' => FILTER_VALIDATE_INT,
         'promedio' => FILTER_VALIDATE_FLOAT,
-        'tipo_documento' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'tipo_sangre' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'genero' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'tipo_documento' => FILTER_DEFAULT,
+        'tipo_sangre' => FILTER_DEFAULT,
+        'genero' => FILTER_DEFAULT,
         'email' => FILTER_SANITIZE_EMAIL,
-        'celular' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'celular' => FILTER_DEFAULT,
         'es_antiguo' => FILTER_VALIDATE_BOOLEAN,
-        'fecha_nacimiento' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'fecha_nacimiento' => FILTER_DEFAULT,
         'edad' => FILTER_VALIDATE_INT,
-        'folio_matricula' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'lugar_nacimiento' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'nacionalidad' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'colegio_anterior' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'direccion_estudiante' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'padre_nombre' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'padre_tipo_documento' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'padre_documento' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'padre_documento_expedicion' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'padre_nacionalidad' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'padre_celular' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'padre_telefono' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'padre_direccion' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'padre_profesion' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'folio_matricula' => FILTER_DEFAULT,
+        'lugar_nacimiento' => FILTER_DEFAULT,
+        'nacionalidad' => FILTER_DEFAULT,
+        'colegio_anterior' => FILTER_DEFAULT,
+        'direccion_estudiante' => FILTER_DEFAULT,
+        'padre_nombre' => FILTER_DEFAULT,
+        'padre_tipo_documento' => FILTER_DEFAULT,
+        'padre_documento' => FILTER_DEFAULT,
+        'padre_documento_expedicion' => FILTER_DEFAULT,
+        'padre_nacionalidad' => FILTER_DEFAULT,
+        'padre_celular' => FILTER_DEFAULT,
+        'padre_telefono' => FILTER_DEFAULT,
+        'padre_direccion' => FILTER_DEFAULT,
+        'padre_profesion' => FILTER_DEFAULT,
         'padre_email' => FILTER_SANITIZE_EMAIL,
-        'madre_nombre' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'madre_tipo_documento' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'madre_documento' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'madre_documento_expedicion' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'madre_nacionalidad' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'madre_celular' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'madre_telefono' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'madre_direccion' => FILTER_SANITIZE_SPECIAL_CHARS,
-        'madre_profesion' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'madre_nombre' => FILTER_DEFAULT,
+        'madre_tipo_documento' => FILTER_DEFAULT,
+        'madre_documento' => FILTER_DEFAULT,
+        'madre_documento_expedicion' => FILTER_DEFAULT,
+        'madre_nacionalidad' => FILTER_DEFAULT,
+        'madre_celular' => FILTER_DEFAULT,
+        'madre_telefono' => FILTER_DEFAULT,
+        'madre_direccion' => FILTER_DEFAULT,
+        'madre_profesion' => FILTER_DEFAULT,
         'madre_email' => FILTER_SANITIZE_EMAIL
     ]);
 
@@ -107,14 +107,30 @@ try {
         $target_id = (int)$db->lastInsertId();
 
         $pass_hash = password_hash($identificacion, PASSWORD_DEFAULT);
-        $stmt_usr = $db->prepare("INSERT INTO usuarios (usuario, password, email, nombre, rol_id, estudiante_id) VALUES (:u, :p, :e, :n, 5, :eid)");
-        $stmt_usr->execute([
-            ':u' => $identificacion,
-            ':p' => $pass_hash,
-            ':e' => $email,
-            ':n' => $nombre . ' ' . $apellido,
-            ':eid' => $target_id
-        ]);
+        
+        $check_u = $db->prepare('SELECT id FROM usuarios WHERE usuario = :u');
+        $check_u->execute([':u' => $identificacion]);
+        $existing_user_id = $check_u->fetchColumn();
+
+        if ($existing_user_id) {
+            $stmt_usr = $db->prepare("UPDATE usuarios SET password = :p, email = :e, nombre = :n, rol_id = 5, estudiante_id = :eid WHERE id = :uid");
+            $stmt_usr->execute([
+                ':p' => $pass_hash,
+                ':e' => $email,
+                ':n' => $nombre . ' ' . $apellido,
+                ':eid' => $target_id,
+                ':uid' => $existing_user_id
+            ]);
+        } else {
+            $stmt_usr = $db->prepare("INSERT INTO usuarios (usuario, password, email, nombre, rol_id, estudiante_id) VALUES (:u, :p, :e, :n, 5, :eid)");
+            $stmt_usr->execute([
+                ':u' => $identificacion,
+                ':p' => $pass_hash,
+                ':e' => $email,
+                ':n' => $nombre . ' ' . $apellido,
+                ':eid' => $target_id
+            ]);
+        }
 
         $edad_val = null;
         if (!empty($input['fecha_nacimiento'])) {
@@ -228,6 +244,12 @@ try {
         throw new Exception("Error al procesar en la bóveda de datos.");
     }
 
+} catch (PDOException $pe) {
+    $msg = $pe->getMessage();
+    if ($pe->getCode() === '23000' || strpos($msg, '1062') !== false || strpos($msg, 'Duplicate entry') !== false) {
+        $msg = 'La identificación o usuario ingresado ya existe en la base de datos.';
+    }
+    echo json_encode(['status' => 'error', 'message' => $msg]);
 } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }

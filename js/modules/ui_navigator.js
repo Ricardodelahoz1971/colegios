@@ -128,49 +128,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const mensaje = urlParams.get('mensaje');
 
     if (error || mensaje) {
-        const btnDangerClass = 'btn-elite btn-elite--danger px-4';
-        const btnWarningClass = 'btn-elite btn-elite--warning px-4';
-
         if (error === 'clave') {
-            Swal.fire({ icon: 'error', title: 'Acceso Denegado', text: 'La contraseña es incorrecta.', customClass: { confirmButton: btnDangerClass } });
+            lanzarToastElite('danger', 'La contraseña ingresada es incorrecta.', 'Acceso Denegado');
         } else if (error === 'usuario') {
-            Swal.fire({ icon: 'question', title: '¿Quién eres?', text: 'Ese nombre de usuario no existe.', customClass: { confirmButton: btnDangerClass } });
+            lanzarToastElite('danger', 'Ese nombre de usuario no existe.', 'Usuario No Encontrado');
         } else if (error === 'duplicado') {
-            Swal.fire({ icon: 'warning', title: 'Atención', text: 'Esta identificación ya existe.', customClass: { confirmButton: btnWarningClass } });
+            lanzarToastElite('warning', 'Esta identificación ya se encuentra registrada en el sistema.');
         } else if (error === 'protegido') {
-            Swal.fire({ icon: 'error', title: 'Acción Bloqueada', text: 'Este recurso está protegido.', customClass: { confirmButton: btnDangerClass } });
+            lanzarToastElite('danger', 'Este recurso institucional está protegido por el sistema.', 'Acción Bloqueada');
         } else if (error === 'protegido_alumnos') {
-            Swal.fire({ icon: 'error', title: 'Acción Bloqueada', text: 'No puedes eliminar un curso que aún tiene alumnos matriculados.', customClass: { confirmButton: btnDangerClass } });
+            lanzarToastElite('danger', 'No puedes eliminar un curso que aún tiene alumnos matriculados.', 'Acción Bloqueada');
         } else if (error === 'duplicado_materia') {
-            Swal.fire({ icon: 'warning', title: 'Ojo con eso', text: 'Esta materia ya ha sido asignada a este curso anteriormente.', customClass: { confirmButton: btnWarningClass } });
+            lanzarToastElite('warning', 'Esta materia ya ha sido asignada a este curso anteriormente.');
         }
 
-        const successToast = (title) => {
-            Swal.fire({ icon: 'success', title: title, timer: 1500, showConfirmButton: false });
+        const emitirToast = (title) => {
+            if (typeof window.lanzarToastElite === 'function') {
+                window.lanzarToastElite('success', title);
+            }
         };
 
-        if (mensaje === 'rol_creado') successToast('¡Rol Guardado!');
-        if (mensaje === 'rol_editado') successToast('¡Rol Actualizado!');
-        if (mensaje === 'rol_borrado') successToast('¡Rol Eliminado!');
-        if (mensaje === 'permisos_rol_actualizados') successToast('¡Leyes de Rol Actualizadas!');
-        if (mensaje === 'permisos_personalizados') successToast('¡Permisos Custom Aplicados con Éxito!');
-        if (mensaje === 'personal_registrado') successToast('¡Personal Registrado!');
-        if (mensaje === 'personal_editado') successToast('¡Perfil Actualizado!');
-        if (mensaje === 'personal_borrado') successToast('¡Baja Confirmada!');
-        if (mensaje === 'insertado') successToast('¡Alumno Matriculado!');
-        if (mensaje === 'especialidad_creada') successToast('¡Nueva Especialidad!');
-        if (mensaje === 'especialidad_editada') successToast('¡Especialidad Actualizada!');
-        if (mensaje === 'especialidad_borrada') successToast('¡Especialidad Eliminada!');
-        if (mensaje === 'area_creada') successToast('¡Nueva Área!');
-        if (mensaje === 'area_editada') successToast('¡Área Actualizada!');
-        if (mensaje === 'area_borrada') successToast('¡Área Eliminada!');
-        if (mensaje === 'curso_creado') successToast('¡Curso Creado!');
-        if (mensaje === 'curso_editado') successToast('¡Curso Actualizado!');
-        if (mensaje === 'curso_borrado') successToast('¡Curso Eliminado!');
-        if (mensaje === 'carga_guardada') successToast('¡Materia Asignada!');
-        if (mensaje === 'carga_eliminada') successToast('¡Materia Retirada!');
-        if (mensaje === 'guardado') successToast('¡Sincronización Élite Exitosa!');
-        if (mensaje === 'reset') successToast('¡ADN de Fábrica Restaurado!');
+        if (mensaje === 'rol_creado') emitirToast('¡Rol Guardado!');
+        if (mensaje === 'rol_editado') emitirToast('¡Rol Actualizado!');
+        if (mensaje === 'rol_borrado') emitirToast('¡Rol Eliminado!');
+        if (mensaje === 'permisos_rol_actualizados') emitirToast('¡Leyes de Rol Actualizadas!');
+        if (mensaje === 'permisos_personalizados') emitirToast('¡Permisos Custom Aplicados con Éxito!');
+        if (mensaje === 'personal_registrado') emitirToast('¡Personal Registrado!');
+        if (mensaje === 'personal_editado') emitirToast('¡Perfil Actualizado!');
+        if (mensaje === 'personal_borrado') emitirToast('¡Baja Confirmada!');
+        if (mensaje === 'insertado') emitirToast('¡Alumno Matriculado!');
+        if (mensaje === 'especialidad_creada') emitirToast('¡Nueva Especialidad!');
+        if (mensaje === 'especialidad_editada') emitirToast('¡Especialidad Actualizada!');
+        if (mensaje === 'especialidad_borrada') emitirToast('¡Especialidad Eliminada!');
+        if (mensaje === 'area_creada') emitirToast('¡Nueva Área!');
+        if (mensaje === 'area_editada') emitirToast('¡Área Actualizada!');
+        if (mensaje === 'area_borrada') emitirToast('¡Área Eliminada!');
+        if (mensaje === 'curso_creado') emitirToast('¡Curso Creado!');
+        if (mensaje === 'curso_editado') emitirToast('¡Curso Actualizado!');
+        if (mensaje === 'curso_borrado') emitirToast('¡Curso Eliminado!');
+        if (mensaje === 'carga_guardada') emitirToast('¡Materia Asignada!');
+        if (mensaje === 'carga_eliminada') emitirToast('¡Materia Retirada!');
+        if (mensaje === 'guardado') emitirToast('¡Sincronización Élite Exitosa!');
+        if (mensaje === 'reset') emitirToast('¡ADN de Fábrica Restaurado!');
 
         window.history.replaceState({}, document.title, window.location.pathname);
     }

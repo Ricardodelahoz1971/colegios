@@ -16,9 +16,10 @@ try {
 
     $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
-    $nombre = trim(filter_var($input['nombre_curso'] ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-    $tutor = isset($input['tutor_id']) ? filter_var($input['tutor_id'], FILTER_VALIDATE_INT) : null;
-    $jornada = trim(filter_var($input['jornada'] ?? 'Mañana', FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+    $nombre = limpiar_texto_utf8($input['nombre_curso'] ?? filter_input(INPUT_POST, 'nombre_curso', FILTER_DEFAULT) ?? '');
+    $tutor_raw = $input['tutor_id'] ?? filter_input(INPUT_POST, 'tutor_id', FILTER_VALIDATE_INT) ?? null;
+    $tutor = ($tutor_raw !== null && $tutor_raw !== '') ? filter_var($tutor_raw, FILTER_VALIDATE_INT) : null;
+    $jornada = limpiar_texto_utf8($input['jornada'] ?? filter_input(INPUT_POST, 'jornada', FILTER_DEFAULT) ?? 'Mañana');
 
     if (empty($nombre)) {
         throw new Exception("El nombre del aula/curso es obligatorio.");

@@ -1,14 +1,18 @@
-﻿let sortable;
+let sortable;
 
 function initConstructor() {
     cargarPruebas();
     
     const formInfo = document.getElementById('form-info-prueba');
-    if (formInfo) formInfo.addEventListener('submit', guardarCabeceraPrueba);
+    if (formInfo) {
+        formInfo.removeEventListener('submit', guardarCabeceraPrueba);
+        formInfo.addEventListener('submit', guardarCabeceraPrueba);
+    }
 
     // Inicializar Sortable
     const lienzo = document.getElementById('lienzo-prueba');
-    if (lienzo) {
+    if (lienzo && typeof Sortable !== 'undefined') {
+        if (sortable) sortable.destroy();
         sortable = new Sortable(lienzo, {
             animation: 150,
             handle: '.handle-drag',
@@ -21,7 +25,11 @@ function initConstructor() {
 }
 
 // Inicialización SPA-Safe
-document.addEventListener('DOMContentLoaded', initConstructor);
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initConstructor();
+} else {
+    document.addEventListener('DOMContentLoaded', initConstructor);
+}
 
 async function cargarPruebas() {
     const lista = document.getElementById('lista-pruebas-ares');
@@ -61,26 +69,26 @@ async function cargarPruebas() {
                     <td class="ps-4 fw-bold text-muted small">#${p.id}</td>
                     <td class="fw-bold text-dark">${p.titulo}</td>
                     <td><span class="badge-elite badge-elite--info">${p.materia_nombre}</span></td>
-                    <td class="text-center"><span class="badge rounded-pill bg-dark bg-opacity-10 text-dark small">${p.total_preguntas} reactivos</span></td>
-                    <td class="text-center">${p.tiempo_limite} min</td>
+                    <td class="text-center"><span class="badge-elite badge-elite--neutral">${p.total_preguntas} reactivos</span></td>
+                    <td class="text-center fw-bold">${p.tiempo_limite} min</td>
                     <td class="text-center">
                         ${p.modalidad == 2 
-                            ? '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 small">FÍSICO (QR)</span>' 
-                            : '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 small">PLATAFORMA</span>'}
+                            ? '<span class="badge-elite badge-elite--warning">FÍSICO (QR)</span>' 
+                            : '<span class="badge-elite badge-elite--primary">PLATAFORMA</span>'}
                     </td>
                     <td class="text-center">
                         ${p.total_asignaciones > 0 
-                            ? '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 small px-2 py-1"><i class="bi bi-calendar-check me-1"></i>PROGRAMADO</span>' 
-                            : '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 small px-2 py-1 animate__animated animate__flash animate__infinite"><i class="bi bi-calendar-x me-1"></i>SIN PROGRAMAR</span>'}
+                            ? '<span class="badge-elite badge-elite--success"><i class="bi bi-calendar-check me-1"></i>PROGRAMADO</span>' 
+                            : '<span class="badge-elite badge-elite--danger"><i class="bi bi-calendar-x me-1"></i>SIN PROGRAMAR</span>'}
                     </td>
                     <td class="pe-4 text-center">
-                        <div class="d-flex justify-content-center gap-2">
+                        <div class="d-flex justify-content-center align-items-center gap-2 u-nowrap">
                             <button class="btn-elite-icon" onclick="editarPrueba(${p.id})" title="Editar Estructura"><i class="bi bi-pencil-square"></i></button>
                             <button class="btn-elite-icon" onclick="duplicarPrueba(${p.id})" title="Duplicar Prueba"><i class="bi bi-files"></i></button>
                             <button class="btn-elite-icon" onclick="mostrarOpcionesImpresion(${p.id})" title="Imprimir Examen"><i class="bi bi-printer"></i></button>
                             ${p.total_asignaciones > 0
                                 ? `<button class="btn-elite-icon text-success" onclick="aplicarPrueba(${p.id})" title="Programado (${p.total_asignaciones} asignaciones)"><i class="bi bi-calendar-check-fill"></i></button>`
-                                : `<button class="btn-elite-icon text-danger animate__animated animate__pulse animate__infinite" onclick="aplicarPrueba(${p.id})" title="Falta programar este examen"><i class="bi bi-calendar-plus-fill"></i></button>`
+                                : `<button class="btn-elite-icon text-danger" onclick="aplicarPrueba(${p.id})" title="Falta programar este examen"><i class="bi bi-calendar-plus-fill"></i></button>`
                             }
                             <button class="btn-elite-icon btn-elite-icon--danger" onclick="eliminarPrueba(${p.id})"><i class="bi bi-trash"></i></button>
                         </div>
@@ -99,12 +107,7 @@ async function cargarPruebas() {
                     <p class="small mb-0">No se pudieron recuperar las pruebas debido a una desconexión o bloqueo temporal de la bóveda.</p>
                 </td>
             </tr>`;
-        Swal.fire({
-            icon: 'error',
-            title: 'FALLO DE CONEXIÓN',
-            text: 'Fallo crítico de red o bloqueo de bóveda al cargar el listado de evaluaciones.',
-            customClass: { popup: 'rounded-4' }
-        });
+        lanzarToastElite('danger', 'No se pudo cargar el listado de evaluaciones.', 'Fallo de Conexión');
     }
 }
 
@@ -117,6 +120,7 @@ function abrirConstructor() {
     document.getElementById('construct-prueba-id').value = '0';
     document.getElementById('lienzo-prueba').innerHTML = '<div class="text-center py-5 text-muted empty-lienzo"><i class="bi bi-plus-circle-dotted fs-1 mb-3"></i><p>Arrastre reactivos aquí o haga clic en <i class="bi bi-plus"></i> en el banco.</p></div>';
     document.getElementById('panel-reactivos-banco').classList.add('d-none');
+    document.getElementById('status-constructor').innerHTML = '<span class="badge-elite badge-elite--info">MODO CONSTRUCTOR</span>';
     
     // Sincronizar selectores con AresSelectEngine
     if (typeof AresSelectEngine !== 'undefined') {
@@ -134,7 +138,13 @@ function volverALista() {
 }
 
 async function guardarCabeceraPrueba(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    const btn = document.querySelector('#form-info-prueba button[type="submit"]');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> GUARDANDO...';
+    }
+    
     const fd = new FormData();
     fd.append('accion', 'guardar');
     fd.append('csrf_token', window.CSRF_TOKEN || '');
@@ -145,13 +155,24 @@ async function guardarCabeceraPrueba(e) {
     fd.append('modalidad', document.getElementById('construct-modalidad').value);
     fd.append('instrucciones', document.getElementById('construct-instrucciones').value);
 
-    const res = await fetch('logica/api_pruebas.php', { method: 'POST', body: fd });
-    const d = await res.json();
-    if (d.status === 'success') {
-        document.getElementById('construct-prueba-id').value = d.id;
-        document.getElementById('panel-reactivos-banco').classList.remove('d-none');
-        cargarBancoConstructor(document.getElementById('construct-materia').value);
-        Swal.fire({ icon: 'success', title: 'Cabecera Guardada', text: 'Ahora puede añadir preguntas del banco.', timer: 1500, showConfirmButton: false });
+    try {
+        const res = await fetch('logica/api_pruebas.php', { method: 'POST', body: fd });
+        const d = await res.json();
+        if (d.status === 'success') {
+            document.getElementById('construct-prueba-id').value = d.id;
+            document.getElementById('panel-reactivos-banco').classList.remove('d-none');
+            cargarBancoConstructor(document.getElementById('construct-materia').value);
+            lanzarToastElite('success', 'Cabecera guardada. Ahora puede añadir preguntas del banco.', 'Cabecera Guardada');
+        } else {
+            lanzarToastElite('danger', d.message || 'Error al guardar la prueba', 'Error de Bóveda');
+        }
+    } catch (err) {
+        lanzarToastElite('danger', 'Fallo de comunicación con la bóveda.', 'Falla Crítica');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-save me-2"></i> GUARDAR CABECERA';
+        }
     }
 }
 
@@ -250,6 +271,10 @@ function actualizarPuntaje() {
 
 async function guardarEstructura() {
     const pruebaId = document.getElementById('construct-prueba-id').value;
+    if (pruebaId == '0') {
+        lanzarToastElite('warning', 'Primero debe guardar la cabecera de la prueba.');
+        return;
+    }
     const cards = document.querySelectorAll('#lienzo-prueba .reactivo-card-mini');
     const items = Array.from(cards).map((card, i) => ({
         pregunta_id: card.dataset.id,
@@ -263,11 +288,17 @@ async function guardarEstructura() {
     fd.append('prueba_id', pruebaId);
     fd.append('items', JSON.stringify(items));
 
-    const res = await fetch('logica/api_pruebas.php', { method: 'POST', body: fd });
-    const d = await res.json();
-    if (d.status === 'success') {
-        Swal.fire({ icon: 'success', title: '¡Prueba Ensamblada!', text: d.message, timer: 2000, showConfirmButton: false });
-        volverALista();
+    try {
+        const res = await fetch('logica/api_pruebas.php', { method: 'POST', body: fd });
+        const d = await res.json();
+        if (d.status === 'success') {
+            lanzarToastElite('success', d.message || 'Estructura de la prueba actualizada.', '¡Prueba Ensamblada!');
+            volverALista();
+        } else {
+            lanzarToastElite('danger', d.message || 'Error al guardar estructura', 'Error de Bóveda');
+        }
+    } catch (err) {
+        lanzarToastElite('danger', 'Fallo al guardar la estructura.', 'Falla Crítica');
     }
 }
 
@@ -338,13 +369,17 @@ async function duplicarPrueba(id) {
         fd.append('csrf_token', window.CSRF_TOKEN || '');
         fd.append('id', id);
 
-        const res = await fetch('logica/api_pruebas.php', { method: 'POST', body: fd });
-        const d = await res.json();
-        if (d.status === 'success') {
-            Swal.fire({ icon: 'success', title: 'Clonación Exitosa', text: d.message, timer: 1500, showConfirmButton: false });
-            cargarPruebas();
-        } else {
-            Swal.fire('Error', d.message, 'error');
+        try {
+            const res = await fetch('logica/api_pruebas.php', { method: 'POST', body: fd });
+            const d = await res.json();
+            if (d.status === 'success') {
+                lanzarToastElite('success', d.message || 'Prueba duplicada correctamente.', 'Clonación Exitosa');
+                cargarPruebas();
+            } else {
+                lanzarToastElite('danger', d.message || 'Error al clonar prueba', 'Error de Bóveda');
+            }
+        } catch (e) {
+            lanzarToastElite('danger', 'Fallo de comunicación con la bóveda.', 'Falla Crítica');
         }
     }
 }
@@ -355,16 +390,26 @@ async function eliminarPrueba(id) {
         text: "La prueba será eliminada permanentemente.",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'SÍ, ELIMINAR'
+        confirmButtonText: 'SÍ, ELIMINAR',
+        customClass: { confirmButton: 'btn-elite btn-elite--danger px-4', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' }
     });
     if (result.isConfirmed) {
         const fd = new FormData();
         fd.append('accion', 'eliminar_prueba');
         fd.append('csrf_token', window.CSRF_TOKEN || '');
         fd.append('id', id);
-        const res = await fetch('logica/api_pruebas.php', { method: 'POST', body: fd });
-        const d = await res.json();
-        if (d.status === 'success') cargarPruebas();
+        try {
+            const res = await fetch('logica/api_pruebas.php', { method: 'POST', body: fd });
+            const d = await res.json();
+            if (d.status === 'success') {
+                lanzarToastElite('success', d.message || 'Prueba purgada correctamente.', 'Prueba Eliminada');
+                cargarPruebas();
+            } else {
+                lanzarToastElite('danger', d.message || 'Error al eliminar la prueba', 'Error de Bóveda');
+            }
+        } catch (e) {
+            lanzarToastElite('danger', 'Fallo de comunicación con la bóveda.', 'Falla Crítica');
+        }
     }
 }
 
