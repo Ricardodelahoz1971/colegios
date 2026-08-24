@@ -320,8 +320,8 @@ if (isset($_GET['raw'])) {
             --el-info-rgb: <?php echo hexToRgb($estilos['brand_info'] ?? '#0ea5e9'); ?>;
             --el-success: <?php echo $estilos['brand_success'] ?? '#10b981'; ?>;
             --el-success-rgb: <?php echo hexToRgb($estilos['brand_success'] ?? '#10b981'); ?>;
-            --el-danger: <?php echo $estilos['brand_danger'] ?? '#ef4444'; ?>;
-            --el-danger-rgb: <?php echo hexToRgb($estilos['brand_danger'] ?? '#ef4444'); ?>;
+            --el-danger: rgb(220, 38, 38);
+            --el-danger-rgb: 220, 38, 38;
             --el-white: rgb(255, 255, 255);
             --el-white-rgb: 255, 255, 255;
             --el-dark-rgb: 30, 41, 59;

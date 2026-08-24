@@ -1997,11 +1997,11 @@ body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
 
 .toast-elite.toast-elite--danger::before,
 .toast-elite.toast-elite--error::before {
-    background: var(--bs-danger);
+    background: rgb(220, 38, 38);
 }
 .toast-elite.toast-elite--danger .toast-icon-elite,
 .toast-elite.toast-elite--error .toast-icon-elite {
-    color: var(--bs-danger);
+    color: rgb(220, 38, 38);
 }
 
 .toast-elite.toast-elite--success::before,
