@@ -491,7 +491,7 @@ window.nuevoCurso = async function (tutoresJSON) {
     const jornadas = ["Mañana", "Tarde", "Noche", "Única"];
     let opcionesJornada = jornadas.map(j => `<option value="${j}">${j}</option>`).join('');
     const r = await Swal.fire({
-        title: 'Aperturar Nivel',
+        title: 'Nuevo Curso / Grado',
         html: `<div class="text-start">
                 <label class="small fw-bold text-secondary mb-1">Nombre del Curso</label>
                 <input id="c-nom" class="input-elite mb-3">
@@ -500,7 +500,7 @@ window.nuevoCurso = async function (tutoresJSON) {
                 <label class="small fw-bold text-secondary mb-1">Director / Tutor</label>
                 <select id="c-tut" class="select-elite">${opciones}</select>
                </div>`,
-        showCancelButton: true, confirmButtonText: 'Registrar',
+        showCancelButton: true, confirmButtonText: 'Registrar', cancelButtonText: 'Cancelar',
         customClass: { confirmButton: 'btn-elite px-4', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' }, buttonsStyling: false,
         showLoaderOnConfirm: true,
         preConfirm: async () => {
@@ -551,7 +551,7 @@ window.editarCurso = async function (id, nombre, tutorActual, jornadaActual, tut
     const jornadas = ["Mañana", "Tarde", "Noche", "Única"];
     let opcionesJornada = jornadas.map(j => `<option value="${j}" ${j === jornadaActual ? 'selected' : ''}>${j}</option>`).join('');
     const r = await Swal.fire({
-        title: 'Edición de jefe de grupo',
+        title: 'Editar Curso / Tutor',
         html: `<div class="text-start">
                 <label class="small fw-bold text-secondary mb-1">Nombre del Curso</label>
                 <input id="c-nom" class="input-elite mb-3" value="${nombre}">
@@ -560,7 +560,7 @@ window.editarCurso = async function (id, nombre, tutorActual, jornadaActual, tut
                 <label class="small fw-bold text-secondary mb-1">Director / Tutor</label>
                 <select id="c-tut" class="select-elite">${opciones}</select>
                </div>`,
-        showCancelButton: true, confirmButtonText: 'Corregir',
+        showCancelButton: true, confirmButtonText: 'Guardar Cambios', cancelButtonText: 'Cancelar',
         customClass: { confirmButton: 'btn-elite px-4', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' }, buttonsStyling: false,
         showLoaderOnConfirm: true,
         preConfirm: async () => {
@@ -609,8 +609,8 @@ window.editarCurso = async function (id, nombre, tutorActual, jornadaActual, tut
 
 window.borrarCurso = async function (id, nombre) {
     const result = await Swal.fire({
-        title: 'Colapso de Nivel', text: `Se borrará el curso "${nombre}".`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Confirmar',
-        customClass: { confirmButton: 'btn-elite btn-elite--primary px-4', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' }, buttonsStyling: false
+        title: '¿Eliminar Curso?', text: `Se borrará el curso "${nombre}".`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, Eliminar', cancelButtonText: 'Cancelar',
+        customClass: { confirmButton: 'btn-elite btn-elite--danger px-4', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' }, buttonsStyling: false
     });
     if (result.isConfirmed) enviarPostElite('logica/borrar_curso.php', { id: id });
 };
