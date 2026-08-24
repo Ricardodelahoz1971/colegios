@@ -56,7 +56,14 @@ if ($origen_id > 0) {
         <div class="col-md-7 header-module-elite mb-0">
             <h4 class="h3 fw-bold mb-0 text-titulo-elite">GESTOR DE ACTIVIDADES</h4>
             <p class="subtitle-elite">Construya rúbricas y criterios de evaluación dinámicos para sus asignaturas.</p>
-        </div>
+        
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Evaluación</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Gestor de Actividades</span>
+            </nav></div>
     </div>
 
     <div class="row g-4">

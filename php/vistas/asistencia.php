@@ -145,6 +145,13 @@ $mis_cursos = $stmt_cur->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <h4 class="fw-bold text-dark">Área de Control de Asistencia</h4>
             <p class="text-secondary mx-auto search-wrapper-max">Por favor, seleccione un curso para gestionar el pase de lista.</p>
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Agenda</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Control de Asistencia</span>
+            </nav>
         </div>
     <?php endif; ?>
 </div><!-- /asistencia-container-master -->

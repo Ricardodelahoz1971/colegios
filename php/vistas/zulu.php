@@ -39,6 +39,13 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
         <div class="col-xl-4 col-lg-5 text-center text-md-start border-start border-4 border-topbar-elite ps-4">
             <h4 class="h3 fw-bold mb-0 text-titulo-elite">Protocolo Atlas</h4>
             <p class="text-secondary mb-0 small">Consola Maestra de Carga Académica.</p>
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Académico</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Matriz Zulu</span>
+            </nav>
             <div class="mt-3">
                 <div class="metric-card-elite variant-info d-inline-block p-3 metric-card-elite--scaled">
                     <div class="metric-header-elite mb-2">

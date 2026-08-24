@@ -19,7 +19,16 @@ $stmt_pol->execute();
 $politica = $stmt_pol->fetchColumn() ?: 'reemplazo';
 ?>
 
-<div class="container-fluid py-4 animate__animated animate__fadeIn" id="gradebook-container" data-nota-minima="<?php echo e((string)$escala['nota_minima']); ?>" data-nota-maxima="<?php echo e((string)$escala['nota_maxima']); ?>" data-nota-aprobacion="<?php echo e((string)$escala['nota_aprobacion']); ?>" data-politica="<?php echo e($politica); ?>">
+<div class="container-fluid py-4 animate__animated animate__fadeIn" id="gradebook-container" data-nota-minima="<?php echo e((string)$escala['nota_minima']); ?>
+    <div class="mb-3">
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Evaluación</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Calificación de Pruebas</span>
+            </nav>
+    </div>" data-nota-maxima="<?php echo e((string)$escala['nota_maxima']); ?>" data-nota-aprobacion="<?php echo e((string)$escala['nota_aprobacion']); ?>" data-politica="<?php echo e($politica); ?>">
     <div class="row align-items-center mb-4 g-3">
         <div class="col-md-8 header-module-elite">
             <h4 class="h3 fw-bold mb-0 text-titulo-elite hero-module-title">Centro de Calificaciones</h4>

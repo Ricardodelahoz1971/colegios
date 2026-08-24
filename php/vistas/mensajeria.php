@@ -577,6 +577,13 @@ if ($chat_con_id > 0 && $chat_type === 'group') {
                 </div>
                 <h4 class="fw-bold text-dark mt-3">Protocolo Hermes</h4>
                 <p class="text-secondary w-75 mx-auto">Seleccione un canal o una persona para iniciar la comunicación oficial bajo el Protocolo Hermes.</p>
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Comunicación</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Mensajería</span>
+            </nav>
             </div>
         <?php endif; ?>
     </div>

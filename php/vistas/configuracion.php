@@ -161,7 +161,14 @@ if (isset($_GET['success']) && (strpos($_GET['success'], 'adn') !== false || str
                             <div class="mb-4">
                                 <label for="school_name" class="form-label small fw-bold text-uppercase">Nombre de la Institución</label>
                                 <input type="text" id="school_name" name="school_name" class="input-elite" placeholder="Ej: Institución Educativa Modelo" value="<?php echo htmlspecialchars($cfg['school_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                            </div>
+                            
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Administración</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Configuración</span>
+            </nav></div>
                             <div class="mb-4">
                                 <label for="school_motto" class="form-label small fw-bold text-uppercase">Lema Institucional</label>
                                 <input type="text" id="school_motto" name="school_motto" class="input-elite" placeholder="Ej: Ciencia, Virtud y Liderazgo" value="<?php echo htmlspecialchars($cfg['school_motto'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">

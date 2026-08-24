@@ -74,7 +74,14 @@ if ($modo == 'asistencia' && empty($ids_seleccionados)) {
                 <h4 class="h3 fw-bold mb-0 text-titulo-elite">Asistencia Estudiantil Impresa</h4>
                 <p class="subtitle-elite">Estación central de extracción de alumnos e informes institucionales.</p>
             <?php endif; ?>
-        </div>
+        
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Académico</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Centro de Reportes</span>
+            </nav></div>
         <div class="col-md-5">
             <div class="d-flex flex-nowrap gap-2 justify-content-end align-items-center">
                 <!-- NAVEGACIÓN DESACOPLADA (SOLO REPORTES SI NO ES ZULU) -->

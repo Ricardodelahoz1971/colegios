@@ -40,6 +40,13 @@ function get_badge_clase($accion) {
         <div class="col-md-7 text-center text-md-start border-start border-4 border-topbar-elite ps-4">
             <h4 class="h3 fw-bold mb-0 text-titulo-elite">Bitácora de Seguridad</h4>
             <p class="text-secondary mb-0 small">Historial sistemático de cambios críticos en el sistema.</p>
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Administración</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Bitácora</span>
+            </nav>
         </div>
         <div class="col-md-5">
             <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-end">

@@ -152,6 +152,13 @@ if ($mes_actual >= 4 && $mes_actual <= 6) {
                 </svg>
                 <h5 class="fw-bold mb-1">Ningún Grupo Seleccionado</h5>
                 <p class="small text-secondary mb-0">Seleccione un curso y un periodo en los controles superiores para cargar la sábana de notas.</p>
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Evaluación</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Sábana de Notas</span>
+            </nav>
             </div>
 
             <!-- 📊 VISTA 1: ANALÍTICA GLOBAL DE COLEGIO (Rectoría/Coordinación) -->

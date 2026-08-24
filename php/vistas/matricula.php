@@ -37,6 +37,15 @@ $lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
 
 <div class="container py-4">
     
+    <div class="col-lg-11 col-xl-10 mx-auto mb-3">
+        <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+            <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-item-elite">Académico</span>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-current-elite">Matrícula</span>
+        </nav>
+    </div>
     <div class="col-lg-11 col-xl-10 mx-auto">
         <div class="card shadow-lg border-0 rounded-4 overflow-visible">
             <!-- CABECERA -->

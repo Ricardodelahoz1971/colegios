@@ -36,7 +36,14 @@ if (tienen_rol(['Administrador', 'Coordinador'])) {
         <div class="col-md-7 header-module-elite mb-0">
             <h4 class="h3 fw-bold mb-0 text-titulo-elite">ENSAMBLADOR DE PRUEBAS</h4>
             <p class="subtitle-elite">Gestione y ensamble los instrumentos de evaluación institucional.</p>
-        </div>
+        
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Evaluación</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Creador de Exámenes</span>
+            </nav></div>
         <div class="col-md-5 text-end">
             <button onclick="abrirConstructor()" class="btn-elite px-4">
                 <i class="bi bi-plus-lg me-2"></i> NUEVA PRUEBA

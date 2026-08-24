@@ -40,7 +40,14 @@ $materias_data = $stmt_m->fetchAll(PDO::FETCH_ASSOC);
         <div class="col-md-7 header-module-elite">
             <h4 class="h3 fw-bold mb-0 text-titulo-elite">Agenda Académica</h4>
             <p class="subtitle-elite">Gestión de tareas, trabajos y compromisos académicos por curso.</p>
-        </div>
+        
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Agenda</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Agenda Académica</span>
+            </nav></div>
         <div class="col-md-5 text-end d-flex justify-content-end align-items-center gap-2">
             <?php if ($es_docente): ?>
                 <button onclick="nuevaTarea()" class="btn-elite btn-elite--sm btn-elite--primary shadow-sm px-elite-1-5">

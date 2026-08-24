@@ -81,6 +81,13 @@ if (tienen_rol(['Administrador', 'Coordinador'])) {
                     <div>
                         <h5 class="fw-bold text-dark mb-0" id="editor-titulo">CONFIGURACIÓN DE REACTIVO</h5>
                         <p class="text-secondary small mb-0">Defina la estructura y metodología de evaluación.</p>
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Evaluación</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-current-elite">Banco de Reactivos</span>
+            </nav>
                     </div>
                     <div id="badge-estado-editor">
                         <span class="badge-elite-pill badge-elite-pill--info">NUEVO REACTIVO</span>
