@@ -59,12 +59,23 @@ $stmt_d = $stmt_d_raw;
         <div class="col-md-6 text-center text-md-start border-start border-4 border-topbar-elite ps-4">
             <h4 class="h3 fw-bold mb-0 text-titulo-elite">Carga Académica</h4>
             <p class="text-secondary mb-0 small">Asignación de cátedras y docentes por nivel institucional.</p>
+            <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+                <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <span class="breadcrumb-item-elite">Académico</span>
+                <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                <a href="javascript:void(0)" onclick="navegarModulo('cursos')" class="breadcrumb-link-elite">Cursos</a>
+                <?php if ($curso): ?>
+                    <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+                    <span class="breadcrumb-current-elite">Carga: <?php echo htmlspecialchars($curso['nombre_curso']); ?></span>
+                <?php endif; ?>
+            </nav>
         </div>
         <div class="col-md-6">
             <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-md-end align-items-center">
                 <div class="d-flex align-items-center gap-2">
                     <label class="small fw-bold text-uppercase text-secondary mb-0 u-nowrap">Gestionar Curso:</label>
-                    <select class="select-elite min-w-250" onchange="if(this.value) window.location.href='dashboard.php?p=carga&id=' + this.value">
+                    <select class="select-elite min-w-250" onchange="if(this.value) typeof navegarModulo === 'function' ? navegarModulo('carga', 'id=' + this.value) : window.location.href='dashboard.php?p=carga&id=' + this.value">
                         <option value="" disabled <?php echo empty($curso_id) ? 'selected' : ''; ?>>-- Seleccione un nivel académico --</option>
                         <?php foreach ($todos_los_cursos as $c_opt): ?>
                             <option value="<?php echo $c_opt['id']; ?>" <?php echo ($c_opt['id'] == $curso_id) ? 'selected' : ''; ?>>
