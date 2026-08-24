@@ -2044,31 +2044,33 @@ body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
 
 @keyframes btnPulseDangerElite {
     0%, 100% {
-        background-color: rgba(220, 38, 38, 0.1);
-        border-color: rgba(220, 38, 38, 0.5);
-        color: rgb(220, 38, 38);
-        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.3);
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+        border-color: rgba(220, 38, 38, 0.6);
+        transform: scale(1);
     }
     50% {
-        background-color: rgba(220, 38, 38, 0.2);
+        box-shadow: 0 0 0 0.35rem rgba(220, 38, 38, 0.15);
         border-color: rgb(220, 38, 38);
-        color: rgb(220, 38, 38);
-        box-shadow: 0 0 0 0.4rem rgba(220, 38, 38, 0.15);
+        transform: scale(1.05);
     }
 }
 
+.btn-elite-icon.btn-elite-icon--danger-pulse,
 .btn-elite-icon--danger-pulse {
-    animation: btnPulseDangerElite 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 0.0625rem solid rgba(220, 38, 38, 0.5);
+    background: transparent;
+    border: 0.0625rem solid rgb(220, 38, 38);
     color: rgb(220, 38, 38);
+    animation: btnPulseDangerElite 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.btn-elite-icon.btn-elite-icon--danger-pulse:hover,
 .btn-elite-icon--danger-pulse:hover {
     animation-play-state: paused;
     transform: scale(1.15);
-    background-color: rgb(220, 38, 38);
-    color: var(--el-white);
+    background: rgba(220, 38, 38, 0.12);
+    border-color: rgb(220, 38, 38);
+    color: rgb(220, 38, 38);
 }
 
 /* ðŸ” BUSCADOR GLOBAL Ã‰LITE (PROTOCOLO INSTITUCIONAL) */

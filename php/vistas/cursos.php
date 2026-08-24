@@ -87,10 +87,10 @@ if ($puede_gestionar) {
                 <thead>
                     <tr>
                         <th class="py-3 ps-4 text-uppercase small fw-800 col-id">ID</th>
-                        <th class="py-3 text-uppercase small fw-800">Grado / Curso Académico</th>
+                        <th class="py-3 text-uppercase small fw-800">Curso</th>
                         <th class="py-3 text-uppercase small fw-800 text-center">Jornada</th>
                         <th class="py-3 text-uppercase small fw-800 text-center">Rol en el Grupo</th>
-                        <th class="py-3 text-uppercase small fw-800 text-center">Tutor Responsable</th>
+                        <th class="py-3 text-uppercase small fw-800 text-center">Jefe de Grupo</th>
                         <th class="py-3 pe-4 text-uppercase small fw-800 text-center col-actions">Operaciones</th>
                     </tr>
                 </thead>
