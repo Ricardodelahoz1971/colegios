@@ -20,12 +20,12 @@ $puede_gestionar = $es_poderoso; // Solo ellos pueden crear/editar/borrar
 
 // 2. CONSULTAS BLINDADAS (v9.2 PDO Edition)
 if ($es_poderoso) {
-    $sql_admin = "SELECT c.*, u.nombre as nombre_tutor FROM cursos c LEFT JOIN usuarios u ON c.tutor_id = u.id ORDER BY c.nombre_curso ASC";
+    $sql_admin = "SELECT c.*, u.nombre as nombre_tutor, (SELECT COUNT(*) FROM carga_academica WHERE curso_id = c.id) as total_materias FROM cursos c LEFT JOIN usuarios u ON c.tutor_id = u.id ORDER BY c.nombre_curso ASC";
     $stmt_stmt_c = $db->prepare($sql_admin); 
     $stmt_stmt_c->execute(); 
     $stmt_c = $stmt_stmt_c;
 } else {
-    $sql_docente = "SELECT DISTINCT c.*, u.nombre as nombre_tutor 
+    $sql_docente = "SELECT DISTINCT c.*, u.nombre as nombre_tutor, (SELECT COUNT(*) FROM carga_academica WHERE curso_id = c.id) as total_materias 
                             FROM cursos c 
                             LEFT JOIN usuarios u ON c.tutor_id = u.id 
                             LEFT JOIN carga_academica ca ON c.id = ca.curso_id 
@@ -104,13 +104,14 @@ if ($puede_gestionar) {
                         $es_admin_r = in_array($_SESSION['rol_id'], [1, 2, 10, 20]);
                         $soy_tutor = ($mi_uid === (int)$row['tutor_id']);
                         $tiene_tutor = ($row['tutor_id'] !== null);
+                        $total_materias = (int)($row['total_materias'] ?? 0);
                         
                         // Lógica de Insignia Élite: Unificada para Admin y Docente
                         if ($es_admin_r) {
                             if ($tiene_tutor) {
                                 $badge_rol = "<span class='badge-elite badge-elite--info'>DIRECTOR_DE_GRUPO</span>";
                             } else {
-                                $badge_rol = "<span class='badge-elite badge-elite--danger'>SIN_DIRECCIÓN</span>";
+                                $badge_rol = "<span class='badge-elite badge-pulse-danger-elite'><i class='bi bi-exclamation-circle me-1'></i>SIN TUTOR</span>";
                             }
                         } else {
                             if ($soy_tutor) {
@@ -125,17 +126,23 @@ if ($puede_gestionar) {
                             echo "<td><span class='fw-semibold text-dark fs-6'>" . htmlspecialchars($row['nombre_curso'], ENT_QUOTES, 'UTF-8') . "</span></td>";
                             echo "<td class='text-center'><span class='badge-elite badge-elite--neutral'>" . htmlspecialchars(mb_strtoupper((string)($row['jornada'] ?? 'Mañana'), 'UTF-8'), ENT_QUOTES, 'UTF-8') . "</span></td>";
                             echo "<td class='text-center'>" . $badge_rol . "</td>";
-                            echo "<td class='text-center'>" . ($row['nombre_tutor'] ? "<span class='badge-elite badge-elite--primary'>" . htmlspecialchars($row['nombre_tutor'], ENT_QUOTES, 'UTF-8') . "</span>" : "<em class='text-muted small italic'>Sin tutor asignado</em>") . "</td>";
+                            echo "<td class='text-center'>" . ($row['nombre_tutor'] ? "<span class='badge-elite badge-elite--primary'>" . htmlspecialchars($row['nombre_tutor'], ENT_QUOTES, 'UTF-8') . "</span>" : "<span class='text-danger small fw-semibold'><i class='bi bi-person-x me-1'></i>Sin tutor asignado</span>") . "</td>";
                             echo "<td class='pe-4 text-center'>";
                                 echo "<div class='d-flex justify-content-center gap-2'>";
                                     echo "<button class='btn-elite-icon' onclick='imprimirLista(" . $c_id . ")' title='Lista de Estudiantes'>
                                             <i class='bi bi-printer'></i>
                                           </button>";
                                     if ($puede_gestionar) {
-                                        echo "<button class='btn-elite-icon' onclick='navegarModulo(\"carga\", \"id=" . $c_id . "\")' title='Carga Académica'>
-                                                <i class='bi bi-book'></i>
-                                              </button>
-                                              <button class='btn-elite-icon' onclick='editarCurso(" . $c_id . ", \"" . htmlspecialchars($row['nombre_curso'], ENT_QUOTES, 'UTF-8') . "\", \"" . ($row['tutor_id'] ?? '') . "\", \"" . htmlspecialchars($row['jornada'] ?? 'Mañana', ENT_QUOTES, 'UTF-8') . "\", " . $docentes_json . ")' title='Editar'>
+                                        if ($total_materias === 0) {
+                                            echo "<button class='btn-elite-icon btn-elite-icon--danger-pulse' onclick='navegarModulo(\"carga\", \"id=" . $c_id . "\")' title='¡Carga académica pendiente! Haz clic para asignar materias'>
+                                                    <i class='bi bi-book-half'></i>
+                                                  </button>";
+                                        } else {
+                                            echo "<button class='btn-elite-icon' onclick='navegarModulo(\"carga\", \"id=" . $c_id . "\")' title='Carga Académica (" . $total_materias . " asignaturas)'>
+                                                    <i class='bi bi-book'></i>
+                                                  </button>";
+                                        }
+                                        echo "<button class='btn-elite-icon' onclick='editarCurso(" . $c_id . ", \"" . htmlspecialchars($row['nombre_curso'], ENT_QUOTES, 'UTF-8') . "\", \"" . ($row['tutor_id'] ?? '') . "\", \"" . htmlspecialchars($row['jornada'] ?? 'Mañana', ENT_QUOTES, 'UTF-8') . "\", " . $docentes_json . ")' title='Editar'>
                                                 <i class='bi bi-pencil-square'></i>
                                               </button>
                                               <button class='btn-elite-icon btn-elite-icon--danger' onclick='borrarCurso(" . $c_id . ", \"" . htmlspecialchars($row['nombre_curso'], ENT_QUOTES, 'UTF-8') . "\")' title='Eliminar'>
