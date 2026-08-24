@@ -45,23 +45,34 @@ try {
         if ($paleta) {
             registrar_evento_elite('LOGICA', "Paleta encontrada: {$paleta['nombre']}. Aplicando...");
             $configs = [
-                'brand_color'   => $paleta['primary_color'],
-                'accent_color'  => $paleta['accent_color'],
-                'info_color'    => $paleta['info_color'],
-                'success_color' => $paleta['success_color'],
-                'danger_color'  => $paleta['danger_color']
+                'active_palette_id' => (string)$paleta['id'],
+                'brand_color'       => $paleta['primary_color'],
+                'accent_color'      => $paleta['accent_color'],
+                'brand_accent'      => $paleta['accent_color'],
+                'info_color'        => $paleta['info_color'],
+                'brand_info'        => $paleta['info_color'],
+                'success_color'     => $paleta['success_color'] ?? '#10b981',
+                'brand_success'     => $paleta['success_color'] ?? '#10b981',
+                'danger_color'      => $paleta['danger_color'] ?? '#ef4444',
+                'brand_danger'      => $paleta['danger_color'] ?? '#ef4444'
             ];
             
             $db->beginTransaction();
             foreach ($configs as $k => $v) {
-                $db->prepare("DELETE FROM ajustes_estetica WHERE clave = ?")->execute([$k]);
-                $db->prepare("INSERT INTO ajustes_estetica (clave, valor) VALUES (?, ?)")->execute([$k, $v]);
+                if ($v !== null && $v !== '') {
+                    $db->prepare("DELETE FROM ajustes_estetica WHERE clave = ?")->execute([$k]);
+                    $db->prepare("INSERT INTO ajustes_estetica (clave, valor) VALUES (?, ?)")->execute([$k, $v]);
+                }
             }
             $db->commit();
             registrar_evento_elite('EXITO', "Paleta '{$paleta['nombre']}' aplicada con éxito.");
             
             if (ob_get_length()) ob_clean();
-            echo json_encode(['status' => 'success', 'message' => "Identidad visual '{$paleta['nombre']}' restaurada al núcleo."]);
+            echo json_encode([
+                'status' => 'success',
+                'message' => "Identidad visual '{$paleta['nombre']}' restaurada al núcleo.",
+                'paleta' => $paleta
+            ]);
             exit();
         } else {
             registrar_evento_elite('LOGICA_FAIL', "Error de lógica: El ID {$pid} no existe en paletas_elite.");

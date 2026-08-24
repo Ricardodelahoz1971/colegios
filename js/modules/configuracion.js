@@ -151,6 +151,7 @@
                 if (data.paleta) {
                     const p = data.paleta;
                     const hexToRgb = (hex) => {
+                        if (!hex) return '0, 0, 0';
                         hex = hex.replace('#', '');
                         if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
                         const num = parseInt(hex, 16);
@@ -162,6 +163,7 @@
                         root.style.setProperty('--el-primary-rgb', hexToRgb(p.primary_color));
                         root.style.setProperty('--bs-primary', p.primary_color);
                         root.style.setProperty('--bs-primary-rgb', hexToRgb(p.primary_color));
+                        root.style.setProperty('--el-sidebar-bg', p.primary_color);
                         root.style.setProperty('--sidebar-bg', p.primary_color);
                     }
                     if (p.accent_color) {
