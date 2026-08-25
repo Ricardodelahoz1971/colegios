@@ -133,7 +133,7 @@ if ($puede_gestionar) {
                             echo "<td><span class='fw-semibold text-dark fs-6'>" . htmlspecialchars($row['nombre_curso'], ENT_QUOTES, 'UTF-8') . "</span></td>";
                             echo "<td class='text-center'><span class='badge-elite badge-elite--neutral'>" . htmlspecialchars(mb_strtoupper((string)($row['jornada'] ?? 'Mañana'), 'UTF-8'), ENT_QUOTES, 'UTF-8') . "</span></td>";
                             echo "<td class='text-center'>" . $badge_rol . "</td>";
-                            echo "<td class='text-center'>" . ($row['nombre_tutor'] ? "<span class='badge-elite badge-elite--primary'>" . htmlspecialchars($row['nombre_tutor'], ENT_QUOTES, 'UTF-8') . "</span>" : "<span class='text-danger small fw-semibold'><i class='bi bi-person-x me-1'></i>Sin tutor asignado</span>") . "</td>";
+                            echo "<td class='text-center'>" . ($row['nombre_tutor'] ? "<span class='badge-elite badge-elite--info'>" . htmlspecialchars($row['nombre_tutor'], ENT_QUOTES, 'UTF-8') . "</span>" : "<span class='text-danger small fw-semibold'><i class='bi bi-person-x me-1'></i>Sin tutor asignado</span>") . "</td>";
                             echo "<td class='pe-4 text-center'>";
                                 echo "<div class='d-flex justify-content-center gap-2'>";
                                     echo "<button class='btn-elite-icon' onclick='imprimirLista(" . $c_id . ")' title='Lista de Estudiantes'>

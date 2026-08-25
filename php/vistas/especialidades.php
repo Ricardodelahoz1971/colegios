@@ -77,7 +77,7 @@ $stmt_e->execute();
                         echo "<tr>";
                             echo "<td class='ps-4 text-muted fw-bold small'>#" . $row['id'] . "</td>";
                             echo "<td><span class='fw-semibold text-dark fs-6'>" . htmlspecialchars($row['nombre_especialidad'], ENT_QUOTES, 'UTF-8') . "</span></td>";
-                            echo "<td class='text-center'><span class='badge-elite badge-elite--primary'>" . htmlspecialchars($row['nombre_area'] ?? 'Sin Facultad', ENT_QUOTES, 'UTF-8') . "</span></td>";
+                            echo "<td class='text-center'><span class='badge-elite badge-elite--neutral'>" . htmlspecialchars($row['nombre_area'] ?? 'Sin Área', ENT_QUOTES, 'UTF-8') . "</span></td>";
                             echo "<td class='text-center'>
                                     <div class='d-flex justify-content-center gap-2'>
                                         <button class='btn-elite-icon' onclick='editarEspecialidad(" . $row['id'] . ", \"" . htmlspecialchars($row['nombre_especialidad'], ENT_QUOTES, 'UTF-8') . "\", \"" . ($row['area_id'] ?? '') . "\", " . $areas_json . ", " . ($row['nivel_desde'] ?? 1) . ", " . ($row['nivel_hasta'] ?? 11) . ")' title='Editar'>
