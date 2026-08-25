@@ -64,7 +64,7 @@ $stmt_e->execute();
                 <thead>
                     <tr>
                         <th class="py-3 ps-4 text-uppercase small fw-800 col-id">ID</th>
-                        <th class="py-3 text-uppercase small fw-800">Nombre de la Especialidad / Materia</th>
+                        <th class="py-3 text-uppercase small fw-800 text-nowrap">Nombre de la Especialidad / Materia</th>
                         <th class="py-3 text-uppercase small fw-800 text-center">Área Responsable</th>
                         <th class="py-3 text-center text-uppercase small fw-800 col-actions">Acciones</th>
                     </tr>

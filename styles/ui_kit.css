@@ -2121,6 +2121,14 @@ body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
     font-weight: 500;
 }
 
+/* ===== 📊 ANCHOS QUIRÚRGICOS DE COLUMNAS DE TABLA ===== */
+.col-id {
+    width: 4.5rem;
+    min-width: 4rem;
+    max-width: 5.5rem;
+    white-space: nowrap;
+}
+
 /* ðŸ” BUSCADOR GLOBAL Ã‰LITE (PROTOCOLO INSTITUCIONAL) */
 /* 
    ==========================================================================

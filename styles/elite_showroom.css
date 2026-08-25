@@ -1,10 +1,10 @@
-﻿/* 
+/* 
    Elite Showroom Styles v8.7 
    Este archivo centraliza la estÃ©tica de la vitrina sin hardcoding.
 */
 
 :root {
-    --el-bg-white: #ffffff;
+    --el-bg-white: var(--el-white);
 }
 
 body { 
@@ -84,7 +84,7 @@ body.dark-theme-mode .component-section-elite {
 
 /* 5. PRECISIÃ“N DE TABLAS */
 .table-elite-fixed { table-layout: fixed; width: 100%; }
-.col-id { width: 15%; }
+.col-id { width: 4.5rem; min-width: 4rem; max-width: 5.5rem; white-space: nowrap; }
 .col-name { width: 45%; }
 .col-status { width: 20%; }
 .col-actions { width: 20%; }
