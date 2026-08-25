@@ -14,13 +14,25 @@ try {
         throw new Exception("Acceso denegado: Rango académico insuficiente.");
     }
 
-    $input = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+    $nombre = limpiar_texto_utf8(filter_input(INPUT_POST, 'nombre_especialidad', FILTER_DEFAULT) ?? '');
+    $area_id = filter_input(INPUT_POST, 'area_id', FILTER_VALIDATE_INT);
+    $nivel_desde = filter_input(INPUT_POST, 'nivel_desde', FILTER_VALIDATE_INT) ?: 1;
+    $nivel_hasta = filter_input(INPUT_POST, 'nivel_hasta', FILTER_VALIDATE_INT) ?: 11;
 
-    $id = filter_var($input['id'] ?? null, FILTER_VALIDATE_INT);
-    $nombre = trim((string)($input['nombre_especialidad'] ?? ''));
-    $area_id = filter_var($input['area_id'] ?? null, FILTER_VALIDATE_INT);
-    $nivel_desde = filter_var($input['nivel_desde'] ?? 1, FILTER_VALIDATE_INT) ?: 1;
-    $nivel_hasta = filter_var($input['nivel_hasta'] ?? 11, FILTER_VALIDATE_INT) ?: 11;
+    // Fallback seguro ante payload JSON
+    if (empty($id) || empty($nombre)) {
+        $input = json_decode(file_get_contents('php://input'), true) ?? [];
+        if (!empty($input)) {
+            $id = $id ?: filter_var($input['id'] ?? null, FILTER_VALIDATE_INT);
+            $nombre = $nombre ?: limpiar_texto_utf8(trim((string)($input['nombre_especialidad'] ?? '')));
+            if ($area_id === false || $area_id === null) {
+                $area_id = filter_var($input['area_id'] ?? null, FILTER_VALIDATE_INT);
+            }
+            $nivel_desde = $nivel_desde ?: (filter_var($input['nivel_desde'] ?? 1, FILTER_VALIDATE_INT) ?: 1);
+            $nivel_hasta = $nivel_hasta ?: (filter_var($input['nivel_hasta'] ?? 11, FILTER_VALIDATE_INT) ?: 11);
+        }
+    }
 
     if (empty($id) || empty($nombre)) {
         throw new Exception("Datos insuficientes para procesar la actualización.");

@@ -388,16 +388,16 @@ window.borrarArea = async function (id, nombre) {
 };
 
 window.nuevaEspecialidad = async function (areasJSON) {
-    let opciones = '<option value="" disabled selected>Seleccione el Área...</option>' + areasJSON.map(a => `<option value="${a.id}">${a.nombre_area}</option>`).join('');
+    let opciones = '<option value="" selected>Sin Área (Opcional)</option>' + areasJSON.map(a => `<option value="${a.id}">${a.nombre_area}</option>`).join('');
     let opcionesNiv = '';
     for (let i = 1; i <= 11; i++) {
         opcionesNiv += `<option value="${i}">${i}</option>`;
     }
     const r = await Swal.fire({
-        title: 'Nueva Materia',
+        title: 'Nueva Asignatura / Materia',
         html: `<div class="text-start">
                 <label class="small fw-bold text-secondary mb-1">Nombre de la Especialidad / Materia</label>
-                <input id="esp-nom" class="input-elite mb-3">
+                <input id="esp-nom" class="input-elite mb-3" placeholder="Ej: Matemáticas">
                 <label class="small fw-bold text-secondary mb-1">Área Académica</label>
                 <select id="esp-area" class="select-elite mb-3">${opciones}</select>
                 <div class="row g-2">
@@ -411,7 +411,7 @@ window.nuevaEspecialidad = async function (areasJSON) {
                     </div>
                 </div>
                </div>`,
-        showCancelButton: true, confirmButtonText: 'Ensamblar',
+        showCancelButton: true, confirmButtonText: 'Registrar', cancelButtonText: 'Cancelar',
         customClass: { confirmButton: 'btn-elite px-4', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' }, buttonsStyling: false,
         preConfirm: () => {
             const desde = parseInt(document.getElementById('esp-desde').value);
@@ -432,7 +432,7 @@ window.nuevaEspecialidad = async function (areasJSON) {
 };
 
 window.editarEspecialidad = async function (id, nombre, areaActual, areasJSON, nivelDesdeActual = 1, nivelHastaActual = 11) {
-    let opciones = areasJSON.map(a => `<option value="${a.id}" ${a.id == areaActual ? 'selected' : ''}>${a.nombre_area}</option>`).join('');
+    let opciones = '<option value="">Sin Área</option>' + areasJSON.map(a => `<option value="${a.id}" ${a.id == areaActual ? 'selected' : ''}>${a.nombre_area}</option>`).join('');
     let opcionesDesde = '';
     let opcionesHasta = '';
     for (let i = 1; i <= 11; i++) {
@@ -440,7 +440,7 @@ window.editarEspecialidad = async function (id, nombre, areaActual, areasJSON, n
         opcionesHasta += `<option value="${i}" ${i == nivelHastaActual ? 'selected' : ''}>${i}</option>`;
     }
     const r = await Swal.fire({
-        title: 'Editar Materia',
+        title: 'Editar Asignatura / Materia',
         html: `<div class="text-start">
                 <label class="small fw-bold text-secondary mb-1">Nombre de la Especialidad / Materia</label>
                 <input id="esp-nom" class="input-elite mb-3" value="${nombre}">
@@ -457,7 +457,7 @@ window.editarEspecialidad = async function (id, nombre, areaActual, areasJSON, n
                     </div>
                 </div>
                </div>`,
-        showCancelButton: true, confirmButtonText: 'Corregir',
+        showCancelButton: true, confirmButtonText: 'Guardar Cambios', cancelButtonText: 'Cancelar',
         customClass: { confirmButton: 'btn-elite px-4', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' }, buttonsStyling: false,
         preConfirm: () => {
             const desde = parseInt(document.getElementById('esp-desde').value);
