@@ -1050,7 +1050,7 @@ body.dark-theme-mode .metric-label-elite {
     padding: 0.625rem;
 }
 
-/* ðŸ† COMPONENTE: BADGE ELITE v1.0 */
+/* ðŸ † COMPONENTE: BADGE ELITE v1.0 */
 .badge-elite {
     display: inline-flex;
     align-items: center;
@@ -1062,6 +1062,12 @@ body.dark-theme-mode .metric-label-elite {
     letter-spacing: 0.03125rem;
     border: 0.0625rem solid transparent;
     line-height: 1.2;
+    white-space: nowrap;
+}
+
+.col-area {
+    min-width: 16rem;
+    white-space: nowrap;
 }
 
 .badge-elite--primary { 
