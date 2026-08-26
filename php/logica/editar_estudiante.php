@@ -14,7 +14,7 @@ try {
         throw new Exception('Permisos insuficientes para esta operación.');
     }
 
-    $input = json_decode(file_get_contents('php://input'), true) ?? [];
+    $input = !empty($_POST) ? $_POST : (json_decode(file_get_contents('php://input'), true) ?? []);
 
     $id = filter_var($input['id'] ?? null, FILTER_VALIDATE_INT);
     if (!$id) throw new Exception('Identificador de estudiante ausente.');

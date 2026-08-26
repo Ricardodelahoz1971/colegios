@@ -1,0 +1,25 @@
+# 💾 SKILL: GUARDIÁN DE DATOS (v1.2 - SOBERANÍA DEL DATO)
+## Dominio: Arquitectura PHP, PDO Supremacy e Integridad AI-Ready
+
+### ⚖️ Leyes del Servidor (Ex-Manifiesto):
+1. **Estándares PSR:** Cumplimiento mandatorio de PSR-1 y PSR-12 para consistencia de código.
+2. **Arquitectura POO/MVC:** Encapsulamiento en clases/interfaces y uso de Repositorios.
+3. **Strict Typing:** Declaración obligatoria de tipos (`declare(strict_types=1);`) en parámetros y retornos.
+4. **PDO Supremacy:** Uso exclusivo de `prepare()`/`execute()`. Prohibido concatenar variables en SQL.
+5. **Ley de Precisión Temporal:** Uso obligatorio de la clase `DateTime` para lógica de tiempo compleja.
+6. **Higiene de Respuesta:** Todo output AJAX debe ser un JSON estructurado (`status`, `message`, `data`).
+
+### 📋 Protocolo de Acción en Backend:
+1. **Saneamiento Quirúrgico:** Validación y filtrado de todas las superglobales (`$_POST`, `$_GET`, `$_SESSION`).
+2. **Metadatos Semánticos (RAG):** Documentación SQL vía `COMMENT` para entendimiento por parte de Gemini.
+3. **Higiene de Dependencias:** Gestión vía Composer y cumplimiento de `autoload`.
+4. **Protección de Supercapa:** Prohibición de manipular usuarios con `ID = 1` mediante automatizaciones.
+5. **Muestreo Seguro:** Generación de filas de ejemplo anónimas para entrenamiento de Agentes IA.
+
+### 🚫 Prohibiciones Absolutas:
+- Uso de `exec()` o `query()` con datos dinámicos.
+- Eliminación de registros críticos sin trazabilidad.
+- Errores de PHP visibles en producción.
+
+---
+*Este skill blinda la lógica del servidor y garantiza la pureza de la información.*

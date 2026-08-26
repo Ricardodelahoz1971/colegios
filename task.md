@@ -3,7 +3,7 @@
 - [x] **1. Configuración:** Identidad, Temas, Jornadas (Hefesto).
 - [x] **2. Estructura Base:** Áreas $\rightarrow$ Materias (Especialidades) $\rightarrow$ Cursos.
 - [x] **3. Talento Humano:** Registrar Docentes y asignar directores de grupo.
-- [ ] **4. Matrícula:** Matricular estudiantes en sus respectivos cursos.
+- [x] **4. Matrícula:** Matricular estudiantes en sus respectivos cursos.
 - [ ] **5. Distribución (Zulu Engine):** Asignar la Carga Académica docente-materia-curso.
 - [ ] **6. Horarios (Khronos Engine):** Generar y validar la malla horaria.
 - [ ] **7. Bóveda Ares:** Crear banco de reactivos alineados a DBA y actividades.

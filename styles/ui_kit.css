@@ -520,10 +520,14 @@ table, .table, .table-elite {
 .table-elite thead th, .table thead th {
     background-color: var(--el-primary);
     color: var(--el-white);
-    padding: 0.9375rem 1.25rem;
+    padding-block: 0.75rem;
+    padding-inline: 0.875rem;
+    text-align: center;
     text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.03125rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
     border: none;
     position: sticky;
     top: 0;
@@ -556,8 +560,10 @@ table, .table, .table-elite {
 .table-elite tbody tr:last-child td:first-child { border-radius: 0 0 0 0.75rem; }
 .table-elite tbody tr:last-child td:last-child { border-radius: 0 0 0.75rem 0; }
 
-/* ðŸ·ï¸ ELEMENTOS INTERNOS DE TABLA */
+/* 🏷️ ELEMENTOS INTERNOS DE TABLA */
 .table-badge-elite {
+    display: inline-block;
+    white-space: nowrap;
     padding: 0.375rem 0.75rem;
     border-radius: var(--el-radius-pill);
     font-size: 0.75rem;
@@ -1161,6 +1167,16 @@ body.dark-theme-mode .metric-label-elite {
     box-shadow: var(--el-shadow-md);
 }
 
+.btn-elite:disabled,
+.btn-elite[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+    transform: none;
+    filter: grayscale(0.6);
+}
+
 /* MODIFICADORES CROMÃTICOS (PIELES) */
 .btn-elite--primary {
     background: var(--el-primary);
@@ -1485,6 +1501,49 @@ body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
     opacity: 0.6;
     pointer-events: none;
     display: flex;
+}
+
+/* COMPONENTE: SELECT TIPO CÁPSULA (ARMONIZADO CON LA BÚSQUEDA) */
+.select-wrapper-pill-elite {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: var(--el-white);
+    border-radius: 50rem;
+    border: 0.0625rem solid var(--el-border-strong);
+    height: 2.75rem;
+    padding-inline: 1.15rem 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+}
+
+.select-wrapper-pill-elite:focus-within,
+.select-wrapper-pill-elite:hover {
+    border-color: var(--el-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--el-primary-rgb), 0.1);
+}
+
+.select-pill-elite {
+    border: none;
+    background: transparent;
+    font-size: 0.85rem;
+    font-family: var(--el-font-institutional);
+    color: var(--el-text-muted);
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    height: 100%;
+    padding-inline-end: 0.25rem;
+}
+
+.select-pill-elite option {
+    color: var(--el-dark);
+    font-weight: normal;
+    background: var(--el-white);
+}
+
+.select-pill-elite:focus {
+    color: var(--el-dark);
 }
 
 /* 13. ANIMACIONES Ã‰LITE (Micro-interacciones) */

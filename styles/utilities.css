@@ -1,4 +1,4 @@
-﻿@layer utilities {
+@layer utilities {
 /* 
    ==========================================================================
    MÃ“DULO: UTILIDADES Y MICRO-TIPOGRAFÃA v9.2
@@ -128,5 +128,13 @@
 .u-opacity-muted { opacity: 0.5 ; }
 .u-opacity-full { opacity: 1 ; }
 .u-z-modal { z-index: 2000 ; }
+
+/* 11. ANCHOS DE COLUMNAS TABLA PERSONAL */
+.col-pers-doc { width: 8.5rem ; min-width: 8.5rem ; }
+.col-pers-colab { width: 13rem ; min-width: 13rem ; }
+.col-pers-user { width: 7.5rem ; min-width: 7.5rem ; text-align: center ; white-space: nowrap ; }
+.col-pers-cargo { min-width: 16rem ; width: auto ; }
+.col-pers-contacto { width: 9rem ; min-width: 9rem ; }
+.col-pers-actions { width: 7.5rem ; min-width: 7.5rem ; text-align: center ; }
 } /* Fin de @layer utilities */
 

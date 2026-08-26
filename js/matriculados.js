@@ -74,5 +74,23 @@ function abrirSelectorImpresion(estudianteId, nombreEstudiante) {
     });
 }
 
+function ejecutarAccionMasivo(sel) {
+    if (!sel || !sel.value) return;
+    const val = sel.value;
+    
+    if (val === 'formato') {
+        window.location.href = 'logica/descargar_plantilla_matricula.php';
+        lanzarToastElite('success', 'Descargando plantilla oficial de matrícula...');
+    } else if (val === 'carga') {
+        if (typeof window.abrirCargaMasiva === 'function') {
+            window.abrirCargaMasiva();
+        }
+    }
+    
+    // Restablecer el select al placeholder "MASIVO"
+    sel.value = '';
+}
+
 // Vincular al scope global
 window.abrirSelectorImpresion = abrirSelectorImpresion;
+window.ejecutarAccionMasivo = ejecutarAccionMasivo;

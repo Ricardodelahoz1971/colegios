@@ -27,6 +27,17 @@ if ($ver_todo) {
 ?>
 
 <div class="container-fluid py-4 animate__animated animate__fadeIn">
+    <!-- MIGA DE PAN (BREADCRUMB ELITE) -->
+    <div class="px-3 mb-3">
+        <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+            <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-item-elite">Académico</span>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-current-elite">Aula Virtual</span>
+        </nav>
+    </div>
+
     <div class="row align-items-center mb-4 g-3">
         <div class="col-md-7 border-start border-4 border-primary ps-4">
             <h4 class="h3 fw-bold mb-0 text-titulo-elite">Aula Virtual</h4>

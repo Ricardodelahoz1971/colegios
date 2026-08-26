@@ -195,7 +195,7 @@ function initMatricula() {
             if (!this.checkValidity()) {
                 e.stopPropagation();
                 this.classList.add('was-validated');
-                lanzarToastElite('warning', 'Por favor, revise los campos requeridos en el formulario.');
+                lanzarToastElite('warning', 'Por favor, complete todos los campos obligatorios requeridos.');
                 return;
             }
 
@@ -220,6 +220,8 @@ function initMatricula() {
         });
     }
 }
+
+window.initMatricula = initMatricula;
 
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     initMatricula();

@@ -44,6 +44,17 @@ $total_estudiantes = (int)(function($db) { $s = $db->prepare("SELECT COUNT(*) FR
 
 <div class="container-fluid py-4" id="matriculados-container" data-formatos-activos="<?php echo $formatos_json; ?>">
     
+    <!-- MIGA DE PAN (BREADCRUMB ELITE) -->
+    <div class="px-3 mb-3">
+        <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+            <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-item-elite">Estudiantes</span>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-current-elite">Gestión de Matriculados</span>
+        </nav>
+    </div>
+
     <!-- POWER HEADER UNIFICADO (VITRINA 06+) -->
     <div class="row align-items-end mb-4 g-3 px-3">
         <!-- BLOQUE TÍTULO Y MÉTRICA -->
@@ -81,12 +92,16 @@ $total_estudiantes = (int)(function($db) { $s = $db->prepare("SELECT COUNT(*) FR
                 </div>
 
                 <!-- BOTONES DE ACCIÓN -->
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 align-items-center">
                     <?php if (tiene_permiso('matricula')): ?>
-                        <button onclick="abrirCargaMasiva()" class="btn-elite btn-elite--outline px-3 u-nowrap">
-                            <i class="bi bi-file-earmark-arrow-up me-1"></i>
-                            IMPORTAR
-                        </button>
+                        <div class="select-wrapper-pill-elite">
+                            <i class="bi bi-layers text-muted me-2"></i>
+                            <select id="select-acciones-masivo" class="select-pill-elite" onchange="ejecutarAccionMasivo(this)">
+                                <option value="" disabled selected>MASIVO</option>
+                                <option value="formato">📥 Formato para Carga Masiva</option>
+                                <option value="carga">📤 Carga Masiva</option>
+                            </select>
+                        </div>
                         
                         <button onclick="navegarModulo('matricula')" class="btn-elite px-3 u-nowrap">
                             <i class="bi bi-plus-lg me-1"></i>
@@ -122,7 +137,9 @@ $total_estudiantes = (int)(function($db) { $s = $db->prepare("SELECT COUNT(*) FR
                     while ($row = $stmt_m->fetch(PDO::FETCH_ASSOC)): 
                         $hay_registros = true;
                         $id = $row['id'];
-                        $nombre_completo = $row['apellido'] . ', ' . $row['nombre'];
+                        $nombres = $row['nombre'];
+                        $apellidos = $row['apellido'];
+                        $nombre_completo = $nombres . ' ' . $apellidos;
                         $curso = $row['nombre_curso'] ?? '<span class="text-danger small fw-bold">SIN ASIGNAR</span>';
                         $promedio = number_format((float)($row['promedio'] ?? 0), 1);
                         
@@ -136,7 +153,8 @@ $total_estudiantes = (int)(function($db) { $s = $db->prepare("SELECT COUNT(*) FR
                             </td>
                             <td>
                                 <div class="student-info-elite">
-                                    <span class="student-name-elite"><?php echo htmlspecialchars($nombre_completo); ?></span>
+                                    <span class="student-name-elite text-uppercase"><?php echo htmlspecialchars($nombres); ?></span>
+                                    <span class="student-surname-elite fw-semibold text-secondary small text-uppercase"><?php echo htmlspecialchars($apellidos); ?></span>
                                     <span class="student-meta-elite"><?php echo htmlspecialchars($row['email'] ?? 'sin correo@elite.edu.co'); ?></span>
                                 </div>
                             </td>
@@ -181,7 +199,7 @@ $total_estudiantes = (int)(function($db) { $s = $db->prepare("SELECT COUNT(*) FR
                     endwhile; 
                     if (!$hay_registros) {
                         echo "<tr>
-                                <td colspan='7' class='py-5 text-center'>
+                                <td colspan='6' class='py-5 text-center'>
                                     <div class='d-flex flex-column align-items-center justify-content-center py-4'>
                                         <!-- Premium Document SVG -->
                                         <svg width='100' height='100' viewBox='0 0 120 120' fill='none' class='mb-3 text-muted opacity-75'>
@@ -207,4 +225,4 @@ $total_estudiantes = (int)(function($db) { $s = $db->prepare("SELECT COUNT(*) FR
     </div>
 </div>
 
-<script src="../js/matriculados.js" defer></script>
+<script src="../js/matriculados.js?v=<?php echo time(); ?>"></script>

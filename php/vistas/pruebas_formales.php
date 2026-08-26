@@ -88,6 +88,17 @@ $res_exitosos = 0;
 ?>
 
 <div class="pruebas-master animate__animated animate__fadeIn">
+    <!-- MIGA DE PAN (BREADCRUMB ELITE) -->
+    <div class="mb-3">
+        <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+            <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-item-elite">Evaluación</span>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-current-elite">Pruebas Formales</span>
+        </nav>
+    </div>
+
     <!-- PANEL DE SOBERANÍA E INFORMACIÓN DE CONFIGURACIÓN -->
     <div class="pruebas-master__header-card">
         <div class="pruebas-master__title-section">

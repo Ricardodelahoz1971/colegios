@@ -42,6 +42,17 @@ $anio_lectivo = $stmt_anio ? ($stmt_anio->fetchColumn() ?: date('Y')) : date('Y'
 
 <div class="formatos-container animate__animated animate__fadeIn" id="formatos-container" data-school-name="<?php echo htmlspecialchars($school_name, ENT_QUOTES, 'UTF-8'); ?>" data-school-motto="<?php echo htmlspecialchars($school_motto, ENT_QUOTES, 'UTF-8'); ?>" data-school-logo="<?php echo htmlspecialchars($school_logo, ENT_QUOTES, 'UTF-8'); ?>" data-school-anio="<?php echo htmlspecialchars((string)$anio_lectivo, ENT_QUOTES, 'UTF-8'); ?>" data-colegio-nit="<?php echo htmlspecialchars($cfg['colegio_nit'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" data-colegio-resolucion="<?php echo htmlspecialchars($cfg['colegio_resolucion'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
     
+    <!-- MIGA DE PAN (BREADCRUMB ELITE) -->
+    <div class="mb-3">
+        <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+            <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-item-elite">Estudiantes</span>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-current-elite">Formatos de Matrícula</span>
+        </nav>
+    </div>
+
     <div class="nav-elite-header-container mb-4">
         <ul class="nav nav-pills-elite" id="formatos-tabs" role="tablist">
             <li class="nav-item-elite">

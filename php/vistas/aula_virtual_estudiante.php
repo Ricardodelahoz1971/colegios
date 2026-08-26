@@ -15,6 +15,17 @@ $nombre_est = $stmt_n->fetchColumn() ?: ($_SESSION['nombre'] ?? 'Estudiante');
 ?>
 
 <div class="container-fluid py-4 animate__animated animate__fadeIn">
+    <!-- MIGA DE PAN (BREADCRUMB ELITE) -->
+    <div class="px-3 mb-3">
+        <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+            <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-item-elite">Aula Virtual</span>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-current-elite">Mis Recursos</span>
+        </nav>
+    </div>
+
     <!-- BANNER DE BIENVENIDA -->
     <div class="card card-elite mb-4 border-0 shadow-none overflow-hidden bg-primary bg-opacity-10">
         <div class="card-body p-4 d-flex align-items-center justify-content-between">

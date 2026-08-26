@@ -143,81 +143,342 @@ window.restaurarRol = async function (id) {
     }
 };
 
-// --- GESTIÓN DE PERSONAL ---
-window.nuevoPersonal = async function (listaRoles, listaEspecialidades) {
-    let opcionesRoles = listaRoles.map(rol => `<option value="${rol.id}">${rol.nombre_rol}</option>`).join('');
-    let opcionesEspecialidades = listaEspecialidades ? listaEspecialidades.map(esp => `<option value="${esp.id}">${esp.nombre_especialidad}</option>`).join('') : '';
+// --- GESTIÓN DE TALENTO HUMANO (FICHA INTEGRAL VITRINA 06) ---
+window.cambiarTabPersonal = function (tabName) {
+    document.querySelectorAll('.tab-pers-pane').forEach(el => {
+        el.classList.add('d-none');
+        el.classList.remove('d-flex');
+    });
+    document.querySelectorAll('.btn-tab-elite, .btn-tab-pers-elite').forEach(el => el.classList.remove('active'));
 
-    const result = await Swal.fire({
-        title: 'Registro de Personal',
-        html: `
-            <div class="text-center mb-3">
-                <div class="d-inline-flex align-items-center justify-content-center bg-primary-faded text-primary rounded-circle size-60">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
+    const targetPane = document.getElementById('tab-pers-' + tabName);
+    if (targetPane) {
+        targetPane.classList.remove('d-none');
+        targetPane.classList.add('d-flex');
+    }
+
+    const btn = document.querySelector(`button[onclick*="cambiarTabPersonal('${tabName}')"]`);
+    if (btn) btn.classList.add('active');
+
+    if (tabName === 'cont' && typeof window.calcularEdadPersonal === 'function') {
+        window.calcularEdadPersonal();
+    }
+};
+
+window.calcularEdadString = function (fechaStr) {
+    if (!fechaStr || fechaStr.trim() === '') return '';
+    fechaStr = fechaStr.trim();
+    let fechaNac;
+    if (/^\d{4}-\d{2}-\d{2}/.test(fechaStr)) {
+        const partes = fechaStr.split('-');
+        fechaNac = new Date(parseInt(partes[0], 10), parseInt(partes[1], 10) - 1, parseInt(partes[2], 10));
+    } else if (/^\d{2}\/\d{2}\/\d{4}/.test(fechaStr)) {
+        const partes = fechaStr.split('/');
+        fechaNac = new Date(parseInt(partes[2], 10), parseInt(partes[1], 10) - 1, parseInt(partes[0], 10));
+    } else {
+        return '';
+    }
+    if (isNaN(fechaNac.getTime())) return '';
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+    const mes = hoy.getMonth() - fechaNac.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+        edad--;
+    }
+    return edad >= 0 ? edad : 0;
+};
+
+window.calcularEdadPersonal = function () {
+    const inputFnac = document.getElementById('swal-pers-fnac');
+    const inputEdad = document.getElementById('swal-pers-edad');
+    if (!inputFnac || !inputEdad) return;
+
+    if (inputFnac.value && inputFnac.value.trim() !== '') {
+        const edadCalculada = window.calcularEdadString(inputFnac.value);
+        if (edadCalculada !== '') {
+            inputEdad.value = edadCalculada;
+            return;
+        }
+    }
+    if (inputEdad.value && inputEdad.value.trim() !== '') {
+        return;
+    }
+    inputEdad.value = '';
+};
+
+window.nuevoPersonal = async function (btnOrRoles, listaEspecialidades) {
+    let listaRoles = [];
+    if (btnOrRoles instanceof HTMLElement) {
+        try { listaRoles = JSON.parse(btnOrRoles.dataset.roles || '[]'); } catch (e) { listaRoles = []; }
+        try { listaEspecialidades = JSON.parse(btnOrRoles.dataset.especialidades || '[]'); } catch (e) { listaEspecialidades = []; }
+    } else if (Array.isArray(btnOrRoles)) {
+        listaRoles = btnOrRoles;
+        listaEspecialidades = listaEspecialidades || [];
+    } else if (typeof btnOrRoles === 'string') {
+        try { listaRoles = JSON.parse(btnOrRoles); } catch (e) { listaRoles = []; }
+        if (typeof listaEspecialidades === 'string') {
+            try { listaEspecialidades = JSON.parse(listaEspecialidades); } catch (e) { listaEspecialidades = []; }
+        }
+    }
+
+    let opcionesRoles = (listaRoles || []).map(rol => `<option value="${rol.id}">${rol.nombre_rol}</option>`).join('');
+    let opcionesEspecialidades = (listaEspecialidades || []).map(esp => `<option value="${esp.id}">${esp.nombre_especialidad}</option>`).join('');
+
+    const r = await Swal.fire({
+        title: 'Vincular Colaborador a Nómina',
+        width: '850px',
+        html: `<div class="swal-tab-container">
+            <form id="swal-pers-form" onsubmit="return false;" autocomplete="off">
+            <style>
+                .btn-tab-elite {
+                    height: 44px;
+                    border: 2px solid var(--el-primary);
+                    border-radius: var(--el-radius-sub);
+                    background: transparent;
+                    color: var(--el-primary);
+                    font-weight: bold;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    cursor: pointer;
+                    padding-inline: 15px;
+                }
+                .btn-tab-elite.active {
+                    background: var(--el-primary);
+                    color: var(--el-white);
+                }
+                .label-horiz-elite {
+                    width: 110px;
+                    min-width: 110px;
+                    margin-bottom: 0;
+                    font-size: 0.8rem;
+                    font-weight: bold;
+                    color: var(--el-text-secondary);
+                    white-space: nowrap;
+                }
+                .select-tdoc-elite {
+                    max-width: 60px;
+                    min-width: 60px;
+                    margin-inline-end: 8px;
+                }
+                .tab-edit-pane {
+                    height: 365px;
+                    min-height: 365px;
+                    align-content: flex-start;
+                }
+                .swal-tab-container .input-elite.input-edad-elite {
+                    width: 52px;
+                    min-width: 52px;
+                    max-width: 52px;
+                    padding-inline: 4px;
+                    text-align: center;
+                    margin-inline-end: 4px;
+                }
+            </style>
+            <div class="d-flex border-bottom mb-3 pb-2 gap-2 justify-content-center">
+                <button type="button" class="btn-tab-elite active" onclick="window.cambiarTabPersonal('cred')">Credenciales & Rol</button>
+                <button type="button" class="btn-tab-elite" onclick="window.cambiarTabPersonal('cont')">Identificación & Contacto</button>
+                <button type="button" class="btn-tab-elite" onclick="window.cambiarTabPersonal('prof')">Perfil Laboral & SOS</button>
+            </div>
+
+            <!-- PESTAÑA 1: CREDENCIALES & ROL -->
+            <div id="tab-pers-cred" class="tab-edit-pane tab-pers-pane d-flex row g-2 text-start mt-2">
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Nombres</label>
+                    <input id="swal-pers-nom" class="input-elite" placeholder="Nombres">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Apellidos</label>
+                    <input id="swal-pers-ape" class="input-elite" placeholder="Apellidos">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Rol</label>
+                    <select id="swal-pers-rol" class="select-elite">
+                        <option value="" disabled selected>Seleccione rol...</option>
+                        ${opcionesRoles}
+                    </select>
+                </div>
+                <div id="wrapper-pers-esp" class="col-6 d-flex align-items-center u-hidden">
+                    <label class="label-horiz-elite">Cátedra / Área</label>
+                    <select id="swal-pers-esp" class="select-elite">
+                        <option value="">Seleccione materia...</option>
+                        ${opcionesEspecialidades}
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Usuario</label>
+                    <input id="swal-pers-user" class="input-elite font-monospace fw-bold text-primary" placeholder="Auto L+Iniciales" readonly autocomplete="username">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Contraseña</label>
+                    <input id="swal-pers-pass" type="password" class="input-elite" placeholder="Clave de acceso" value="123456" autocomplete="new-password">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Email Inst.</label>
+                    <input id="swal-pers-email-inst" type="email" class="input-elite" placeholder="correo@institucion.edu.co">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Estado</label>
+                    <select id="swal-pers-estado" class="select-elite">
+                        <option value="ACTIVO" selected>ACTIVO</option>
+                        <option value="LICENCIA">LICENCIA</option>
+                        <option value="RETIRADO">RETIRADO</option>
+                    </select>
                 </div>
             </div>
-            <input id="swal-nom" class="swal2-input border-secondary" placeholder="Nombre Completo">
-            <input id="swal-user" class="swal2-input border-secondary" placeholder="Nombre de Usuario">
-            <input id="swal-pass" type="password" class="swal2-input border-secondary" placeholder="Contraseña Temporal">
-            <select id="swal-rol" class="form-select border-secondary text-secondary w-75 m-auto mt-3 border-2"><option value="" disabled selected>Rol Institucional...</option>${opcionesRoles}</select>
-            <select id="swal-esp" class="form-select border-secondary text-secondary w-75 m-auto mt-3 border-2 u-hidden"><option value="">Ninguna área (Alta Admin)</option>${opcionesEspecialidades}</select>
-        `,
+
+            <!-- PESTAÑA 2: IDENTIFICACIÓN & CONTACTO -->
+            <div id="tab-pers-cont" class="tab-edit-pane tab-pers-pane d-none row g-2 text-start mt-2">
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Documento</label>
+                    <select id="swal-pers-tdoc" class="select-elite select-tdoc-elite">
+                        <option value="CC" selected>CC</option>
+                        <option value="CE">CE</option>
+                        <option value="PAS">PAS</option>
+                    </select>
+                    <input id="swal-pers-doc" class="input-elite" placeholder="Número Cédula">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Expedición</label>
+                    <input id="swal-pers-doc-exp" class="input-elite" placeholder="Ciudad de expedición">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">F. Nacimiento</label>
+                    <input id="swal-pers-fnac" type="date" class="input-elite" oninput="window.calcularEdadPersonal()" onchange="window.calcularEdadPersonal()">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Edad / RH</label>
+                    <input id="swal-pers-edad" type="text" class="input-elite input-edad-elite" placeholder="Edad" readonly>
+                    <select id="swal-pers-gen" class="select-elite" style="max-width:55px;min-width:55px;margin-inline-end:4px;">
+                        <option value="M" selected>M</option>
+                        <option value="F">F</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                    <select id="swal-pers-rh" class="select-elite" style="max-width:65px;min-width:65px;">
+                        <option value="O+" selected>O+</option>
+                        <option value="O-">O-</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Celular</label>
+                    <input id="swal-pers-cel" class="input-elite" placeholder="Número de celular">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Tel. Fijo</label>
+                    <input id="swal-pers-tel" class="input-elite" placeholder="Teléfono residencial">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Email Pers.</label>
+                    <input id="swal-pers-email" type="email" class="input-elite" placeholder="correo@gmail.com">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Dirección</label>
+                    <input id="swal-pers-dir" class="input-elite" placeholder="Dirección de residencia">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Ciudad</label>
+                    <input id="swal-pers-ciudad" class="input-elite" placeholder="Municipio / Ciudad">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Barrio</label>
+                    <input id="swal-pers-barrio" class="input-elite" placeholder="Barrio">
+                </div>
+            </div>
+
+            <!-- PESTAÑA 3: PERFIL LABORAL & SOS -->
+            <div id="tab-pers-prof" class="tab-edit-pane tab-pers-pane d-none row g-2 text-start mt-2">
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Título Univ.</label>
+                    <input id="swal-pers-titulo" class="input-elite" placeholder="Ej: Licenciado en Matemáticas">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Formación</label>
+                    <select id="swal-pers-formacion" class="select-elite">
+                        <option value="Pregrado" selected>Pregrado / Licenciatura</option>
+                        <option value="Especialización">Especialización</option>
+                        <option value="Maestría">Maestría</option>
+                        <option value="Doctorado">Doctorado</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Escalafón</label>
+                    <input id="swal-pers-escalafon" class="input-elite" placeholder="Ej: Decreto 1278 - Grado 2A">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">F. Ingreso</label>
+                    <input id="swal-pers-fingreso" type="date" class="input-elite" value="${new Date().toISOString().split('T')[0]}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Contrato</label>
+                    <select id="swal-pers-contrato" class="select-elite">
+                        <option value="PLANTA" selected>Planta / Indefinido</option>
+                        <option value="TÉRMINO FIJO">Término Fijo</option>
+                        <option value="SERVICIOS">Prestación de Servicios</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite" for="swal-pers-estado-lab">Estado</label>
+                    <select id="swal-pers-estado-lab" name="estado_laboral" class="select-elite">
+                        <option value="ACTIVO" selected>ACTIVO</option>
+                        <option value="LICENCIA">LICENCIA</option>
+                        <option value="RETIRADO">RETIRADO</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">EPS</label>
+                    <input id="swal-pers-eps" class="input-elite" placeholder="Entidad de Salud">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Pensión</label>
+                    <input id="swal-pers-pension" class="input-elite" placeholder="Fondo Pensiones">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">ARL</label>
+                    <input id="swal-pers-arl" class="input-elite" placeholder="Administradora Riesgos">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Contacto SOS</label>
+                    <input id="swal-pers-sos-nom" class="input-elite" placeholder="Nombre completo">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Teléfono SOS</label>
+                    <input id="swal-pers-sos-tel" class="input-elite" placeholder="Celular de emergencia">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Parentesco</label>
+                    <input id="swal-pers-sos-par" class="input-elite" placeholder="Vínculo o Parentesco">
+                </div>
+            </div>
+            </form>
+        </div>`,
         showCancelButton: true,
-        confirmButtonText: 'Registrar Empleado',
-        customClass: { confirmButton: 'btn-elite px-4', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' },
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        customClass: { confirmButton: 'btn-elite px-4 shadow-sm', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' },
         buttonsStyling: false,
-        showLoaderOnConfirm: true,
-        preConfirm: async () => {
-            const nombre = document.getElementById('swal-nom').value.trim();
-            const user = document.getElementById('swal-user').value.trim();
-            const pass = document.getElementById('swal-pass').value;
-            const rol = document.getElementById('swal-rol').value;
-            const esp = document.getElementById('swal-esp').value;
-
-            if (!nombre || !user || !pass || !rol) {
-                lanzarToastElite('danger', 'Por favor complete todos los campos obligatorios.');
-                return false;
-            }
-
-            try {
-                const formData = new FormData();
-                formData.append('csrf_token', window.CSRF_TOKEN || '');
-                formData.append('nombre', nombre);
-                formData.append('user', user);
-                formData.append('pass', pass);
-                formData.append('rol', rol);
-                formData.append('esp', esp);
-
-                const response = await fetch('logica/guardar_personal.php', { method: 'POST', body: formData });
-                if (!response.ok) throw new Error('Error en la comunicación HTTP.');
-
-                const data = await response.json();
-                if (data.status === 'success') {
-                    return data;
-                } else {
-                    lanzarToastElite('danger', data.message || 'Error de registro');
-                    return false;
-                }
-            } catch (err) {
-                lanzarToastElite('danger', err.message || 'No se pudo contactar con el servidor.');
-                return false;
-            }
-        },
         didOpen: () => {
-            const selectRol = document.getElementById('swal-rol');
-            const selectEsp = document.getElementById('swal-esp');
-            const inputNom = document.getElementById('swal-nom');
-            const inputUser = document.getElementById('swal-user');
+            const selectRol = document.getElementById('swal-pers-rol');
+            const wrapperEsp = document.getElementById('wrapper-pers-esp');
+            const selectEsp = document.getElementById('swal-pers-esp');
+            const inputNom = document.getElementById('swal-pers-nom');
+            const inputApe = document.getElementById('swal-pers-ape');
+            const inputUser = document.getElementById('swal-pers-user');
+            const inputFnac = document.getElementById('swal-pers-fnac');
+            const inputEdad = document.getElementById('swal-pers-edad');
 
             const generarUsuario = () => {
-                if (!inputNom.value.trim()) {
+                let nom = inputNom.value.trim();
+                let ape = inputApe ? inputApe.value.trim() : '';
+                let textoCompleto = (nom + ' ' + ape).trim();
+                if (!textoCompleto) {
                     inputUser.value = '';
                     return;
                 }
-                let partes = inputNom.value.trim().split(' ');
+                let partes = textoCompleto.split(/\s+/);
                 let iniciales = '';
                 partes.forEach(p => { if (p.length > 0) iniciales += p[0].toUpperCase(); });
 
@@ -226,12 +487,11 @@ window.nuevoPersonal = async function (listaRoles, listaEspecialidades) {
                     let optionText = selectRol.options[selectRol.selectedIndex].text;
                     let val = selectRol.value;
                     if (val !== "") {
-                        let textoLimpio = optionText.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '').trim();
-                        let textoLimpioLower = textoLimpio.toLowerCase();
-                        if (textoLimpioLower.includes('docente') || textoLimpioLower.includes('profesor')) {
-                            prefijo = 'L'; // Licenciado (estándar docente)
+                        let textoLimpio = optionText.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '').trim().toLowerCase();
+                        if (textoLimpio.includes('docente') || textoLimpio.includes('profesor')) {
+                            prefijo = 'L';
                         } else if (textoLimpio.length > 0) {
-                            prefijo = textoLimpio.charAt(0).toUpperCase(); // Tomar primera letra
+                            prefijo = textoLimpio.charAt(0).toUpperCase();
                         }
                     }
                 }
@@ -239,106 +499,503 @@ window.nuevoPersonal = async function (listaRoles, listaEspecialidades) {
             };
 
             selectRol.addEventListener('change', () => {
-                if (selectRol.value === "11") { selectEsp.classList.remove('u-hidden'); }
-                else { selectEsp.classList.add('u-hidden'); selectEsp.value = ""; }
+                if (selectRol.value === "11") {
+                    wrapperEsp.classList.remove('u-hidden');
+                } else {
+                    wrapperEsp.classList.add('u-hidden');
+                    selectEsp.value = "";
+                }
                 generarUsuario();
             });
 
             inputNom.addEventListener('input', generarUsuario);
+            if (inputApe) inputApe.addEventListener('input', generarUsuario);
+            if (inputFnac) {
+                ['input', 'change', 'blur', 'keyup'].forEach(evento => {
+                    inputFnac.addEventListener(evento, window.calcularEdadPersonal);
+                });
+                window.calcularEdadPersonal();
+            }
+        },
+        preConfirm: () => {
+            const nom = document.getElementById('swal-pers-nom').value.trim();
+            const ape = document.getElementById('swal-pers-ape') ? document.getElementById('swal-pers-ape').value.trim() : '';
+            const nombreCompleto = ape ? (nom + ' ' + ape) : nom;
+            const rol = document.getElementById('swal-pers-rol').value;
+            const user = document.getElementById('swal-pers-user').value.trim();
+            const pass = document.getElementById('swal-pers-pass').value;
+
+            if (!nombreCompleto || !rol || !user || !pass) {
+                Swal.showValidationMessage('El Nombre, Apellidos, Rol, Usuario y Contraseña son obligatorios.');
+                return false;
+            }
+
+            return {
+                nombre: nombreCompleto,
+                rol: rol,
+                esp: document.getElementById('swal-pers-esp').value,
+                user: user,
+                pass: pass,
+                email: document.getElementById('swal-pers-email-inst') ? document.getElementById('swal-pers-email-inst').value.trim() : '',
+                tipo_documento: document.getElementById('swal-pers-tdoc').value,
+                documento: document.getElementById('swal-pers-doc').value.trim(),
+                documento_expedicion: document.getElementById('swal-pers-doc-exp').value.trim(),
+                fecha_nacimiento: document.getElementById('swal-pers-fnac').value,
+                edad: document.getElementById('swal-pers-edad').value,
+                genero: document.getElementById('swal-pers-gen').value,
+                rh: document.getElementById('swal-pers-rh').value,
+                celular: document.getElementById('swal-pers-cel').value.trim(),
+                telefono_fijo: document.getElementById('swal-pers-tel').value.trim(),
+                email_personal: document.getElementById('swal-pers-email').value.trim(),
+                direccion: document.getElementById('swal-pers-dir').value.trim(),
+                ciudad_residencia: document.getElementById('swal-pers-ciudad').value.trim(),
+                barrio: document.getElementById('swal-pers-barrio').value.trim(),
+                titulo_profesional: document.getElementById('swal-pers-titulo').value.trim(),
+                nivel_formacion: document.getElementById('swal-pers-formacion').value,
+                escalafon_docente: document.getElementById('swal-pers-escalafon').value.trim(),
+                fecha_ingreso: document.getElementById('swal-pers-fingreso').value,
+                tipo_contrato: document.getElementById('swal-pers-contrato').value,
+                estado_laboral: document.getElementById('swal-pers-estado').value,
+                eps: document.getElementById('swal-pers-eps').value.trim(),
+                fondo_pensiones: document.getElementById('swal-pers-pension').value.trim(),
+                arl: document.getElementById('swal-pers-arl').value.trim(),
+                contacto_emergencia_nombre: document.getElementById('swal-pers-sos-nom').value.trim(),
+                contacto_emergencia_telefono: document.getElementById('swal-pers-sos-tel').value.trim(),
+                contacto_emergencia_parentesco: document.getElementById('swal-pers-sos-par').value.trim()
+            };
         }
     });
 
-    if (result.isConfirmed && result.value) {
-        sessionStorage.setItem('reabrir_nuevo_personal', 'true');
-        lanzarToastElite('success', result.value.message || 'Personal registrado correctamente.');
-        if (typeof navegarModulo === 'function') {
+    if (r.isConfirmed && r.value) {
+        const data = r.value;
+        const formData = new FormData();
+        Object.keys(data).forEach(k => {
+            formData.append(k, data[k] || '');
+        });
+        if (window.CSRF_TOKEN) formData.append('csrf_token', window.CSRF_TOKEN);
+
+        const resultado = await enviarPostElite('logica/guardar_personal.php', formData, true);
+        if (resultado && resultado.status === 'success') {
+            window.lanzarToastElite('success', resultado.message || 'Personal vinculado correctamente.');
             window.forceRefreshElite = true;
-            navegarModulo(window.MODULO_ACTUAL || 'inicio');
+            if (typeof navegarModulo === 'function') navegarModulo(window.MODULO_ACTUAL || 'personal');
+        } else if (resultado && resultado.status !== 'success') {
+            window.lanzarToastElite('danger', resultado.message || 'No se pudo vincular al personal.', 'Error de Bóveda');
         }
     }
 };
 
-window.editarPersonal = async function (id, nombreActual, usuarioActual, rolActual, listaRoles, espActual, listaEspecialidades) {
-    let opcionesRoles = listaRoles.map(rol => `<option value="${rol.id}" ${rol.id == rolActual ? 'selected' : ''}>${rol.nombre_rol}</option>`).join('');
-    let opcionesEspecialidades = listaEspecialidades ? listaEspecialidades.map(esp => `<option value="${esp.id}" ${esp.id == espActual ? 'selected' : ''}>${esp.nombre_especialidad}</option>`).join('') : '';
-    const result = await Swal.fire({
-        title: 'Actualizar Personal',
-        html: `
-            <div class="text-center mb-3">
-                <div class="d-inline-flex align-items-center justify-content-center bg-primary-faded text-primary rounded-circle size-60">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
+window.editarPersonal = async function (id, dOrBtn, listaRoles, listaEspecialidades) {
+    let d = {};
+    if (dOrBtn instanceof HTMLElement) {
+        try { d = JSON.parse(dOrBtn.dataset.personal || '{}'); } catch (e) { d = {}; }
+        try { listaRoles = JSON.parse(dOrBtn.dataset.roles || '[]'); } catch (e) { listaRoles = []; }
+        try { listaEspecialidades = JSON.parse(dOrBtn.dataset.especialidades || '[]'); } catch (e) { listaEspecialidades = []; }
+    } else if (typeof dOrBtn === 'object' && dOrBtn !== null) {
+        d = dOrBtn;
+    } else if (typeof dOrBtn === 'string') {
+        try { d = JSON.parse(dOrBtn); } catch (e) { d = {}; }
+    }
+    d = d || {};
+
+    if (typeof listaRoles === 'string') {
+        try { listaRoles = JSON.parse(listaRoles); } catch (e) { listaRoles = []; }
+    }
+    if (typeof listaEspecialidades === 'string') {
+        try { listaEspecialidades = JSON.parse(listaEspecialidades); } catch (e) { listaEspecialidades = []; }
+    }
+    listaRoles = Array.isArray(listaRoles) ? listaRoles : [];
+    listaEspecialidades = Array.isArray(listaEspecialidades) ? listaEspecialidades : [];
+
+    let nombres = '', apellidos = '';
+    if (d.nombre) {
+        let partes = d.nombre.trim().split(/\s+/);
+        if (partes.length >= 4) {
+            nombres = partes[0] + ' ' + partes[1];
+            apellidos = partes.slice(2).join(' ');
+        } else if (partes.length === 3) {
+            nombres = partes[0];
+            apellidos = partes.slice(1).join(' ');
+        } else if (partes.length === 2) {
+            nombres = partes[0];
+            apellidos = partes[1];
+        } else {
+            nombres = d.nombre;
+        }
+    }
+
+    let edadCalculada = d.edad;
+    if ((edadCalculada === undefined || edadCalculada === null || edadCalculada === '' || edadCalculada == 0) && d.fecha_nacimiento) {
+        let fn = new Date(d.fecha_nacimiento + 'T00:00:00');
+        if (!isNaN(fn.getTime())) {
+            let hoy = new Date();
+            let age = hoy.getFullYear() - fn.getFullYear();
+            let m = hoy.getMonth() - fn.getMonth();
+            if (m < 0 || (m === 0 && hoy.getDate() < fn.getDate())) age--;
+            if (age >= 0) edadCalculada = age;
+        }
+    }
+
+    let opcionesRoles = (listaRoles || []).map(rol => `<option value="${rol.id}" ${rol.id == (d.rol_id || 0) ? 'selected' : ''}>${rol.nombre_rol}</option>`).join('');
+    let opcionesEspecialidades = (listaEspecialidades || []).map(esp => `<option value="${esp.id}" ${esp.id == (d.especialidad_id || 0) ? 'selected' : ''}>${esp.nombre_especialidad}</option>`).join('');
+
+    const r = await Swal.fire({
+        title: 'Expediente: ' + (d.nombre || ''),
+        width: '850px',
+        html: `<div class="swal-tab-container">
+            <form id="swal-pers-form" onsubmit="return false;" autocomplete="off">
+            <style>
+                .btn-tab-elite {
+                    height: 44px;
+                    border: 2px solid var(--el-primary);
+                    border-radius: var(--el-radius-sub);
+                    background: transparent;
+                    color: var(--el-primary);
+                    font-weight: bold;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    cursor: pointer;
+                    padding-inline: 15px;
+                }
+                .btn-tab-elite.active {
+                    background: var(--el-primary);
+                    color: var(--el-white);
+                }
+                .label-horiz-elite {
+                    width: 110px;
+                    min-width: 110px;
+                    margin-bottom: 0;
+                    font-size: 0.8rem;
+                    font-weight: bold;
+                    color: var(--el-text-secondary);
+                    white-space: nowrap;
+                }
+                .select-tdoc-elite {
+                    max-width: 60px;
+                    min-width: 60px;
+                    margin-inline-end: 8px;
+                }
+                .tab-edit-pane {
+                    height: 365px;
+                    min-height: 365px;
+                    align-content: flex-start;
+                }
+                .swal-tab-container .input-elite.input-edad-elite {
+                    width: 52px;
+                    min-width: 52px;
+                    max-width: 52px;
+                    padding-inline: 4px;
+                    text-align: center;
+                    margin-inline-end: 4px;
+                }
+            </style>
+            <div class="d-flex border-bottom mb-3 pb-2 gap-2 justify-content-center">
+                <button type="button" class="btn-tab-elite active" onclick="window.cambiarTabPersonal('cred')">Credenciales & Rol</button>
+                <button type="button" class="btn-tab-elite" onclick="window.cambiarTabPersonal('cont')">Identificación & Contacto</button>
+                <button type="button" class="btn-tab-elite" onclick="window.cambiarTabPersonal('prof')">Perfil Laboral & SOS</button>
+            </div>
+
+            <!-- PESTAÑA 1: CREDENCIALES & ROL -->
+            <div id="tab-pers-cred" class="tab-edit-pane tab-pers-pane d-flex row g-2 text-start mt-2">
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Nombres</label>
+                    <input id="swal-pers-nom" class="input-elite" value="${nombres}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Apellidos</label>
+                    <input id="swal-pers-ape" class="input-elite" value="${apellidos}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Rol</label>
+                    <select id="swal-pers-rol" class="select-elite">
+                        ${opcionesRoles}
+                    </select>
+                </div>
+                <div id="wrapper-pers-esp" class="col-6 d-flex align-items-center ${d.rol_id == 11 ? '' : 'u-hidden'}">
+                    <label class="label-horiz-elite">Cátedra / Área</label>
+                    <select id="swal-pers-esp" class="select-elite">
+                        <option value="">Seleccione materia...</option>
+                        ${opcionesEspecialidades}
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Usuario</label>
+                    <input id="swal-pers-user" class="input-elite font-monospace fw-bold text-primary" value="${d.usuario || ''}" autocomplete="username">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Nueva Clave</label>
+                    <input id="swal-pers-pass" type="password" class="input-elite" placeholder="En blanco para mantener" autocomplete="new-password">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Email Inst.</label>
+                    <input id="swal-pers-email-inst" type="email" class="input-elite" value="${d.email_usuario || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Estado</label>
+                    <select id="swal-pers-estado" class="select-elite">
+                        <option value="ACTIVO" ${d.estado_laboral === 'ACTIVO' ? 'selected' : ''}>ACTIVO</option>
+                        <option value="LICENCIA" ${d.estado_laboral === 'LICENCIA' ? 'selected' : ''}>LICENCIA</option>
+                        <option value="RETIRADO" ${d.estado_laboral === 'RETIRADO' ? 'selected' : ''}>RETIRADO</option>
+                    </select>
                 </div>
             </div>
-            <input id="swal-nom" class="swal2-input border-secondary text-dark" value="${nombreActual}">
-            <input id="swal-user" class="swal2-input border-secondary text-dark" value="${usuarioActual}">
-            <input id="swal-pass" type="password" class="swal2-input border-secondary text-dark" placeholder="Nueva Contraseña (Opcional)">
-            <select id="swal-rol" class="form-select border-secondary w-75 m-auto mt-3 border-2">${opcionesRoles}</select>
-            <select id="swal-esp" class="form-select border-secondary w-75 m-auto mt-3 border-2 ${rolActual == 11 ? '' : 'u-hidden'}"><option value="" ${!espActual ? 'selected' : ''}>Ninguna área (Alta Admin)</option>${opcionesEspecialidades}</select>
-        `,
+
+            <!-- PESTAÑA 2: IDENTIFICACIÓN & CONTACTO -->
+            <div id="tab-pers-cont" class="tab-edit-pane tab-pers-pane d-none row g-2 text-start mt-2">
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Documento</label>
+                    <select id="swal-pers-tdoc" class="select-elite select-tdoc-elite">
+                        <option value="CC" ${d.tipo_documento === 'CC' ? 'selected' : ''}>CC</option>
+                        <option value="CE" ${d.tipo_documento === 'CE' ? 'selected' : ''}>CE</option>
+                        <option value="PAS" ${d.tipo_documento === 'PAS' ? 'selected' : ''}>PAS</option>
+                    </select>
+                    <input id="swal-pers-doc" class="input-elite" placeholder="Número Cédula" value="${d.documento || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Expedición</label>
+                    <input id="swal-pers-doc-exp" class="input-elite" placeholder="Expedida en" value="${d.documento_expedicion || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">F. Nacimiento</label>
+                    <input id="swal-pers-fnac" type="date" class="input-elite" value="${d.fecha_nacimiento || ''}" oninput="window.calcularEdadPersonal()" onchange="window.calcularEdadPersonal()">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Edad / RH</label>
+                    <input id="swal-pers-edad" type="text" class="input-elite input-edad-elite" placeholder="Edad" value="${edadCalculada !== undefined && edadCalculada !== null ? edadCalculada : ''}" readonly autocomplete="off">
+                    <select id="swal-pers-gen" class="select-elite" style="max-width:55px;min-width:55px;margin-inline-end:4px;">
+                        <option value="M" ${d.genero === 'M' ? 'selected' : ''}>M</option>
+                        <option value="F" ${d.genero === 'F' ? 'selected' : ''}>F</option>
+                        <option value="OTRO" ${d.genero === 'OTRO' ? 'selected' : ''}>Otro</option>
+                    </select>
+                    <select id="swal-pers-rh" class="select-elite" style="max-width:65px;min-width:65px;">
+                        <option value="O+" ${d.rh === 'O+' ? 'selected' : ''}>O+</option>
+                        <option value="O-" ${d.rh === 'O-' ? 'selected' : ''}>O-</option>
+                        <option value="A+" ${d.rh === 'A+' ? 'selected' : ''}>A+</option>
+                        <option value="A-" ${d.rh === 'A-' ? 'selected' : ''}>A-</option>
+                        <option value="B+" ${d.rh === 'B+' ? 'selected' : ''}>B+</option>
+                        <option value="B-" ${d.rh === 'B-' ? 'selected' : ''}>B-</option>
+                        <option value="AB+" ${d.rh === 'AB+' ? 'selected' : ''}>AB+</option>
+                        <option value="AB-" ${d.rh === 'AB-' ? 'selected' : ''}>AB-</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Celular</label>
+                    <input id="swal-pers-cel" class="input-elite" placeholder="Celular" value="${d.celular || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Tel. Fijo</label>
+                    <input id="swal-pers-tel" class="input-elite" placeholder="Teléfono Fijo" value="${d.telefono_fijo || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Email Pers.</label>
+                    <input id="swal-pers-email" type="email" class="input-elite" placeholder="correo@gmail.com" value="${d.email_personal || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Dirección</label>
+                    <input id="swal-pers-dir" class="input-elite" placeholder="Dirección" value="${d.direccion || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Ciudad</label>
+                    <input id="swal-pers-ciudad" class="input-elite" placeholder="Ciudad" value="${d.ciudad_residencia || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Barrio</label>
+                    <input id="swal-pers-barrio" class="input-elite" placeholder="Barrio" value="${d.barrio || ''}">
+                </div>
+            </div>
+
+            <!-- PESTAÑA 3: PERFIL LABORAL & SOS -->
+            <div id="tab-pers-prof" class="tab-edit-pane tab-pers-pane d-none row g-2 text-start mt-2">
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Título Univ.</label>
+                    <input id="swal-pers-titulo" class="input-elite" placeholder="Título Profesional" value="${d.titulo_profesional || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Formación</label>
+                    <select id="swal-pers-formacion" class="select-elite">
+                        <option value="Pregrado" ${d.nivel_formacion === 'Pregrado' ? 'selected' : ''}>Pregrado / Licenciatura</option>
+                        <option value="Especialización" ${d.nivel_formacion === 'Especialización' ? 'selected' : ''}>Especialización</option>
+                        <option value="Maestría" ${d.nivel_formacion === 'Maestría' ? 'selected' : ''}>Maestría</option>
+                        <option value="Doctorado" ${d.nivel_formacion === 'Doctorado' ? 'selected' : ''}>Doctorado</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Escalafón</label>
+                    <input id="swal-pers-escalafon" class="input-elite" placeholder="Escalafón MEN" value="${d.escalafon_docente || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">F. Ingreso</label>
+                    <input id="swal-pers-fingreso" type="date" class="input-elite" value="${d.fecha_ingreso || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Contrato</label>
+                    <select id="swal-pers-contrato" class="select-elite">
+                        <option value="PLANTA" ${d.tipo_contrato === 'PLANTA' ? 'selected' : ''}>Planta / Indefinido</option>
+                        <option value="TÉRMINO FIJO" ${d.tipo_contrato === 'TÉRMINO FIJO' ? 'selected' : ''}>Término Fijo</option>
+                        <option value="SERVICIOS" ${d.tipo_contrato === 'SERVICIOS' ? 'selected' : ''}>Prestación de Servicios</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite" for="swal-pers-estado-lab">Estado</label>
+                    <select id="swal-pers-estado-lab" name="estado_laboral" class="select-elite">
+                        <option value="ACTIVO" ${d.estado_laboral === 'ACTIVO' ? 'selected' : ''}>ACTIVO</option>
+                        <option value="LICENCIA" ${d.estado_laboral === 'LICENCIA' ? 'selected' : ''}>LICENCIA</option>
+                        <option value="RETIRADO" ${d.estado_laboral === 'RETIRADO' ? 'selected' : ''}>RETIRADO</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">EPS</label>
+                    <input id="swal-pers-eps" class="input-elite" placeholder="Entidad de Salud" value="${d.eps || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Pensión</label>
+                    <input id="swal-pers-pension" class="input-elite" placeholder="Fondo Pensiones" value="${d.fondo_pensiones || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">ARL</label>
+                    <input id="swal-pers-arl" class="input-elite" placeholder="Administradora Riesgos" value="${d.arl || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Contacto SOS</label>
+                    <input id="swal-pers-sos-nom" class="input-elite" placeholder="Nombre completo" value="${d.contacto_emergencia_nombre || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Teléfono SOS</label>
+                    <input id="swal-pers-sos-tel" class="input-elite" placeholder="Celular de emergencia" value="${d.contacto_emergencia_telefono || ''}">
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite">Parentesco</label>
+                    <input id="swal-pers-sos-par" class="input-elite" placeholder="Vínculo o Parentesco" value="${d.contacto_emergencia_parentesco || ''}">
+                </div>
+            </div>
+            </form>
+        </div>`,
         showCancelButton: true,
-        confirmButtonText: 'Aprobar Cambios',
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
         customClass: { confirmButton: 'btn-elite px-4 shadow-sm', cancelButton: 'btn-elite btn-elite--outline px-4 ms-2' },
         buttonsStyling: false,
-        showLoaderOnConfirm: true,
-        preConfirm: async () => {
-            const nombre = document.getElementById('swal-nom').value.trim();
-            const user = document.getElementById('swal-user').value.trim();
-            const pass = document.getElementById('swal-pass').value;
-            const rol = document.getElementById('swal-rol').value;
-            const esp = document.getElementById('swal-esp').value;
+        didOpen: () => {
+            const selectRol = document.getElementById('swal-pers-rol');
+            const wrapperEsp = document.getElementById('wrapper-pers-esp');
+            const selectEsp = document.getElementById('swal-pers-esp');
+            const inputNom = document.getElementById('swal-pers-nom');
+            const inputApe = document.getElementById('swal-pers-ape');
+            const inputUser = document.getElementById('swal-pers-user');
+            const inputFnac = document.getElementById('swal-pers-fnac');
+            const inputEdad = document.getElementById('swal-pers-edad');
 
-            if (!nombre || !user || !rol) {
-                lanzarToastElite('danger', 'El nombre, usuario y rol son obligatorios.');
-                return false;
+            const generarUsuario = () => {
+                let nom = inputNom.value.trim();
+                let ape = inputApe ? inputApe.value.trim() : '';
+                let textoCompleto = (nom + ' ' + ape).trim();
+                if (!textoCompleto) {
+                    inputUser.value = '';
+                    return;
+                }
+                let partes = textoCompleto.split(/\s+/);
+                let iniciales = '';
+                partes.forEach(p => { if (p.length > 0) iniciales += p[0].toUpperCase(); });
+
+                let prefijo = 'U';
+                if (selectRol && selectRol.selectedIndex !== -1) {
+                    let optionText = selectRol.options[selectRol.selectedIndex].text;
+                    let val = selectRol.value;
+                    if (val !== "") {
+                        let textoLimpio = optionText.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '').trim().toLowerCase();
+                        if (textoLimpio.includes('docente') || textoLimpio.includes('profesor')) {
+                            prefijo = 'L';
+                        } else if (textoLimpio.length > 0) {
+                            prefijo = textoLimpio.charAt(0).toUpperCase();
+                        }
+                    }
+                }
+                inputUser.value = prefijo + iniciales;
+            };
+
+            if (selectRol) {
+                selectRol.addEventListener('change', () => {
+                    if (selectRol.value === "11") {
+                        if (wrapperEsp) wrapperEsp.classList.remove('u-hidden');
+                    } else {
+                        if (wrapperEsp) wrapperEsp.classList.add('u-hidden');
+                        if (selectEsp) selectEsp.value = "";
+                    }
+                });
             }
 
-            try {
-                const formData = new FormData();
-                formData.append('csrf_token', window.CSRF_TOKEN || '');
-                formData.append('id', id);
-                formData.append('nombre', nombre);
-                formData.append('user', user);
-                formData.append('pass', pass);
-                formData.append('rol', rol);
-                formData.append('esp', esp);
-
-                const response = await fetch('logica/editar_personal.php', { method: 'POST', body: formData });
-                if (!response.ok) throw new Error('Error en la comunicación HTTP.');
-
-                const data = await response.json();
-                if (data.status === 'success') {
-                    return data;
-                } else {
-                    lanzarToastElite('danger', data.message || 'Error de edición');
-                    return false;
-                }
-            } catch (err) {
-                lanzarToastElite('danger', err.message || 'No se pudo contactar con el servidor.');
-                return false;
+            if (inputNom) inputNom.addEventListener('input', generarUsuario);
+            if (inputApe) inputApe.addEventListener('input', generarUsuario);
+            if (inputFnac) {
+                ['input', 'change', 'blur', 'keyup'].forEach(evento => {
+                    inputFnac.addEventListener(evento, window.calcularEdadPersonal);
+                });
+                window.calcularEdadPersonal();
             }
         },
-        didOpen: () => {
-            const selectRol = document.getElementById('swal-rol');
-            const selectEsp = document.getElementById('swal-esp');
+        preConfirm: () => {
+            const nom = document.getElementById('swal-pers-nom').value.trim();
+            const ape = document.getElementById('swal-pers-ape') ? document.getElementById('swal-pers-ape').value.trim() : '';
+            const nombreCompleto = ape ? (nom + ' ' + ape) : nom;
+            const rol = document.getElementById('swal-pers-rol').value;
+            const user = document.getElementById('swal-pers-user').value.trim();
 
-            selectRol.addEventListener('change', () => {
-                if (selectRol.value === "11") {
-                    selectEsp.classList.remove('u-hidden');
-                } else {
-                    selectEsp.classList.add('u-hidden');
-                    selectEsp.value = "";
-                }
-            });
+            if (!nombreCompleto || !rol || !user) {
+                Swal.showValidationMessage('El Nombre, Apellidos, Rol y Usuario son obligatorios.');
+                return false;
+            }
+
+            return {
+                id: id,
+                nombre: nombreCompleto,
+                rol: rol,
+                esp: document.getElementById('swal-pers-esp') ? document.getElementById('swal-pers-esp').value : '',
+                user: user,
+                pass: document.getElementById('swal-pers-pass').value,
+                email: document.getElementById('swal-pers-email-inst') ? document.getElementById('swal-pers-email-inst').value.trim() : '',
+                tipo_documento: document.getElementById('swal-pers-tdoc').value,
+                documento: document.getElementById('swal-pers-doc').value.trim(),
+                documento_expedicion: document.getElementById('swal-pers-doc-exp').value.trim(),
+                fecha_nacimiento: document.getElementById('swal-pers-fnac').value,
+                edad: document.getElementById('swal-pers-edad').value,
+                genero: document.getElementById('swal-pers-gen').value,
+                rh: document.getElementById('swal-pers-rh').value,
+                celular: document.getElementById('swal-pers-cel').value.trim(),
+                telefono_fijo: document.getElementById('swal-pers-tel').value.trim(),
+                email_personal: document.getElementById('swal-pers-email').value.trim(),
+                direccion: document.getElementById('swal-pers-dir').value.trim(),
+                ciudad_residencia: document.getElementById('swal-pers-ciudad').value.trim(),
+                barrio: document.getElementById('swal-pers-barrio').value.trim(),
+                titulo_profesional: document.getElementById('swal-pers-titulo').value.trim(),
+                nivel_formacion: document.getElementById('swal-pers-formacion').value,
+                escalafon_docente: document.getElementById('swal-pers-escalafon').value.trim(),
+                fecha_ingreso: document.getElementById('swal-pers-fingreso').value,
+                tipo_contrato: document.getElementById('swal-pers-contrato').value,
+                estado_laboral: document.getElementById('swal-pers-estado').value,
+                eps: document.getElementById('swal-pers-eps').value.trim(),
+                fondo_pensiones: document.getElementById('swal-pers-pension').value.trim(),
+                arl: document.getElementById('swal-pers-arl').value.trim(),
+                contacto_emergencia_nombre: document.getElementById('swal-pers-sos-nom').value.trim(),
+                contacto_emergencia_telefono: document.getElementById('swal-pers-sos-tel').value.trim(),
+                contacto_emergencia_parentesco: document.getElementById('swal-pers-sos-par').value.trim()
+            };
         }
     });
-    if (result.isConfirmed && result.value) {
-        lanzarToastElite('success', result.value.message || 'Personal actualizado correctamente.');
-        if (typeof navegarModulo === 'function') {
+
+    if (r.isConfirmed && r.value) {
+        const data = r.value;
+        const formData = new FormData();
+        Object.keys(data).forEach(k => {
+            formData.append(k, data[k] || '');
+        });
+        if (window.CSRF_TOKEN) formData.append('csrf_token', window.CSRF_TOKEN);
+
+        const resultado = await enviarPostElite('logica/editar_personal.php', formData, true);
+        if (resultado && resultado.status === 'success') {
+            window.lanzarToastElite('success', resultado.message || 'Expediente actualizado con éxito.');
             window.forceRefreshElite = true;
-            navegarModulo(window.MODULO_ACTUAL || 'inicio');
+            if (typeof navegarModulo === 'function') navegarModulo(window.MODULO_ACTUAL || 'personal');
+        } else if (resultado && resultado.status !== 'success') {
+            window.lanzarToastElite('danger', resultado.message || 'No se pudo actualizar el expediente.', 'Error de Bóveda');
         }
     }
 };
@@ -971,7 +1628,14 @@ window.editarEstudiante = async function (id, d, listaCursos) {
         if (data.fotoFile) {
             formData.append('foto', data.fotoFile);
         }
-        enviarPostElite('logica/editar_estudiante.php', formData);
+        const resultado = await enviarPostElite('logica/editar_estudiante.php', formData, true);
+        if (resultado && resultado.status === 'success') {
+            window.lanzarToastElite('success', resultado.message || 'Expediente actualizado con éxito.');
+            window.forceRefreshElite = true;
+            if (typeof navegarModulo === 'function') navegarModulo(window.MODULO_ACTUAL || 'matriculados');
+        } else if (resultado && resultado.status !== 'success') {
+            window.lanzarToastElite('danger', resultado.message || 'No se pudo actualizar el expediente.', 'Error de Bóveda');
+        }
     }
 };
 

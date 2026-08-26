@@ -41,7 +41,7 @@ $lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
         <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
             <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
             <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
-            <span class="breadcrumb-item-elite">Académico</span>
+            <span class="breadcrumb-item-elite">Estudiantes</span>
             <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
             <span class="breadcrumb-current-elite">Matrícula</span>
         </nav>
@@ -74,7 +74,7 @@ $lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
                         
                         <div class="row g-4">
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small text-secondary">Tipo de Documento</label>
+                                <label class="form-label fw-bold small text-secondary">Tipo de Documento<span class="text-danger ms-1">*</span></label>
                                 <select name="tipo_documento" class="select-elite" required>
                                     <option value="" disabled selected>Seleccione...</option>
                                     <option value="RC">Registro Civil (RC)</option>
@@ -83,11 +83,11 @@ $lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small text-secondary">Identificación</label>
+                                <label class="form-label fw-bold small text-secondary">Identificación<span class="text-danger ms-1">*</span></label>
                                 <input type="text" name="identificacion" placeholder="Sin puntos" class="input-elite" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small text-secondary">RH / Grupo Sanguíneo</label>
+                                <label class="form-label fw-bold small text-secondary">RH / Grupo Sanguíneo<span class="text-danger ms-1">*</span></label>
                                 <select name="tipo_sangre" class="select-elite" required>
                                     <option value="" disabled selected>Seleccione...</option>
                                     <option value="O+">O+</option>
@@ -102,16 +102,16 @@ $lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-secondary">Nombres Completos</label>
+                                <label class="form-label fw-bold small text-secondary">Nombres Completos<span class="text-danger ms-1">*</span></label>
                                 <input type="text" name="nombre" placeholder="Nombre(s)" class="input-elite" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-secondary">Apellidos Completos</label>
+                                <label class="form-label fw-bold small text-secondary">Apellidos Completos<span class="text-danger ms-1">*</span></label>
                                 <input type="text" name="apellido" placeholder="Apellido(s)" class="input-elite" required>
                             </div>
                             
                             <div class="col-md-12">
-                                <label class="form-label fw-bold small text-secondary mb-2">Género</label>
+                                <label class="form-label fw-bold small text-secondary mb-2">Género<span class="text-danger ms-1">*</span></label>
                                 <div class="d-flex gap-4 p-2 px-4 bg-white rounded-pill border w-fit-content border-topbar-elite">
                                     <label class="radio-elite">
                                         <input type="radio" name="genero" value="M" required>
@@ -142,14 +142,14 @@ $lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
                         
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-secondary">Correo Institucional</label>
+                                <label class="form-label fw-bold small text-secondary">Correo Institucional<span class="text-danger ms-1">*</span></label>
                                 <div class="position-relative">
                                     <i class="bi bi-envelope input-icon-elite text-accent"></i>
                                     <input type="email" name="email" placeholder="estudiante@dominio.com" class="input-elite input-with-icon-elite" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-secondary">Número de Celular</label>
+                                <label class="form-label fw-bold small text-secondary">Número de Celular<span class="text-danger ms-1">*</span></label>
                                 <div class="position-relative">
                                     <i class="bi bi-phone input-icon-elite text-accent"></i>
                                     <input type="tel" name="celular" placeholder="300 000 0000" class="input-elite input-with-icon-elite" pattern="3[0-9]{9}" required>
@@ -167,7 +167,7 @@ $lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
                         
                         <div class="row g-4">
                             <div class="col-md-3">
-                                <label class="form-label fw-bold small text-secondary">Fecha de Nacimiento</label>
+                                <label class="form-label fw-bold small text-secondary">Fecha de Nacimiento<span class="text-danger ms-1">*</span></label>
                                 <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" class="input-elite" required>
                             </div>
                             <div class="col-md-2">
@@ -346,7 +346,7 @@ $lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
                         
                         <div class="row g-4 align-items-center">
                             <div class="col-md-8">
-                                <label class="form-label fw-bold small text-secondary">Grado a Matricular</label>
+                                <label class="form-label fw-bold small text-secondary">Grado a Matricular<span class="text-danger ms-1">*</span></label>
                                 <select name="curso_id" class="select-elite text-primary fw-bold" required>
                                     <option value="" disabled selected>Seleccione curso...</option>
                                     <?php while ($c = $stmt_courses->fetch(PDO::FETCH_ASSOC)) { ?>
@@ -376,7 +376,7 @@ $lista_paises = $stmt_paises ? $stmt_paises->fetchAll(PDO::FETCH_ASSOC) : [];
                     <div class="py-5"></div>
                 </form>
 
-                <script src="../js/matricula.js" defer></script>
+                <script src="../js/matricula.js?v=<?php echo time(); ?>"></script>
             </div>
         </div>
     </div>

@@ -115,6 +115,17 @@ if ($curso_id > 0) {
 
 
 <div class="khronos-container animate__animated animate__fadeIn p-3" id="khronos-container" data-curso-id="<?php echo $curso_id; ?>">
+    <!-- MIGA DE PAN (BREADCRUMB ELITE) -->
+    <div class="mb-3">
+        <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
+            <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-item-elite">Académico</span>
+            <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
+            <span class="breadcrumb-current-elite">Horario Escolar</span>
+        </nav>
+    </div>
+
     <!-- BARRA DE CONTROL SUPERIOR (Soberanía Élite Compacta) -->
     <div class="d-flex flex-wrap align-items-center justify-content-between mb-2 gap-3">
         <div class="header-module-elite mb-0">

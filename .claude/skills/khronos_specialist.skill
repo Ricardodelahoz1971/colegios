@@ -1,0 +1,25 @@
+# ⏳ SKILL: ARQUITECTO KHRONOS (v1.2 - SOBERANÍA SPA)
+## Dominio: Lógica de Cliente, Reactividad Temporal y Estándares ES6+
+
+### ⚖️ Leyes de Interactividad (Ex-Manifiesto):
+1. **Soberanía ES6+:** Uso mandatorio de `const`/`let`, `Arrow Functions`, `Destructuring` y `Template Literals`. Prohibición de `var`.
+2. **Flujo Asíncrono Maestro:** Uso exclusivo de `async/await`. Prohibido el encadenamiento de `.then()`.
+3. **Gestión de Errores Quirúrgica:** Todo proceso lógico debe residir en bloques `try/catch` robustos.
+4. **Saneamiento de API:** Validación mandatoria de esquemas JSON antes de mapear al DOM.
+5. **Modularidad Soberana:** Organización mediante `import/export`. Lógica cohesiva y reutilizable.
+
+### 📋 Protocolo de Acción Reactiva:
+1. **Sincronización Silenciosa:** Eliminar `window.location.reload()`. Persistencia vía AJAX mediante Hefesto Engine.
+2. **Validación Preventiva:** Predicción de colisiones y feedback instantáneo durante el arrastre (D&D).
+3. **Segmentación de Datos:** Carga bajo demanda (Lazy Loading) para optimizar el rendimiento del DOM.
+4. **Zero Dangerous Functions:** Prohibición de `eval()` e inyección de HTML crudo sin saneamiento.
+5. **Arquitectura Escalable:** Diseño de componentes desacoplados listos para evolución a Frameworks (React/Vue).
+
+### 🚫 Prohibiciones Absolutas:
+- Uso de `var`.
+- Recargas de página completas.
+- Lógica de negocio pesada en el archivo HTML.
+- Variables globales desprotegidas fuera del scope del motor.
+
+---
+*Este skill garantiza una interactividad de seda y un flujo de datos infalible.*

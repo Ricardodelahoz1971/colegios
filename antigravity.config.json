@@ -3,6 +3,6 @@
         "provider": "openai-compatible",
         "model": "deepseek-chat",
         "baseUrl": "https://api.deepseek.com",
-        "apiKey": "sk-1b0fc7b6f8d5488f87792726f0380948"
+        "apiKey": "sk-6ecc8a7877294fd5919f918d3fb51f74"
     }
 }
