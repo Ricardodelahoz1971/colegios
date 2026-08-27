@@ -107,7 +107,7 @@ try {
             ':madre_email' => filter_input(INPUT_POST, 'madre_email', FILTER_SANITIZE_EMAIL) ?: null
         ]);
 
-        $pass_hash = password_hash($identificacion, PASSWORD_DEFAULT);
+        $pass_hash = password_hash('1234', PASSWORD_DEFAULT);
         $stmt_usr = $db->prepare("INSERT INTO usuarios (usuario, password, email, nombre, rol_id, estudiante_id) VALUES (:u, :p, :e, :n, 5, :eid)");
         $stmt_usr->execute([
             ':u' => $identificacion,

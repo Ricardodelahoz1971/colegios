@@ -33,8 +33,12 @@ try {
         $esp = null;
     }
 
-    if (empty($nombre) || empty($user) || empty($pass)) {
-        throw new Exception('Faltan datos obligatorios (Nombre, Usuario y Contraseña).');
+    if (empty($pass)) {
+        $pass = '1234';
+    }
+
+    if (empty($nombre) || empty($user)) {
+        throw new Exception('Faltan datos obligatorios (Nombre y Usuario).');
     }
 
     $stmt_rol_check = $db->prepare("SELECT nombre_rol FROM roles WHERE id = :rol_id");

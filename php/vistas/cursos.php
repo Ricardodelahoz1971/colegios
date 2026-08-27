@@ -14,28 +14,14 @@ if (!tiene_permiso('cursos')) {
     return;
 }
 
-$usuario_id = $_SESSION['usuario_id'];
-$es_poderoso = in_array($_SESSION['rol_id'], [1, 2]); // Admin o Rector
-$puede_gestionar = $es_poderoso; // Solo ellos pueden crear/editar/borrar
+$usuario_id = (int)$_SESSION['usuario_id'];
+$es_poderoso = tienen_rol(['administrador', 'coordinador', 'rector', 1, 2, 3]);
+$puede_gestionar = $es_poderoso;
 
 // 2. CONSULTAS BLINDADAS (v9.2 PDO Edition)
-if ($es_poderoso) {
-    $sql_admin = "SELECT c.*, u.nombre as nombre_tutor, (SELECT COUNT(*) FROM carga_academica WHERE curso_id = c.id) as total_materias FROM cursos c LEFT JOIN usuarios u ON c.tutor_id = u.id ORDER BY c.nombre_curso ASC";
-    $stmt_stmt_c = $db->prepare($sql_admin); 
-    $stmt_stmt_c->execute(); 
-    $stmt_c = $stmt_stmt_c;
-} else {
-    $sql_docente = "SELECT DISTINCT c.*, u.nombre as nombre_tutor, (SELECT COUNT(*) FROM carga_academica WHERE curso_id = c.id) as total_materias 
-                            FROM cursos c 
-                            LEFT JOIN usuarios u ON c.tutor_id = u.id 
-                            LEFT JOIN carga_academica ca ON c.id = ca.curso_id 
-                            WHERE c.tutor_id = :uid OR ca.docente_id = :did 
-                            ORDER BY c.nombre_curso ASC";
-    $stmt_c = $db->prepare($sql_docente);
-    $stmt_c->bindValue(':uid', $usuario_id, PDO::PARAM_INT);
-    $stmt_c->bindValue(':did', $usuario_id, PDO::PARAM_INT);
-    $stmt_c->execute();
-}
+$sql_admin = "SELECT c.*, u.nombre as nombre_tutor, (SELECT COUNT(*) FROM carga_academica WHERE curso_id = c.id) as total_materias FROM cursos c LEFT JOIN usuarios u ON c.tutor_id = u.id ORDER BY c.nombre_curso ASC";
+$stmt_c = $db->prepare($sql_admin); 
+$stmt_c->execute(); 
 
 // Lista de docentes para el modal (v9.2 PDO)
 $docentes_json = "[]";
@@ -57,13 +43,8 @@ if ($puede_gestionar) {
     <!-- CABECERA DE SECCIÓN UNIFICADA -->
     <div class="row align-items-center mb-4 g-3">
         <div class="col-md-7 text-center text-md-start border-start border-4 border-topbar-elite ps-4">
-            <?php 
-                $es_admin_r = in_array($_SESSION['rol_id'], [1, 2, 10, 20]);
-                $titulo_v = $es_admin_r ? 'Gestión de Cursos' : 'Mis Grupos Académicos';
-                $desc_v = $es_admin_r ? 'Administre la oferta académica institucional de forma eficiente.' : 'Panel central de sus grupos y grados asignados.';
-            ?>
-            <h4 class="h3 fw-bold mb-0 text-titulo-elite"><?php echo $titulo_v; ?></h4>
-            <p class="text-secondary mb-0 small"><?php echo $desc_v; ?></p>
+            <h4 class="h3 fw-bold mb-0 text-titulo-elite">Gestión de Cursos</h4>
+            <p class="text-secondary mb-0 small">Administre la oferta académica institucional y asignación de directores de grupo.</p>
             <nav class="breadcrumb-elite" aria-label="Ruta de navegación">
                 <a href="javascript:void(0)" onclick="navegarModulo('inicio')" class="breadcrumb-link-elite"><i class="bi bi-house-door me-1"></i>Inicio</a>
                 <i class="bi bi-chevron-right breadcrumb-separator-elite"></i>
@@ -96,8 +77,7 @@ if ($puede_gestionar) {
                         <th class="py-3 ps-4 text-uppercase small fw-800 col-id">ID</th>
                         <th class="py-3 text-uppercase small fw-800">Curso</th>
                         <th class="py-3 text-uppercase small fw-800 text-center">Jornada</th>
-                        <th class="py-3 text-uppercase small fw-800 text-center">Rol en el Grupo</th>
-                        <th class="py-3 text-uppercase small fw-800 text-center">Jefe de Grupo</th>
+                        <th class="py-3 text-uppercase small fw-800 text-center">Director de Grupo</th>
                         <th class="py-3 pe-4 text-uppercase small fw-800 text-center col-actions">Operaciones</th>
                     </tr>
                 </thead>
@@ -106,33 +86,13 @@ if ($puede_gestionar) {
                     $hay_registros = false;
                     while ($row = $stmt_c->fetch(PDO::FETCH_ASSOC)) {
                         $hay_registros = true;
-                        $c_id = $row['id'];
-                        $mi_uid = (int)$_SESSION['usuario_id'];
-                        $es_admin_r = in_array($_SESSION['rol_id'], [1, 2, 10, 20]);
-                        $soy_tutor = ($mi_uid === (int)$row['tutor_id']);
-                        $tiene_tutor = ($row['tutor_id'] !== null);
+                        $c_id = (int)$row['id'];
                         $total_materias = (int)($row['total_materias'] ?? 0);
-                        
-                        // Lógica de Insignia Élite: Unificada para Admin y Docente
-                        if ($es_admin_r) {
-                            if ($tiene_tutor) {
-                                $badge_rol = "<span class='badge-elite badge-elite--info'>DIRECTOR_DE_GRUPO</span>";
-                            } else {
-                                $badge_rol = "<span class='badge-elite badge-pulse-danger-elite'><i class='bi bi-exclamation-circle me-1'></i>SIN TUTOR</span>";
-                            }
-                        } else {
-                            if ($soy_tutor) {
-                                $badge_rol = "<span class='badge-elite badge-elite--info shadow-sm'>DIRECTOR_DE_GRUPO</span>";
-                            } else {
-                                $badge_rol = "<span class='badge-elite badge-elite--neutral'>DOCENTE_CATEDRÁTICO</span>";
-                            }
-                        }
 
                         echo "<tr>";
                             echo "<td class='ps-4 text-muted fw-bold small'>#" . $c_id . "</td>";
                             echo "<td><span class='fw-semibold text-dark fs-6'>" . htmlspecialchars($row['nombre_curso'], ENT_QUOTES, 'UTF-8') . "</span></td>";
                             echo "<td class='text-center'><span class='badge-elite badge-elite--neutral'>" . htmlspecialchars(mb_strtoupper((string)($row['jornada'] ?? 'Mañana'), 'UTF-8'), ENT_QUOTES, 'UTF-8') . "</span></td>";
-                            echo "<td class='text-center'>" . $badge_rol . "</td>";
                             echo "<td class='text-center'>" . ($row['nombre_tutor'] ? "<span class='badge-elite badge-elite--info'>" . htmlspecialchars($row['nombre_tutor'], ENT_QUOTES, 'UTF-8') . "</span>" : "<span class='text-danger small fw-semibold'><i class='bi bi-person-x me-1'></i>Sin tutor asignado</span>") . "</td>";
                             echo "<td class='pe-4 text-center'>";
                                 echo "<div class='d-flex justify-content-center gap-2'>";
@@ -162,7 +122,7 @@ if ($puede_gestionar) {
                     }
                     if (!$hay_registros) {
                         echo "<tr>
-                                <td colspan='6' class='py-5 text-center'>
+                                <td colspan='5' class='py-5 text-center'>
                                     <div class='d-flex flex-column align-items-center justify-content-center py-4'>
                                         <!-- Premium Document SVG -->
                                         <svg width='100' height='100' viewBox='0 0 120 120' fill='none' class='mb-3 text-muted opacity-75'>

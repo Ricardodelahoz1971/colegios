@@ -106,7 +106,7 @@ try {
     if ($stmt->execute()) {
         $target_id = (int)$db->lastInsertId();
 
-        $pass_hash = password_hash($identificacion, PASSWORD_DEFAULT);
+        $pass_hash = password_hash('1234', PASSWORD_DEFAULT);
         
         $check_u = $db->prepare('SELECT id FROM usuarios WHERE usuario = :u');
         $check_u->execute([':u' => $identificacion]);

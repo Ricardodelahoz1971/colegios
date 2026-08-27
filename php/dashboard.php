@@ -54,7 +54,7 @@ $permisos_requeridos = [
     'roles'          => 'roles',
     'auditoria'      => 'auditoria',
     'zulu'           => 'zulu',
-    'khronos'        => 'zulu',
+    'khronos'        => 'cronograma',
     'reporte_listas' => 'estudiantes',
     'editor_preguntas' => 'evaluacion',
     'ares_canvas_lab' => 'evaluacion',
@@ -449,9 +449,9 @@ if (isset($_GET['raw'])) {
                     <?php endif; ?>
 
                     <!-- CATEGORÍA: ACADÉMICO -->
-                    <?php if ((tiene_permiso('areas') || tiene_permiso('especialidades') || tiene_permiso('cursos')) && (moduloAutorizadoMovil('areas', $mi_rol_id_enc) || moduloAutorizadoMovil('especialidades', $mi_rol_id_enc) || moduloAutorizadoMovil('cursos', $mi_rol_id_enc) || moduloAutorizadoMovil('khronos', $mi_rol_id_enc) || moduloAutorizadoMovil('reporte_listas', $mi_rol_id_enc))): ?>
+                    <?php if ((tiene_permiso('areas') || tiene_permiso('especialidades') || tiene_permiso('cursos') || tiene_permiso('zulu') || tiene_permiso('cronograma') || tiene_permiso('agenda') || tiene_permiso('estudiantes') || tiene_permiso('aula_virtual') || tiene_permiso('evaluacion')) && (moduloAutorizadoMovil('areas', $mi_rol_id_enc) || moduloAutorizadoMovil('especialidades', $mi_rol_id_enc) || moduloAutorizadoMovil('cursos', $mi_rol_id_enc) || moduloAutorizadoMovil('khronos', $mi_rol_id_enc) || moduloAutorizadoMovil('reporte_listas', $mi_rol_id_enc) || moduloAutorizadoMovil('aula_virtual_gestion', $mi_rol_id_enc) || moduloAutorizadoMovil('editor_preguntas', $mi_rol_id_enc))): ?>
                     <li class="menu-item-elite">
-                        <a href="#!" onclick="event.preventDefault()" class="menu-link-elite <?php echo (in_array($pagina, ['areas', 'especialidades', 'cursos', 'zulu', 'khronos', 'reporte_listas'])) ? 'active' : ''; ?>">
+                        <a href="#!" onclick="event.preventDefault()" class="menu-link-elite <?php echo (in_array($pagina, ['areas', 'especialidades', 'cursos', 'zulu', 'khronos', 'reporte_listas', 'aula_virtual_gestion', 'editor_preguntas', 'constructor_pruebas', 'constructor_actividades', 'calificar_pruebas', 'sabana_calificaciones'])) ? 'active' : ''; ?>">
                             <div class="d-flex align-items-center">
                                 <svg class="me-3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 17 17H20"></path><path d="M6.5 20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                                 <span>Académico</span>
@@ -474,6 +474,8 @@ if (isset($_GET['raw'])) {
                             <?php endif; ?>
                             <?php if (tiene_permiso('zulu') && moduloAutorizadoMovil('khronos', $mi_rol_id_enc)): ?>
                                 <li><a class="submenu-link-elite <?php echo ($pagina == 'zulu') ? 'active' : ''; ?>" href="dashboard.php?p=zulu" onclick="event.preventDefault(); navegarModulo('zulu')">Carga Académica</a></li>
+                            <?php endif; ?>
+                            <?php if ((tiene_permiso('zulu') || tiene_permiso('cronograma') || tiene_permiso('agenda')) && moduloAutorizadoMovil('khronos', $mi_rol_id_enc)): ?>
                                 <li><a class="submenu-link-elite <?php echo ($pagina == 'khronos') ? 'active' : ''; ?>" href="dashboard.php?p=khronos" onclick="event.preventDefault(); navegarModulo('khronos')">Horario Escolar</a></li>
                             <?php endif; ?>
                             <?php if (tiene_permiso('estudiantes') && moduloAutorizadoMovil('reporte_listas', $mi_rol_id_enc)): ?>

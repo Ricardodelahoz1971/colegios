@@ -309,7 +309,7 @@ window.nuevoPersonal = async function (btnOrRoles, listaEspecialidades) {
                 </div>
                 <div class="col-6 d-flex align-items-center">
                     <label class="label-horiz-elite">Contraseña</label>
-                    <input id="swal-pers-pass" type="password" class="input-elite" placeholder="Clave de acceso" value="123456" autocomplete="new-password">
+                    <input id="swal-pers-pass" type="password" class="input-elite" placeholder="Clave de acceso" value="1234" autocomplete="new-password">
                 </div>
                 <div class="col-6 d-flex align-items-center">
                     <label class="label-horiz-elite">Email Inst.</label>
