@@ -49,7 +49,8 @@ try {
         'privacidad_catedratico_sabana',
         'anio_lectivo_oficial',
         'politica_recuperacion',
-        'dias_gracia_recuperaciones'
+        'dias_gracia_recuperaciones',
+        'limite_horas_docente'
     ];
 
     if (!in_array($clave, $lista_blanca)) {
@@ -79,6 +80,14 @@ try {
         $val_int = filter_var($valor, FILTER_VALIDATE_INT);
         if ($val_int === false || $val_int < 0 || $val_int > 30) {
             throw new Exception("El valor para los días de holgura debe ser un número entero entre 0 y 30.");
+        }
+        $valor = (string)$val_int;
+    }
+
+    if ($clave === 'limite_horas_docente') {
+        $val_int = filter_var($valor, FILTER_VALIDATE_INT);
+        if ($val_int === false || $val_int < 1 || $val_int > 60) {
+            throw new Exception("El límite de horas semanales debe ser un número entero entre 1 y 60.");
         }
         $valor = (string)$val_int;
     }

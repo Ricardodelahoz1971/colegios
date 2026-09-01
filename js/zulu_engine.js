@@ -129,9 +129,41 @@
         }
     }
 
+    window.seleccionarCursoZulu = function(id) {
+        document.querySelectorAll('.card-curso-detalle').forEach(card => {
+            card.classList.add('d-none');
+        });
+
+        const cardSeleccionada = document.getElementById(`curso-detalle-${id}`);
+        if (cardSeleccionada) {
+            cardSeleccionada.classList.remove('d-none');
+        }
+
+        const selectorCursos = document.getElementById('selector-cursos-zulu');
+        if (selectorCursos && selectorCursos.value !== String(id)) {
+            selectorCursos.value = String(id);
+        }
+
+        document.querySelectorAll('.curso-item-zulu').forEach(button => {
+            button.classList.remove('bg-primary-subtle', 'border-primary');
+        });
+
+        const buttonActivo = document.getElementById(`curso-item-${id}`);
+        if (buttonActivo) {
+            buttonActivo.classList.add('bg-primary-subtle', 'border-primary');
+        }
+    };
+
     window.filtrarCursosZulu = function() {
-        const busqueda = document.getElementById('buscador-cursos-zulu').value.toLowerCase();
-        document.querySelectorAll('.card-curso-wrap').forEach(t => t.classList.toggle('d-none', !t.getAttribute('data-curso-nombre').includes(busqueda)));
+        const input = document.getElementById('buscador-cursos-zulu');
+        const filter = input ? input.value.toLowerCase().trim() : '';
+        const tarjetas = document.querySelectorAll('.card-curso-wrap');
+        
+        tarjetas.forEach(tarjeta => {
+            const textoCurso = (tarjeta.getAttribute('data-curso-nombre') || tarjeta.textContent).toLowerCase();
+            const coincide = textoCurso.includes(filter);
+            tarjeta.classList.toggle('d-none', !coincide);
+        });
     };
 
     window.filtrarPozo = function() {
@@ -140,8 +172,11 @@
     };
 
     window.limpiarBuscadorZulu = function() {
-        document.getElementById('buscador-cursos-zulu').value = '';
-        window.filtrarCursosZulu();
+        const buscador = document.getElementById('buscador-lateral-zulu') || document.getElementById('buscador-cursos-zulu');
+        if (buscador) {
+            buscador.value = '';
+        }
+        window.filtrarCursosZulu('');
     };
 
     window.cargarPlanMaestro = async function(nivel) {

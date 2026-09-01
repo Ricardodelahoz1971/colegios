@@ -1462,6 +1462,7 @@ body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
     border-radius: 50rem;
     border: 0.0625rem solid var(--el-border-strong); /* Retorno a 0.0625rem */
     transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 .search-wrapper-elite:focus-within {
@@ -1472,10 +1473,37 @@ body, input, button, select, textarea, .btn, .nav-link, .dropdown-item {
 .search-elite--wrapped {
     width: 100%;
     border: none;
+    outline: none;
     background: transparent;
+    border-radius: 50rem;
     padding: 0.75rem 1.25rem 0.75rem 3rem;
     font-size: 0.85rem;
     height: 2.75rem;
+    color: var(--el-dark);
+}
+
+.search-elite--wrapped:focus,
+.search-elite--wrapped:focus-visible,
+.search-wrapper-elite input,
+.search-wrapper-elite input:focus,
+.search-wrapper-elite input:focus-visible,
+.search-elite-container input:focus,
+.search-elite-container input:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Bloque de contención para autofill de navegadores WebKit */
+.search-wrapper-elite input:-webkit-autofill,
+.search-wrapper-elite input:-webkit-autofill:hover,
+.search-wrapper-elite input:-webkit-autofill:focus,
+.search-elite--wrapped:-webkit-autofill,
+.search-elite--wrapped:-webkit-autofill:hover,
+.search-elite--wrapped:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--el-white) inset;
+    -webkit-text-fill-color: var(--el-dark);
+    border-radius: 50rem;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 /* El botÃ³n de cierre ahora usa la clase estÃ¡ndar .btn-close-elite definida arriba */
