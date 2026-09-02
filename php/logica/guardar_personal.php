@@ -126,6 +126,7 @@ try {
     $fingreso = !empty($input['fecha_ingreso']) ? (string)$input['fecha_ingreso'] : date('Y-m-d');
     $contrato = trim((string)($input['tipo_contrato'] ?? 'PLANTA'));
     $estado_lab = trim((string)($input['estado_laboral'] ?? 'ACTIVO'));
+    $jornada_lab = trim((string)($input['jornada_laboral'] ?? 'Completa')) ?: 'Completa';
 
     $eps = trim((string)($input['eps'] ?? ''));
     $pension = trim((string)($input['fondo_pensiones'] ?? ''));
@@ -138,12 +139,12 @@ try {
         INSERT INTO personal_datos_adicionales (
             usuario_id, tipo_documento, documento, documento_expedicion, fecha_nacimiento, edad, genero, rh, foto,
             celular, telefono_fijo, email_personal, direccion, ciudad_residencia, barrio,
-            titulo_profesional, nivel_formacion, escalafon_docente, fecha_ingreso, tipo_contrato, estado_laboral,
+            titulo_profesional, nivel_formacion, escalafon_docente, fecha_ingreso, tipo_contrato, estado_laboral, jornada_laboral,
             eps, fondo_pensiones, arl, contacto_emergencia_nombre, contacto_emergencia_telefono, contacto_emergencia_parentesco
         ) VALUES (
             :uid, :tdoc, :doc, :doc_exp, :fnac, :edad, :gen, :rh, :foto,
             :cel, :tel, :email_p, :dir, :ciudad, :barrio,
-            :titulo, :formacion, :escalafon, :fingreso, :contrato, :estado_lab,
+            :titulo, :formacion, :escalafon, :fingreso, :contrato, :estado_lab, :jornada_lab,
             :eps, :pension, :arl, :sos_nom, :sos_tel, :sos_par
         )
     ";
@@ -170,6 +171,7 @@ try {
         ':fingreso' => $fingreso,
         ':contrato' => $contrato,
         ':estado_lab' => $estado_lab,
+        ':jornada_lab' => $jornada_lab,
         ':eps' => $eps ?: null,
         ':pension' => $pension ?: null,
         ':arl' => $arl ?: null,

@@ -21,10 +21,24 @@ if (!is_array($input)) {
 
 $docente_id = filter_var($input['docente_id'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
 $materia_id = filter_var($input['materia_id'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
-$curso_dest = filter_var($input['curso_dest'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
 $curso_orig = filter_var($input['curso_orig'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
 $accion = limpiar_texto_utf8($input['accion'] ?? 'asignar') ?: 'asignar';
 $confirmar = filter_var($input['confirmar'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+$cursos_dest = [];
+if (!empty($input['cursos_dest']) && is_array($input['cursos_dest'])) {
+    foreach ($input['cursos_dest'] as $cid) {
+        $c_val = filter_var($cid, FILTER_VALIDATE_INT);
+        if ($c_val && $c_val > 0) {
+            $cursos_dest[] = $c_val;
+        }
+    }
+} elseif (!empty($input['curso_dest'])) {
+    $c_val = filter_var($input['curso_dest'], FILTER_VALIDATE_INT);
+    if ($c_val && $c_val > 0) {
+        $cursos_dest[] = $c_val;
+    }
+}
 
 if (!$docente_id || !$materia_id) {
     echo json_encode(['success' => false, 'message' => 'Datos incompletos']);
@@ -42,38 +56,42 @@ try {
         exit;
     }
 
-    if (!$curso_dest) {
+    if (empty($cursos_dest)) {
         echo json_encode(['success' => false, 'message' => 'Curso destino no especificado']);
         exit;
     }
 
     if ($accion !== 'eliminar') {
+        // Validar límite de horas
         $stmt_horas = $db->prepare("
             SELECT COALESCE(SUM(pm.intensidad_horaria), 0)
             FROM carga_academica ca
             JOIN cursos c ON ca.curso_id = c.id
             JOIN zulu_plan_maestro pm ON pm.especialidad_id = ca.especialidad_id AND CAST(pm.nivel_nombre AS INT) = c.nivel_id
-            WHERE ca.docente_id = :doc AND NOT (ca.curso_id = :cur AND ca.especialidad_id = :esp)
+            WHERE ca.docente_id = :doc
         ");
         $stmt_horas->bindValue(':doc', $docente_id, PDO::PARAM_INT);
-        $stmt_horas->bindValue(':cur', $curso_dest, PDO::PARAM_INT);
-        $stmt_horas->bindValue(':esp', $materia_id, PDO::PARAM_INT);
         $stmt_horas->execute();
         $horas_actuales = (int)$stmt_horas->fetchColumn();
 
         $stmt_nueva_hora = $db->prepare("
-            SELECT pm.intensidad_horaria
+            SELECT COALESCE(pm.intensidad_horaria, 0)
             FROM zulu_plan_maestro pm
             JOIN cursos c ON c.id = :cur
             WHERE pm.especialidad_id = :esp AND CAST(pm.nivel_nombre AS INT) = c.nivel_id
             LIMIT 1
         ");
-        $stmt_nueva_hora->bindValue(':cur', $curso_dest, PDO::PARAM_INT);
-        $stmt_nueva_hora->bindValue(':esp', $materia_id, PDO::PARAM_INT);
-        $stmt_nueva_hora->execute();
-        $horas_nuevas = (int)$stmt_nueva_hora->fetchColumn();
+        
+        $horas_a_sumar = 0;
+        foreach ($cursos_dest as $c_id) {
+            $stmt_nueva_hora->bindValue(':cur', $c_id, PDO::PARAM_INT);
+            $stmt_nueva_hora->bindValue(':esp', $materia_id, PDO::PARAM_INT);
+            $stmt_nueva_hora->execute();
+            $h = (int)$stmt_nueva_hora->fetchColumn();
+            $horas_a_sumar += ($h > 0 ? $h : 1);
+        }
 
-        $total_proyectado = $horas_actuales + $horas_nuevas;
+        $total_proyectado = $horas_actuales + $horas_a_sumar;
 
         $limite_horas = 24;
         $stmt_lim = $db->prepare("SELECT valor FROM configuracion_global WHERE clave = 'limite_horas_docente' LIMIT 1");
@@ -92,31 +110,13 @@ try {
             echo json_encode([
                 'success' => false,
                 'conflict' => true,
-                'message' => "El docente $nombre_docente ya cuenta con $horas_actuales horas. Asignarle esta materia superará el límite configurado de $limite_horas horas semanales (Total proyectado: $total_proyectado horas). ¿Deseas autorizar esta carga como Horas Extras?"
+                'message' => "El docente $nombre_docente cuenta con $horas_actuales horas. Asignarle estos cursos sumará $horas_a_sumar horas y superará el límite configurado de $limite_horas horas semanales (Total proyectado: $total_proyectado horas). ¿Deseas autorizar esta carga?"
             ]);
             exit;
         }
     }
 
-    $stmt_chk = $db->prepare("SELECT id, docente_id FROM carga_academica WHERE curso_id = :cur AND especialidad_id = :esp");
-    $stmt_chk->bindValue(':cur', $curso_dest, PDO::PARAM_INT);
-    $stmt_chk->bindValue(':esp', $materia_id, PDO::PARAM_INT);
-    $stmt_chk->execute();
-    $existente = $stmt_chk->fetch(PDO::FETCH_ASSOC);
-
-    if ($existente && !$confirmar) {
-        $stmt_usr = $db->prepare("SELECT nombre FROM usuarios WHERE id = :id");
-        $stmt_usr->bindValue(':id', $existente['docente_id'], PDO::PARAM_INT);
-        $stmt_usr->execute();
-        $docente_actual = $stmt_usr->fetch(PDO::FETCH_ASSOC)['nombre'] ?? 'Desconocido';
-
-        echo json_encode([
-            'success' => false,
-            'conflict' => true,
-            'message' => "La materia ya está asignada a: $docente_actual. ¿Deseas reemplazarlo?"
-        ]);
-        exit;
-    }
+    $db->beginTransaction();
 
     if ($accion === 'trasladar' && $curso_orig > 0) {
         $stmt_del = $db->prepare("DELETE FROM carga_academica WHERE curso_id = :orig AND especialidad_id = :esp AND docente_id = :doc");
@@ -126,22 +126,41 @@ try {
         $stmt_del->execute();
     }
 
-    if ($existente) {
-        $stmt_upd = $db->prepare("UPDATE carga_academica SET docente_id = :doc WHERE id = :id");
-        $stmt_upd->bindValue(':doc', $docente_id, PDO::PARAM_INT);
-        $stmt_upd->bindValue(':id', $existente['id'], PDO::PARAM_INT);
-        $stmt_upd->execute();
-    } else {
-        $stmt_ins = $db->prepare("INSERT INTO carga_academica (curso_id, especialidad_id, docente_id) VALUES (:cur, :esp, :doc)");
-        $stmt_ins->bindValue(':cur', $curso_dest, PDO::PARAM_INT);
-        $stmt_ins->bindValue(':esp', $materia_id, PDO::PARAM_INT);
-        $stmt_ins->bindValue(':doc', $docente_id, PDO::PARAM_INT);
-        $stmt_ins->execute();
+    $stmt_chk = $db->prepare("SELECT id, docente_id FROM carga_academica WHERE curso_id = :cur AND especialidad_id = :esp");
+    $stmt_upd = $db->prepare("UPDATE carga_academica SET docente_id = :doc WHERE id = :id");
+    $stmt_ins = $db->prepare("INSERT INTO carga_academica (curso_id, especialidad_id, docente_id) VALUES (:cur, :esp, :doc)");
+
+    $asignadosCount = 0;
+    foreach ($cursos_dest as $c_dest) {
+        $stmt_chk->bindValue(':cur', $c_dest, PDO::PARAM_INT);
+        $stmt_chk->bindValue(':esp', $materia_id, PDO::PARAM_INT);
+        $stmt_chk->execute();
+        $existente = $stmt_chk->fetch(PDO::FETCH_ASSOC);
+
+        if ($existente) {
+            $stmt_upd->bindValue(':doc', $docente_id, PDO::PARAM_INT);
+            $stmt_upd->bindValue(':id', $existente['id'], PDO::PARAM_INT);
+            $stmt_upd->execute();
+        } else {
+            $stmt_ins->bindValue(':cur', $c_dest, PDO::PARAM_INT);
+            $stmt_ins->bindValue(':esp', $materia_id, PDO::PARAM_INT);
+            $stmt_ins->bindValue(':doc', $docente_id, PDO::PARAM_INT);
+            $stmt_ins->execute();
+        }
+        $asignadosCount++;
     }
 
-    echo json_encode(['success' => true, 'message' => 'Carga académica actualizada correctamente']);
+    $db->commit();
+
+    $msg = ($asignadosCount > 1) 
+        ? "Carga académica replicada con éxito en {$asignadosCount} cursos del nivel." 
+        : "Carga académica actualizada correctamente.";
+
+    echo json_encode(['success' => true, 'message' => $msg]);
 
 } catch (Exception $e) {
+    if ($db->inTransaction()) {
+        $db->rollBack();
+    }
     echo json_encode(['success' => false, 'message' => 'Error de base de datos: ' . $e->getMessage()]);
 }
-?>

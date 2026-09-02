@@ -429,6 +429,16 @@ window.nuevoPersonal = async function (btnOrRoles, listaEspecialidades) {
                     </select>
                 </div>
                 <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite" for="swal-pers-jornada">Jornada</label>
+                    <select id="swal-pers-jornada" name="jornada_laboral" class="select-elite">
+                        <option value="Completa" selected>Completa / Mixta</option>
+                        <option value="Mañana">Mañana</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noche">Noche</option>
+                        <option value="Sabatina">Sabatina</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
                     <label class="label-horiz-elite">EPS</label>
                     <input id="swal-pers-eps" class="input-elite" placeholder="Entidad de Salud">
                 </div>
@@ -555,7 +565,8 @@ window.nuevoPersonal = async function (btnOrRoles, listaEspecialidades) {
                 escalafon_docente: document.getElementById('swal-pers-escalafon').value.trim(),
                 fecha_ingreso: document.getElementById('swal-pers-fingreso').value,
                 tipo_contrato: document.getElementById('swal-pers-contrato').value,
-                estado_laboral: document.getElementById('swal-pers-estado').value,
+                estado_laboral: document.getElementById('swal-pers-estado-lab') ? document.getElementById('swal-pers-estado-lab').value : document.getElementById('swal-pers-estado').value,
+                jornada_laboral: document.getElementById('swal-pers-jornada') ? document.getElementById('swal-pers-jornada').value : 'Completa',
                 eps: document.getElementById('swal-pers-eps').value.trim(),
                 fondo_pensiones: document.getElementById('swal-pers-pension').value.trim(),
                 arl: document.getElementById('swal-pers-arl').value.trim(),
@@ -843,6 +854,16 @@ window.editarPersonal = async function (id, dOrBtn, listaRoles, listaEspecialida
                     </select>
                 </div>
                 <div class="col-6 d-flex align-items-center">
+                    <label class="label-horiz-elite" for="swal-pers-jornada">Jornada</label>
+                    <select id="swal-pers-jornada" name="jornada_laboral" class="select-elite">
+                        <option value="Completa" ${(d.jornada_laboral || 'Completa') === 'Completa' ? 'selected' : ''}>Completa / Mixta</option>
+                        <option value="Mañana" ${d.jornada_laboral === 'Mañana' ? 'selected' : ''}>Mañana</option>
+                        <option value="Tarde" ${d.jornada_laboral === 'Tarde' ? 'selected' : ''}>Tarde</option>
+                        <option value="Noche" ${d.jornada_laboral === 'Noche' ? 'selected' : ''}>Noche</option>
+                        <option value="Sabatina" ${d.jornada_laboral === 'Sabatina' ? 'selected' : ''}>Sabatina</option>
+                    </select>
+                </div>
+                <div class="col-6 d-flex align-items-center">
                     <label class="label-horiz-elite">EPS</label>
                     <input id="swal-pers-eps" class="input-elite" placeholder="Entidad de Salud" value="${d.eps || ''}">
                 </div>
@@ -970,7 +991,8 @@ window.editarPersonal = async function (id, dOrBtn, listaRoles, listaEspecialida
                 escalafon_docente: document.getElementById('swal-pers-escalafon').value.trim(),
                 fecha_ingreso: document.getElementById('swal-pers-fingreso').value,
                 tipo_contrato: document.getElementById('swal-pers-contrato').value,
-                estado_laboral: document.getElementById('swal-pers-estado').value,
+                estado_laboral: document.getElementById('swal-pers-estado-lab') ? document.getElementById('swal-pers-estado-lab').value : document.getElementById('swal-pers-estado').value,
+                jornada_laboral: document.getElementById('swal-pers-jornada') ? document.getElementById('swal-pers-jornada').value : 'Completa',
                 eps: document.getElementById('swal-pers-eps').value.trim(),
                 fondo_pensiones: document.getElementById('swal-pers-pension').value.trim(),
                 arl: document.getElementById('swal-pers-arl').value.trim(),

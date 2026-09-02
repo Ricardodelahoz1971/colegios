@@ -88,7 +88,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
     
     <?php 
     $stmt_plantilla = $db->prepare("
-        SELECT c.id as curso_id, c.nombre_curso, c.nivel_id, u_tutor.nombre as nombre_tutor,
+        SELECT c.id as curso_id, c.nombre_curso, c.nivel_id, c.jornada, u_tutor.nombre as nombre_tutor,
                e.nombre_especialidad as materia_nombre, u_doc.nombre as docente_nombre,
                u_doc.id as docente_id, e.id as materia_id
         FROM cursos c
@@ -120,6 +120,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
             $data_agrupada[$c_id] = [
                 'nombre'   => $row['nombre_curso'],
                 'nivel_id' => $row['nivel_id'],
+                'jornada'  => $row['jornada'] ?? 'Mañana',
                 'tutor'    => $row['nombre_tutor'],
                 'carga'    => []
             ];
@@ -189,6 +190,9 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                 <div class="col-md-6 col-12 card-curso-wrap" data-curso-nombre="<?php echo strtolower($info['nombre']); ?>">
                     <div class="card card-zulu-elite border-0 shadow-sm rounded-4 position-relative <?php echo $border_class; ?>"
                          data-curso-dest="<?php echo $id_cur; ?>"
+                         data-nivel-id="<?php echo $nivel_id; ?>"
+                         data-curso-nombre="<?php echo htmlspecialchars($info['nombre']); ?>"
+                         data-curso-jornada="<?php echo htmlspecialchars($info['jornada'] ?? 'Mañana'); ?>"
                          data-materias-faltantes='<?php echo json_encode(array_values($materias_faltantes)); ?>'
                          data-materias-nombres-faltantes='<?php echo json_encode(array_values($nombres_faltantes)); ?>'
                          <?php if($can_edit_census): ?>
@@ -282,6 +286,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                             <?php 
                             $stmt_docentes_side = $db->prepare("
                                 SELECT u.id, u.nombre, u.especialidad_id as esp_id, e.nombre_especialidad,
+                                COALESCE(da.jornada_laboral, 'Completa') as jornada_laboral,
                                 (SELECT SUM(pm.intensidad_horaria) 
                                  FROM carga_academica ca
                                  JOIN cursos c ON ca.curso_id = c.id
@@ -289,6 +294,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                                  WHERE ca.docente_id = u.id) as total_horas
                                 FROM usuarios u
                                 LEFT JOIN especialidades e ON u.especialidad_id = e.id
+                                LEFT JOIN personal_datos_adicionales da ON u.id = da.usuario_id
                                 WHERE u.rol_id IN (11, 19, 20) OR (u.permisos_custom = 1 AND u.rol_id NOT IN (1, 2))
                                 ORDER BY u.nombre ASC
                             ");
@@ -301,14 +307,21 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                                  draggable="true" ondragstart="handleDragStartPozo(event)"
                                  data-docente-id="<?php echo $doc['id']; ?>"
                                  data-especialidad-id="<?php echo $doc['esp_id']; ?>"
-                                 data-docente-nombre="<?php echo htmlspecialchars($doc['nombre']); ?>">
+                                 data-docente-nombre="<?php echo htmlspecialchars($doc['nombre']); ?>"
+                                 data-docente-materia="<?php echo htmlspecialchars($doc['nombre_especialidad'] ?? ''); ?>"
+                                 data-docente-jornada="<?php echo htmlspecialchars($doc['jornada_laboral']); ?>">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center overflow-hidden">
                                         <div class="avatar-elite--sm avatar-elite--circle me-2">
                                             <?php echo strtoupper(substr($doc['nombre'], 0, 1)); ?>
                                         </div>
                                         <div class="overflow-hidden">
-                                            <div class="fw-bold small text-dark text-truncate text-uppercase"><?php echo htmlspecialchars($doc['nombre']); ?></div>
+                                            <div class="d-flex align-items-center gap-1">
+                                                <div class="fw-bold small text-dark text-truncate text-uppercase"><?php echo htmlspecialchars($doc['nombre']); ?></div>
+                                                <?php if ($doc['jornada_laboral'] !== 'Completa'): ?>
+                                                    <span class="badge-elite badge-elite--info fs-nano py-0 px-1 text-uppercase"><?php echo htmlspecialchars($doc['jornada_laboral']); ?></span>
+                                                <?php endif; ?>
+                                            </div>
                                             <div class="text-secondary fs-nano text-uppercase opacity-75 text-truncate">
                                                 <?php echo htmlspecialchars($doc['nombre_especialidad'] ?? 'DOCENTE'); ?>
                                             </div>
@@ -333,7 +346,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
 
 <!-- MODAL PLAN MAESTRO -->
 <div class="modal fade animate__animated animate__fadeIn" id="modalPlanMaster" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-stable">
         <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
             <div class="modal-header bg-primary text-white border-0 py-3 px-4">
                 <h5 class="modal-title fw-bold text-uppercase">Intensidad Horaria</h5>
@@ -353,18 +366,32 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                     </select>
                 </div>
 
-                <div class="mb-2 d-flex justify-content-between align-items-center">
+                <div class="mb-3 d-flex justify-content-between align-items-center">
                     <h6 class="fw-bold text-dark text-uppercase small mb-0">2. Malla Curricular Obligatoria</h6>
-                    <span class="badge-elite badge-elite--info">Horas / Sem</span>
+                    <span id="badge-total-horas-plan" class="badge-elite badge-elite--info">Total: <strong id="total-horas-plan-val">0</strong> h/sem</span>
                 </div>
                 
-                <div class="row g-2 overflow-auto max-h-400" id="lista-materias-plan">
+                <!-- PESTAÑAS POR ÁREA (ZERO SCROLL) -->
+                <nav class="zulu-plan-tabs" id="tabs-plan-areas" role="tablist">
+                    <button type="button" class="zulu-tab-pill active" data-area-tab="todas" onclick="filtrarPlanTab('todas')">Todas</button>
+                    <button type="button" class="zulu-tab-pill" data-area-tab="1" onclick="filtrarPlanTab('1')">Matemáticas</button>
+                    <button type="button" class="zulu-tab-pill" data-area-tab="2" onclick="filtrarPlanTab('2')">Ciencias</button>
+                    <button type="button" class="zulu-tab-pill" data-area-tab="8" onclick="filtrarPlanTab('8')">Humanidades / Inglés</button>
+                    <button type="button" class="zulu-tab-pill" data-area-tab="3" onclick="filtrarPlanTab('3')">Sociales</button>
+                    <button type="button" class="zulu-tab-pill" data-area-tab="4" onclick="filtrarPlanTab('4')">Artes</button>
+                    <button type="button" class="zulu-tab-pill" data-area-tab="9" onclick="filtrarPlanTab('9')">Tecnología</button>
+                    <button type="button" class="zulu-tab-pill" data-area-tab="otras" onclick="filtrarPlanTab('otras')">Otras</button>
+                </nav>
+
+                <div class="row g-2" id="lista-materias-plan">
                     <?php 
-                    $stmt_mats = $db->prepare("SELECT id, nombre_especialidad, nivel_desde, nivel_hasta FROM especialidades ORDER BY nombre_especialidad ASC");
+                    $stmt_mats = $db->prepare("SELECT id, nombre_especialidad, area_id, nivel_desde, nivel_hasta FROM especialidades ORDER BY area_id ASC, nombre_especialidad ASC");
                     $stmt_mats->execute();
                     $res_mats = $stmt_mats;
-                    while($rm = $res_mats->fetch(PDO::FETCH_ASSOC)): ?>
-                        <div class="col-md-6 card-materia-item" data-nivel-desde="<?php echo $rm['nivel_desde'] ?? 1; ?>" data-nivel-hasta="<?php echo $rm['nivel_hasta'] ?? 11; ?>">
+                    while($rm = $res_mats->fetch(PDO::FETCH_ASSOC)): 
+                        $area_id = $rm['area_id'] ?? 0;
+                    ?>
+                        <div class="col-md-6 card-materia-item" data-area-id="<?php echo $area_id; ?>" data-nivel-desde="<?php echo $rm['nivel_desde'] ?? 1; ?>" data-nivel-hasta="<?php echo $rm['nivel_hasta'] ?? 11; ?>">
                             <div class="p-2 rounded-3 border bg-white h-100 d-flex align-items-center justify-content-between">
                                 <div class="m-0 d-flex align-items-center">
                                     <input class="form-check-input-elite chk-materia-plan me-2" type="checkbox" value="<?php echo $rm['id']; ?>" id="chk-mat-<?php echo $rm['id']; ?>" onchange="toggleIntensidad(<?php echo $rm['id']; ?>, this.checked)">
@@ -372,7 +399,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                                         <?php echo htmlspecialchars($rm['nombre_especialidad']); ?>
                                     </label>
                                 </div>
-                                <input type="number" id="intensidad-mat-<?php echo $rm['id']; ?>" class="input-elite zulu-intensidad-input text-center fw-bold text-primary h-35 rounded-3 fs-md-elite" value="1" min="1" max="20" disabled>
+                                <input type="number" id="intensidad-mat-<?php echo $rm['id']; ?>" class="input-elite zulu-intensidad-input text-center fw-bold text-primary h-35 rounded-3 fs-md-elite" value="1" min="1" max="20" disabled oninput="recalcularTotalHorasPlan()">
                             </div>
                         </div>
                     <?php endwhile; ?>
@@ -380,7 +407,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
             </div>
             <div class="modal-footer border-0 p-4 bg-light">
                 <button type="button" class="btn-elite btn-elite--outline px-4" data-bs-dismiss="modal">CANCELAR</button>
-                <button type="button" class="btn-elite px-4" onclick="guardarPlanMaestro()">GUARDAR PROTOCOLO</button>
+                <button type="button" class="btn-elite px-4" onclick="guardarPlanMaestro()">GUARDAR</button>
             </div>
         </div>
     </div>

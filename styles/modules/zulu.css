@@ -56,4 +56,106 @@
 .zulu-pozo-scroll::-webkit-scrollbar-thumb:hover {
     background: rgba(var(--el-primary-rgb), 0.5);
 }
+
+/* MODAL PLAN MAESTRO / INTENSIDAD HORARIA SIN SCROLL */
+.zulu-plan-tabs {
+    display: flex;
+    gap: 0.375rem;
+    overflow-x: auto;
+    padding-block-end: 0.5rem;
+    margin-block-end: 1rem;
+    scrollbar-width: none;
+}
+
+.zulu-plan-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.zulu-tab-pill {
+    height: 36px;
+    padding-inline: 0.875rem;
+    border-radius: var(--el-radius-sub);
+    border: 1px solid var(--el-border-light);
+    background: var(--el-surface-secondary);
+    color: var(--el-text-muted);
+    font-family: var(--el-font-institutional);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zulu-tab-pill:hover {
+    background: rgba(var(--el-primary-rgb), 0.08);
+    color: var(--el-primary);
+}
+
+.zulu-tab-pill.active {
+    background: var(--el-primary);
+    color: var(--el-white);
+    border-color: var(--el-primary);
+    box-shadow: 0 4px 12px rgba(var(--el-primary-rgb), 0.2);
+}
+
+.card-materia-item .p-2 {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-materia-item .p-2:hover {
+    border-color: rgba(var(--el-primary-rgb), 0.3);
+    box-shadow: 0 2px 8px rgba(var(--el-primary-rgb), 0.08);
+}
+
+/* ESTABILIDAD VISUAL DEL MODAL (CRECIMIENTO NATURAL HACIA ABAJO) */
+.modal-dialog-stable {
+    margin-block-start: 6vh;
+    margin-inline: auto;
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#lista-materias-plan {
+    min-block-size: 13.5rem;
+    align-content: flex-start;
+    transition: min-block-size 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* QUICK-FILTER TYPEAHEAD POZO DOCENTES (VITRINA 06) */
+#pozo-docentes {
+    position: relative;
+}
+
+.docente-pozo-item {
+    transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.zulu-filter-hud {
+    position: absolute;
+    inset-block-start: 0.5rem;
+    inset-inline-end: 0.5rem;
+    z-index: 10;
+    padding-block: 0.25rem;
+    padding-inline: 0.75rem;
+    border-radius: var(--el-radius-pill, 9999px);
+    background: var(--el-card-bg, rgba(255, 255, 255, 0.95));
+    border: 1px solid var(--el-border);
+    box-shadow: 0 4px 12px rgba(var(--el-primary-rgb), 0.15);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--el-primary);
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+    transition: opacity 0.24s cubic-bezier(0.4, 0, 0.2, 1), transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.zulu-filter-hud.zulu-filter-hud-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
 } /* Fin de @layer modules */
