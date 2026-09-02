@@ -42,11 +42,12 @@ try {
         }
     }
 
-    $stmt_check = $db->prepare('SELECT COUNT(*) FROM cursos WHERE nombre_curso = :nom');
+    $stmt_check = $db->prepare('SELECT COUNT(*) FROM cursos WHERE nombre_curso = :nom AND jornada = :jor');
     $stmt_check->bindValue(':nom', $nombre, PDO::PARAM_STR);
+    $stmt_check->bindValue(':jor', $jornada, PDO::PARAM_STR);
     $stmt_check->execute();
     if ((int)$stmt_check->fetchColumn() > 0) {
-        throw new Exception("Ya existe un curso registrado con ese nombre.");
+        throw new Exception("Ya existe un curso registrado con ese nombre en la jornada " . $jornada . ".");
     }
 
     $stmt = $db->prepare('INSERT INTO cursos (nombre_curso, tutor_id, nivel_id, jornada) VALUES (:nom, :tut, :niv, :jor)');

@@ -187,7 +187,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                         $badge_text = 'Carga completa';
                     }
                 ?>
-                <div class="col-md-6 col-12 card-curso-wrap" data-curso-nombre="<?php echo strtolower($info['nombre']); ?>">
+                <div class="col-md-6 col-12 card-curso-wrap" data-curso-nombre="<?php echo strtolower($info['nombre'] . ' ' . ($info['jornada'] ?? '')); ?>">
                     <div class="card card-zulu-elite border-0 shadow-sm rounded-4 position-relative <?php echo $border_class; ?>"
                          data-curso-dest="<?php echo $id_cur; ?>"
                          data-nivel-id="<?php echo $nivel_id; ?>"
@@ -201,8 +201,9 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                         
                         <div class="card-body p-3">
                             <div class="mb-2">
-                                <div class="text-truncate text-nowrap mb-2" title="<?php echo htmlspecialchars($info['nombre'] . ' - DIR: ' . ($info['tutor'] ?? 'SIN ASIGNAR')); ?>">
+                                <div class="text-truncate text-nowrap mb-2" title="<?php echo htmlspecialchars($info['nombre'] . ' (' . ($info['jornada'] ?? 'Mañana') . ') - DIR: ' . ($info['tutor'] ?? 'SIN ASIGNAR')); ?>">
                                     <span class="fw-bold text-primary text-uppercase small"><?php echo htmlspecialchars($info['nombre']); ?></span>
+                                    <span class="badge badge-elite badge-elite--neutral fs-nano ms-1 text-uppercase"><?php echo htmlspecialchars($info['jornada'] ?? 'Mañana'); ?></span>
                                     <span class="text-secondary fs-nano fw-bold text-uppercase ms-1">- DIR: <?php echo htmlspecialchars($info['tutor'] ?? 'SIN ASIGNAR'); ?></span>
                                 </div>
                                 <div>
