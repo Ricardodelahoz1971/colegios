@@ -358,7 +358,7 @@ if ($chat_con_id > 0 && $chat_type === 'group') {
                                 <div class="contact-item d-flex align-items-center cursor-pointer <?php echo ($chat_con_id == $c['id'] && $chat_type === 'direct') ? 'is-active-elite' : ''; ?>" 
                                      onclick="abrirChat(<?php echo $c['id']; ?>, 'direct')" data-user-id="<?php echo $c['id']; ?>" data-unread="<?php echo $c['no_leidos'] > 0 ? '1' : '0'; ?>" data-urgent="<?php echo ($c['no_leidos_urgentes'] ?? 0) > 0 ? '1' : '0'; ?>">
                                     <div class="avatar-elite--sm avatar-elite--circle me-3 bg-primary bg-opacity-10 text-primary position-relative">
-                                        <?php echo strtoupper(substr($c['nombre'], 0, 1)); ?>
+                                        <?php echo inicial_texto_utf8($c['nombre']); ?>
                                         <?php if ($c['online']): ?><span class="status-indicator online"></span><?php endif; ?>
                                     </div>
                                     <div class="flex-grow-1 overflow-hidden">
@@ -387,7 +387,7 @@ if ($chat_con_id > 0 && $chat_type === 'group') {
                                 <div class="contact-item d-flex align-items-center cursor-pointer <?php echo ($chat_con_id == $e['id'] && $chat_type === 'direct') ? 'is-active-elite' : ''; ?>" 
                                      onclick="abrirChat(<?php echo $e['id']; ?>, 'direct')" data-user-id="<?php echo $e['id']; ?>" data-unread="<?php echo $e['no_leidos'] > 0 ? '1' : '0'; ?>" data-urgent="<?php echo ($e['no_leidos_urgentes'] ?? 0) > 0 ? '1' : '0'; ?>">
                                     <div class="avatar-elite--sm avatar-elite--circle me-3 bg-success bg-opacity-10 text-success position-relative">
-                                        <?php echo strtoupper(substr($e['nombre'], 0, 1)); ?>
+                                        <?php echo inicial_texto_utf8($e['nombre']); ?>
                                         <?php if ($e['online']): ?><span class="status-indicator online"></span><?php endif; ?>
                                     </div>
                                     <div class="flex-grow-1 overflow-hidden">
@@ -422,7 +422,7 @@ if ($chat_con_id > 0 && $chat_type === 'group') {
                     </button>
                     
                     <div class="avatar-elite--sm avatar-elite--circle me-3 <?php echo ($chat_type === 'group' ? 'bg-primary bg-opacity-10 text-primary' : 'bg-success bg-opacity-10 text-success'); ?>">
-                        <?php echo ($chat_type === 'group' ? '#' : strtoupper(substr($chat_nombre, 0, 1))); ?>
+                        <?php echo ($chat_type === 'group' ? '#' : inicial_texto_utf8($chat_nombre)); ?>
                     </div>
                     <div class="overflow-hidden">
                         <div class="elite-chat-contact-name text-dark fs-6 fw-bold text-truncate"><?php echo htmlspecialchars($chat_nombre); ?></div>

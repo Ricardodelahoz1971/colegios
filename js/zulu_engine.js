@@ -321,22 +321,64 @@
 
     window.filtrarCursosZulu = function() {
         const input = document.getElementById('buscador-cursos-zulu');
-        const filter = input ? input.value.toLowerCase().trim() : '';
+        const filter = input ? input.value.trim() : '';
         window.ZULU_CURSO_FILTRO = filter;
         const tarjetas = document.querySelectorAll('.card-curso-wrap');
         
+        if (!filter) {
+            tarjetas.forEach(tarjeta => tarjeta.classList.remove('d-none'));
+            return;
+        }
+
+        const tokens = filter
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .split(/\s+/)
+            .filter(t => t.length > 0);
+
         tarjetas.forEach(tarjeta => {
-            const textoCurso = (tarjeta.getAttribute('data-curso-nombre') || tarjeta.textContent).toLowerCase();
-            const coincide = textoCurso.includes(filter);
+            const rawSearch = tarjeta.getAttribute('data-curso-search') || tarjeta.getAttribute('data-curso-nombre') || tarjeta.textContent;
+            const normalizedText = (rawSearch || '')
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+
+            const coincide = tokens.every(token => normalizedText.includes(token));
             tarjeta.classList.toggle('d-none', !coincide);
         });
     };
 
     window.filtrarPozo = function() {
         const input = document.getElementById('busqueda-pozo');
-        const busqueda = input ? input.value.toLowerCase().trim() : '';
+        const busqueda = input ? input.value.trim() : '';
         sessionStorage.setItem('zulu_filtro_pozo', busqueda);
-        document.querySelectorAll('.docente-pozo-item').forEach(item => item.classList.toggle('d-none', !item.getAttribute('data-docente-nombre').toLowerCase().includes(busqueda)));
+        const items = document.querySelectorAll('.docente-pozo-item');
+
+        if (!busqueda) {
+            items.forEach(item => item.classList.remove('d-none'));
+            return;
+        }
+
+        const tokens = busqueda
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .split(/\s+/)
+            .filter(t => t.length > 0);
+
+        items.forEach(item => {
+            const nom = item.getAttribute('data-docente-nombre') || '';
+            const mat = item.getAttribute('data-docente-materia') || '';
+            const jor = item.getAttribute('data-docente-jornada') || '';
+            const target = `${nom} ${mat} ${jor}`
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+
+            const coincide = tokens.every(token => target.includes(token));
+            item.classList.toggle('d-none', !coincide);
+        });
     };
 
     window.limpiarBuscadorZulu = function() {

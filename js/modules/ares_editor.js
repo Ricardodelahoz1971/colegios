@@ -817,10 +817,29 @@ function limpiarHTML(html) {
 }
 
 function filtrarBanco() {
-    const txt = document.getElementById('buscar-pregunta').value.toLowerCase();
-    document.querySelectorAll('.reactivo-item').forEach(item => {
-        const matches = item.textContent.toLowerCase().includes(txt);
-        item.classList.toggle('u-hidden', !matches);
+    const rawTxt = (document.getElementById('buscar-pregunta')?.value || '').trim();
+    const items = document.querySelectorAll('.reactivo-item');
+
+    if (!rawTxt) {
+        items.forEach(item => item.classList.remove('u-hidden'));
+        return;
+    }
+
+    const tokens = rawTxt
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(t => t.length > 0);
+
+    items.forEach(item => {
+        const itemTxt = (item.textContent || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
+
+        const matchesAll = tokens.every(token => itemTxt.includes(token));
+        item.classList.toggle('u-hidden', !matchesAll);
     });
 }
 

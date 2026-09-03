@@ -186,8 +186,19 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                         $badge_class = 'bg-success text-white';
                         $badge_text = 'Carga completa';
                     }
+
+                    $search_parts = [
+                        $info['nombre'],
+                        $info['jornada'] ?? 'Mañana',
+                        $info['tutor'] ?? ''
+                    ];
+                    foreach ($carga_unificada as $cu) {
+                        if (!empty($cu['materia'])) $search_parts[] = $cu['materia'];
+                        if (!empty($cu['docente']) && $cu['docente'] !== 'SIN DOCENTE') $search_parts[] = $cu['docente'];
+                    }
+                    $search_index = mb_strtolower(implode(' ', array_filter($search_parts)), 'UTF-8');
                 ?>
-                <div class="col-md-6 col-12 card-curso-wrap" data-curso-nombre="<?php echo strtolower($info['nombre'] . ' ' . ($info['jornada'] ?? '')); ?>">
+                <div class="col-md-6 col-12 card-curso-wrap" data-curso-search="<?php echo htmlspecialchars($search_index, ENT_QUOTES, 'UTF-8'); ?>" data-curso-nombre="<?php echo htmlspecialchars($info['nombre'] . ' ' . ($info['jornada'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                     <div class="card card-zulu-elite border-0 shadow-sm rounded-4 position-relative <?php echo $border_class; ?>"
                          data-curso-dest="<?php echo $id_cur; ?>"
                          data-nivel-id="<?php echo $nivel_id; ?>"
@@ -250,7 +261,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                                                  <?php endif; ?>>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar-elite--sm avatar-elite--circle me-3 <?php echo $es_slot ? 'opacity-25' : ''; ?>">
-                                                        <?php echo strtoupper(substr($item['materia'], 0, 1)); ?>
+                                                        <?php echo inicial_texto_utf8($item['materia']); ?>
                                                     </div>
                                                     <div class="flex-grow-1 overflow-hidden">
                                                         <div class="fw-bold fs-nano <?php echo $es_slot ? 'text-secondary opacity-50' : 'text-dark'; ?> text-truncate text-uppercase"><?php echo htmlspecialchars($item['materia']); ?></div>
@@ -314,7 +325,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center overflow-hidden">
                                         <div class="avatar-elite--sm avatar-elite--circle me-2">
-                                            <?php echo strtoupper(substr($doc['nombre'], 0, 1)); ?>
+                                            <?php echo inicial_texto_utf8($doc['nombre']); ?>
                                         </div>
                                         <div class="overflow-hidden">
                                             <div class="d-flex align-items-center gap-1">

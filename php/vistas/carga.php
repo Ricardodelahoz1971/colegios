@@ -160,7 +160,7 @@ $stmt_d = $stmt_d_raw;
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar-user me-2 bg-primary text-white d-flex align-items-center justify-content-center fw-bold small">
-                                                    <?php echo strtoupper(substr($c['profesor'], 0, 1)); ?>
+                                                    <?php echo inicial_texto_utf8($c['profesor']); ?>
                                                 </div>
                                                 <div class="fw-semibold text-dark small"><?php echo htmlspecialchars($c['profesor']); ?></div>
                                             </div>

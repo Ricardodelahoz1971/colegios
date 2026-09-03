@@ -212,4 +212,18 @@ function limpiar_texto_utf8(?string $texto): string {
     $limpio = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $t);
     return $limpio !== null ? $limpio : $t;
 }
+
+/**
+ * Obtiene la inicial de un texto de forma 100% segura para UTF-8 y caracteres multibyte (tildes, eñes).
+ *
+ * @param string|null $texto Texto del cual extraer la inicial
+ * @param int $longitud Número de caracteres a extraer (por defecto 1)
+ * @return string Inicial(es) en mayúscula(s) o cadena vacía si el texto es null/vacío
+ */
+function inicial_texto_utf8(?string $texto, int $longitud = 1): string {
+    if ($texto === null || trim($texto) === '') {
+        return '';
+    }
+    return mb_strtoupper(mb_substr(trim($texto), 0, $longitud, 'UTF-8'), 'UTF-8');
+}
 ?>

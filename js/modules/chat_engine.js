@@ -220,16 +220,26 @@ window.enviarMasivo = async function() {
 
 // APLICACIÓN DE FILTROS EN BARRA LATERAL (Vitrina 06 - BEM-Elite)
 function applyContactFilters() {
-    const term = document.getElementById('buscar-contacto')?.value.toLowerCase() || '';
+    const rawTerm = (document.getElementById('buscar-contacto')?.value || '').trim();
     const unreadOnly = document.getElementById('filter-unread')?.classList.contains('is-active') || false;
     const urgentOnly = document.getElementById('filter-urgent')?.classList.contains('is-active') || false;
 
+    const tokens = rawTerm
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(t => t.length > 0);
+
     document.querySelectorAll('.contact-item').forEach(item => {
-        const name = item.querySelector('.elite-chat-contact-name')?.textContent.toLowerCase() || '';
+        const name = (item.querySelector('.elite-chat-contact-name')?.textContent || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
         const isUnread = item.getAttribute('data-unread') === '1';
         const isUrgent = item.getAttribute('data-urgent') === '1';
 
-        const matchesSearch = name.includes(term);
+        const matchesSearch = tokens.length === 0 || tokens.every(token => name.includes(token));
         const matchesUnread = !unreadOnly || isUnread;
         const matchesUrgent = !urgentOnly || isUrgent;
 

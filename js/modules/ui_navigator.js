@@ -86,21 +86,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LÓGICA DE BÚSQUEDA DINÁMICA UNIVERSAL (Filtros SPA) ---
     window.aplicarFiltroElite = function(valor = null) {
         const buscador = document.querySelector('.buscador-dinamico');
-        if (!buscador) return;
+        if (!buscador && valor === null) return;
         
-        const termino = (valor !== null ? valor : buscador.value).toLowerCase();
+        const rawTerm = (valor !== null ? valor : (buscador?.value || '')).toString().trim();
         const tabla = document.querySelector('.tabla-datos');
         if (!tabla) return;
 
         const filas = tabla.querySelectorAll('tbody tr');
         const btnClear = document.querySelector('.btn-clear-search');
         
+        if (!rawTerm) {
+            filas.forEach(fila => fila.classList.remove('u-hidden'));
+            if (btnClear) btnClear.classList.add('u-hidden');
+            return;
+        }
+
+        const tokens = rawTerm
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .split(/\s+/)
+            .filter(t => t.length > 0);
+
         filas.forEach(fila => {
-            const texto = fila.textContent.toLowerCase();
-            fila.classList.toggle('u-hidden', !texto.includes(termino));
+            if (fila.querySelector('td[colspan]')) return;
+
+            const rowText = (fila.textContent || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase();
+
+            const matchesAll = tokens.every(token => rowText.includes(token));
+            fila.classList.toggle('u-hidden', !matchesAll);
         });
 
-        if (btnClear) btnClear.classList.toggle('u-hidden', termino.length === 0);
+        if (btnClear) btnClear.classList.toggle('u-hidden', rawTerm.length === 0);
     };
 
     document.addEventListener('input', function(e) {

@@ -414,9 +414,29 @@ async function eliminarPrueba(id) {
 }
 
 function filtrarBancoConstruct() {
-    const txt = document.getElementById('buscar-banco-construct').value.toLowerCase();
-    document.querySelectorAll('.reactivo-banco-item').forEach(item => {
-        item.classList.toggle('u-hidden', !item.textContent.toLowerCase().includes(txt));
+    const rawTxt = (document.getElementById('buscar-banco-construct')?.value || '').trim();
+    const items = document.querySelectorAll('.reactivo-banco-item');
+
+    if (!rawTxt) {
+        items.forEach(item => item.classList.remove('u-hidden'));
+        return;
+    }
+
+    const tokens = rawTxt
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(t => t.length > 0);
+
+    items.forEach(item => {
+        const itemTxt = (item.textContent || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
+
+        const matchesAll = tokens.every(token => itemTxt.includes(token));
+        item.classList.toggle('u-hidden', !matchesAll);
     });
 }
 
