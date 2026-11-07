@@ -20,6 +20,26 @@ try {
     session_write_close();
     $accion = filter_input(INPUT_POST, 'accion') ?? $_GET['accion'] ?? 'listar';
 
+    if ($accion === 'listar_asignaciones_profesor') {
+        $sql = "SELECT a.id, a.prueba_id, a.fecha_inicio, a.fecha_fin, p.titulo, p.modalidad, e.nombre_especialidad as materia, c.nombre_curso as curso_nombre,
+                (SELECT COUNT(*) FROM eval_respuestas WHERE asignacion_id = a.id AND estado IN (2, 3)) as total_entregas,
+                (SELECT COUNT(*) FROM estudiantes WHERE curso_id = a.curso_id) as total_estudiantes
+                FROM eval_asignaciones a 
+                JOIN eval_pruebas p ON a.prueba_id = p.id 
+                JOIN especialidades e ON p.materia_id = e.id 
+                JOIN cursos c ON a.curso_id = c.id
+                WHERE a.docente_id = ?
+                ORDER BY a.id DESC";
+        
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$mi_id]);
+        if (ob_get_length()) {
+            ob_clean();
+        }
+        echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)], JSON_UNESCAPED_UNICODE);
+        exit();
+    }
+
     switch ($accion) {
         case 'guardar':
             proteccion_extrema();
@@ -277,53 +297,6 @@ try {
             }
             break;
 
-        case 'eliminar_prueba':
-            proteccion_extrema();
-            $id = (int)filter_input(INPUT_POST, 'id');
-            
-            $db->beginTransaction();
-            try {
-                // 1. Obtener asignaciones
-                $stmt_asig = $db->prepare("SELECT id FROM eval_asignaciones WHERE prueba_id = ?");
-                $stmt_asig->execute([$id]);
-                $asigs = $stmt_asig->fetchAll(PDO::FETCH_COLUMN);
-                
-                if (!empty($asigs)) {
-                    $in_query = implode(',', array_fill(0, count($asigs), '?'));
-                    $sql_resp = "DELETE FROM eval_respuestas WHERE asignacion_id IN ($in_query)";
-                    $sql_inci = "DELETE FROM eval_incidentes WHERE asignacion_id IN ($in_query)";
-                    
-                    $db->prepare($sql_resp)->execute($asigs);
-                    $db->prepare($sql_inci)->execute($asigs);
-                }
-                
-                $db->prepare("DELETE FROM eval_asignaciones WHERE prueba_id = ? AND docente_id = ?")->execute([$id, $mi_id]);
-                $db->prepare("DELETE FROM eval_pruebas_items WHERE prueba_id = ?")->execute([$id]);
-                $db->prepare("DELETE FROM eval_pruebas WHERE id = ? AND docente_id = ?")->execute([$id, $mi_id]);
-                
-                $db->commit();
-                echo json_encode(['status' => 'success', 'message' => 'Prueba y dependencias purgadas con éxito.']);
-            } catch (Exception $e) {
-                if ($db->inTransaction()) $db->rollBack();
-                throw $e;
-            }
-            break;
-        case 'listar_asignaciones_profesor':
-            $sql = "SELECT a.id, a.prueba_id, a.fecha_inicio, a.fecha_fin, p.titulo, p.modalidad, e.nombre_especialidad as materia, c.nombre_curso as curso_nombre,
-                    (SELECT COUNT(*) FROM eval_respuestas WHERE asignacion_id = a.id AND estado IN (2, 3)) as total_entregas,
-                    (SELECT COUNT(*) FROM estudiantes WHERE curso_id = a.curso_id) as total_estudiantes
-                    FROM eval_asignaciones a 
-                    JOIN eval_pruebas p ON a.prueba_id = p.id 
-                    JOIN especialidades e ON p.materia_id = e.id 
-                    JOIN cursos c ON a.curso_id = c.id
-                    WHERE a.docente_id = ?
-                    ORDER BY a.id DESC";
-            
-            $stmt = $db->prepare($sql);
-            $stmt->execute([$mi_id]);
-            ob_clean();
-            echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll()]);
-            break;
 
         case 'listar_entregas_asignacion':
             $asig_id = (int)filter_input(INPUT_POST, 'asignacion_id');

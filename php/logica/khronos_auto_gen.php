@@ -148,62 +148,109 @@ foreach ($materias_pendientes as &$m) {
 function asignarHora(PDO $db, array $m, string $dia, int $hora, array $cfg, int $curso_id): void {
     $stmt_j = $db->prepare("SELECT jornada FROM cursos WHERE id = ?");
     $stmt_j->execute([$curso_id]);
-    $jornada_curso = $stmt_j->fetchColumn() ?: 'Mañana';
+    $jornada_result = $stmt_j->fetchColumn();
+    $jornada_curso = $jornada_result !== false ? (string)$jornada_result : 'Mañana';
 
-    $obtener_cfg = function($clave, $jornada) use ($cfg) {
+    $obtener_cfg = function(string $clave, string $jornada) use ($cfg): ?string {
         $suffix = strtolower(str_replace([' ', 'á', 'é', 'í', 'ó', 'ú'], ['', 'a', 'e', 'i', 'o', 'u'], $jornada));
         $clave_jornada = $clave . '_' . $suffix;
         if (isset($cfg[$clave_jornada]) && $cfg[$clave_jornada] !== '') {
-            return $cfg[$clave_jornada];
+            return (string)$cfg[$clave_jornada];
         }
-        return $cfg[$clave] ?? null;
+        if (isset($cfg[$clave]) && $cfg[$clave] !== '') {
+            return (string)$cfg[$clave];
+        }
+        return null;
     };
 
     $h_ini_base = $obtener_cfg('khronos_inicio', $jornada_curso) ?? '07:00';
+    
     $recesos_raw = $obtener_cfg('khronos_recesos', $jornada_curso);
     $recesos_lista = [];
-    if (!empty($recesos_raw)) {
-        $decoded = json_decode((string)$recesos_raw, true);
+    
+    if ($recesos_raw !== null && $recesos_raw !== '') {
+        $decoded = json_decode($recesos_raw, true);
         if (is_array($decoded)) {
-            $recesos_lista = $decoded;
+            foreach ($decoded as $receso) {
+                if (is_array($receso) && isset($receso['bloque']) && isset($receso['duracion'])) {
+                    $recesos_lista[] = [
+                        'bloque' => (int)$receso['bloque'], 
+                        'duracion' => (int)$receso['duracion']
+                    ];
+                }
+            }
         }
     }
+    
     if (empty($recesos_lista)) {
-        $d1h = (int)($obtener_cfg('khronos_descanso_h', $jornada_curso) ?? 0);
-        $d1m = (int)($obtener_cfg('khronos_descanso_m', $jornada_curso) ?? 0);
-        if ($d1h > 0 && $d1m > 0) $recesos_lista[] = ['bloque' => $d1h, 'duracion' => $d1m];
-        $d2h = (int)($obtener_cfg('khronos_descanso2_h', $jornada_curso) ?? 0);
-        $d2m = (int)($obtener_cfg('khronos_descanso2_m', $jornada_curso) ?? 0);
-        if ($d2h > 0 && $d2m > 0) $recesos_lista[] = ['bloque' => $d2h, 'duracion' => $d2m];
+        $d1h_str = $obtener_cfg('khronos_descanso_h', $jornada_curso);
+        $d1m_str = $obtener_cfg('khronos_descanso_m', $jornada_curso);
+        $d1h = $d1h_str !== null ? (int)$d1h_str : 0;
+        $d1m = $d1m_str !== null ? (int)$d1m_str : 0;
+        
+        if ($d1h > 0 && $d1m > 0) {
+            $recesos_lista[] = ['bloque' => $d1h, 'duracion' => $d1m];
+        }
+        
+        $d2h_str = $obtener_cfg('khronos_descanso2_h', $jornada_curso);
+        $d2m_str = $obtener_cfg('khronos_descanso2_m', $jornada_curso);
+        $d2h = $d2h_str !== null ? (int)$d2h_str : 0;
+        $d2m = $d2m_str !== null ? (int)$d2m_str : 0;
+        
+        if ($d2h > 0 && $d2m > 0) {
+            $recesos_lista[] = ['bloque' => $d2h, 'duracion' => $d2m];
+        }
     }
 
-    [$h, $min] = explode(':', $h_ini_base);
+    $dur = 55;
+    $cfg_dur = $obtener_cfg('khronos_duracion', $jornada_curso);
+    if ($cfg_dur !== null && $cfg_dur !== '') {
+        $dur = (int)$cfg_dur;
+    }
+    
+    $parts = explode(':', $h_ini_base);
+    if (count($parts) !== 2) {
+        $h = 7;
+        $min = 0;
+    } else {
+        $h = (int)$parts[0];
+        $min = (int)$parts[1];
+    }
+    
     $t_ini = '';
     $t_fin = '';
-    for($j=1; $j<=$hora; $j++) {
+    
+    for ($j = 1; $j <= $hora; $j++) {
         $t_ini = sprintf("%02d:%02d", $h, $min);
         $total = $min + $dur;
-        $h += floor($total/60);
+        $h += intdiv($total, 60);
         $min = $total % 60;
         $t_fin = sprintf("%02d:%02d", $h, $min);
 
-        foreach ($recesos_lista as $rec) {
-            if ((int)($rec['bloque'] ?? 0) === $j) {
-                $dur_rec = (int)($rec['duracion'] ?? 0);
+        foreach ($recesos_lista as $receso) {
+            if (isset($receso['bloque']) && $receso['bloque'] === $j) {
+                $dur_rec = isset($receso['duracion']) ? (int)$receso['duracion'] : 0;
                 $total_d = $min + $dur_rec;
-                $h += floor($total_d/60);
+                $h += intdiv($total_d, 60);
                 $min = $total_d % 60;
             }
         }
     }
 
     $stmt = $db->prepare("INSERT INTO khronos_horarios (curso_id, docente_id, especialidad_id, dia_semana, hora_numero, hora_inicio, hora_fin) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$curso_id, $m['docente_id'], $m['especialidad_id'], $dia, $hora, $t_ini, $t_fin]);
+    $stmt->execute([
+        $curso_id, 
+        $m['docente_id'], 
+        $m['especialidad_id'], 
+        $dia, 
+        $hora, 
+        $t_ini, 
+        $t_fin
+    ]);
 }
 
 if ($asignaciones > 0) {
     echo json_encode(['status' => 'success', 'message' => "Se han distribuido $asignaciones horas equitativamente."]);
 } else {
-    echo json_encode(['status' => 'info', 'message' => 'No se pudieron asignar más horas.']);
+    echo json_encode(['status' => 'warning', 'message' => 'No fue posible asignar horas automáticamente respetando las restricciones de jornada y descansos.']);
 }
-?>

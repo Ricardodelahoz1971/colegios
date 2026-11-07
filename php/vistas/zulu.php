@@ -90,13 +90,15 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
     $stmt_plantilla = $db->prepare("
         SELECT c.id as curso_id, c.nombre_curso, c.nivel_id, c.jornada, u_tutor.nombre as nombre_tutor,
                e.nombre_especialidad as materia_nombre, u_doc.nombre as docente_nombre,
-               u_doc.id as docente_id, e.id as materia_id
+               u_doc.id as docente_id, e.id as materia_id,
+               COALESCE(da.jornada_laboral, 'Completa') as docente_jornada
         FROM cursos c
         LEFT JOIN usuarios u_tutor ON c.tutor_id = u_tutor.id
         LEFT JOIN carga_academica ca ON c.id = ca.curso_id
         LEFT JOIN especialidades e ON ca.especialidad_id = e.id
         LEFT JOIN usuarios u_doc ON ca.docente_id = u_doc.id
-        ORDER BY c.nombre_curso ASC, e.nombre_especialidad ASC
+        LEFT JOIN personal_datos_adicionales da ON u_doc.id = da.usuario_id
+        ORDER BY c.nivel_id ASC, c.nombre_curso ASC, c.jornada ASC, c.id ASC, e.nombre_especialidad ASC
     ");
     $stmt_plantilla->execute();
     $plantilla_stmt = $stmt_plantilla;
@@ -130,7 +132,8 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                 'materia' => $row['materia_nombre'],
                 'docente' => $row['docente_nombre'],
                 'd_id'    => $row['docente_id'],
-                'm_id'    => $row['materia_id']
+                'm_id'    => $row['materia_id'],
+                'jornada' => $row['docente_jornada'] ?? 'Completa'
             ];
         }
     }
@@ -258,6 +261,7 @@ $total_horas_sistema = (int)$stmt_horas->fetchColumn() ?: 0;
                                                  data-curso-orig="<?php echo $id_cur; ?>"
                                                  data-docente-nombre="<?php echo htmlspecialchars($item['docente']); ?>"
                                                  data-materia-nombre="<?php echo htmlspecialchars($item['materia']); ?>"
+                                                 data-docente-jornada="<?php echo htmlspecialchars($item['jornada'] ?? 'Completa'); ?>"
                                                  <?php endif; ?>>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar-elite--sm avatar-elite--circle me-3 <?php echo $es_slot ? 'opacity-25' : ''; ?>">

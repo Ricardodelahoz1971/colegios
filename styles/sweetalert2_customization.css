@@ -217,4 +217,48 @@
     background-color: var(--el-border);
 }
 
+/* ==========================================================================
+   SEMÁNTICA UNIVERSAL DE ICONOS - Blindaje contra var(--el-primary) forzado
+   ========================================================================== */
+.swal2-icon.swal2-error {
+    border-color: hsl(0, 84%, 60%) !important;
+    color: hsl(0, 84%, 60%) !important;
+}
+
+.swal2-icon.swal2-error [class^="swal2-x-mark-line"] {
+    background-color: hsl(0, 84%, 60%) !important;
+}
+
+.swal2-icon.swal2-warning {
+    border-color: hsl(38, 92%, 50%) !important;
+    color: hsl(38, 92%, 50%) !important;
+}
+
+.swal2-icon.swal2-warning .swal2-icon-content {
+    color: hsl(38, 92%, 50%) !important;
+}
+
+.swal2-icon.swal2-success {
+    border-color: hsl(142, 71%, 45%) !important;
+    color: hsl(142, 71%, 45%) !important;
+}
+
+.swal2-icon.swal2-success [class^="swal2-success-line"],
+.swal2-icon.swal2-success .swal2-success-ring {
+    border-color: hsl(142, 71%, 45%) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-fix {
+    background-color: hsl(142, 71%, 45%) !important;
+}
+
+.swal2-icon.swal2-info {
+    border-color: var(--el-primary) !important;
+    color: var(--el-primary) !important;
+}
+
+.swal2-icon.swal2-info .swal2-icon-content {
+    color: var(--el-primary) !important;
+}
+
 } /* Fin @layer components */

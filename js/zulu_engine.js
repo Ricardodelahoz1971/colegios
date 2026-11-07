@@ -49,31 +49,61 @@
     window.handleDragOverSlot = function(e) { if (e.preventDefault) e.preventDefault(); e.currentTarget.classList.add('slot-over-active'); return false; };
     window.handleDragLeaveSlot = function(e) { e.currentTarget.classList.remove('slot-over-active'); };
 
-    async function validarJornadaDocente(cursoDestId, docenteObj) {
-        const cardDest = document.querySelector(`.card-zulu-elite[data-curso-dest="${cursoDestId}"]`);
-        if (!cardDest || !docenteObj || !docenteObj.jornada || docenteObj.jornada === 'Completa') {
+    async function validarJornadaCursos(cursosDest, docenteObj) {
+        if (!docenteObj || !docenteObj.jornada || docenteObj.jornada === 'Completa') {
             return true;
         }
-        const cursoJornada = cardDest.dataset.cursoJornada || 'Mañana';
-        if (cursoJornada !== 'Completa' && docenteObj.jornada.toLowerCase() !== cursoJornada.toLowerCase()) {
-            const c = await Swal.fire({
-                title: 'Incompatibilidad de Jornada',
-                html: `
-                    <div class="text-start">
-                        <p class="small text-muted mb-2">El docente <strong class="text-dark">${docenteObj.nombre}</strong> está contratado para Jornada <span class="badge badge-elite badge-elite--info">${docenteObj.jornada}</span>.</p>
-                        <p class="small text-danger mb-2"><i class="bi bi-exclamation-triangle-fill me-1"></i> El curso seleccionado pertenece a la Jornada <strong class="text-dark">${cursoJornada}</strong>.</p>
-                        <p class="small fw-bold text-dark mt-3 mb-0">¿Deseas autorizar esta asignación de todas formas?</p>
-                    </div>
-                `,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, autorizar',
-                cancelButtonText: 'Cancelar'
-            });
-            return c.isConfirmed;
+        const ids = Array.isArray(cursosDest) ? cursosDest : [cursosDest];
+        const docenteJor = docenteObj.jornada.toLowerCase();
+        const incompatibles = [];
+
+        ids.forEach(cid => {
+            const card = document.querySelector(`.card-zulu-elite[data-curso-dest="${cid}"]`);
+            if (card) {
+                const jor = (card.dataset.cursoJornada || 'Mañana').toLowerCase();
+                if (jor !== 'completa' && jor !== docenteJor) {
+                    incompatibles.push({
+                        id: cid,
+                        nombre: card.dataset.cursoNombre || `Curso #${cid}`,
+                        jornada: card.dataset.cursoJornada || 'Mañana'
+                    });
+                }
+            }
+        });
+
+        if (incompatibles.length === 0) {
+            return true;
         }
-        return true;
+
+        const itemsHtml = incompatibles
+            .map(i => `<li class="mb-1"><strong>${i.nombre}</strong> &mdash; Jornada <span class="badge badge-elite badge-elite--warning fs-nano text-uppercase">${i.jornada}</span></li>`)
+            .join('');
+
+        const mensajeCursos = incompatibles.length === 1 
+            ? `El curso seleccionado pertenece a la Jornada <strong class="text-dark">${incompatibles[0].jornada}</strong>:`
+            : `Los siguientes cursos seleccionados pertenecen a una jornada diferente:`;
+
+        const c = await Swal.fire({
+            title: 'Incompatibilidad de Jornada',
+            html: `
+                <div class="text-start">
+                    <p class="small text-muted mb-2">El docente <strong class="text-dark">${docenteObj.nombre}</strong> está contratado para Jornada <span class="badge badge-elite badge-elite--info text-uppercase">${docenteObj.jornada}</span>.</p>
+                    <p class="small text-danger mb-2"><i class="bi bi-exclamation-triangle-fill me-1"></i> ${mensajeCursos}</p>
+                    <ul class="small text-dark ps-3 mb-2">
+                        ${itemsHtml}
+                    </ul>
+                    <p class="small fw-bold text-dark mt-3 mb-0">¿Deseas autorizar esta asignación de todas formas?</p>
+                </div>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, autorizar',
+            cancelButtonText: 'Cancelar'
+        });
+        return c.isConfirmed;
     }
+
+    const validarJornadaDocente = validarJornadaCursos;
 
     window.handleDrop = async function(e) {
         if (e.stopPropagation) e.stopPropagation();
@@ -88,11 +118,7 @@
         if (!dragData || dragData.cursoOrig === cursoDestId) return;
         const docenteActual = { ...dragData };
 
-        // 2. VALIDAR COMPATIBILIDAD DE JORNADA
-        const autorizaJornada = await validarJornadaDocente(cursoDestId, docenteActual);
-        if (!autorizaJornada) return;
-
-        // 3. PROCESAR ASIGNACIÓN
+        // 2. PROCESAR ASIGNACIÓN
         let faltantesIds = [];
         let faltantesNombres = [];
         try { faltantesIds = JSON.parse(faltantesRaw); } catch(err) { faltantesIds = []; }
@@ -161,9 +187,6 @@
 
         const docenteActual = { ...dragData };
 
-        const autorizaJornada = await validarJornadaDocente(cursoDestId, docenteActual);
-        if (!autorizaJornada) return;
-
         const slotMateriaNombre = dropSlot.dataset.materiaNombre || docenteActual.materia || 'Asignatura';
         const cursosFinales = await solicitarCursosReplicacion(cursoDestId, materiaId, slotMateriaNombre, docenteActual);
         if (cursosFinales) {
@@ -186,6 +209,8 @@
 
         const nivelId = cardDest.dataset.nivelId;
         const cursoNombre = cardDest.dataset.cursoNombre || `Curso #${cursoDestId}`;
+        const cursoJornada = cardDest.dataset.cursoJornada || 'Mañana';
+        const docenteJornada = (dObj && dObj.jornada) ? dObj.jornada : 'Completa';
         
         const cardsHermanos = Array.from(document.querySelectorAll(`.card-zulu-elite[data-nivel-id="${nivelId}"]`))
             .filter(c => c.dataset.cursoDest !== String(cursoDestId));
@@ -194,25 +219,42 @@
             return [parseInt(cursoDestId)];
         }
 
-        const hermanosData = cardsHermanos.map(c => ({
-            id: parseInt(c.dataset.cursoDest),
-            nombre: c.dataset.cursoNombre || `Curso #${c.dataset.cursoDest}`
-        }));
+        const hermanosData = cardsHermanos.map(c => {
+            const hJornada = c.dataset.cursoJornada || 'Mañana';
+            const compatible = docenteJornada === 'Completa' || hJornada === 'Completa' || docenteJornada.toLowerCase() === hJornada.toLowerCase();
+            return {
+                id: parseInt(c.dataset.cursoDest),
+                nombre: c.dataset.cursoNombre || `Curso #${c.dataset.cursoDest}`,
+                jornada: hJornada,
+                compatible: compatible
+            };
+        });
 
         const htmlContent = `
             <div class="text-start mt-2">
-                <p class="small text-muted mb-2">Docente: <strong class="text-dark">${dObj.nombre}</strong></p>
+                <p class="small text-muted mb-2">Docente: <strong class="text-dark">${dObj.nombre}</strong> <span class="badge badge-elite badge-elite--info fs-nano text-uppercase ms-1">Jornada ${docenteJornada}</span></p>
                 <p class="small text-muted mb-3">Materia: <strong class="text-primary">${materiaNombre || dObj.materia || 'Asignatura'}</strong></p>
                 <div class="p-2 mb-2 rounded-3 bg-light border">
                     <span class="fs-nano text-uppercase text-secondary fw-bold">Curso asignado:</span>
-                    <div class="fw-bold text-dark small">${cursoNombre}</div>
+                    <div class="fw-bold text-dark small d-flex align-items-center justify-content-between">
+                        <span>${cursoNombre}</span>
+                        <span class="badge badge-elite badge-elite--neutral fs-nano text-uppercase">${cursoJornada}</span>
+                    </div>
                 </div>
                 <p class="small fw-bold text-dark mb-2">¿Deseas aplicar también a los demás cursos del grado?</p>
                 <div class="d-flex flex-column gap-1 max-h-200 overflow-auto p-2 border rounded-3 bg-white">
                     ${hermanosData.map(h => `
-                        <label class="d-flex align-items-center p-2 rounded-2 bg-light border cursor-pointer m-0">
-                            <input type="checkbox" class="form-check-input-elite chk-curso-replicar me-2" value="${h.id}" checked>
-                            <span class="small fw-bold text-dark">${h.nombre}</span>
+                        <label class="d-flex align-items-center justify-content-between p-2 rounded-2 ${h.compatible ? 'bg-light' : 'bg-warning-subtle border-warning'} border cursor-pointer m-0">
+                            <div class="d-flex align-items-center">
+                                <input type="checkbox" class="form-check-input-elite chk-curso-replicar me-2" value="${h.id}" checked>
+                                <span class="small fw-bold text-dark">${h.nombre}</span>
+                            </div>
+                            <div>
+                                ${h.compatible 
+                                    ? `<span class="badge badge-elite badge-elite--neutral fs-nano text-uppercase">${h.jornada}</span>`
+                                    : `<span class="badge badge-elite badge-elite--warning fs-nano text-uppercase" title="Jornada no coincide con disponibilidad docente (${docenteJornada})"><i class="bi bi-exclamation-triangle-fill me-1"></i>${h.jornada} (Fuera de jornada)</span>`
+                                }
+                            </div>
                         </label>
                     `).join('')}
                 </div>
@@ -247,6 +289,12 @@
         const dObj = docenteObj || dragData;
         const finalMateriaId = materiaForzadaId || dObj.materiaId;
         const cursosArray = Array.isArray(cursosDest) ? cursosDest : [cursosDest];
+
+        // Validar compatibilidad de jornadas antes de proceder
+        if (accion !== 'eliminar' && !confirmar) {
+            const autorizaJornada = await validarJornadaCursos(cursosArray, dObj);
+            if (!autorizaJornada) return;
+        }
 
         const inputCurso = document.getElementById('buscador-cursos-zulu');
         if (inputCurso && inputCurso.value.trim()) {
